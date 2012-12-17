@@ -15,6 +15,7 @@
   {{ HTML::style('css/jquery-datatables/demo_table.css') }}
   {{ HTML::style('css/app.css') }}
   {{ HTML::style('css/general_enclosed_foundicons.css') }}
+  {{ HTML::style('css/general_foundicons.css') }}
 
   {{ HTML::script('js/jquery-1.8.3.min.js') }}
   {{ HTML::script('js/jquery.dataTables.min.js') }}
@@ -26,8 +27,10 @@
 <body>
 
   <!-- Header and Nav -->
-  <header class="sixteen columns mainheader">
-    <h1 id="paramanusaLogo">ParamaNusa</h1>
+  <header class="row mainheader">
+    
+      <h1 id="paramanusaLogo">ParamaNusa</h1>
+    
   </header>
 
   <!-- End Header and Nav -->
@@ -38,11 +41,9 @@
     <!-- Nav Sidebar -->
     <!-- This is source ordered to be pulled to the left on larger screens -->
 @if(Auth::check())
-    <nav class="top-bar twelve columns">
-      <section>
-        <!-- Left Nav Section -->
-        <ul class="left">
-          <li class="divider"></li>
+    <nav class="top-bar main-bar">
+        <ul class="">
+          <!--<li class="divider"></li>-->
           <li>{{ HTML::link('opportunity', 'Opportunity' ) }}</li>
           <li>{{ HTML::link('tender', 'Tender' ) }}</li>
           <li>{{ HTML::link('proposal', 'Tech Proposal' ) }}</li>
@@ -61,6 +62,9 @@
           </li>
           <li>{{ HTML::link('logout', 'Logout') }}</li>
         </ul>
+      
+    </nav>
+    
 <!--
         <ul class="right">
           <li class="divider"></li>
@@ -73,11 +77,9 @@
           </li>
         </ul>
 -->
-      </section>
-    </nav>
-    <div class="row alignleft">
-        <div class="two columns">
-          
+      
+    <div class="row container-content clearfix">
+        <div class="two columns mobile">     
           <dl class="vertical tabs">
             <dd><a href="#"><i class="foundicon-home sidemenu"></i> <br/>Home</a></dd>
             <dd><a href="#"><i class="foundicon-mail sidemenu"></i> <br/>Messages</a></dd>
@@ -90,7 +92,7 @@
           </dl>
           
         </div>
-        <div id="maincontent" class="eleven columns">
+        <div id="maincontent" class="seven columns">
             @if (Session::has('notify_success'))
                 <div class="row">
                     <span class="success">{{Session::get('notify_success')}}</span>
@@ -100,18 +102,61 @@
             @yield('content')
         </div>
         <aside class="three columns">
+
             <div class="panel sidepanel">
-              <a href="#"><img src="http://placehold.it/75x100&text=[img]" /></a>
-              <h5>Welcome back, {{ Auth::user()->fullname }}</h5>
-                <ul class="dropdown">
+
+                <div class=" row">
+                  <div class="eight columns">
+                    <p>Logged in as, <strong>{{ Auth::user()->fullname }}</strong>
+                      <br/><br/>VIP Information Technology
+                      <br/><br/>Last Login: Tuesday, Nov 20 2012
+                      <br/>from <i>Office</i>
+                    </p>
+                    <p>trudjino@paramanusa.co.id
+                      <br/><a href="#">Preferences</a> | {{ HTML::link('logout', 'Logout') }}
+                    </p>
+                  </div>
+                  <div class="four columns">
+                    <a href="#"><img src="http://placehold.it/80x80&text=[img]" /></a>
+                  </div>
+                </div>
+              
+                <!--<ul class="dropdown">
                   <li>{{ HTML::link('profile', 'My Profile') }}</li>
                   <li>{{ HTML::link('passwd', 'Change Password') }}</li>
                   <li>{{ HTML::link('logout', 'Logout') }}</li>
-                </ul>
+                </ul>-->
             </div>
+
             <div class="panel sidepanel">
-              <h3>Messages</h3>
-              <p>Welcome back, {{ Auth::user()->fullname }}</p>
+              <h4><span class="foundicon-mail"></span>&nbsp;&nbsp;Messages</h4>
+              <!--<p>Welcome back, {{ Auth::user()->fullname }}</p>-->
+              <div class="message-list-side">
+                <div class="message-list-item">
+                  <span class="category-info">e-mail</span><br/>
+                  <span class="author-info">from:</span> vendor@vendor.co.id<br/>
+                  <span class="author-info">date:</span> Nov 19, 2012 15.30 WIB<br/>
+                  <span class="author-info">subject:</span> Quotation 1<br/>
+                  <span class="content-info">Dear, Bpk Taufiq ini adalah .... <a href="#">(read more)</a></span>
+                </div>
+
+                <div class="message-list-item">
+                  <span class="category-info">comments</span><br/>
+                  <span class="author-info">from:</span> vendor@vendor.co.id<br/>
+                  <span class="author-info">date:</span> Nov 19, 2012 15.30 WIB<br/>
+                  <span class="author-info">subject:</span> Quotation 1<br/>
+                  <span class="content-info">Dear, Bpk Taufiq ini adalah .... <a href="#">(read more)</a></span>
+                </div>
+
+                <div class="message-list-item">
+                  <span class="category-info">e-mail</span><br/>
+                  <span class="author-info">from:</span> vendor@vendor.co.id<br/>
+                  <span class="author-info">date:</span> Nov 19, 2012 15.30 WIB<br/>
+                  <span class="author-info">subject:</span> Quotation 1<br/>
+                  <span class="content-info">Dear, Bpk Taufiq ini adalah .... <a href="#">(read more)</a></span>
+                </div>
+
+              </div>
             </div>
         </aside>
     </div>
@@ -139,10 +184,10 @@
 
 
   <footer class="row">
-    <div class="sixteen columns">
+    
       <hr />
         <p>&copy; Copyright no one at all. Go to town.</p>
-    </div>
+    
   </footer>
 </body>
 </html>
