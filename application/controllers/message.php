@@ -129,7 +129,12 @@ class Message_Controller extends Base_Controller {
 
 	public function get_new()
 	{
-		return View::make('message.new');
+		return View::make('message.new')
+			->with('title','Compose Message');
 	}
+
+	public function post_new(){
+		
+	}	
 
 }
