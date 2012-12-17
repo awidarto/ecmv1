@@ -48,8 +48,44 @@ class Document_Controller extends Base_Controller {
 
 	public function post_index()
 	{
+		$fields = array('title','createdDate','creatorName','creatorName','tags');
+
+		$rel = array('like','like','like','like','equ');
+
+		$cond = array('both','both','both','both','equ');
+
+		$idx = 0;
+		$q = array();
+		foreach($fields as $field){
+			if(Input::get('sSearch_'.$idx))
+			{
+				if($rel[$idx] == 'like'){
+					if($cond[$idx] == 'both'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/');
+					}else if($cond[$idx] == 'before'){
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/');						
+					}else if($cond[$idx] == 'after'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/');						
+					}
+				}else if($rel[$idx] == 'equ'){
+					$q[$field] = Input::get('sSearch_'.$idx);
+				}
+			}
+			$idx++;
+		}
+
+		//print_r($q)
+
 		$document = new Document();
-		$documents = $document->find();
+
+		if(count($q) > 0){
+			$documents = $document->find($q);
+		}else{
+			$documents = $document->find();
+		}
+
+
+
 
 		$aadata = array();
 
@@ -74,7 +110,8 @@ class Document_Controller extends Base_Controller {
 			'sEcho'=> Input::get('sEcho'),
 			'iTotalRecords'=>$count_all,
 			'iTotalDisplayRecords'=> $count_display_all,
-			'aaData'=>$aadata
+			'aaData'=>$aadata,
+			'qrs'=>$q
 		);
 
 		print json_encode($result);
