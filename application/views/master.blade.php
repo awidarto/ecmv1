@@ -107,8 +107,8 @@
 
                 <div class=" row">
                   <div class="eight columns">
-                    <p>Logged in as, <strong>{{ Auth::user()->fullname }}</strong>
-                      <br/><br/>VIP Information Technology
+                    <p>Logged in as, <br/><br/><strong>{{ Auth::user()->fullname }}</strong>
+                      <br/>VP Information Technology
                       <br/><br/>Last Login: Tuesday, Nov 20 2012
                       <br/>from <i>Office</i>
                     </p>
@@ -167,8 +167,9 @@
     <section>
       <!-- Right Nav Section -->
         <ul class="left">
-          <li >
-              <li>{{ HTML::link('login', 'Login') }}</li>
+          <li>
+              <!--<li>{{ HTML::link('login', 'Login') }}</li>-->
+              <li><h3 class="loginHeader">Login</h3></li>
           </li>
         </ul>
     </section>

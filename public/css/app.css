@@ -15,6 +15,7 @@
 ----------------------------------------- */
 body{
 	background-color: #f1f1f1;
+	font-size: 1em;
 }
 
 .clearfix:after
@@ -27,10 +28,22 @@ visibility:hidden;
 }
 .clearfix
 {display:inline-block;}
+
 #maincontent{
 	padding:20px;
 	background-color: #fff;
 	border: 1px solid #d7d7d7;
+}
+#maincontent ul{
+	list-style-position:inside;
+	list-style-type: none;
+
+}
+#maincontent h3,.panel h3{
+	font-size: 1.7em;
+}
+#maincontent h4,.sidepanel h4{
+	font-size: 1.4em;
 }
 .row{
 	width:100%;
@@ -77,6 +90,9 @@ table.dataTable{
 .tabs.vertical dd a:hover, .tabs.vertical li a:hover{
 	background-color: #fff;
 }
+.tabs.vertical dd a:hover i, .tabs.vertical li a:hover i{
+	color: #2795b6;
+}
 /* -----------------------------------------
    Page Name 1
 ----------------------------------------- */
@@ -113,13 +129,15 @@ table.dataTable{
 .top-bar ul li a{
 	background: #000;
 }
+.top-bar ul > li:first-child a{
+	padding:0 15px 0 35px;
+}
 
 .top-bar ul > li a:not(.button){
-	color: #fff;
-	display: block;
-	font-size: 12.5px;
+	
+	font-size: 12px;
 	font-weight: normal;
-	padding: 0 17px;
+	
 }
 .tabs.vertical dd a, .tabs.vertical li a{
 	margin: 0 auto;
@@ -211,5 +229,41 @@ table tbody tr.even,tr.even td.sorting_1{
 }
 footer p{
 	margin-left: 20px;
+}
+/*FRONT*/
+.front .mainheader{
+	text-align: center;
+
+}
+body.front .mainheader #paramanusaLogo{
+	margin: 0 auto;
+	padding-bottom: 10px;
+}
+body.front .container-content{
+	margin: 40px 0;
+	text-align: center;
+	width: 100%;
+	float: none;
+	position: relative;
+}
+body.front .container-content #maincontent{
+	margin: 0 auto;
+	text-align: left;	
+	float: none;
+	-webkit-box-shadow: 0px 3px 3px 1px rgba(0, 0, 0, 0.2);
+box-shadow: 0px 3px 3px 1px rgba(0, 0, 0, 0.2);
+}
+span.error{
+	background-color: #ffcdcd;
+	padding:8px;
+	display: block;
+	margin-bottom: 10px;
+}
+ul li{
+	line-height: 20px;
+}
+li small.bullet{
+	font-size: 0.6em;
+	color: #bdbdbd;
 }
 
