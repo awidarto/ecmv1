@@ -16,7 +16,8 @@ return array(
 	|
 	*/
 
-	'driver' => 'eloquent',
+	//'driver' => 'eloquent',
+	'driver' => 'mongoauth',
 
 	/*
 	|--------------------------------------------------------------------------

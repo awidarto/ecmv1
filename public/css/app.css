@@ -1,0 +1,60 @@
+/* Artfully masterminded by ZURB  */
+
+/* -------------------------------------------------- 
+   Table of Contents
+-----------------------------------------------------
+:: Shared Styles
+:: Page Name 1
+:: Page Name 2
+*/
+
+
+
+/* -----------------------------------------
+   Shared Styles
+----------------------------------------- */
+.row{
+	width:1280px;
+}
+
+.center{
+	width:1024px;
+	margin:auto;
+}
+
+.alignleft{
+	margin-left:0px;
+}
+
+table.dataTable{
+	width:100%;
+}
+
+.dataTables_length select{
+	width:60px;
+}
+
+.dataTables_filter label input[type="text"]{
+	width:160px;
+	float:right;
+}
+
+.action{
+	font-size: 1.8em;
+}
+
+.sidemenu{
+	font-size: 1.9em;	
+}
+/* -----------------------------------------
+   Page Name 1
+----------------------------------------- */
+
+
+
+
+/* -----------------------------------------
+   Page Name 2
+----------------------------------------- */
+
+

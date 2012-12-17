@@ -37,6 +37,94 @@ Route::get('/', function()
 	return View::make('home.index');
 });
 
+Route::get('hashme/(:any)',function($mypass){
+
+	print Hash::make($mypass);
+});
+
+// Auth routes
+
+Route::get('login', function()
+{
+	return View::make('auth.login');
+});
+
+Route::post('login', function()
+{
+	// get POST data
+    $username = Input::get('username');
+    $password = Input::get('password');
+
+    if ( $userdata = Auth::attempt(array('username'=>$username, 'password'=>$password)) )
+    {
+    	//print_r($userdata);
+        // we are now logged in, go to home
+        return Redirect::to('user');
+
+    }
+    else
+    {
+        // auth failure! lets go back to the login
+        return Redirect::to('login')
+            ->with('login_errors', true);
+        // pass any error notification you want
+        // i like to do it this way  
+    }
+
+});
+
+Route::get('passwd', array('before'=>'auth',function(){
+    return View::make('auth.password');
+}));
+
+Route::post('passwd', function()
+{
+	// get POST data
+    $newpass = Input::get('pass');
+    $chkpass = Input::get('chkpass');
+
+    if ($newpass == $chkpass)
+    {
+
+        if(Auth::changepass($newpass)){
+			return Redirect::to('user')->with('notify_success','Password changed.');        	
+        }
+
+    }
+    else
+    {
+        // auth failure! lets go back to the login
+        return Redirect::to('passwd')
+            ->with('newpass_errors', true);
+        // pass any error notification you want
+        // i like to do it this way  
+    }
+
+});
+
+
+Route::get('logout',function(){
+	Auth::logout();
+	return Redirect::to('login');
+});
+
+
+Route::get('user', array('before'=>'auth',function(){
+	//print_r(Auth::user());
+
+	//$items = new Item();
+
+	//$myitems = $items->find(array('owner'=> Auth::user()->id),array('name','descriptor','created_at'));
+
+	//print_r($myitems);
+
+	return View::make('user.home');
+}));
+
+Route::controller(array('document','user'));
+
+Route::get('profile',array('before'=>'auth','uses'=>'user@index'));
+
 /*
 |--------------------------------------------------------------------------
 | Application 404 & 500 Error Handlers
