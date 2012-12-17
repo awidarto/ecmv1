@@ -1,6 +1,6 @@
 <?php
 
-class User_Controller extends Base_Controller {
+class Message_Controller extends Base_Controller {
 
 	/*
 	|--------------------------------------------------------------------------
@@ -34,55 +34,27 @@ class User_Controller extends Base_Controller {
 
 	public function get_index()
 	{
-		$user = new User();
+		$heads = array('#','Timestamp','Subject','To','From','Tags','Action');
+		$fields = array('seq','createdDate','subject','to','from','tags','action');
+		$searchinput = array(false,'createdDate','subject','to','from','tags',false);
 
-		$user_profile = $user->get(array('email'=>Auth::user()->email));
-
-		return View::make('user.profile')->with('profile',$user_profile);
+		return View::make('tables.simple')
+			->with('title','Messages')
+			->with('newbutton','New Message')
+			->with('disablesort','0,5,6')
+			->with('addurl','message/new')
+			->with('searchinput',$searchinput)
+			->with('ajaxsource',URL::to('message'))
+			->with('heads',$heads);
 	}
 
 	public function post_index()
 	{
-		return View::make('user.index');
-	}
+		$fields = array('createdDate','subject','to','from','tags');
 
-	public function get_profile(){
+		$rel = array('like','like','like','like','equ');
 
-		$user = new User();
-
-		$user_profile = $user->get(array('email'=>Auth::user()->email));
-
-		return View::make('user.profile')->with('profile',$user_profile);
-	}
-
-	public function post_profile(){
-		
-	}
-
-
-	public function get_users()
-	{
-		$heads = array('#','Full Name','Username','Email','Role','Access','Action');
-		$fields = array('seq','fullname','username','email','role','access','action');
-		$searchinput = array(false,'fullname','username','email','role','access',false);
-
-		return View::make('tables.simple')
-			->with('title','User Management')
-			->with('newbutton','New User')
-			->with('disablesort','0,5,6')
-			->with('addurl','user/add')
-			->with('searchinput',$searchinput)
-			->with('ajaxsource',URL::to('users'))
-			->with('heads',$heads);
-	}
-
-	public function post_users()
-	{
-		$fields = array('fullname','username','email','role','access');
-
-		$rel = array('like','like','like','equ','equ');
-
-		$cond = array('both','both','both','equ','equ');
+		$cond = array('both','both','both','both','equ');
 
 		$idx = 0;
 		$q = array();
@@ -106,7 +78,7 @@ class User_Controller extends Base_Controller {
 
 		//print_r($q)
 
-		$document = new User();
+		$document = new Message();
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
@@ -133,11 +105,11 @@ class User_Controller extends Base_Controller {
 		foreach ($documents as $doc) {
 			$aadata[] = array(
 				$counter,
-				$doc['fullname'],
-				$doc['username'],
-				$doc['email'],
-				implode(',',$doc['role']),
-				implode(',',$doc['access']),
+				date('Y-m-d h:i:s',$doc['createdDate']),
+				$doc['subject'],
+				implode(',',$doc['to']),
+				implode(',',$doc['from']),
+				implode(',',$doc['tag']),
 				'<i class="foundicon-edit action"></i>&nbsp;<i class="foundicon-trash action"></i>'
 			);
 			$counter++;
@@ -155,5 +127,9 @@ class User_Controller extends Base_Controller {
 		print json_encode($result);
 	}
 
+	public function get_new()
+	{
+		return View::make('message.new');
+	}
 
 }

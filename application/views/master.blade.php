@@ -82,7 +82,7 @@
         <div class="two columns mobile">     
           <dl class="vertical tabs">
             <dd><a href="#"><i class="foundicon-home sidemenu"></i> <br/>Home</a></dd>
-            <dd><a href="#"><i class="foundicon-mail sidemenu"></i> <br/>Messages</a></dd>
+            <dd><a href="{{ URL::to('message') }}"><i class="foundicon-mail sidemenu"></i> <br/>Messages</a></dd>
             <dd><a href="#"><i class="foundicon-idea sidemenu"></i> <br/>Projects</a></dd>
             <dd><a href="#"><i class="foundicon-down-arrow sidemenu"></i> <br/>File Download</a></dd>
             <dd><a href="#"><i class="foundicon-up-arrow sidemenu"></i> <br/>File Upload</a></dd>
