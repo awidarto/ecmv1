@@ -2,9 +2,11 @@
 
 
 @section('content')
+<div class="tableHeader">
 <h3>{{$title}}</h3>
-<div class="row">
-	<a class="medium button right" href="#">{{$newbutton}}</a>
+
+	<a class="foundicon-add-doc button right newdoc action clearfix" href="#">&nbsp;&nbsp;<span>{{$newbutton}}</span></a>
+
 </div>
 <div class="row">
 	<table class="dataTable">
