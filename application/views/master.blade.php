@@ -81,14 +81,14 @@
     <div class="row container-content clearfix">
         <div class="two columns mobile">     
           <dl class="vertical tabs">
-            <dd><a href="#"><i class="foundicon-home sidemenu"></i> <br/>Home</a></dd>
+            <dd><a href="{{ URL::base() }}"><i class="foundicon-home sidemenu"></i> <br/>Home</a></dd>
             <dd><a href="{{ URL::to('message') }}"><i class="foundicon-mail sidemenu"></i> <br/>Messages</a></dd>
-            <dd><a href="#"><i class="foundicon-idea sidemenu"></i> <br/>Projects</a></dd>
-            <dd><a href="#"><i class="foundicon-down-arrow sidemenu"></i> <br/>File Download</a></dd>
-            <dd><a href="#"><i class="foundicon-up-arrow sidemenu"></i> <br/>File Upload</a></dd>
-            <dd><a href="#"><i class="foundicon-people sidemenu"></i> <br/>People</a></dd>
-            <dd><a href="#"><i class="foundicon-search sidemenu"></i> <br/>Search</a></dd>
-            <dd><a href="#"><i class="foundicon-smiley sidemenu"></i> <br/>Help</a></dd>
+            <dd><a href="{{ URL::to('project') }}"><i class="foundicon-idea sidemenu"></i> <br/>Projects</a></dd>
+            <dd><a href="{{ URL::to('download') }}"><i class="foundicon-down-arrow sidemenu"></i> <br/>File Download</a></dd>
+            <dd><a href="{{ URL::to('upload') }}"><i class="foundicon-up-arrow sidemenu"></i> <br/>File Upload</a></dd>
+            <dd><a href="{{ URL::to('people') }}"><i class="foundicon-people sidemenu"></i> <br/>People</a></dd>
+            <dd><a href="{{ URL::to('search') }}"><i class="foundicon-search sidemenu"></i> <br/>Search</a></dd>
+            <dd><a href="{{ URL::to('help') }}"><i class="foundicon-smiley sidemenu"></i> <br/>Help</a></dd>
           </dl>
           
         </div>
@@ -113,7 +113,7 @@
                       <br/>from <i>Office</i>
                     </p>
                     <p>trudjino@paramanusa.co.id
-                      <br/><a href="#">Preferences</a> | {{ HTML::link('logout', 'Logout') }}
+                      <br/><a href="{{URL::to('profile')}}">Profile</a> | {{ HTML::link('logout', 'Logout') }}
                     </p>
                   </div>
                   <div class="four columns">
