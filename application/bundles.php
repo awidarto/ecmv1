@@ -36,6 +36,7 @@
 return array(
 
 	'docs' => array('handles' => 'docs'),
+	'former' => array('auto' => true),
 	'mongovel' => array('auto'=>true)
 
 );

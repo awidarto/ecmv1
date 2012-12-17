@@ -125,6 +125,10 @@ Route::controller(array('document','user'));
 
 Route::get('profile',array('before'=>'auth','uses'=>'user@index'));
 
+Route::get('users',array('before'=>'auth','uses'=>'user@users'));
+
+Route::post('users',array('before'=>'auth','uses'=>'user@users'));
+
 /*
 |--------------------------------------------------------------------------
 | Application 404 & 500 Error Handlers

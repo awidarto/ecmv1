@@ -5,7 +5,7 @@
 <div class="tableHeader">
 <h3>{{$title}}</h3>
 
-	<a class="foundicon-add-doc button right newdoc action clearfix" href="#">&nbsp;&nbsp;<span>{{$newbutton}}</span></a>
+	<a class="foundicon-add-doc button right newdoc action clearfix" href="{{URL::to($addurl)}}">&nbsp;&nbsp;<span>{{$newbutton}}</span></a>
 
 </div>
 <div class="row">
@@ -57,6 +57,9 @@
 				"oTableTools": {
 					"sSwfPath": "assets/swf/copy_csv_xls_pdf.swf"
 				},
+				"aoColumnDefs": [ 
+				    { "bSortable": false, "aTargets": [ {{ $disablesort }} ] }
+				 ],
 			    "fnServerData": function ( sSource, aoData, fnCallback ) {
 		            $.ajax( {
 		                "dataType": 'json', 

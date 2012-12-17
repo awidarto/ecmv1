@@ -52,8 +52,13 @@
           <li>{{ HTML::link('legal', 'Legal Docs' ) }}</li>
           <li>{{ HTML::link('warehouse', 'Warehouse' ) }}</li>
           <li>{{ HTML::link('qc', 'QA / QC' ) }}</li>
-          <li>{{ HTML::link('document', 'Document Library' ) }}</li>
-          <li class="divider"></li>
+          <li class="has-dropdown">
+            <a href="#">Administration</a>
+            <ul class="dropdown">
+              <li>{{ HTML::link('document', 'Document Library' ) }}</li>
+              <li>{{ HTML::link('users', 'Users Management' ) }}</li>
+            </ul>
+          </li>
           <li>{{ HTML::link('logout', 'Logout') }}</li>
         </ul>
 <!--

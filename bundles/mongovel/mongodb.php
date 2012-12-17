@@ -261,12 +261,13 @@ class MongoDB {
 		));
 	}
 
-	public function find($collection_name, array $query = array(), array $fields = array())
+	public function find($collection_name, array $query = array(), array $fields = array(),array $sorts = array())
 	{
 		return $this->_call('find', array(
 			'collection_name' => $collection_name,
 			'query'           => $query,
-			'fields'          => $fields
+			'fields'          => $fields,
+			'sorts'          => $sorts,
 		));
 	}
 
@@ -416,7 +417,7 @@ class MongoDB {
 				$r = $c->findOne($query, $fields);
 			break;
 			case 'find':
-				$r = $c->find($query, $fields);
+				$r = $c->find($query, $fields)->sort($sorts);
 			break;
 			case 'group':
 				$r = $c->group($keys, $initial, $reduce, $condition);

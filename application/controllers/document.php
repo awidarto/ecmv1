@@ -41,6 +41,8 @@ class Document_Controller extends Base_Controller {
 		return View::make('tables.simple')
 			->with('title','Document Library')
 			->with('newbutton','New Document')
+			->with('disablesort','0,5,6')
+			->with('addurl','document/add')
 			->with('searchinput',$searchinput)
 			->with('ajaxsource',URL::to('document'))
 			->with('heads',$heads);
@@ -78,10 +80,20 @@ class Document_Controller extends Base_Controller {
 
 		$document = new Document();
 
+		/* first column is always sequence number, so must be omitted */
+		$fidx = Input::get('iSortCol_0');
+		$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+		$sort_col = $fields[$fidx];
+		$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+
+		$count_all = $document->count();
+
 		if(count($q) > 0){
-			$documents = $document->find($q);
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir));
+			$count_display_all = $document->count($q);
 		}else{
-			$documents = $document->find();
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir));
+			$count_display_all = $document->count();
 		}
 
 
@@ -98,13 +110,11 @@ class Document_Controller extends Base_Controller {
 				$doc['creatorName'],
 				$doc['creatorName'],
 				implode(',',$doc['tag']),
-				'<i class="foundicon-edit action"></i>'
+				'<i class="foundicon-edit action"></i>&nbsp;<i class="foundicon-trash action"></i>'
 			);
 			$counter++;
 		}
 
-		$count_all = $document->count();
-		$count_display_all = $document->count();
 		
 		$result = array(
 			'sEcho'=> Input::get('sEcho'),
@@ -115,6 +125,11 @@ class Document_Controller extends Base_Controller {
 		);
 
 		print json_encode($result);
+	}
+
+	public function get_add()
+	{
+		return View::make('document.add');
 	}
 
 }

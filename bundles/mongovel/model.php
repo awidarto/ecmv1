@@ -74,9 +74,9 @@ class Model {
 	 * @param  array $fields
 	 * @return MongoDB Object
 	 */
-	public function find($query = array(), $fields = array())
+	public function find($query = array(), $fields = array(),$sorts = array())
 	{
-		$find =  $this->_db->find($this->_collection, $query, $fields);
+		$find =  $this->_db->find($this->_collection, $query, $fields, $sorts);
 
 		if($find->count()==0)
 		{

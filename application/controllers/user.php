@@ -59,4 +59,101 @@ class User_Controller extends Base_Controller {
 		
 	}
 
+
+	public function get_users()
+	{
+		$heads = array('#','Full Name','Username','Email','Role','Access','Action');
+		$fields = array('seq','fullname','username','email','role','access','action');
+		$searchinput = array(false,'fullname','username','email','role','access',false);
+
+		return View::make('tables.simple')
+			->with('title','User Management')
+			->with('newbutton','New User')
+			->with('disablesort','0,5,6')
+			->with('addurl','user/add')
+			->with('searchinput',$searchinput)
+			->with('ajaxsource',URL::to('users'))
+			->with('heads',$heads);
+	}
+
+	public function post_users()
+	{
+		$fields = array('fullname','username','email','role','access');
+
+		$rel = array('like','like','like','equ','equ');
+
+		$cond = array('both','both','both','equ','equ');
+
+		$idx = 0;
+		$q = array();
+		foreach($fields as $field){
+			if(Input::get('sSearch_'.$idx))
+			{
+				if($rel[$idx] == 'like'){
+					if($cond[$idx] == 'both'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/');
+					}else if($cond[$idx] == 'before'){
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/');						
+					}else if($cond[$idx] == 'after'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/');						
+					}
+				}else if($rel[$idx] == 'equ'){
+					$q[$field] = Input::get('sSearch_'.$idx);
+				}
+			}
+			$idx++;
+		}
+
+		//print_r($q)
+
+		$document = new Document();
+
+		/* first column is always sequence number, so must be omitted */
+		$fidx = Input::get('iSortCol_0');
+		$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+		$sort_col = $fields[$fidx];
+		$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+
+		$count_all = $document->count();
+
+		if(count($q) > 0){
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir));
+			$count_display_all = $document->count($q);
+		}else{
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir));
+			$count_display_all = $document->count();
+		}
+
+
+
+
+		$aadata = array();
+
+		$counter = 1;
+		foreach ($documents as $doc) {
+			$aadata[] = array(
+				$counter,
+				$doc['title'],
+				date('Y-m-d h:i:s',$doc['createdDate']),
+				$doc['creatorName'],
+				$doc['creatorName'],
+				implode(',',$doc['tag']),
+				'<i class="foundicon-edit action"></i>&nbsp;<i class="foundicon-trash action"></i>'
+			);
+			$counter++;
+		}
+
+		
+		$result = array(
+			'sEcho'=> Input::get('sEcho'),
+			'iTotalRecords'=>$count_all,
+			'iTotalDisplayRecords'=> $count_display_all,
+			'aaData'=>$aadata,
+			'qrs'=>$q
+		);
+
+		print json_encode($result);
+	}
+
+
 }
