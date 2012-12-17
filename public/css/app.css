@@ -13,10 +13,31 @@
 /* -----------------------------------------
    Shared Styles
 ----------------------------------------- */
+body{
+	background-color: #f1f1f1;
+}
+.clearfix:after
+{
+content:".";
+display:none;
+height:0;
+clear:both;
+visibility:hidden;
+}
+.clearfix
+{display:inline-block;}
+#maincontent{
+	padding:20px;
+	background-color: #fff;
+	border: 1px solid #d7d7d7;
+}
 .row{
 	width:1280px;
 }
-
+.sidepanel{
+	background-color: #fff;
+	border: 1px solid #d7d7d7;	
+}
 .center{
 	width:1024px;
 	margin:auto;
@@ -46,15 +67,98 @@ table.dataTable{
 .sidemenu{
 	font-size: 1.9em;	
 }
+.tabs.vertical dd a, .tabs.vertical li a{
+	background-color: #fafafa;
+}
 /* -----------------------------------------
    Page Name 1
 ----------------------------------------- */
+.mainheader{
+	background: #c9ac78; /* Old browsers */
+	background: -moz-linear-gradient(top,  #c9ac78 0%, #c99d4c 100%); /* FF3.6+ */
+	background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#c9ac78), color-stop(100%,#c99d4c)); /* Chrome,Safari4+ */
+	background: -webkit-linear-gradient(top,  #c9ac78 0%,#c99d4c 100%); /* Chrome10+,Safari5.1+ */
+	background: -o-linear-gradient(top,  #c9ac78 0%,#c99d4c 100%); /* Opera 11.10+ */
+	background: -ms-linear-gradient(top,  #c9ac78 0%,#c99d4c 100%); /* IE10+ */
+	background: linear-gradient(to bottom,  #c9ac78 0%,#c99d4c 100%); /* W3C */
+	filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#c9ac78', endColorstr='#c99d4c',GradientType=0 ); /* IE6-9 */
+	border-bottom: 1px solid #e3c388;
 
-
-
-
+}
+#paramanusaLogo{
+	background: transparent url(../images/logo.png);
+	width: 161px;
+	height: 90px;
+	text-indent: -99999px;
+}
+.top-bar{
+	height: 35px;
+}
+.top-bar ul{
+	height: 35px;
+}
+.top-bar ul > li a:not(.button){
+	color: #fff;
+	display: block;
+	font-size: 12.5px;
+	font-weight: normal;
+	height: 35px;
+	line-height: 35px;
+	padding: 0 17px;
+}
+.tabs.vertical dd a, .tabs.vertical li a{
+	margin: 0 auto;
+	width: 100%;
+	text-align: center;
+}
 /* -----------------------------------------
    Page Name 2
 ----------------------------------------- */
 
+.tableHeader h3{
+	width: 50%;
+	display: inline-block;
+}
+.tableHeader{
+	margin-bottom: 40px;
+}
+.tableHeader a.newdoc{
+	margin: 10px 0 0;
+	vertical-align: middle;
 
+}
+.dataTables_filter label{
+	display: block;
+	vertical-align: middle;
+	height: 30px;
+}
+.dataTables_filter label input{
+	margin-top:-9px;
+	margin-left: 7px;
+}
+.newdoc.action{
+	font-size:1.7em; 
+	background-position: top left;
+
+}
+.newdoc span{
+	font-size: 12px;
+	margin-top: 4px;
+	vertical-align: top;
+	display: inline-block;
+
+}
+tr.odd,tr.odd td.sorting_1{
+	background-color: #fff;
+}
+table tbody tr.even,tr.even td.sorting_1{
+	background-color: #f0f0f0;
+}
+.paging_full_numbers a.paginate_active{
+	background-color: #000;
+	color: #fff;
+}
+.paging_full_numbers a.paginate_active{
+	color: #fff !important;
+	border: none;
+}

@@ -12,8 +12,8 @@
 
   <!-- Included CSS Files -->
   {{ HTML::style('css/foundation.min.css') }}
-  {{ HTML::style('css/app.css') }}
   {{ HTML::style('css/jquery-datatables/demo_table.css') }}
+  {{ HTML::style('css/app.css') }}
   {{ HTML::style('css/general_enclosed_foundicons.css') }}
 
   {{ HTML::script('js/jquery-1.8.3.min.js') }}
@@ -26,8 +26,8 @@
 <body>
 
   <!-- Header and Nav -->
-  <header class="sixteen columns">
-    <h1>ParamaNusa</h1>
+  <header class="sixteen columns mainheader">
+    <h1 id="paramanusaLogo">ParamaNusa</h1>
   </header>
 
   <!-- End Header and Nav -->
@@ -72,20 +72,20 @@
     </nav>
     <div class="row alignleft">
         <div class="two columns">
-          <div class="panel">
-            <dl class="vertical tabs">
-              <dd><a href="#"><i class="foundicon-home sidemenu"></i></a></dd>
-              <dd><a href="#"><i class="foundicon-mail sidemenu"></i></a></dd>
-              <dd><a href="#"><i class="foundicon-idea sidemenu"></i></a></dd>
-              <dd><a href="#"><i class="foundicon-down-arrow sidemenu"></i></a></dd>
-              <dd><a href="#"><i class="foundicon-up-arrow sidemenu"></i></a></dd>
-              <dd><a href="#"><i class="foundicon-people sidemenu"></i></a></dd>
-              <dd><a href="#"><i class="foundicon-search sidemenu"></i></a></dd>
-              <dd><a href="#"><i class="foundicon-smiley sidemenu"></i></a></dd>
-            </dl>
-          </div>
+          
+          <dl class="vertical tabs">
+            <dd><a href="#"><i class="foundicon-home sidemenu"></i> <br/>Home</a></dd>
+            <dd><a href="#"><i class="foundicon-mail sidemenu"></i> <br/>Messages</a></dd>
+            <dd><a href="#"><i class="foundicon-idea sidemenu"></i> <br/>Projects</a></dd>
+            <dd><a href="#"><i class="foundicon-down-arrow sidemenu"></i> <br/>File Download</a></dd>
+            <dd><a href="#"><i class="foundicon-up-arrow sidemenu"></i> <br/>File Upload</a></dd>
+            <dd><a href="#"><i class="foundicon-people sidemenu"></i> <br/>People</a></dd>
+            <dd><a href="#"><i class="foundicon-search sidemenu"></i> <br/>Search</a></dd>
+            <dd><a href="#"><i class="foundicon-smiley sidemenu"></i> <br/>Help</a></dd>
+          </dl>
+          
         </div>
-        <div class="eleven columns">
+        <div id="maincontent" class="eleven columns">
             @if (Session::has('notify_success'))
                 <div class="row">
                     <span class="success">{{Session::get('notify_success')}}</span>
@@ -95,7 +95,7 @@
             @yield('content')
         </div>
         <aside class="three columns">
-            <div class="panel">
+            <div class="panel sidepanel">
               <a href="#"><img src="http://placehold.it/75x100&text=[img]" /></a>
               <h5>Welcome back, {{ Auth::user()->fullname }}</h5>
                 <ul class="dropdown">
@@ -104,9 +104,9 @@
                   <li>{{ HTML::link('logout', 'Logout') }}</li>
                 </ul>
             </div>
-            <div class="panel">
+            <div class="panel sidepanel">
               <h3>Messages</h3>
-              <h5>Welcome back, {{ Auth::user()->fullname }}</h5>
+              <p>Welcome back, {{ Auth::user()->fullname }}</p>
             </div>
         </aside>
     </div>
