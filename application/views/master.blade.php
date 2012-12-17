@@ -112,7 +112,7 @@
                       <br/><br/>Last Login: Tuesday, Nov 20 2012
                       <br/>from <i>Office</i>
                     </p>
-                    <p>trudjino@paramanusa.co.id
+                    <p>{{Auth::user()->email}}
                       <br/><a href="{{URL::to('profile')}}">Profile</a> | {{ HTML::link('logout', 'Logout') }}
                     </p>
                   </div>
