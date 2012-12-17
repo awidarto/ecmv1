@@ -266,4 +266,22 @@ li small.bullet{
 	font-size: 0.6em;
 	color: #bdbdbd;
 }
+.profileContent{
+	margin-top: 15px;
+}
+table.profile-info{
+	border: none;
+}
+table.profile-info td{
+	padding:9px 10px 9px 0;	
+}
+
+table.profile-info tbody tr:nth-child(even){
+	background: transparent;
+}
+table.profile-info td.detail-title{
+	width: 130px;
+	color: #999;
+
+}
 
