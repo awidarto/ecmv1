@@ -129,7 +129,8 @@ class Document_Controller extends Base_Controller {
 
 	public function get_add()
 	{
-		return View::make('document.add');
+		return View::make('document.add')
+					->with('title','New Document');
 	}
 
 }

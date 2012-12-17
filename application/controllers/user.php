@@ -155,5 +155,14 @@ class User_Controller extends Base_Controller {
 		print json_encode($result);
 	}
 
+	public function get_add(){
+		return View::make('user.new')
+					->with('title','New User');
+
+	}
+
+	public function post_add(){
+		
+	}
 
 }
