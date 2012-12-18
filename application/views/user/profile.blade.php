@@ -22,22 +22,18 @@
 				</tr>
 				<tr>
 					<td class="detail-title">Roles</td>
-					<td class="detail-info">
-						
-							@foreach($profile['role'] as $role)
-							{{$role}}
-							@endforeach
-						</tr>
+					<td class="detail-info">	
+						@foreach($profile['role'] as $role)
+							<span>{{$role}}</span>
+						@endforeach
 					</td>
 				</tr>
 				<tr>
 					<td class="detail-title">Access</td>
 					<td class="detail-info">
-						
-							@foreach($profile['access'] as $access)
-							{{$access}}
-							@endforeach
-						
+						@foreach($profile['access'] as $access)
+							<span>{{$access}}</span>
+						@endforeach
 					</td>
 				</tr>
 

@@ -284,4 +284,7 @@ table.profile-info td.detail-title{
 	color: #999;
 
 }
+table.profile-info td.detail-info span{
+	display: block;
+}
 
