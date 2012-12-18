@@ -49,7 +49,7 @@
   <footer class="row">
     
       <hr />
-        <p>&copy; Copyright no one at all. Go to town.</p>
+        <p>&copy; Copyright 2012. ParamaNusa.</p>
     
   </footer>
 </body>

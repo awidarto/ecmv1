@@ -32,6 +32,10 @@ class Document_Controller extends Base_Controller {
 
 	public $restful = true;
 
+	public function __construct(){
+		$this->filter('before','auth');
+	}
+
 	public function get_index()
 	{
 		$heads = array('#','Title','Created','Creator','Owner','Tags','Action');
@@ -132,5 +136,114 @@ class Document_Controller extends Base_Controller {
 		return View::make('document.add')
 					->with('title','New Document');
 	}
+
+
+	public function get_type($type = null)
+	{
+		$menutitle = array(
+			'opportunity'=>'Opportunity',
+			'tender'=>'Tender',
+			'commbid'=>'Commercial Bid',
+			'proposal'=>'Tech Proposal',
+			'techbid'=>'Tech Bid',
+			'contract'=>'Contracts',
+			'legal'=>'Legal Docs',
+			'qc'=>'QA / QC',
+			'warehouse'=>'Warehouse'
+			);
+
+		$heads = array('#','Title','Created','Creator','Owner','Tags','Action');
+		$fields = array('seq','title','created','creator','owner','tags','action');
+		$searchinput = array(false,'title','created','creator','owner','tags',false);
+
+		return View::make('tables.simple')
+			->with('title',(is_null($type))?'Document - All':'Document - '.$menutitle[$type])
+			->with('newbutton','New Document')
+			->with('disablesort','0,5,6')
+			->with('addurl','document/add')
+			->with('searchinput',$searchinput)
+			->with('ajaxsource',URL::to('document/type/'.$type))
+			->with('heads',$heads);
+	}
+
+	public function post_type($type = null)
+	{
+		$fields = array('title','createdDate','creatorName','creatorName','tags');
+
+		$rel = array('like','like','like','like','equ');
+
+		$cond = array('both','both','both','both','equ');
+
+		$idx = 0;
+		$q = array();
+		foreach($fields as $field){
+			if(Input::get('sSearch_'.$idx))
+			{
+				if($rel[$idx] == 'like'){
+					if($cond[$idx] == 'both'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/');
+					}else if($cond[$idx] == 'before'){
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/');						
+					}else if($cond[$idx] == 'after'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/');						
+					}
+				}else if($rel[$idx] == 'equ'){
+					$q[$field] = Input::get('sSearch_'.$idx);
+				}
+			}
+			$idx++;
+		}
+
+		//print_r($q)
+
+		$document = new Document();
+
+		/* first column is always sequence number, so must be omitted */
+		$fidx = Input::get('iSortCol_0');
+		$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+		$sort_col = $fields[$fidx];
+		$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+
+		$count_all = $document->count();
+
+		if(count($q) > 0){
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir));
+			$count_display_all = $document->count($q);
+		}else{
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir));
+			$count_display_all = $document->count();
+		}
+
+
+
+
+		$aadata = array();
+
+		$counter = 1;
+		foreach ($documents as $doc) {
+			$aadata[] = array(
+				$counter,
+				$doc['title'],
+				date('Y-m-d h:i:s',$doc['createdDate']),
+				$doc['creatorName'],
+				$doc['creatorName'],
+				implode(',',$doc['tag']),
+				'<i class="foundicon-edit action"></i>&nbsp;<i class="foundicon-trash action"></i>'
+			);
+			$counter++;
+		}
+
+		
+		$result = array(
+			'sEcho'=> Input::get('sEcho'),
+			'iTotalRecords'=>$count_all,
+			'iTotalDisplayRecords'=> $count_display_all,
+			'aaData'=>$aadata,
+			'qrs'=>$q
+		);
+
+		print json_encode($result);
+	}
+
 
 }

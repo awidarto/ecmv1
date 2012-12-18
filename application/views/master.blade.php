@@ -16,9 +16,11 @@
   {{ HTML::style('css/app.css') }}
   {{ HTML::style('css/general_enclosed_foundicons.css') }}
   {{ HTML::style('css/general_foundicons.css') }}
+  {{ HTML::style('css/select2.css') }}
 
   {{ HTML::script('js/jquery-1.8.3.min.js') }}
   {{ HTML::script('js/jquery.dataTables.min.js') }}
+  {{ HTML::script('js/select2.min.js') }}
 
   <!--[if lt IE 8]>
     {{ HTML::style('css/general_enclosed_foundicons_ie7.css') }}
@@ -44,15 +46,15 @@
     <nav class="top-bar main-bar">
         <ul class="">
           <!--<li class="divider"></li>-->
-          <li>{{ HTML::link('opportunity', 'Opportunity' ) }}</li>
-          <li>{{ HTML::link('tender', 'Tender' ) }}</li>
-          <li>{{ HTML::link('proposal', 'Tech Proposal' ) }}</li>
-          <li>{{ HTML::link('techbid', 'Tech Bid' ) }}</li>
-          <li>{{ HTML::link('commbid', 'Commercial Bid' ) }}</li>
-          <li>{{ HTML::link('contract', 'Contracts' ) }}</li>
-          <li>{{ HTML::link('legal', 'Legal Docs' ) }}</li>
-          <li>{{ HTML::link('warehouse', 'Warehouse' ) }}</li>
-          <li>{{ HTML::link('qc', 'QA / QC' ) }}</li>
+          <li>{{ HTML::link('document/type/opportunity', 'Opportunity' ) }}</li>
+          <li>{{ HTML::link('document/type/tender', 'Tender' ) }}</li>
+          <li>{{ HTML::link('document/type/proposal', 'Tech Proposal' ) }}</li>
+          <li>{{ HTML::link('document/type/techbid', 'Tech Bid' ) }}</li>
+          <li>{{ HTML::link('document/type/commbid', 'Commercial Bid' ) }}</li>
+          <li>{{ HTML::link('document/type/contract', 'Contracts' ) }}</li>
+          <li>{{ HTML::link('document/type/legal', 'Legal Docs' ) }}</li>
+          <li>{{ HTML::link('document/type/warehouse', 'Warehouse' ) }}</li>
+          <li>{{ HTML::link('document/type/qc', 'QA / QC' ) }}</li>
           <li class="has-dropdown">
             <a href="#">Administration</a>
             <ul class="dropdown">
@@ -84,9 +86,9 @@
             <dd><a href="{{ URL::base() }}"><i class="foundicon-home sidemenu"></i> <br/>Home</a></dd>
             <dd><a href="{{ URL::to('message') }}"><i class="foundicon-mail sidemenu"></i> <br/>Messages</a></dd>
             <dd><a href="{{ URL::to('project') }}"><i class="foundicon-idea sidemenu"></i> <br/>Projects</a></dd>
-            <dd><a href="{{ URL::to('download') }}"><i class="foundicon-down-arrow sidemenu"></i> <br/>File Download</a></dd>
-            <dd><a href="{{ URL::to('upload') }}"><i class="foundicon-up-arrow sidemenu"></i> <br/>File Upload</a></dd>
-            <dd><a href="{{ URL::to('people') }}"><i class="foundicon-people sidemenu"></i> <br/>People</a></dd>
+            <dd><a href="{{ URL::to('activity/download') }}"><i class="foundicon-down-arrow sidemenu"></i> <br/>File Download</a></dd>
+            <dd><a href="{{ URL::to('activity/upload') }}"><i class="foundicon-up-arrow sidemenu"></i> <br/>File Upload</a></dd>
+            <dd><a href="{{ URL::to('user/people') }}"><i class="foundicon-people sidemenu"></i> <br/>People</a></dd>
             <dd><a href="{{ URL::to('search') }}"><i class="foundicon-search sidemenu"></i> <br/>Search</a></dd>
             <dd><a href="{{ URL::to('help') }}"><i class="foundicon-smiley sidemenu"></i> <br/>Help</a></dd>
           </dl>
@@ -187,7 +189,7 @@
   <footer class="row">
     
       <hr />
-        <p>&copy; Copyright no one at all. Go to town.</p>
+        <p>&copy; Copyright 2012. ParamaNusa.</p>
     
   </footer>
 </body>

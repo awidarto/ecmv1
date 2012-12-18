@@ -121,7 +121,9 @@ Route::get('user', array('before'=>'auth',function(){
 	return View::make('user.home');
 }));
 
-Route::controller(array('document','user','message','project','opportunity','search'));
+Route::controller(array('document','user','message','project','opportunity','search','activity'));
+
+Route::get('document',array('before'=>'auth','uses'=>'document@index'));
 
 Route::get('profile',array('before'=>'auth','uses'=>'user@index'));
 

@@ -14,36 +14,29 @@ print Former::horizontal_open()
 ?>
 
 <div class="row">
-  <div class="six columns">
+  <div class="twelve columns">
     <?php
-    print Former::xlarge_text('name')
+    print Former::large_text('from')
         ->class('myclass')
         ->value('Joseph')
         ->required();
 
-    print Former::textarea('comments')
-        ->rows(10)->columns(20)
-        ->autofocus();
-
-    print Former::actions (
-        Former::large_primary_submit('Submit'),
-        Former::large_inverse_reset('Reset')
-      );
-    ?>
-  </div>
-  <div class="six columns">
-    <?php
-    print Former::xlarge_text('name')
+    print Former::large_text('to')
         ->class('myclass')
         ->value('Joseph')
         ->required();
 
-    print Former::textarea('comments')
+    print Former::large_text('subject')
+        ->class('myclass')
+        ->value('Joseph')
+        ->required();
+
+    print Former::textarea('message')
         ->rows(10)->columns(20)
         ->autofocus();
 
     print Former::actions (
-        Former::large_primary_submit('Submit'),
+        Former::large_primary_submit('Send'),
         Former::large_inverse_reset('Reset')
       );
     ?>

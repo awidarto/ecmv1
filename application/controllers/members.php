@@ -32,6 +32,10 @@ class User_Controller extends Base_Controller {
 
 	public $restful = true;
 
+	public function __construct(){
+		$this->filter('before','auth');
+	}
+
 	public function get_index()
 	{
 		$heads = array('#','Title','Created','Creator','Owner','Tags','Action');
