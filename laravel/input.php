@@ -250,8 +250,16 @@ class Input {
 	 * @return void
 	 */
 	public static function flash($filter = null, $keys = array())
-	{
-		$flash = ( ! is_null($filter)) ? static::$filter($keys) : static::get();
+	{	
+		//if(is_null($filter)){
+			$flash = static::get();
+		//}else 
+		if($filter == 'only'){
+			$flash = static::only($keys);
+		}else if($filter == 'except'){
+			$flash = static::except($keys);
+		}
+		//$flash = ( ! is_null($filter)) ? static::$filter($keys) : static::get();
 
 		Session::flash(Input::old_input, $flash);
 	}

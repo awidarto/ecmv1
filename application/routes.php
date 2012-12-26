@@ -32,10 +32,10 @@
 |
 */
 
-Route::get('/', function()
+Route::get('/',  array('before'=>'auth', function()
 {
 	return View::make('home.index');
-});
+}));
 
 Route::get('hashme/(:any)',function($mypass){
 
@@ -59,7 +59,7 @@ Route::post('login', function()
     {
     	//print_r($userdata);
         // we are now logged in, go to home
-        return Redirect::to('user');
+        return Redirect::to('/');
 
     }
     else
@@ -108,28 +108,18 @@ Route::get('logout',function(){
 	return Redirect::to('login');
 });
 
+Route::controller(array('document','user','message','project','opportunity','search','activity','ajax'));
 
-Route::get('user', array('before'=>'auth',function(){
-	//print_r(Auth::user());
-
-	//$items = new Item();
-
-	//$myitems = $items->find(array('owner'=> Auth::user()->id),array('name','descriptor','created_at'));
-
-	//print_r($myitems);
-
-	return View::make('user.home');
-}));
-
-Route::controller(array('document','user','message','project','opportunity','search','activity'));
-
-Route::get('document',array('before'=>'auth','uses'=>'document@index'));
-
-Route::get('profile',array('before'=>'auth','uses'=>'user@index'));
+Route::get('user/profile',array('before'=>'auth','uses'=>'user@profile'));
 
 Route::get('users',array('before'=>'auth','uses'=>'user@users'));
 
 Route::post('users',array('before'=>'auth','uses'=>'user@users'));
+
+
+/*
+Route::get('document',array('before'=>'auth','uses'=>'document@index'));
+*/
 
 /*
 |--------------------------------------------------------------------------

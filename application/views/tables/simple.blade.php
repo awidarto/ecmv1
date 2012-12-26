@@ -20,14 +20,6 @@
 	        </tr>
 	    </thead>
 	    <tbody>
-	        <tr>
-	            <td>1</td>
-	            <td>Row 1 Data 2</td>
-	            <td>etc</td>
-	            <td>Row 1 Data 1</td>
-	            <td>Row 1 Data 2</td>
-	            <td>etc</td>
-	        </tr>
 	    </tbody>
 	    <tfoot>
 	    <tr>
@@ -133,6 +125,25 @@
 			}
 		} );
 
+		$('table.dataTable').click(function(e){
+
+			if ($(e.target).is('.del')) {
+				var _id = e.target.id;
+				var answer = confirm("Are you sure you want to delete this item ?");
+				if (answer){
+					$.post('{{ URL::to($ajaxdel) }}',{'id':_id}, function(data) {
+						if(data.status == 'OK'){
+							//redraw table
+							oTable.fnDraw();
+							alert("Item id : " + _id + " deleted");
+						}
+					},'json');
+				}else{
+					alert("Deletion cancelled");
+				}
+		   	}
+
+		});
 
     });
   </script>

@@ -37,6 +37,27 @@ return array(
 
 	'docs' => array('handles' => 'docs'),
 	'former' => array('auto' => true),
-	'mongovel' => array('auto'=>true)
+	'mongovel' => array('auto'=>true),
+	'formly' => array(
+	    'autoloads' => array(
+	        'map' => array(
+	            'Flare\\Formly' => '(:bundle)/formly.php',
+	        ),
+	    ),
+	),
+	'breadcrumb' => array(
+		'auto'=>true,
+	    'autoloads' => array(
+	    	'namespaces'=>array(
+	    		'Noherczeg\\Breadcrumb'=>'(:bundle)/src/Noherczeg/Breadcrumb',
+	    		//'Noherczeg\\Breadcrumb\\Builders'=>'(:bundle)/src/Noherczeg/Breadcrumb/Builders',
+	    		),
+	    	'map'=>array(
+	    		'\\Noherczeg\\Breadcrumb\\Segment'=>'(:bundle)/src/Noherczeg/Breadcrumb/Segment.php',	    		
+	    		'\\Noherczeg\\Breadcrumb\\Builders\\Builder'=>'(:bundle)/src/Noherczeg/Breadcrumb/Builders/Builder.php',	    		
+	    		'\\Noherczeg\\Breadcrumb\\Builders\\FoundationBuilder'=>'(:bundle)/src/Noherczeg/Breadcrumb/Builders/FoundationBuilder.php',	    		
+	    		),
+	    )
+	),
 
 );

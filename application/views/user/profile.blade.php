@@ -23,39 +23,19 @@
 				<tr>
 					<td class="detail-title">Roles</td>
 					<td class="detail-info">	
-						@foreach($profile['role'] as $role)
-							<span>{{$role}}</span>
-						@endforeach
+						<span>{{$profile['role']}}</span>
 					</td>
 				</tr>
 				<tr>
-					<td class="detail-title">Access</td>
-					<td class="detail-info">
-						@foreach($profile['access'] as $access)
-							<span>{{$access}}</span>
-						@endforeach
-					</td>
+					<td class="detail-title">Job Title</td>
+					<td class="detail-info">{{ $profile['employee_jobtitle'] }}</td>
+				</tr>
+				<tr>
+					<td class="detail-title">Department</td>
+					<td class="detail-info">{{ $profile['employee_department'] }}</td>
 				</tr>
 
 			</table>
-			<!--<ul>
-				<li><small class="foundicon-right-arrow bullet">&nbsp;</small> Email : </li>
-				<li><small class="foundicon-right-arrow bullet">&nbsp;</small> Username : </li>
-				<li><small class="foundicon-right-arrow bullet">&nbsp;</small> Roles :
-					<ul>
-						@foreach($profile['role'] as $role)
-							<li>{{$role}}</li>
-						@endforeach
-					</ul>
-				</li>
-				<li><small class="foundicon-right-arrow bullet">&nbsp;</small> Access :
-					<ul>
-						@foreach($profile['access'] as $access)
-							<li>{{$access}}</li>
-						@endforeach
-					</ul>
-				</li>
-			</ul>-->
 		</div>
 	</div>
 </div>

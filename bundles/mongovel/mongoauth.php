@@ -40,13 +40,14 @@ class MongoAuth extends \Laravel\Auth\Drivers\Driver {
 
 		$user = $this->model()->get(array($username=>$arguments['username']));
 
+		$passfield = Config::get('auth.password');
 
 		// This driver uses a basic username and password authentication scheme
 		// so if the credentials match what is in the database we will just
 		// log the user into the application and remember them if asked.
 		$password = $arguments['password'];
 
-		if ( ! is_null($user) and Hash::check($password, $user['password']))
+		if ( ! is_null($user) and Hash::check($password, $user[$passfield]))
 		{
 			//$user = $this->array_to_object($user);
 			
@@ -69,11 +70,13 @@ class MongoAuth extends \Laravel\Auth\Drivers\Driver {
 		$passwd = Hash::make($newpass);
 
 		$user = $this->user();
+
+		$passfield = Config::get('auth.password');		
 		
 		if(is_null($user)){
 			return false;
 		}else{
-			return $this->model()->update(array('email'=>$user->email), array('$set'=>array('password'=>$passwd))); 
+			return $this->model()->update(array('email'=>$user->email), array('$set'=>array($passfield=>$passwd))); 
 		}
 
 	}

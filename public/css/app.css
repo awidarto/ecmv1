@@ -56,6 +56,23 @@ visibility:hidden;
 	width:1024px;
 	margin:auto;
 }
+
+.top-bar,
+.top-bar ul > li.has-dropdown .dropdown,
+.top-bar ul > li.has-dropdown .dropdown li,
+.top-bar ul > li.has-dropdown .dropdown li:last-child{
+	background-color: #000;
+}
+
+.top-bar ul > li.has-dropdown .dropdown li a{
+	display:block;
+}
+
+.top-bar ul > li.has-dropdown .dropdown li a:hover{
+	background-color: #555;
+}
+
+
 .main-bar{
 	position: relative;
 	float: left;
@@ -79,6 +96,11 @@ table.dataTable{
 
 .action{
 	font-size: 1.8em;
+	cursor:pointer;
+}
+
+.del{
+	color:red;
 }
 
 .sidemenu{
@@ -143,7 +165,10 @@ table.dataTable{
 	margin: 0 auto;
 	width: 100%;
 	text-align: center;
+	padding-left: 0px;
+	padding-right: 0px;
 }
+
 /* -----------------------------------------
    Page Name 2
 ----------------------------------------- */
@@ -288,3 +313,54 @@ table.profile-info td.detail-info span{
 	display: block;
 }
 
+/* Breadcrums ---------------------- */
+div#breadcrumb ul.breadcrumbs { display: block; background: #f6f6f6; padding: 6px 10px 7px; border: 1px solid #e9e9e9; -webkit-border-radius: 2px; -moz-border-radius: 2px; -ms-border-radius: 2px; -o-border-radius: 2px; border-radius: 2px; overflow: hidden; margin-left: 0; }
+div#breadcrumb ul.breadcrumbs li { margin: 0; padding: 0 12px 0 0; float: left; list-style: none; }
+div#breadcrumb ul.breadcrumbs li a, ul.breadcrumbs li span { text-transform: uppercase; font-size: 11px; font-size: 1.1rem; padding-left: 12px; }
+div#breadcrumb ul.breadcrumbs li:first-child a, ul.breadcrumbs li:first-child span { padding-left: 0; }
+div#breadcrumb ul.breadcrumbs li:before { content: "/"; color: #aaa; }
+div#breadcrumb ul.breadcrumbs li:first-child:before { content: " "; }
+div#breadcrumb ul.breadcrumbs li.current a { cursor: default; color: #333; }
+div#breadcrumb ul.breadcrumbs li:hover a, ul.breadcrumbs li a:focus { text-decoration: underline; }
+div#breadcrumb ul.breadcrumbs li.current:hover a, ul.breadcrumbs li.current a:focus { text-decoration: none; }
+div#breadcrumb ul.breadcrumbs li.unavailable a { color: #999; }
+div#breadcrumb ul.breadcrumbs li.unavailable:hover a, ul.breadcrumbs li.unavailable a:focus { text-decoration: none; color: #999; cursor: default; }
+
+
+/* forms */
+
+label {
+	line-height: 24px;
+	display: block;
+}
+
+option{
+	text-transform: capitalize;
+}
+
+optgroup{
+	text-transform: capitalize;
+	font-weight: bold;
+}
+
+label.check {
+	line-height: 24px;
+	display: block;
+	vertical-align: middle;
+}
+
+.text-wrap{
+	width:100%;
+}
+
+.custom .checkbox, .custom .radio {
+	margin-right: 5px;
+}
+
+/* select 2 */
+
+.select2-container{
+	width:250px;
+	margin-bottom: 5px;
+	text-transform: capitalize;
+}

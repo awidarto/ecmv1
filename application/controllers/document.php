@@ -42,23 +42,24 @@ class Document_Controller extends Base_Controller {
 		$fields = array('seq','title','created','creator','owner','tags','action');
 		$searchinput = array(false,'title','created','creator','owner','tags',false);
 
-		return View::make('tables.simple')
+		return View::make('tables.noaside')
 			->with('title','Document Library')
 			->with('newbutton','New Document')
 			->with('disablesort','0,5,6')
 			->with('addurl','document/add')
 			->with('searchinput',$searchinput)
 			->with('ajaxsource',URL::to('document'))
+			->with('ajaxdel',URL::to('document/del'))
 			->with('heads',$heads);
 	}
 
 	public function post_index()
 	{
-		$fields = array('title','createdDate','creatorName','creatorName','tags');
+		$fields = array('title','createdDate','creatorName','creatorName','docTag');
 
-		$rel = array('like','like','like','like','equ');
+		$rel = array('like','like','like','like','like');
 
-		$cond = array('both','both','both','both','equ');
+		$cond = array('both','both','both','both','both');
 
 		$idx = 0;
 		$q = array();
@@ -67,11 +68,11 @@ class Document_Controller extends Base_Controller {
 			{
 				if($rel[$idx] == 'like'){
 					if($cond[$idx] == 'both'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/');
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/');						
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
 					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/');						
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
 					}
 				}else if($rel[$idx] == 'equ'){
 					$q[$field] = Input::get('sSearch_'.$idx);
@@ -110,11 +111,12 @@ class Document_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				$doc['title'],
-				date('Y-m-d h:i:s',$doc['createdDate']),
+				date('Y-m-d h:i:s', $doc['createdDate']->sec),
 				$doc['creatorName'],
 				$doc['creatorName'],
-				implode(',',$doc['tag']),
-				'<i class="foundicon-edit action"></i>&nbsp;<i class="foundicon-trash action"></i>'
+				$doc['docTag'],
+				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
+				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 			);
 			$counter++;
 		}
@@ -131,11 +133,101 @@ class Document_Controller extends Base_Controller {
 		print json_encode($result);
 	}
 
-	public function get_add()
-	{
-		return View::make('document.add')
-					->with('title','New Document');
+	public function post_del(){
+		$id = Input::get('id');
+
+		$user = new Document();
+
+		if(is_null($id)){
+			$result = array('status'=>'ERR','data'=>'NOID');
+		}else{
+
+			$id = new MongoId($id);
+
+			if($user->delete(array('_id'=>$id))){
+				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
+			}else{
+				$result = array('status'=>'ERR','data'=>'DELETEFAILED');				
+			}
+		}
+
+		print json_encode($result);
 	}
+
+
+	public function get_add(){
+
+		$form = new Formly();
+		return View::make('document.new')
+					->with('form',$form)
+					->with('title','New Document');
+
+	}
+
+	public function post_add(){
+
+		//print_r(Session::get('permission'));
+
+	    $rules = array(
+	        'title'  => 'required|max:50',
+	        'description' => 'required'
+	    );
+
+	    $validation = Validator::make($input = Input::all(), $rules);
+
+	    if($validation->fails()){
+
+	    	return Redirect::to('document/add')->with_errors($validation)->with_input(Input::all());
+
+	    }else{
+
+			$data = Input::get();
+	    	
+	    	//print_r($data);
+
+			//pre save transform
+			unset($data['csrf_token']);
+
+			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
+			$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+
+			$data['createdDate'] = new MongoDate();
+			$data['creatorName'] = Auth::user()->fullname;
+			$data['creatorId'] = Auth::user()->id;
+			
+			$docupload = Input::file('docupload');
+
+			$data['docFilename'] = $docupload['name'];
+
+			$data['docFiledata'] = $docupload;
+
+			$document = new Document();
+
+			$newobj = $document->insert($data);
+
+			if($newobj){
+
+
+				if($docupload['name'] != ''){
+
+					$newid = $newobj['_id']->__toString();
+
+					$newdir = realpath(Config::get('parama.storage')).'/'.$newid;
+
+					Input::upload('docupload',$newdir,$docupload['name']);
+					
+				}
+
+		    	return Redirect::to('document')->with('notify_success','Document saved successfully');
+			}else{
+		    	return Redirect::to('document')->with('notify_success','Document saving failed');
+			}
+
+	    }
+
+		
+	}
+
 
 
 	public function get_type($type = null)

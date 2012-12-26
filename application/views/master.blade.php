@@ -13,14 +13,29 @@
   <!-- Included CSS Files -->
   {{ HTML::style('css/foundation.min.css') }}
   {{ HTML::style('css/jquery-datatables/demo_table.css') }}
+  {{ HTML::style('css/flick/jquery-ui-1.9.2.custom.min.css') }}
   {{ HTML::style('css/app.css') }}
   {{ HTML::style('css/general_enclosed_foundicons.css') }}
   {{ HTML::style('css/general_foundicons.css') }}
+
+  {{ HTML::style('css/jquery.tagsinput.css') }}
   {{ HTML::style('css/select2.css') }}
 
+
   {{ HTML::script('js/jquery-1.8.3.min.js') }}
+  {{ HTML::script('js/jquery-ui-1.9.2.custom.min.js') }}
+
   {{ HTML::script('js/jquery.dataTables.min.js') }}
+
+  {{ HTML::script('js/jquery.tagsinput.min.js') }}
   {{ HTML::script('js/select2.min.js') }}
+
+  <!--[if (!IE)|(gte IE 8)]><!-->
+    {{ HTML::style('css/visualsearch/visualsearch-datauri.css') }}
+  <!--<![endif]-->
+  <!--[if lte IE 7]><!-->
+    {{ HTML::style('css/visualsearch/visualsearch.css') }}
+  <!--<![endif]-->
 
   <!--[if lt IE 8]>
     {{ HTML::style('css/general_enclosed_foundicons_ie7.css') }}
@@ -36,7 +51,6 @@
   </header>
 
   <!-- End Header and Nav -->
-
   <!-- Main Grid Section -->
 
 
@@ -46,6 +60,8 @@
     <nav class="top-bar main-bar">
         <ul class="">
           <!--<li class="divider"></li>-->
+          <li>{{ HTML::link('/', 'Doc Type' ) }}</li>
+          <li class="divider"></li>
           <li>{{ HTML::link('document/type/opportunity', 'Opportunity' ) }}</li>
           <li>{{ HTML::link('document/type/tender', 'Tender' ) }}</li>
           <li>{{ HTML::link('document/type/proposal', 'Tech Proposal' ) }}</li>
@@ -81,24 +97,47 @@
 -->
       
     <div class="row container-content clearfix">
-        <div class="two columns mobile">     
+        <div class="one columns mobile">     
           <dl class="vertical tabs">
             <dd><a href="{{ URL::base() }}"><i class="foundicon-home sidemenu"></i> <br/>Home</a></dd>
             <dd><a href="{{ URL::to('message') }}"><i class="foundicon-mail sidemenu"></i> <br/>Messages</a></dd>
-            <dd><a href="{{ URL::to('project') }}"><i class="foundicon-idea sidemenu"></i> <br/>Projects</a></dd>
-            <dd><a href="{{ URL::to('activity/download') }}"><i class="foundicon-down-arrow sidemenu"></i> <br/>File Download</a></dd>
-            <dd><a href="{{ URL::to('activity/upload') }}"><i class="foundicon-up-arrow sidemenu"></i> <br/>File Upload</a></dd>
-            <dd><a href="{{ URL::to('user/people') }}"><i class="foundicon-people sidemenu"></i> <br/>People</a></dd>
+            <dd><a href="{{ URL::to('tender') }}"><i class="foundicon-idea sidemenu"></i> <br/>Tender</a></dd>
+            <dd><a href="{{ URL::to('project') }}"><i class="foundicon-star sidemenu"></i> <br/>Projects</a></dd>
+            <dd><a href="{{ URL::to('qc') }}"><i class="foundicon-checkmark sidemenu"></i> <br/>Quality</a></dd>
+            <dd><a href="{{ URL::to('warehouse') }}"><i class="foundicon-cart sidemenu"></i> <br/>Warehouse</a></dd>
+            <dd><a href="{{ URL::to('finance') }}"><i class="foundicon-graph sidemenu"></i> <br/>Finance</a></dd>
+            <dd><a href="{{ URL::to('hr') }}"><i class="foundicon-people sidemenu"></i> <br/>HRD</a></dd>
+            <dd><a href="{{ URL::to('activity/download') }}"><i class="foundicon-down-arrow sidemenu"></i> <br/>Download</a></dd>
+            <dd><a href="{{ URL::to('activity/upload') }}"><i class="foundicon-up-arrow sidemenu"></i> <br/>Upload</a></dd>
+            <dd><a href="{{ URL::to('user/people') }}"><i class="foundicon-address-book sidemenu"></i> <br/>People</a></dd>
             <dd><a href="{{ URL::to('search') }}"><i class="foundicon-search sidemenu"></i> <br/>Search</a></dd>
             <dd><a href="{{ URL::to('help') }}"><i class="foundicon-smiley sidemenu"></i> <br/>Help</a></dd>
           </dl>
           
         </div>
-        <div id="maincontent" class="seven columns">
+
+        <!--
+        <div id="breadcrumb" class="eleven columns">
+            <?php
+              $bc = new Noherczeg\Breadcrumb\Breadcrumb( URL::base());
+
+              $curr = explode('/',URL::current());
+
+              $bc->from($curr);
+
+              //print_r($bc);
+
+              print $bc->build('foundation');
+            ?>
+        </div>
+        -->
+        <div id="maincontent" class="eight columns">
+
             @if (Session::has('notify_success'))
-                <div class="row">
-                    <span class="success">{{Session::get('notify_success')}}</span>
-                </div>
+              <div class="alert-box">
+                {{Session::get('notify_success')}}
+                <a href="" class="close">&times;</a>
+              </div>
             @endif
 
             @yield('content')
@@ -110,12 +149,12 @@
                 <div class=" row">
                   <div class="eight columns">
                     <p>Logged in as, <br/><br/><strong>{{ Auth::user()->fullname }}</strong>
-                      <br/>VP Information Technology
+                      <br/>{{ (isset(Auth::user()->employee_jobtitle))?Auth::user()->employee_jobtitle:'no title' }}
                       <br/><br/>Last Login: Tuesday, Nov 20 2012
                       <br/>from <i>Office</i>
                     </p>
                     <p>{{Auth::user()->email}}
-                      <br/><a href="{{URL::to('profile')}}">Profile</a> | {{ HTML::link('logout', 'Logout') }}
+                      <br/><a href="{{URL::to('user/profile')}}">Profile</a> | {{ HTML::link('logout', 'Logout') }}
                     </p>
                   </div>
                   <div class="four columns">
@@ -185,12 +224,14 @@
   <!-- Footer -->
 
 
-
   <footer class="row">
     
       <hr />
         <p>&copy; Copyright 2012. ParamaNusa.</p>
     
   </footer>
+    {{ HTML::script('js/jquery.foundation.forms.js') }}
+    {{ HTML::script('js/pnu.js') }}
+
 </body>
 </html>
