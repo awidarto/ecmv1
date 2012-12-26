@@ -1,6 +1,6 @@
     $(document).ready(function(){
 
-    	base = 'http://localhost/pnu/public/';
+    	//base = 'http://localhost/pnu/public/';
 
 		$('.date').datepicker({
 			dateFormat: "dd-mm-yy"

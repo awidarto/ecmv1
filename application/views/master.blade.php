@@ -231,6 +231,9 @@
     
   </footer>
     {{ HTML::script('js/jquery.foundation.forms.js') }}
+    <script type="text/javascript">
+      base = '{{ URL::base() }}/';
+    </script>
     {{ HTML::script('js/pnu.js') }}
 
 </body>
