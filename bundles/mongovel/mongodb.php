@@ -418,7 +418,7 @@ class MongoDB {
 				$r = $c->findOne($query, $fields);
 			break;
 			case 'find':
-				if(count($limit) < 2){
+				if(count($limit) < 1){
 					$r = $c->find($query, $fields)->sort($sorts);
 				}else{
 					$r = $c->find($query, $fields)->limit($limit[0])->skip($limit[1])->sort($sorts);

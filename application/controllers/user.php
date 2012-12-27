@@ -113,6 +113,11 @@ class User_Controller extends Base_Controller {
 
 		$cond = array('both','both','both','both');
 
+		$pagestart = Input::get('iDisplayStart');
+		$pagelength = Input::get('iDisplayLength');
+
+		$limit = array($pagelength, $pagestart);
+
 		$idx = 0;
 		$q = array();
 		foreach($fields as $field){
@@ -146,10 +151,10 @@ class User_Controller extends Base_Controller {
 		$count_all = $document->count();
 
 		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir));
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
 			$count_display_all = $document->count($q);
 		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir));
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
 			$count_display_all = $document->count();
 		}
 
@@ -158,7 +163,7 @@ class User_Controller extends Base_Controller {
 
 		$aadata = array();
 
-		$counter = 1;
+		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
 			$aadata[] = array(
 				$counter,

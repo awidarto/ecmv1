@@ -100,7 +100,7 @@ class Model {
 	 */
 	public function delete(array$criteria)
 	{
-		return $this->_db->remove($this->_collection, $criteria, false);
+		return $this->_db->remove($this->_collection, $criteria, array());
 	}
 
 	/**

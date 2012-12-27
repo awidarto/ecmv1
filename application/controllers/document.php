@@ -38,7 +38,7 @@ class Document_Controller extends Base_Controller {
 
 	public function get_index()
 	{
-		$heads = array('#','Title','Created','Creator','Owner','Tags','Action');
+		$heads = array('#','Title','Created','Creator','Attachment','Tags','Action');
 		$fields = array('seq','title','created','creator','owner','tags','action');
 		$searchinput = array(false,'title','created','creator','owner','tags',false);
 
@@ -63,6 +63,8 @@ class Document_Controller extends Base_Controller {
 
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
+
+		$limit = array($pagelength, $pagestart);
 
 		$idx = 0;
 		$q = array();
@@ -97,10 +99,10 @@ class Document_Controller extends Base_Controller {
 		$count_all = $document->count();
 
 		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),array($pagelength, $pagestart));
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
 			$count_display_all = $document->count($q);
 		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir,array($pagelength, $pagestart)));
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
 			$count_display_all = $document->count();
 		}
 
@@ -109,14 +111,14 @@ class Document_Controller extends Base_Controller {
 
 		$aadata = array();
 
-		$counter = 1;
+		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
 			$aadata[] = array(
 				$counter,
 				$doc['title'],
 				date('Y-m-d h:i:s', $doc['createdDate']->sec),
 				$doc['creatorName'],
-				$doc['creatorName'],
+				$doc['docFilename'],
 				$doc['docTag'],
 				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
