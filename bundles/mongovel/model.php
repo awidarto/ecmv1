@@ -37,7 +37,7 @@ class Model {
 	 * @param  bool  $options
 	 * @return MongoDB Object
 	 */
-	public function insert(array $insert, $options =  true)
+	public function insert(array $insert, $options =  array())
 	{
 		return $this->_db->insert($this->_collection, $insert, $options);
 	}
