@@ -261,13 +261,14 @@ class MongoDB {
 		));
 	}
 
-	public function find($collection_name, array $query = array(), array $fields = array(),array $sorts = array())
+	public function find($collection_name, array $query = array(), array $fields = array(),array $sorts = array(), array $limit = array())
 	{
 		return $this->_call('find', array(
 			'collection_name' => $collection_name,
 			'query'           => $query,
 			'fields'          => $fields,
 			'sorts'          => $sorts,
+			'limit'			=> $limit
 		));
 	}
 
@@ -417,7 +418,11 @@ class MongoDB {
 				$r = $c->findOne($query, $fields);
 			break;
 			case 'find':
-				$r = $c->find($query, $fields)->sort($sorts);
+				if(count($limit) < 2){
+					$r = $c->find($query, $fields)->sort($sorts);
+				}else{
+					$r = $c->find($query, $fields)->limit($limit[0])->skip($limit[1])->sort($sorts);
+				}
 			break;
 			case 'group':
 				$r = $c->group($keys, $initial, $reduce, $condition);

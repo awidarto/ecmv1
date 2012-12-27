@@ -146,6 +146,53 @@ Event::listen('500', function()
 	return Response::error('500');
 });
 
+Event::listen('document.create',function($id, $result){
+    $activity = new Activity();
+
+    $ev = array('event'=>'document.upload',
+        'timestamp'=>new MongoDate(),
+        'user_id'=>new MongoId(Auth::user()->id),
+        'doc_id'=>$id,'result'=>$result);
+
+    if($activity->insert($ev)){
+        return true;
+    }else{
+        return false;
+    }
+
+});
+
+Event::listen('document.update',function($id,$result){
+    $activity = new Activity();
+
+    $ev = array('event'=>'document.update',
+        'timestamp'=>new MongoDate(),
+        'user_id'=>new MongoId(Auth::user()->id),
+        'doc_id'=>$id,'result'=>$result);
+
+    if($activity->insert($ev)){
+        return true;
+    }else{
+        return false;
+    }
+
+});
+
+Event::listen('document.delete',function($id,$result){
+    $activity = new Activity();
+
+    $ev = array('event'=>'document.delete',
+        'timestamp'=>new MongoDate(),
+        'user_id'=>new MongoId(Auth::user()->id),
+        'doc_id'=>$id,'result'=>$result);
+
+    if($activity->insert($ev)){
+        return true;
+    }else{
+        return false;
+    }
+
+});
 /*
 |--------------------------------------------------------------------------
 | Route Filters

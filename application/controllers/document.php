@@ -61,6 +61,9 @@ class Document_Controller extends Base_Controller {
 
 		$cond = array('both','both','both','both','both');
 
+		$pagestart = Input::get('iDisplayStart');
+		$pagelength = Input::get('iDisplayLength');
+
 		$idx = 0;
 		$q = array();
 		foreach($fields as $field){
@@ -94,10 +97,10 @@ class Document_Controller extends Base_Controller {
 		$count_all = $document->count();
 
 		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir));
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),array($pagelength, $pagestart));
 			$count_display_all = $document->count($q);
 		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir));
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir,array($pagelength, $pagestart)));
 			$count_display_all = $document->count();
 		}
 
@@ -144,9 +147,12 @@ class Document_Controller extends Base_Controller {
 
 			$id = new MongoId($id);
 
+
 			if($user->delete(array('_id'=>$id))){
+				Event::fire('document.delete',array('id'=>$id,'result'=>'OK'));
 				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
 			}else{
+				Event::fire('document.delete',array('id'=>$id,'result'=>'FAILED'));
 				$result = array('status'=>'ERR','data'=>'DELETEFAILED');				
 			}
 		}
@@ -218,8 +224,84 @@ class Document_Controller extends Base_Controller {
 					
 				}
 
+				Event::fire('document.create',array('id'=>$newobj['_id'],'result'=>'OK'));
+
 		    	return Redirect::to('document')->with('notify_success','Document saved successfully');
 			}else{
+				Event::fire('document.create',array('id'=>$id,'result'=>'FAILED'));
+		    	return Redirect::to('document')->with('notify_success','Document saving failed');
+			}
+
+	    }
+
+		
+	}
+
+	public function get_edit($id = null){
+
+		$doc = new Document();
+
+		$id = (is_null($id))?Auth::user()->id:$id;
+
+		$id = new MongoId($id);
+
+		$doc_data = $doc->get(array('_id'=>$id));
+
+		$doc_data['effectiveDate'] = date('Y-m-d', $doc_data['effectiveDate']->sec);
+		$doc_data['expiryDate'] = date('Y-m-d', $doc_data['expiryDate']->sec);
+
+
+		$form = Formly::make($doc_data);
+
+		return View::make('document.edit')
+					->with('doc',$doc_data)
+					->with('form',$form)
+					->with('title','Edit Document');
+
+	}
+
+
+	public function post_edit($id){
+
+		//print_r(Session::get('permission'));
+
+	    $rules = array(
+	        'title'  => 'required|max:50',
+	        'description' => 'required'
+	    );
+
+	    $validation = Validator::make($input = Input::all(), $rules);
+
+	    if($validation->fails()){
+
+	    	return Redirect::to('document/edit/'.$id)->with_errors($validation)->with_input(Input::all());
+
+	    }else{
+
+			$data = Input::get();
+	    	
+			$id = new MongoId($data['id']);
+
+			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
+			$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+
+			unset($data['csrf_token']);
+			unset($data['id']);
+
+			$doc = new Document();
+
+			//print_r($data);
+
+			
+			if($doc->update(array('_id'=>$id),array('$set'=>$data))){
+
+				Event::fire('document.update',array('id'=>$id,'result'=>'OK'));
+
+		    	return Redirect::to('document')->with('notify_success','Document saved successfully');
+			}else{
+
+				Event::fire('document.update',array('id'=>$id,'result'=>'FAILED'));
+
 		    	return Redirect::to('document')->with('notify_success','Document saving failed');
 			}
 
