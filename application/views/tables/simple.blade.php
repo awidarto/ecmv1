@@ -143,6 +143,16 @@
 				}
 		   	}
 
+			if ($(e.target).is('.metaview')) {
+				var _id = e.target.id;
+				alert(_id);
+		   	}
+
+			if ($(e.target).is('.fileview')) {
+				var _id = e.target.id;
+				alert(_id);
+		   	}		   			   	
+
 		});
 
     });

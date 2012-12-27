@@ -20,6 +20,7 @@
 
   {{ HTML::style('css/jquery.tagsinput.css') }}
   {{ HTML::style('css/select2.css') }}
+  {{ HTML::style('css/jquery.fancybox.css') }}
 
 
   {{ HTML::script('js/jquery-1.8.3.min.js') }}
@@ -29,6 +30,8 @@
 
   {{ HTML::script('js/jquery.tagsinput.min.js') }}
   {{ HTML::script('js/select2.min.js') }}
+
+  {{ HTML::script('js/jquery.fancybox.js') }}
 
   <!--[if (!IE)|(gte IE 8)]><!-->
     {{ HTML::style('css/visualsearch/visualsearch-datauri.css') }}

@@ -102,4 +102,17 @@ class Ajax_Controller extends Base_Controller {
 	{
 
 	}
+
+	public function get_meta()
+	{
+		$q = Input::get('term');
+
+		$doc = new Document();
+		$id = new MongoId($q);
+
+		$res = $doc->get(array('_id'=>$id));
+
+		print json_encode($res);				
+	}
+
 }

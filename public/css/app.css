@@ -364,3 +364,19 @@ label.check {
 	margin-bottom: 5px;
 	text-transform: capitalize;
 }
+
+.fileview , .metaview{
+	cursor: pointer;
+	text-decoration:underline;
+	color:brown;
+}
+
+#upload-indicator{
+	background: transparent url('ajax-uploader.gif') no-repeat -6px 0px;
+	width:100%;
+	height:30px;
+	padding-left: 220px;
+	padding-top: 3px;
+	display: block;
+	vertical-align: middle;
+}

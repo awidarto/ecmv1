@@ -6,8 +6,6 @@
 			dateFormat: "dd-mm-yy"
 		});
 
-		var tags = [];
-
 		$('.tag_email').tagsInput({
 			'autocomplete_url': base + 'ajax/email',
 		   	'height':'100px',

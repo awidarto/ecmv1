@@ -35,6 +35,13 @@
 	</table>
 </div>
 
+<div id="view_dialog" title="Order Detail" style="overflow:hidden;padding:8px;">
+	<input type="hidden" value="" id="print_id" />
+	<iframe id="view_frame" name="print_frame" width="100%" height="100%"
+    marginWidth="0" marginHeight="0" frameBorder="0" scrolling="auto"
+    title="Dialog Title">Your browser does not suppr</iframe>
+</div>
+
   <script type="text/javascript">
     $(document).ready(function(){
 		var asInitVals = new Array();
@@ -143,8 +150,56 @@
 				}
 		   	}
 
+			if ($(e.target).is('.fileview')) {
+				var _id = e.target.id;
+
+				$.fancybox({
+					type:'iframe',
+					href: '{{ URL::to("document/fileview/") }}' + _id,
+					autosize: true
+				});
+
+		   	}		   			   	
+
+			if ($(e.target).is('.metaview')) {
+				var doc_id = e.target.id;
+				var src = '{{ URL::to('document/view/')}}' + doc_id;
+
+				$.fancybox({
+					type:'iframe',
+					href: '{{ URL::to("document/view/") }}' + _id,
+					autosize: true
+				});
+			}
+
 		});
 
+
+		$('#view_dialog').dialog({
+			autoOpen: false,
+			height: 600,
+			width: 900,
+			modal: true,
+			buttons: {
+				Save: function(){
+					var nframe = document.getElementById('view_frame');
+					var nframeWindow = nframe.contentWindow;
+					nframeWindow.submitorder();
+				}, 
+				Print: function(){
+					var pframe = document.getElementById('print_frame');
+					var pframeWindow = pframe.contentWindow;
+					pframeWindow.print();
+				}, 
+				Close: function() {
+					oTable.fnDraw();
+					$( this ).dialog( "close" );
+				}
+			},
+			close: function() {
+				
+			}
+		});
     });
   </script>
 

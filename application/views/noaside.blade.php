@@ -18,11 +18,13 @@
   {{ HTML::style('css/general_enclosed_foundicons.css') }}
   {{ HTML::style('css/general_foundicons.css') }}
   {{ HTML::style('css/select2.css') }}
+  {{ HTML::style('css/jquery.fancybox.css') }}
 
   {{ HTML::script('js/jquery-1.8.3.min.js') }}
   {{ HTML::script('js/jquery-ui-1.9.2.custom.min.js') }}
   {{ HTML::script('js/jquery.dataTables.min.js') }}
   {{ HTML::script('js/select2.min.js') }}
+  {{ HTML::script('js/jquery.fancybox.js') }}
 
   <!--[if lt IE 8]>
     {{ HTML::style('css/general_enclosed_foundicons_ie7.css') }}
@@ -141,6 +143,9 @@
     
   </footer>
     {{ HTML::script('js/jquery.foundation.forms.js') }}
+    <script type="text/javascript">
+      base = '{{ URL::base() }}/';
+    </script>
     {{ HTML::script('js/pnu.js') }}
 
 </body>

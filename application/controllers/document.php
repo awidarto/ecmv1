@@ -115,10 +115,10 @@ class Document_Controller extends Base_Controller {
 		foreach ($documents as $doc) {
 			$aadata[] = array(
 				$counter,
-				$doc['title'],
+				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
 				date('Y-m-d h:i:s', $doc['createdDate']->sec),
 				$doc['creatorName'],
-				isset($doc['docFilename'])?$doc['docFilename']:'',
+				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$doc['docTag'],
 				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
@@ -339,6 +339,7 @@ class Document_Controller extends Base_Controller {
 			->with('addurl','document/add')
 			->with('searchinput',$searchinput)
 			->with('ajaxsource',URL::to('document/type/'.$type))
+			->with('ajaxdel',URL::to('document/del'))
 			->with('heads',$heads);
 	}
 
@@ -421,5 +422,27 @@ class Document_Controller extends Base_Controller {
 		print json_encode($result);
 	}
 
+
+	public function get_view($id){
+		$id = new MongoId($id);
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$id));
+
+		return View::make('document.view')->with('doc',$doc);
+	}
+
+	public function get_fileview($id){
+		$_id = new MongoId($id);
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$_id));
+
+		$file = URL::to(Config::get('parama.storage').$id.'/'.$doc['docFilename']);
+
+		return View::make('document.fileview')->with('doc',$doc)->with('href',$file);
+	}
 
 }

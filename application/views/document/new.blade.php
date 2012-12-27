@@ -6,7 +6,7 @@
 <h3>{{$title}}</h3>
 </div>
 
-{{$form->open_for_files('document/add','POST',array('class'=>'custom'))}}
+{{$form->open_for_files('document/add','POST',array('class'=>'custom','id'=>'newdoc'))}}
 <div class="row">
   <div class="six columns left">
     <h4>Document Info</h4>
@@ -17,6 +17,7 @@
     {{$form->select('docFormat','Original Document Format',Config::get('parama.doc_format'),array('class'=>'four'))}}
 
     {{ $form->file('docupload','Document File')}}
+    <div id="upload-indicator" style="display:none" >Uploading file, please wait.</div>
 
     {{ $form->text('docRevisionOf','Revision of','',array('class'=>'tag_revision four','rows'=>'1', 'style'=>'width:100%')) }}
 
@@ -57,6 +58,12 @@
       //alert($('#field_role').val());
       // load default permission here
   });
+
+  $('#newdoc').submit(function() {
+    $('#upload-indicator').toggle();
+    $('#newdoc').submit();
+  });
+
 </script>
 
 @endsection

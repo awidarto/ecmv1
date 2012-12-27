@@ -44,7 +44,7 @@
 			'employee hospitalized insurance'=>'Employee Hospitalized Insurance',
 			'employee tax'=>'Employee Tax',
 			'employee jamsostek'=>'Employee JAMSOSTEK',
-			'employee salary slip'=>'employee Salary Slip',
+			'employee salary slip'=>'Employee Salary Slip',
 		),
 		'Assets'=>array(
 			'leasing'=>'Leasing',
