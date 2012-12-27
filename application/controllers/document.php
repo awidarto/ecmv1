@@ -39,8 +39,8 @@ class Document_Controller extends Base_Controller {
 	public function get_index()
 	{
 		$heads = array('#','Title','Created','Creator','Attachment','Tags','Action');
-		$fields = array('seq','title','created','creator','owner','tags','action');
-		$searchinput = array(false,'title','created','creator','owner','tags',false);
+		$fields = array('seq','title','created','creator','filename','tags','action');
+		$searchinput = array(false,'title','created','creator','filename','tags',false);
 
 		return View::make('tables.noaside')
 			->with('title','Document Library')
@@ -55,7 +55,7 @@ class Document_Controller extends Base_Controller {
 
 	public function post_index()
 	{
-		$fields = array('title','createdDate','creatorName','creatorName','docTag');
+		$fields = array('title','createdDate','creatorName','docFilename','docTag');
 
 		$rel = array('like','like','like','like','like');
 
@@ -118,7 +118,7 @@ class Document_Controller extends Base_Controller {
 				$doc['title'],
 				date('Y-m-d h:i:s', $doc['createdDate']->sec),
 				$doc['creatorName'],
-				$doc['docFilename'],
+				isset($doc['docFilename'])?$doc['docFilename']:'',
 				$doc['docTag'],
 				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
