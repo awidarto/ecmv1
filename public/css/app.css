@@ -380,3 +380,15 @@ label.check {
 	display: block;
 	vertical-align: middle;
 }
+
+.tagitem{
+	background: #8d8b8b url(tag.png)no-repeat center right;
+	height: 15px;
+	padding:0 18px 0 4px;
+	display: inline-block;
+	color: #fff;
+	font-size: 10.5px;
+	line-height: 14px;
+	margin-bottom: 6px;
+	margin-right: 5px;
+}

@@ -92,15 +92,18 @@ class User_Controller extends Base_Controller {
 	public function get_users()
 	{
 		$heads = array('#','Full Name','Username','Email','Role','Action');
-		$fields = array('seq','fullname','username','email','role','action');
 		$searchinput = array(false,'fullname','username','email','role',false);
 
-		return View::make('tables.noaside')
+		$tag = new Tag();
+		$tags = $tag->find(array(), array(),array('count'=>-1));
+
+		return View::make('tables.simple')
 			->with('title','User Management')
 			->with('newbutton','New User')
 			->with('disablesort','0,4,5')
 			->with('addurl','user/add')
 			->with('searchinput',$searchinput)
+			->with('tags',$tags)
 			->with('ajaxsource',URL::to('users'))
 			->with('ajaxdel',URL::to('user/del'))
 			->with('heads',$heads);
@@ -118,6 +121,9 @@ class User_Controller extends Base_Controller {
 		$pagelength = Input::get('iDisplayLength');
 
 		$limit = array($pagelength, $pagestart);
+
+		$defsort = 1;
+		$defdir = -1;
 
 		$idx = 0;
 		$q = array();
@@ -145,9 +151,15 @@ class User_Controller extends Base_Controller {
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
-		$fidx = ($fidx > 0)?$fidx - 1:$fidx;
-		$sort_col = $fields[$fidx];
-		$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		if($fidx == 0){
+			$fidx = $defsort;			
+			$sort_col = $fields[$fidx];
+			$sort_dir = $defdir;
+		}else{
+			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+			$sort_col = $fields[$fidx];
+			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		}
 
 		$count_all = $document->count();
 
@@ -261,6 +273,7 @@ class User_Controller extends Base_Controller {
 			$data['permissions'] = $permissions;
 
 			$id = new MongoId($data['id']);
+			$data['lastUpdate'] = new MongoDate();
 
 			unset($data['csrf_token']);
 			unset($data['id']);
@@ -343,6 +356,11 @@ class User_Controller extends Base_Controller {
 
 			unset($data['repass']);
 			unset($data['csrf_token']);
+
+			$data['createdDate'] = new MongoDate();
+			$data['lastUpdate'] = new MongoDate();
+			$data['creatorName'] = Auth::user()->fullname;
+			$data['creatorId'] = Auth::user()->id;
 
 			$user = new User();
 

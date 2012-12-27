@@ -1,5 +1,12 @@
 @layout('master')
 
+@section('tagcloud')
+	@if(isset($tags))
+		@foreach($tags as $t)
+			<span class="tagitem">{{$t['tag']}}</span>
+		@endforeach
+	@endif
+@endsection
 
 @section('content')
 <div class="tableHeader">
@@ -143,15 +150,27 @@
 				}
 		   	}
 
-			if ($(e.target).is('.metaview')) {
-				var _id = e.target.id;
-				alert(_id);
-		   	}
-
 			if ($(e.target).is('.fileview')) {
 				var _id = e.target.id;
-				alert(_id);
+
+				$.fancybox({
+					type:'iframe',
+					href: '{{ URL::to("document/fileview/") }}' + _id,
+					autosize: true
+				});
+
 		   	}		   			   	
+
+			if ($(e.target).is('.metaview')) {
+				var doc_id = e.target.id;
+				var src = '{{ URL::to('document/view/')}}' + doc_id;
+
+				$.fancybox({
+					type:'iframe',
+					href: '{{ URL::to("document/view/") }}' + _id,
+					autosize: true
+				});
+			}
 
 		});
 

@@ -1,4 +1,4 @@
-@layout('noaside')
+@layout('master')
 
 
 @section('content')

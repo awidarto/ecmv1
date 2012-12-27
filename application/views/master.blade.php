@@ -134,7 +134,7 @@
             ?>
         </div>
         -->
-        <div id="maincontent" class="eight columns">
+        <div id="maincontent" class="nine columns">
 
             @if (Session::has('notify_success'))
               <div class="alert-box">
@@ -145,7 +145,7 @@
 
             @yield('content')
         </div>
-        <aside class="three columns">
+        <aside class="two columns">
 
             <div class="panel sidepanel">
 
@@ -170,6 +170,11 @@
                   <li>{{ HTML::link('passwd', 'Change Password') }}</li>
                   <li>{{ HTML::link('logout', 'Logout') }}</li>
                 </ul>-->
+            </div>
+
+            <div class="panel sidepanel">
+                <h4><span class="foundicon-heart"></span>&nbsp;&nbsp;Tags</h4>
+                @yield('tagcloud')
             </div>
 
             <div class="panel sidepanel">

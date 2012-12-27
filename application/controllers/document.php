@@ -39,16 +39,20 @@ class Document_Controller extends Base_Controller {
 
 	public function get_index()
 	{
-		$heads = array('#','Title','Created','Creator','Attachment','Tags','Action');
-		$fields = array('seq','title','created','creator','filename','tags','action');
-		$searchinput = array(false,'title','created','creator','filename','tags',false);
+		$heads = array('#','Title','Created','Last Update','Creator','Attachment','Tags','Action');
+		$searchinput = array(false,'title','created','last update','creator','filename','tags',false);
 
-		return View::make('tables.noaside')
+		$tag = new Tag();
+		$tags = $tag->find(array(), array(),array('count'=>-1));
+
+
+		return View::make('tables.simple')
 			->with('title','Document Library')
 			->with('newbutton','New Document')
 			->with('disablesort','0,5,6')
 			->with('addurl','document/add')
 			->with('searchinput',$searchinput)
+			->with('tags',$tags)
 			->with('ajaxsource',URL::to('document'))
 			->with('ajaxdel',URL::to('document/del'))
 			->with('heads',$heads);
@@ -57,16 +61,19 @@ class Document_Controller extends Base_Controller {
 	public function post_index()
 	{
 
-		$fields = array('title','createdDate','creatorName','docFilename','docTag');
+		$fields = array('title','createdDate','lastUpdate','creatorName','docFilename','docTag');
 
-		$rel = array('like','like','like','like','like');
+		$rel = array('like','like','like','like','like','like');
 
-		$cond = array('both','both','both','both','both');
+		$cond = array('both','both','both','both','both','both');
 
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
 
 		$limit = array($pagelength, $pagestart);
+
+		$defsort = 1;
+		$defdir = -1;
 
 		$idx = 0;
 		$q = array();
@@ -94,9 +101,15 @@ class Document_Controller extends Base_Controller {
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
-		$fidx = ($fidx > 0)?$fidx - 1:$fidx;
-		$sort_col = $fields[$fidx];
-		$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		if($fidx == 0){
+			$fidx = $defsort;			
+			$sort_col = $fields[$fidx];
+			$sort_dir = $defdir;
+		}else{
+			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+			$sort_col = $fields[$fidx];
+			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		}
 
 		$count_all = $document->count();
 
@@ -115,13 +128,27 @@ class Document_Controller extends Base_Controller {
 
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
+			if(isset($doc['tags'])){
+				$tags = array();
+
+				foreach($doc['tags'] as $t){
+					$tags[] = '<span class="tagitem">'.$t.'</span>';
+				}
+
+				$tags = implode('',$tags);
+
+			}else{
+				$tags = '';
+			}
+
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
 				date('Y-m-d H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
 				$doc['creatorName'],
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
-				$doc['docTag'],
+				$tags,
 				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 			);
@@ -202,6 +229,7 @@ class Document_Controller extends Base_Controller {
 			$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
 
 			$data['createdDate'] = new MongoDate();
+			$data['lastUpdate'] = new MongoDate();
 			$data['creatorName'] = Auth::user()->fullname;
 			$data['creatorId'] = Auth::user()->id;
 			
@@ -210,6 +238,8 @@ class Document_Controller extends Base_Controller {
 			$data['docFilename'] = $docupload['name'];
 
 			$data['docFiledata'] = $docupload;
+
+			$data['tags'] = explode(',',$data['docTag']);
 
 			$document = new Document();
 
@@ -226,6 +256,13 @@ class Document_Controller extends Base_Controller {
 
 					Input::upload('docupload',$newdir,$docupload['name']);
 					
+				}
+
+				if(count($data['tags']) > 0){
+					$tag = new Tag();
+					foreach($data['tags'] as $t){
+						$tag->update(array('tag'=>$t),array('$inc'=>array('count'=>1)),array('upsert'=>true));
+					}
 				}
 
 				Event::fire('document.create',array('id'=>$newobj['_id'],'result'=>'OK'));
@@ -288,9 +325,12 @@ class Document_Controller extends Base_Controller {
 
 			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
 			$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+			$data['lastUpdate'] = new MongoDate();
 
 			unset($data['csrf_token']);
 			unset($data['id']);
+
+			$data['tags'] = explode(',',$data['docTag']);
 
 			$doc = new Document();
 
