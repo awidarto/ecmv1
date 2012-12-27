@@ -33,6 +33,7 @@ class Document_Controller extends Base_Controller {
 	public $restful = true;
 
 	public function __construct(){
+		date_default_timezone_set('Asia/Jakarta');
 		$this->filter('before','auth');
 	}
 
@@ -55,6 +56,7 @@ class Document_Controller extends Base_Controller {
 
 	public function post_index()
 	{
+
 		$fields = array('title','createdDate','creatorName','docFilename','docTag');
 
 		$rel = array('like','like','like','like','like');
@@ -116,7 +118,7 @@ class Document_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
-				date('Y-m-d h:i:s', $doc['createdDate']->sec),
+				date('Y-m-d H:i:s', $doc['createdDate']->sec),
 				$doc['creatorName'],
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$doc['docTag'],
