@@ -33,6 +33,8 @@
     {{ $form->text('docTender','Related Tender','',array('class'=>'tag_tender four','rows'=>'1', 'style'=>'width:100%')) }}
     {{ $form->text('docLead','Related Opportunity','',array('class'=>'tag_opportunity four','rows'=>'1', 'style'=>'width:100%')) }}
 
+    {{ $form->hidden('oldTag',$doc['oldTag'])}}
+
     {{ $form->text('docTag','Tag','',array('class'=>'tag_keyword four','rows'=>'1', 'style'=>'width:100%')) }}
 
     {{ $form->text('docShare','Shared to','',array('class'=>'tag_email four','style'=>'width:100%')) }}

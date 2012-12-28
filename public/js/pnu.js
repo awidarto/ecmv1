@@ -49,6 +49,7 @@
 		});
 
 		$('.tag_keyword').tagsInput({
+			'autocomplete_url': base + 'ajax/tag',
 		   'height':'100px',
 		   'width':'300px',
 		   'interactive':true,

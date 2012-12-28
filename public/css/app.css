@@ -382,9 +382,15 @@ label.check {
 }
 
 .tagitem{
-	background: #8d8b8b url(tag.png)no-repeat center right;
-	height: 15px;
-	padding:0 18px 0 4px;
+	background: #a3a3a3 url('tag-open.png') no-repeat center left;
+
+	background-image: url('tag-open.png'),url('tag-close.png');
+	background-position: center left, center right;
+
+	height: 22px;
+	padding-left: 10px;
+	padding-right: 10px;
+	padding-top: 4px;
 	display: inline-block;
 	color: #fff;
 	font-size: 10.5px;

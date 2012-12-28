@@ -288,6 +288,8 @@ class Document_Controller extends Base_Controller {
 
 		$doc_data = $doc->get(array('_id'=>$id));
 
+		$doc_data['oldTag'] = $doc_data['docTag'];
+
 		$doc_data['effectiveDate'] = date('Y-m-d', $doc_data['effectiveDate']->sec);
 		$doc_data['expiryDate'] = date('Y-m-d', $doc_data['expiryDate']->sec);
 
@@ -335,7 +337,21 @@ class Document_Controller extends Base_Controller {
 			$doc = new Document();
 
 			//print_r($data);
+			$oldtags = explode(',',$data['oldTag']);
 
+			if(count($data['tags']) > 0){
+				$tag = new Tag();
+				foreach($data['tags'] as $t){
+					if(in_array($t, $oldtags)){
+						$add = 0;
+					}else{
+						$add = 1;
+					}
+					$tag->update(array('tag'=>$t),array('$inc'=>array('count'=>$add)),array('upsert'=>true));
+				}
+			}
+
+			unset($data['oldTag']);
 			
 			if($doc->update(array('_id'=>$id),array('$set'=>$data))){
 

@@ -98,9 +98,22 @@ class Ajax_Controller extends Base_Controller {
 		print json_encode($result);				
 	}
 
-	public function post_keyword()
+	public function get_tag()
 	{
+		$q = Input::get('term');
 
+		$tag = new Tag();
+		$qtag = new MongoRegex('/'.$q.'/i');
+
+		$res = $tag->find(array('tag'=>$qtag),array('tag'));
+
+		$result = array();
+
+		foreach($res as $r){
+			$result[] = array('id'=>$r['tag'],'label'=>$r['tag'],'value'=>$r['tag']);
+		}
+
+		print json_encode($result);		
 	}
 
 	public function get_meta()
