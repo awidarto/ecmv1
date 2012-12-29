@@ -59,7 +59,7 @@ class Ajax_Controller extends Base_Controller {
 			$result[] = array('id'=>$r['email'],'label'=>$r['fullname'],'value'=>$r['email']);
 		}
 
-		print json_encode($result);		
+		return Response::json($result);		
 	}
 
 	public function get_rev()
@@ -77,7 +77,7 @@ class Ajax_Controller extends Base_Controller {
 			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['title'],'value'=>$r['_id']->__toString());
 		}
 
-		print json_encode($result);		
+		return Response::json($result);		
 	}
 
 	public function get_project()
@@ -95,7 +95,7 @@ class Ajax_Controller extends Base_Controller {
 			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['title'],'value'=>$r['_id']->__toString());
 		}
 
-		print json_encode($result);				
+		return Response::json($result);		
 	}
 
 	public function get_tag()
@@ -113,7 +113,7 @@ class Ajax_Controller extends Base_Controller {
 			$result[] = array('id'=>$r['tag'],'label'=>$r['tag'],'value'=>$r['tag']);
 		}
 
-		print json_encode($result);		
+		return Response::json($result);		
 	}
 
 	public function get_meta()
@@ -125,7 +125,7 @@ class Ajax_Controller extends Base_Controller {
 
 		$res = $doc->get(array('_id'=>$id));
 
-		print json_encode($res);				
+		return Response::json($result);		
 	}
 
 }

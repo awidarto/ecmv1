@@ -1,13 +1,5 @@
 @layout('master')
 
-@section('tagcloud')
-	@if(isset($tags))
-		@foreach($tags as $t)
-			<span class="tagitem">{{$t['tag']}}</span>
-		@endforeach
-	@endif
-@endsection
-
 @section('content')
 <div class="tableHeader">
 <h3>{{$title}}</h3>

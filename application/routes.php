@@ -193,6 +193,21 @@ Event::listen('document.delete',function($id,$result){
     }
 
 });
+
+/*
+|--------------------------------------------------------------------------
+| View Composers
+|--------------------------------------------------------------------------
+|
+*/
+
+View::composer('master',function($view){
+    $tag = new Tag();
+    $tags = $tag->find(array(), array(),array('count'=>-1));
+    $view->nest('tagcloud','partials.tags',array('tags'=>$tags));
+    $view->nest('identity','partials.identity');
+});
+
 /*
 |--------------------------------------------------------------------------
 | Route Filters

@@ -147,35 +147,8 @@
         </div>
         <aside class="two columns">
 
-            <div class="panel sidepanel">
-
-                <div class=" row">
-                  <div class="eight columns">
-                    <p>Logged in as, <br/><br/><strong>{{ Auth::user()->fullname }}</strong>
-                      <br/>{{ (isset(Auth::user()->employee_jobtitle))?Auth::user()->employee_jobtitle:'no title' }}
-                      <br/><br/>Last Login: Tuesday, Nov 20 2012
-                      <br/>from <i>Office</i>
-                    </p>
-                    <p>{{Auth::user()->email}}
-                      <br/><a href="{{URL::to('user/profile')}}">Profile</a> | {{ HTML::link('logout', 'Logout') }}
-                    </p>
-                  </div>
-                  <div class="four columns">
-                    <a href="#"><img src="http://placehold.it/80x80&text=[img]" /></a>
-                  </div>
-                </div>
-              
-                <!--<ul class="dropdown">
-                  <li>{{ HTML::link('profile', 'My Profile') }}</li>
-                  <li>{{ HTML::link('passwd', 'Change Password') }}</li>
-                  <li>{{ HTML::link('logout', 'Logout') }}</li>
-                </ul>-->
-            </div>
-
-            <div class="panel sidepanel">
-                <h4><span class="foundicon-heart"></span>&nbsp;&nbsp;Tags</h4>
-                @yield('tagcloud')
-            </div>
+            @yield('identity')
+            @yield('tagcloud')
 
             <div class="panel sidepanel">
               <h4><span class="foundicon-mail"></span>&nbsp;&nbsp;Messages</h4>

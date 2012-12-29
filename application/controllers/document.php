@@ -42,17 +42,12 @@ class Document_Controller extends Base_Controller {
 		$heads = array('#','Title','Created','Last Update','Creator','Attachment','Tags','Action');
 		$searchinput = array(false,'title','created','last update','creator','filename','tags',false);
 
-		$tag = new Tag();
-		$tags = $tag->find(array(), array(),array('count'=>-1));
-
-
 		return View::make('tables.simple')
 			->with('title','Document Library')
 			->with('newbutton','New Document')
 			->with('disablesort','0,5,6')
 			->with('addurl','document/add')
 			->with('searchinput',$searchinput)
-			->with('tags',$tags)
 			->with('ajaxsource',URL::to('document'))
 			->with('ajaxdel',URL::to('document/del'))
 			->with('heads',$heads);
