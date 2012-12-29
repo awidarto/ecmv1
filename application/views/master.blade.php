@@ -100,25 +100,8 @@
 -->
       
     <div class="row container-content clearfix">
-        <div class="one columns mobile">     
-          <dl class="vertical tabs">
-            <dd><a href="{{ URL::base() }}"><i class="foundicon-home sidemenu"></i> <br/>Home</a></dd>
-            <dd><a href="{{ URL::to('message') }}"><i class="foundicon-mail sidemenu"></i> <br/>Messages</a></dd>
-            <dd><a href="{{ URL::to('tender') }}"><i class="foundicon-idea sidemenu"></i> <br/>Tender</a></dd>
-            <dd><a href="{{ URL::to('project') }}"><i class="foundicon-star sidemenu"></i> <br/>Projects</a></dd>
-            <dd><a href="{{ URL::to('qc') }}"><i class="foundicon-checkmark sidemenu"></i> <br/>Quality</a></dd>
-            <dd><a href="{{ URL::to('warehouse') }}"><i class="foundicon-cart sidemenu"></i> <br/>Warehouse</a></dd>
-            <dd><a href="{{ URL::to('finance') }}"><i class="foundicon-graph sidemenu"></i> <br/>Finance</a></dd>
-            <dd><a href="{{ URL::to('hr') }}"><i class="foundicon-people sidemenu"></i> <br/>HRD</a></dd>
-            <dd><a href="{{ URL::to('activity/download') }}"><i class="foundicon-down-arrow sidemenu"></i> <br/>Download</a></dd>
-            <dd><a href="{{ URL::to('activity/upload') }}"><i class="foundicon-up-arrow sidemenu"></i> <br/>Upload</a></dd>
-            <dd><a href="{{ URL::to('user/people') }}"><i class="foundicon-address-book sidemenu"></i> <br/>People</a></dd>
-            <dd><a href="{{ URL::to('search') }}"><i class="foundicon-search sidemenu"></i> <br/>Search</a></dd>
-            <dd><a href="{{ URL::to('help') }}"><i class="foundicon-smiley sidemenu"></i> <br/>Help</a></dd>
-          </dl>
-          
-        </div>
 
+        @yield('sidenav')
         <!--
         <div id="breadcrumb" class="eleven columns">
             <?php
@@ -149,37 +132,8 @@
 
             @yield('identity')
             @yield('tagcloud')
+            @yield('messages')
 
-            <div class="panel sidepanel">
-              <h4><span class="foundicon-mail"></span>&nbsp;&nbsp;Messages</h4>
-              <!--<p>Welcome back, {{ Auth::user()->fullname }}</p>-->
-              <div class="message-list-side">
-                <div class="message-list-item">
-                  <span class="category-info">e-mail</span><br/>
-                  <span class="author-info">from:</span> vendor@vendor.co.id<br/>
-                  <span class="author-info">date:</span> Nov 19, 2012 15.30 WIB<br/>
-                  <span class="author-info">subject:</span> Quotation 1<br/>
-                  <span class="content-info">Dear, Bpk Taufiq ini adalah .... <a href="#">(read more)</a></span>
-                </div>
-
-                <div class="message-list-item">
-                  <span class="category-info">comments</span><br/>
-                  <span class="author-info">from:</span> vendor@vendor.co.id<br/>
-                  <span class="author-info">date:</span> Nov 19, 2012 15.30 WIB<br/>
-                  <span class="author-info">subject:</span> Quotation 1<br/>
-                  <span class="content-info">Dear, Bpk Taufiq ini adalah .... <a href="#">(read more)</a></span>
-                </div>
-
-                <div class="message-list-item">
-                  <span class="category-info">e-mail</span><br/>
-                  <span class="author-info">from:</span> vendor@vendor.co.id<br/>
-                  <span class="author-info">date:</span> Nov 19, 2012 15.30 WIB<br/>
-                  <span class="author-info">subject:</span> Quotation 1<br/>
-                  <span class="content-info">Dear, Bpk Taufiq ini adalah .... <a href="#">(read more)</a></span>
-                </div>
-
-              </div>
-            </div>
         </aside>
     </div>
   <!-- End Grid Section -->

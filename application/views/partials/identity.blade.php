@@ -8,7 +8,11 @@
 	      <br/>from <i>Office</i>
 	    </p>
 	    <p>{{Auth::user()->email}}
-	      <br/><a href="{{URL::to('user/profile')}}">Profile</a> | {{ HTML::link('logout', 'Logout') }}
+	      <br/><a href="{{URL::to('user/profile')}}">Profile</a> 
+	    <!--
+	      <br/><span class="pop" id="{{Auth::user()->id}}" rel="user/popprofile" >Profile</span> 
+		-->
+	      | {{ HTML::link('logout', 'Logout') }}
 	    </p>
 	  </div>
 	  <div class="four columns">

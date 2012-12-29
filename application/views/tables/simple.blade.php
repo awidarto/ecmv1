@@ -142,6 +142,18 @@
 				}
 		   	}
 
+			if ($(e.target).is('.pop')) {
+				var _id = e.target.id;
+				var _rel = $(e.target).attr('rel');
+
+				$.fancybox({
+					type:'iframe',
+					href: '{{ URL::base() }}' + '/' + _rel + '/' + _id,
+					autosize: true
+				});
+
+		   	}	
+
 			if ($(e.target).is('.fileview')) {
 				var _id = e.target.id;
 

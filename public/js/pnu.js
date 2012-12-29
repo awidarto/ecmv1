@@ -6,6 +6,19 @@
 			dateFormat: "dd-mm-yy"
 		});
 
+		$('.pop').click(function(){
+			var _id = $(this).attr('id');
+
+			var _rel = $(this).attr('rel');
+
+			$.fancybox({
+				type:'iframe',
+				href: base + '/' + _rel + '/' + _id,
+				autosize: true
+			});
+
+		})
+
 		$('.tag_email').tagsInput({
 			'autocomplete_url': base + 'ajax/email',
 		   	'height':'100px',

@@ -64,6 +64,19 @@ class User_Controller extends Base_Controller {
 		return View::make('user.profile')->with('profile',$user_profile);
 	}
 
+	public function get_popprofile($id = null){
+
+		$user = new User();
+
+		$id = (is_null($id))?Auth::user()->id:$id;
+
+		$id = new MongoId($id);
+
+		$user_profile = $user->get(array('_id'=>$id));
+
+		return View::make('pop.userprofile')->with('profile',$user_profile);
+	}
+
 	public function post_profile(){
 		
 	}
@@ -180,7 +193,8 @@ class User_Controller extends Base_Controller {
 		foreach ($documents as $doc) {
 			$aadata[] = array(
 				$counter,
-				HTML::link('user/profile/'.$doc['_id'],$doc['fullname']),
+				'<span class="pop" rel="user/popprofile" id="'.$doc['_id'].'" >'.$doc['fullname'].'</span>',
+				//HTML::link('user/profile/'.$doc['_id'],$doc['fullname']),
 				$doc['username'],
 				$doc['email'],
 				$doc['role'],

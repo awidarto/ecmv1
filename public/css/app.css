@@ -398,3 +398,8 @@ label.check {
 	margin-bottom: 6px;
 	margin-right: 5px;
 }
+
+.pop{
+	cursor: pointer;
+	text-decoration: underline;
+}

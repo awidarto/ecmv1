@@ -81,6 +81,33 @@ class MongoAuth extends \Laravel\Auth\Drivers\Driver {
 
 	}
 
+	/**
+	 * Check permission
+	 * always return true if role is root
+	 * @return boolean
+	 */
+
+	public function permit($object, $ops = 'set'){
+		if($this->user->role == 'root'){
+			return true;
+		}else{
+			return $this->user->permissions->$object->$ops;
+		}
+	}
+
+	/**
+	 * Check permission
+	 *
+	 * @return boolean
+	 */
+
+	public function role($role){
+		if($this->user->role == $role){
+			return true;
+		}else{
+			return false;
+		}
+	}
 
 	/**
 	 * Get a fresh model instance.
