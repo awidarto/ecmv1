@@ -1,6 +1,6 @@
 <?php
 
-class Project_Controller extends Base_Controller {
+class Tender_Controller extends Base_Controller {
 
 	/*
 	|--------------------------------------------------------------------------
@@ -38,26 +38,26 @@ class Project_Controller extends Base_Controller {
 
 	public function get_index()
 	{
-		$heads = array('#','Project','Tags','Action');
+		$heads = array('#','Tender','Tags','Action');
 		$colclass = array('one','','two','one');
-		//$searchinput = array(false,'title','created','last update','creator','project manager','tags',false);
-		$searchinput = array(false,'project','tags',false);
+		//$searchinput = array(false,'title','created','last update','creator','tender manager','tags',false);
+		$searchinput = array(false,'tender','tags',false);
 
 		return View::make('tables.simple')
-			->with('title','Project')
-			->with('newbutton','New Project')
+			->with('title','Tender')
+			->with('newbutton','New Tender')
 			->with('disablesort','0,3')
-			->with('addurl','project/add')
+			->with('addurl','tender/add')
 			->with('colclass',$colclass)
 			->with('searchinput',$searchinput)
-			->with('ajaxsource',URL::to('project'))
-			->with('ajaxdel',URL::to('project/del'))
+			->with('ajaxsource',URL::to('tender'))
+			->with('ajaxdel',URL::to('tender/del'))
 			->with('heads',$heads);
 	}
 
 	public function post_index()
 	{
-		$fields = array(array('title','body'),'projectTag');
+		$fields = array(array('title','body'),'tenderTag');
 
 		$rel = array('like','like');
 
@@ -113,7 +113,7 @@ class Project_Controller extends Base_Controller {
 		}
 
 
-		$document = new Project();
+		$document = new Tender();
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
@@ -158,7 +158,7 @@ class Project_Controller extends Base_Controller {
 				$tags = '';
 			}
 
-			$item = View::make('project.item')->with('doc',$doc)->with('popsrc','project/view')->with('tags',$tags)->render();
+			$item = View::make('tender.item')->with('doc',$doc)->with('popsrc','tender/view')->with('tags',$tags)->render();
 
 			$item = str_replace($hilite, $hilite_replace, $item);
 
@@ -166,7 +166,7 @@ class Project_Controller extends Base_Controller {
 				$counter,
 				$item,
 				$tags,
-				'<a href="'.URL::to('project/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
+				'<a href="'.URL::to('tender/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 			);
 			$counter++;
@@ -188,9 +188,9 @@ class Project_Controller extends Base_Controller {
 	public function get_add(){
 
 		$form = new Formly();
-		return View::make('project.new')
+		return View::make('tender.new')
 					->with('form',$form)
-					->with('title','New Project');
+					->with('title','New Tender');
 
 	}
 
@@ -207,7 +207,7 @@ class Project_Controller extends Base_Controller {
 
 	    if($validation->fails()){
 
-	    	return Redirect::to('project/add')->with_errors($validation)->with_input(Input::all());
+	    	return Redirect::to('tender/add')->with_errors($validation)->with_input(Input::all());
 
 	    }else{
 
@@ -218,7 +218,8 @@ class Project_Controller extends Base_Controller {
 			//pre save transform
 			unset($data['csrf_token']);
 
-			$data['startDate'] = new MongoDate(strtotime($data['startDate']." 00:00:00"));
+			$data['submitDate'] = new MongoDate(strtotime($data['submitDate']." 00:00:00"));
+			$data['prepStartDate'] = new MongoDate(strtotime($data['prepStartDate']." 00:00:00"));
 			$data['estCompleteDate'] = new MongoDate(strtotime($data['estCompleteDate']." 00:00:00"));
 
 			$data['createdDate'] = new MongoDate();
@@ -226,11 +227,11 @@ class Project_Controller extends Base_Controller {
 			$data['creatorName'] = Auth::user()->fullname;
 			$data['creatorId'] = Auth::user()->id;
 			
-			$data['tags'] = explode(',',$data['projectTag']);
+			$data['tags'] = explode(',',$data['tenderTag']);
 
-			$project = new Project();
+			$tender = new tender();
 
-			$newobj = $project->insert($data);
+			$newobj = $tender->insert($data);
 
 			if($newobj){
 
@@ -241,12 +242,12 @@ class Project_Controller extends Base_Controller {
 					}
 				}
 
-				Event::fire('project.create',array('id'=>$newobj['_id'],'result'=>'OK'));
+				Event::fire('tender.create',array('id'=>$newobj['_id'],'result'=>'OK'));
 
-		    	return Redirect::to('project')->with('notify_success','Document saved successfully');
+		    	return Redirect::to('tender')->with('notify_success','Document saved successfully');
 			}else{
-				Event::fire('project.create',array('id'=>$id,'result'=>'FAILED'));
-		    	return Redirect::to('project')->with('notify_success','Document saving failed');
+				Event::fire('tender.create',array('id'=>$id,'result'=>'FAILED'));
+		    	return Redirect::to('tender')->with('notify_success','Document saving failed');
 			}
 
 	    }
@@ -254,7 +255,7 @@ class Project_Controller extends Base_Controller {
 
 	public function get_edit($id = null){
 
-		$doc = new Project();
+		$doc = new Tender();
 
 		$id = (is_null($id))?Auth::user()->id:$id;
 
@@ -262,15 +263,16 @@ class Project_Controller extends Base_Controller {
 
 		$doc_data = $doc->get(array('_id'=>$id));
 
-		$doc_data['oldTag'] = $doc_data['projectTag'];
+		$doc_data['oldTag'] = $doc_data['tenderTag'];
 
-		$doc_data['startDate'] = date('Y-m-d', $doc_data['startDate']->sec);
+		$doc_data['submitDate'] = date('Y-m-d', $doc_data['submitDate']->sec);
+		$doc_data['startDate'] = date('Y-m-d', $doc_data['prepStartDate']->sec);
 		$doc_data['estCompleteDate'] = date('Y-m-d', $doc_data['estCompleteDate']->sec);
 
 
 		$form = Formly::make($doc_data);
 
-		return View::make('project.edit')
+		return View::make('tender.edit')
 					->with('doc',$doc_data)
 					->with('form',$form)
 					->with('title','Edit Document');
@@ -291,7 +293,7 @@ class Project_Controller extends Base_Controller {
 
 	    if($validation->fails()){
 
-	    	return Redirect::to('project/edit/'.$id)->with_errors($validation)->with_input(Input::all());
+	    	return Redirect::to('tender/edit/'.$id)->with_errors($validation)->with_input(Input::all());
 
 	    }else{
 
@@ -299,16 +301,17 @@ class Project_Controller extends Base_Controller {
 	    	
 			$id = new MongoId($data['id']);
 
-			$data['startDate'] = new MongoDate(strtotime($data['startDate']." 00:00:00"));
+			$data['submitDate'] = new MongoDate(strtotime($data['submitDate']." 00:00:00"));
+			$data['prepStartDate'] = new MongoDate(strtotime($data['prepStartDate']." 00:00:00"));
 			$data['estCompleteDate'] = new MongoDate(strtotime($data['estCompleteDate']." 00:00:00"));
 			$data['lastUpdate'] = new MongoDate();
 
 			unset($data['csrf_token']);
 			unset($data['id']);
 
-			$data['tags'] = explode(',',$data['projectTag']);
+			$data['tags'] = explode(',',$data['tenderTag']);
 
-			$doc = new Project();
+			$doc = new Tender();
 
 			//print_r($data);
 			$oldtags = explode(',',$data['oldTag']);
@@ -329,14 +332,14 @@ class Project_Controller extends Base_Controller {
 			
 			if($doc->update(array('_id'=>$id),array('$set'=>$data))){
 
-				Event::fire('project.update',array('id'=>$id,'result'=>'OK'));
+				Event::fire('tender.update',array('id'=>$id,'result'=>'OK'));
 
-		    	return Redirect::to('project')->with('notify_success','Document saved successfully');
+		    	return Redirect::to('tender')->with('notify_success','Tender saved successfully');
 			}else{
 
-				Event::fire('project.update',array('id'=>$id,'result'=>'FAILED'));
+				Event::fire('tender.update',array('id'=>$id,'result'=>'FAILED'));
 
-		    	return Redirect::to('project')->with('notify_success','Document saving failed');
+		    	return Redirect::to('tender')->with('notify_success','Tender saving failed');
 			}
 
 	    }
@@ -346,7 +349,7 @@ class Project_Controller extends Base_Controller {
 	public function post_del(){
 		$id = Input::get('id');
 
-		$user = new Project();
+		$user = new Tender();
 
 		if(is_null($id)){
 			$result = array('status'=>'ERR','data'=>'NOID');
@@ -356,15 +359,16 @@ class Project_Controller extends Base_Controller {
 
 
 			if($user->delete(array('_id'=>$id))){
-				Event::fire('project.delete',array('id'=>$id,'result'=>'OK'));
+				Event::fire('tender.delete',array('id'=>$id,'result'=>'OK'));
 				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
 			}else{
-				Event::fire('project.delete',array('id'=>$id,'result'=>'FAILED'));
+				Event::fire('tender.delete',array('id'=>$id,'result'=>'FAILED'));
 				$result = array('status'=>'ERR','data'=>'DELETEFAILED');				
 			}
 		}
 
 		print json_encode($result);
 	}
+
 
 }

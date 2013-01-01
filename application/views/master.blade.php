@@ -63,7 +63,7 @@
     <nav class="top-bar main-bar">
         <ul class="">
           <!--<li class="divider"></li>-->
-          <li>{{ HTML::link('/', 'Doc Type' ) }}</li>
+          <li><h5>Quick Docs</h5></li>
           <li class="divider"></li>
           <li>{{ HTML::link('document/type/opportunity', 'Opportunity' ) }}</li>
           <li>{{ HTML::link('document/type/tender', 'Tender' ) }}</li>

@@ -7,7 +7,9 @@
     <div class="one columns mobile">     
       <dl class="vertical tabs">
         <dd><a href="{{ URL::base() }}"><i class="foundicon-home sidemenu"></i> <br/>Home</a></dd>
+        <dd><a href="{{ URL::to('document') }}"><i class="foundicon-page sidemenu"></i> <br/>Documents</a></dd>
         <dd><a href="{{ URL::to('message') }}"><i class="foundicon-mail sidemenu"></i> <br/>Messages</a></dd>
+        <dd><a href="{{ URL::to('opportunity') }}"><i class="foundicon-heart sidemenu"></i> <br/>Opportunity</a></dd>
         <dd><a href="{{ URL::to('tender') }}"><i class="foundicon-idea sidemenu"></i> <br/>Tender</a></dd>
         <dd><a href="{{ URL::to('project') }}"><i class="foundicon-star sidemenu"></i> <br/>Projects</a></dd>
         <dd><a href="{{ URL::to('qc') }}"><i class="foundicon-checkmark sidemenu"></i> <br/>Quality</a></dd>

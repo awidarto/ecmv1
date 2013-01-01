@@ -11,10 +11,10 @@
 	<table class="dataTable">
 	    <thead>
 	        <tr>
-	        	@if(!isset($colclass))
-	        		$colclass = array();
-	        	@endif
 	        	<?php
+		        	if(!isset($colclass)){
+		        		$colclass = array();
+		        	}
 	        		$hid = 0;
 	        	?>
 	        	@foreach($heads as $head)

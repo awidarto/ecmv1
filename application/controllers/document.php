@@ -72,9 +72,18 @@ class Document_Controller extends Base_Controller {
 
 		$idx = 0;
 		$q = array();
+
+		$hilite = array();
+		$hilite_replace = array();
+
 		foreach($fields as $field){
 			if(Input::get('sSearch_'.$idx))
 			{
+
+				$hilite_item = Input::get('sSearch_'.$idx);
+				$hilite[] = $hilite_item;
+				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
+
 				if($rel[$idx] == 'like'){
 					if($cond[$idx] == 'both'){
 						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
@@ -135,6 +144,9 @@ class Document_Controller extends Base_Controller {
 			}else{
 				$tags = '';
 			}
+
+			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
+			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
 			$aadata[] = array(
 				$counter,

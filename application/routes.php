@@ -32,6 +32,9 @@
 |
 */
 
+Route::controller(array('document','user','message','project','tender','opportunity','search','activity','ajax'));
+
+
 Route::get('/',  array('before'=>'auth', function()
 {
 	return View::make('home.index');
@@ -108,7 +111,6 @@ Route::get('logout',function(){
 	return Redirect::to('login');
 });
 
-Route::controller(array('document','user','message','project','opportunity','search','activity','ajax'));
 
 Route::get('user/profile',array('before'=>'auth','uses'=>'user@profile'));
 
