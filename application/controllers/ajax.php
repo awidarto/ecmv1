@@ -56,7 +56,7 @@ class Ajax_Controller extends Base_Controller {
 		$result = array();
 
 		foreach($res as $r){
-			$result[] = array('id'=>$r['email'],'label'=>$r['fullname'],'value'=>$r['email']);
+			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['fullname'],'value'=>$r['fullname'].' | '.$r['email']);
 		}
 
 		return Response::json($result);		

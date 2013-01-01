@@ -11,8 +11,19 @@
 	<table class="dataTable">
 	    <thead>
 	        <tr>
+	        	@if(!isset($colclass))
+	        		$colclass = array();
+	        	@endif
+	        	<?php
+	        		$hid = 0;
+	        	?>
 	        	@foreach($heads as $head)
-	        		<th>
+	        		<th 
+	        			@if(isset($colclass[$hid]))
+	        				class="{{$colclass[$hid]}}"
+	        			@endif
+	        			<?php $hid++ ?>
+	        		>
 	        			{{ $head }}
 	        		</th>
 	        	@endforeach

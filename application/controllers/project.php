@@ -38,27 +38,38 @@ class Project_Controller extends Base_Controller {
 
 	public function get_index()
 	{
-		$heads = array('#','Title','Created','Creator','Owner','Tags','Action');
-		$fields = array('seq','title','created','creator','owner','tags','action');
-		$searchinput = array(false,'title','created','creator','owner','tags',false);
+		$heads = array('#','Project','Tags','Action');
+		$colclass = array('one','','two','one');
+		//$searchinput = array(false,'title','created','last update','creator','project manager','tags',false);
+		$searchinput = array(false,'project','tags',false);
 
 		return View::make('tables.simple')
 			->with('title','Project')
 			->with('newbutton','New Project')
-			->with('disablesort','0,5,6')
-			->with('addurl','document/add')
+			->with('disablesort','0,3')
+			->with('addurl','project/add')
+			->with('colclass',$colclass)
 			->with('searchinput',$searchinput)
 			->with('ajaxsource',URL::to('project'))
+			->with('ajaxdel',URL::to('project/del'))
 			->with('heads',$heads);
 	}
 
 	public function post_index()
 	{
-		$fields = array('title','createdDate','creatorName','creatorName','tags');
+		$fields = array(array('title','body'),'projectTag');
 
-		$rel = array('like','like','like','like','equ');
+		$rel = array('like','like');
 
-		$cond = array('both','both','both','both','equ');
+		$cond = array('both','both');
+
+		$pagestart = Input::get('iDisplayStart');
+		$pagelength = Input::get('iDisplayLength');
+
+		$limit = array($pagelength, $pagestart);
+
+		$defsort = 1;
+		$defdir = -1;
 
 		$idx = 0;
 		$q = array();
@@ -66,12 +77,27 @@ class Project_Controller extends Base_Controller {
 			if(Input::get('sSearch_'.$idx))
 			{
 				if($rel[$idx] == 'like'){
-					if($cond[$idx] == 'both'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/');
-					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/');						
-					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/');						
+					if(is_array($field)){
+						$q = array('$or'=>'');
+						$sub = array();
+						foreach($field as $f){
+							if($cond[$idx] == 'both'){
+								$sub[] = array($f=> new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i') );
+							}else if($cond[$idx] == 'before'){
+								$sub[] = array($f=> new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i') );						
+							}else if($cond[$idx] == 'after'){
+								$sub[] = array($f=> new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i') );						
+							}
+						}
+						$q['$or'] = $sub;
+					}else{
+						if($cond[$idx] == 'both'){
+							$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
+						}else if($cond[$idx] == 'before'){
+							$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
+						}else if($cond[$idx] == 'after'){
+							$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
+						}						
 					}
 				}else if($rel[$idx] == 'equ'){
 					$q[$field] = Input::get('sSearch_'.$idx);
@@ -80,23 +106,29 @@ class Project_Controller extends Base_Controller {
 			$idx++;
 		}
 
-		//print_r($q)
 
 		$document = new Project();
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
-		$fidx = ($fidx > 0)?$fidx - 1:$fidx;
-		$sort_col = $fields[$fidx];
-		$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		if($fidx == 0){
+			$fidx = $defsort;			
+			$sort_col = $fields[$fidx];
+			$sort_dir = $defdir;
+		}else{
+			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+			$sort_col = $fields[$fidx];
+			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		}
+
 
 		$count_all = $document->count();
 
 		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir));
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
 			$count_display_all = $document->count($q);
 		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir));
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
 			$count_display_all = $document->count();
 		}
 
@@ -105,16 +137,29 @@ class Project_Controller extends Base_Controller {
 
 		$aadata = array();
 
-		$counter = 1;
+		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
+			if(isset($doc['tags'])){
+				$tags = array();
+
+				foreach($doc['tags'] as $t){
+					$tags[] = '<span class="tagitem">'.$t.'</span>';
+				}
+
+				$tags = implode('',$tags);
+
+			}else{
+				$tags = '';
+			}
+
+			$item = View::make('project.item')->with('doc',$doc)->with('popsrc','project/view')->with('tags',$tags)->render();
+
 			$aadata[] = array(
 				$counter,
-				$doc['title'],
-				date('Y-m-d h:i:s',$doc['createdDate']),
-				$doc['creatorName'],
-				$doc['creatorName'],
-				implode(',',$doc['tag']),
-				'<i class="foundicon-edit action"></i>&nbsp;<i class="foundicon-trash action"></i>'
+				$item,
+				$tags,
+				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
+				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 			);
 			$counter++;
 		}
@@ -128,12 +173,78 @@ class Project_Controller extends Base_Controller {
 			'qrs'=>$q
 		);
 
-		print json_encode($result);
+		return Response::json($result);
+
 	}
 
-	public function get_add()
-	{
-		return View::make('document.add');
+	public function get_add(){
+
+		$form = new Formly();
+		return View::make('project.new')
+					->with('form',$form)
+					->with('title','New Project');
+
 	}
+
+	public function post_add(){
+
+		//print_r(Session::get('permission'));
+
+	    $rules = array(
+	        'title'  => 'required|max:50',
+	        'description' => 'required'
+	    );
+
+	    $validation = Validator::make($input = Input::all(), $rules);
+
+	    if($validation->fails()){
+
+	    	return Redirect::to('project/add')->with_errors($validation)->with_input(Input::all());
+
+	    }else{
+
+			$data = Input::get();
+	    	
+	    	//print_r($data);
+
+			//pre save transform
+			unset($data['csrf_token']);
+
+			$data['startDate'] = new MongoDate(strtotime($data['startDate']." 00:00:00"));
+			$data['estCompleteDate'] = new MongoDate(strtotime($data['estCompleteDate']." 00:00:00"));
+
+			$data['createdDate'] = new MongoDate();
+			$data['lastUpdate'] = new MongoDate();
+			$data['creatorName'] = Auth::user()->fullname;
+			$data['creatorId'] = Auth::user()->id;
+			
+			$data['tags'] = explode(',',$data['projectTag']);
+
+			$project = new Project();
+
+			$newobj = $project->insert($data);
+
+			if($newobj){
+
+				if(count($data['tags']) > 0){
+					$tag = new Tag();
+					foreach($data['tags'] as $t){
+						$tag->update(array('tag'=>$t),array('$inc'=>array('count'=>1)),array('upsert'=>true));
+					}
+				}
+
+				Event::fire('project.create',array('id'=>$newobj['_id'],'result'=>'OK'));
+
+		    	return Redirect::to('project')->with('notify_success','Document saved successfully');
+			}else{
+				Event::fire('project.create',array('id'=>$id,'result'=>'FAILED'));
+		    	return Redirect::to('project')->with('notify_success','Document saving failed');
+			}
+
+	    }
+
+		
+	}
+
 
 }

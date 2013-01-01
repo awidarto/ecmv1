@@ -5,47 +5,32 @@
 <div class="tableHeader">
 <h3>{{$title}}</h3>
 </div>
-<?php 
-print Former::horizontal_open()
-  ->id('MyForm')
-  ->secure()
-  ->rules(array( 'name' => 'required' ))
-  ->method('GET');
-?>
 
+{{$form->open_for_files('message/add','POST',array('class'=>'custom','id'=>'newmsg'))}}
 <div class="row">
   <div class="twelve columns">
-    <?php
-    print Former::large_text('from')
-        ->class('myclass')
-        ->value('Joseph')
-        ->required();
 
-    print Former::large_text('to')
-        ->class('myclass')
-        ->value('Joseph')
-        ->required();
+    {{ $form->hidden('from',Auth::user()->email )}}
 
-    print Former::large_text('subject')
-        ->class('myclass')
-        ->value('Joseph')
-        ->required();
+    {{ $form->hidden('fromId',Auth::user()->id )}}
+    <div class="row">
+        <span style="margin-left:0px"><strong>From</strong></span><span style="padding-left:20px;">{{Auth::user()->fullname}} ( {{ Auth::user()->email }} )</span>
+    </div>
+    {{ $form->text('to','To','',array('class'=>'tag_email_inline four','style'=>'width:100%')) }}
 
-    print Former::textarea('message')
-        ->rows(10)->columns(20)
-        ->autofocus();
+    {{ $form->text('subject','Subject','',array('class'=>'tag_project four','rows'=>'1', 'style'=>'width:100%')) }}
 
-    print Former::actions (
-        Former::large_primary_submit('Send'),
-        Former::large_inverse_reset('Reset')
-      );
-    ?>
+    {{ $form->textarea('body','Message','',array('class'=>'text')) }}
+
+
   </div>
 </div>
 
-<?php
-print Former::close();
+<div class="row right">
+{{ Form::submit('Save',array('class'=>'button'))}}&nbsp;&nbsp;
+{{ Form::reset('Reset',array('class'=>'button'))}}
+</div>
+{{$form->close()}}
 
-?>
 
 @endsection

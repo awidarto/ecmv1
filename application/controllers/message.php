@@ -49,6 +49,7 @@ class Message_Controller extends Base_Controller {
 			->with('addurl','message/new')
 			->with('searchinput',$searchinput)
 			->with('ajaxsource',URL::to('message'))
+			->with('ajaxdel','')
 			->with('heads',$heads);
 	}
 
@@ -133,7 +134,10 @@ class Message_Controller extends Base_Controller {
 
 	public function get_new()
 	{
+		$form = new Formly();
+
 		return View::make('message.new')
+			->with('form',$form)
 			->with('title','Compose Message');
 	}
 

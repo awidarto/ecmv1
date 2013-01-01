@@ -159,7 +159,7 @@ class Document_Controller extends Base_Controller {
 			'qrs'=>$q
 		);
 
-		print json_encode($result);
+		return Response::json($result);
 	}
 
 	public function post_del(){

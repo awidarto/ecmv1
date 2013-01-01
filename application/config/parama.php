@@ -1,5 +1,6 @@
 <?php return array(
   'storage'=>'public/storage/',
+  'currencies'=>array( 'IDR'=>'IDR','USD'=>'USD','SGD'=>'SGD','EU'=>'EU','AUD'=>'AUD'),
   'parama_roles'=>array( 'root'=>'root','super'=>'super','user'=>'user','client'=>'client','vendor'=>'vendor'),
   'parama_access'=>array( 'all'=>'all','restrict'=>'restrict','client'=>'client','vendor'=>'vendor'),
   'doc_type'=>array( 

@@ -19,6 +19,28 @@
 
 		})
 
+		$('.tag_email_inline').tagsInput({
+			'autocomplete_url': base + 'ajax/email',
+		   	'height':'80px',
+		   	'width':'100%',
+		   	'interactive':true,
+		   	'onChange' : function(c){
+
+		   		},
+		   	'onAddTag' : function(t){
+		   			console.log(t);
+		   		},
+		   	'onRemoveTag' : function(t){
+		   			console.log(t);
+		   		},
+		   	'defaultText':'add email',
+		   	'removeWithBackspace' : true,
+		   	'minChars' : 0,
+		   	'maxChars' : 0, //if not provided there is no limit,
+		   	'placeholderColor' : '#666666'
+		});
+
+
 		$('.tag_email').tagsInput({
 			'autocomplete_url': base + 'ajax/email',
 		   	'height':'100px',
@@ -88,6 +110,14 @@
 
 		$('.tag_revision').autocomplete({
 			source: base + 'ajax/rev'
+		});
+
+		$('.auto_user').autocomplete({
+			source: base + 'ajax/email',
+			select: function(event, ui){
+				$('#user_id').val(ui.item.id);
+				$('#user_name').val(ui.item.label);				
+			}
 		});
 
     });

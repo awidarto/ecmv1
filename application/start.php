@@ -171,3 +171,11 @@ if ( ! Request::cli() and Config::get('session.driver') !== '')
 {
 	Session::load();
 }
+
+
+require('bootstraps/helpers.php');
+require('bootstraps/macros.php');
+require('bootstraps/filters.php');
+require('bootstraps/composers.php');
+require('bootstraps/events.php');
+
