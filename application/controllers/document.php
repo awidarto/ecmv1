@@ -390,8 +390,148 @@ class Document_Controller extends Base_Controller {
 	}
 
 
-
 	public function get_type($type = null)
+	{
+		$heads = array('#','Title','Created','Last Update','Creator','Attachment','Tags','Action');
+		$searchinput = array(false,'title','created','last update','creator','filename','tags',false);
+
+		return View::make('tables.simple')
+			->with('title','Document Library')
+			->with('newbutton','New Document')
+			->with('disablesort','0,5,6')
+			->with('addurl','document/add')
+			->with('searchinput',$searchinput)
+			->with('ajaxsource',URL::to('document/type/'.$type))
+			->with('ajaxdel',URL::to('document/del'))
+			->with('heads',$heads);
+	}
+
+	public function post_type($type = null)
+	{
+
+		$fields = array('title','createdDate','lastUpdate','creatorName','docFilename','docTag');
+
+		$rel = array('like','like','like','like','like','like');
+
+		$cond = array('both','both','both','both','both','both');
+
+		$pagestart = Input::get('iDisplayStart');
+		$pagelength = Input::get('iDisplayLength');
+
+		$limit = array($pagelength, $pagestart);
+
+		$defsort = 1;
+		$defdir = -1;
+
+		$idx = 0;
+		$q = array();
+
+		$hilite = array();
+		$hilite_replace = array();
+
+		foreach($fields as $field){
+			if(Input::get('sSearch_'.$idx))
+			{
+
+				$hilite_item = Input::get('sSearch_'.$idx);
+				$hilite[] = $hilite_item;
+				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
+
+				if($rel[$idx] == 'like'){
+					if($cond[$idx] == 'both'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
+					}else if($cond[$idx] == 'before'){
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
+					}else if($cond[$idx] == 'after'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
+					}
+				}else if($rel[$idx] == 'equ'){
+					$q[$field] = Input::get('sSearch_'.$idx);
+				}
+			}
+			$idx++;
+		}
+
+		//print_r($q)
+		if(!is_null($type)){
+			$q['docCategory'] = $type;
+		}
+
+		$document = new Document();
+
+		/* first column is always sequence number, so must be omitted */
+		$fidx = Input::get('iSortCol_0');
+		if($fidx == 0){
+			$fidx = $defsort;			
+			$sort_col = $fields[$fidx];
+			$sort_dir = $defdir;
+		}else{
+			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+			$sort_col = $fields[$fidx];
+			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		}
+
+		$count_all = $document->count();
+
+		if(count($q) > 0){
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count($q);
+		}else{
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count();
+		}
+
+
+
+
+		$aadata = array();
+
+		$counter = 1 + $pagestart;
+		foreach ($documents as $doc) {
+			if(isset($doc['tags'])){
+				$tags = array();
+
+				foreach($doc['tags'] as $t){
+					$tags[] = '<span class="tagitem">'.$t.'</span>';
+				}
+
+				$tags = implode('',$tags);
+
+			}else{
+				$tags = '';
+			}
+
+			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
+			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
+
+			$aadata[] = array(
+				$counter,
+				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
+				date('Y-m-d H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				$doc['creatorName'],
+				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
+				$tags,
+				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
+				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
+			);
+			$counter++;
+		}
+
+		
+		$result = array(
+			'sEcho'=> Input::get('sEcho'),
+			'iTotalRecords'=>$count_all,
+			'iTotalDisplayRecords'=> $count_display_all,
+			'aaData'=>$aadata,
+			'qrs'=>$q
+		);
+
+		return Response::json($result);
+	}
+
+
+	public function __get_type($type = null)
 	{
 		$menutitle = array(
 			'opportunity'=>'Opportunity',
@@ -420,7 +560,7 @@ class Document_Controller extends Base_Controller {
 			->with('heads',$heads);
 	}
 
-	public function post_type($type = null)
+	public function __post_type($type = null)
 	{
 		$fields = array('title','createdDate','creatorName','creatorName','tags');
 

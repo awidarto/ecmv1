@@ -208,9 +208,9 @@ class Activity_Controller extends Base_Controller {
 		foreach ($documents as $doc) {
 			$aadata[] = array(
 				$counter,
-				date('Y-m-d H:i:s',$doc['timestamp']->sec),
-				$doc['user_id'],
-				$doc['doc_id'],
+				(isset($doc['timestamp']))?date('Y-m-d H:i:s',$doc['timestamp']->sec):'no time record',
+				$this->name_of_user($doc['user_id']->__toString()),
+				(isset($doc['doc_id']))?$this->title_of_doc($doc['doc_id']->__toString()):'',
 				'<i class="foundicon-edit action"></i>&nbsp;<i class="foundicon-trash action"></i>'
 			);
 			$counter++;
@@ -304,8 +304,8 @@ class Activity_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				(isset($doc['timestamp']))?date('Y-m-d H:i:s',$doc['timestamp']->sec):'no time record',
-				$doc['user_id']->__toString(),
-				(isset($doc['doc_id']))?$doc['doc_id']->__toString():'',
+				$this->name_of_user($doc['user_id']->__toString()),
+				(isset($doc['doc_id']))?$this->title_of_doc($doc['doc_id']->__toString()):'',
 				'<i class="foundicon-edit action"></i>&nbsp;<i class="foundicon-trash action"></i>'
 			);
 			$counter++;
@@ -327,6 +327,20 @@ class Activity_Controller extends Base_Controller {
 	{
 		return View::make('document.add')
 					->with('title','New Document');
+	}
+
+	protected function title_of_doc($id){
+		$doc = new Document();
+		$_id = new MongoId($id);
+		$document = $doc->get(array('_id'=>$_id));
+		return $document['title'];
+	}
+
+	protected function name_of_user($id){
+		$usr = new User();
+		$_id = new MongoId($id);
+		$user = $usr->get(array('_id'=>$_id));
+		return $user['fullname'];
 	}
 
 }

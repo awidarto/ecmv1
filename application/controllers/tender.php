@@ -370,5 +370,63 @@ class Tender_Controller extends Base_Controller {
 		print json_encode($result);
 	}
 
+	public function get_scheduleitems($id)
+	{
+		$project = new Tender();
+
+		$_id = new MongoId($id);
+
+		$schedule = $project->get(array('_id'=>$_id),array('schedules'));
+
+		$schedules = array();
+
+		if(isset($schedule)){
+			$seq = 0;
+			foreach ($schedule['schedules'] as $val) {
+				$from = $val['values'][0]['from']->sec * 1000;
+				$val['values'][0]['from'] = '/Date('.$from.')/';
+				
+				$to = $val['values'][0]['to']->sec * 1000;
+				$val['values'][0]['to'] = '/Date('.$to.')/';
+
+				$val['values'][0]['dataObj'] = array('item_id'=>$id.'_'.$seq);
+
+				$schedules[] = $val;
+
+				$seq++;
+
+			}			
+		}
+
+		return Response::json($schedules);
+	}
+
+
+	public function get_view($id = null){
+
+		$project = new Tender();
+
+		$_id = new MongoId($id);
+
+		$projectdata = $project->get(array('_id'=>$_id));
+
+		return View::make('tender.detail')
+			->with('title','Tender Detail - '.$projectdata['title'])
+			->with('project', $projectdata)
+			->with('newbutton','New Schedule Item')
+			->with('newprogressbutton','New Progress Report')
+			->with('addurl','tender/addschitem')
+			->with('ajaxsource',URL::to('tender/scheduleitems/'.$id))
+			->with('ajaxdel',URL::to('tender/del'));
+	}
+
+	public function get_addscitem(){
+
+	}
+
+	public function get_postscitem(){
+		
+	}
+
 
 }

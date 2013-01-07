@@ -65,17 +65,17 @@
     <nav class="top-bar main-bar">
         <ul class="">
           <!--<li class="divider"></li>-->
-          <li><h5>Quick Docs</h5></li>
+          <li><h5>Fast Links</h5></li>
           <li class="divider"></li>
+          <li>{{ HTML::link('document/type/progress_report', 'Progress Report' ) }}</li>
+          
           <li>{{ HTML::link('document/type/opportunity', 'Opportunity' ) }}</li>
           <li>{{ HTML::link('document/type/tender', 'Tender' ) }}</li>
-          <li>{{ HTML::link('document/type/proposal', 'Tech Proposal' ) }}</li>
-          <li>{{ HTML::link('document/type/techbid', 'Tech Bid' ) }}</li>
-          <li>{{ HTML::link('document/type/commbid', 'Commercial Bid' ) }}</li>
+          <li>{{ HTML::link('document/type/project', 'Project' ) }}</li>
           <li>{{ HTML::link('document/type/contract', 'Contracts' ) }}</li>
           <li>{{ HTML::link('document/type/legal', 'Legal Docs' ) }}</li>
-          <li>{{ HTML::link('document/type/warehouse', 'Warehouse' ) }}</li>
-          <li>{{ HTML::link('document/type/qc', 'QA / QC' ) }}</li>
+        
+          <li class="divider"></li>
           <li class="has-dropdown">
             <a href="#">Administration</a>
             <ul class="dropdown">

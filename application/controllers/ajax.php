@@ -128,9 +128,5 @@ class Ajax_Controller extends Base_Controller {
 		return Response::json($result);		
 	}
 
-	public function get_scheduleitems()
-	{
-		
-	}
 
 }

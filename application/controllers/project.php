@@ -166,6 +166,7 @@ class Project_Controller extends Base_Controller {
 				$counter,
 				$item,
 				$tags,
+				'<a href="'.URL::to('project/view/'.$doc['_id']).'"><i class="foundicon-clock action"></i></a>&nbsp;'.
 				'<a href="'.URL::to('project/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 			);
@@ -367,13 +368,61 @@ class Project_Controller extends Base_Controller {
 		print json_encode($result);
 	}
 
-	public function get_schedule(){
-		return View::make('project.gantt')
-			->with('title','Project Schedule')
-			->with('newbutton','New Item')
+	public function get_view($id = null){
+
+		$project = new Project();
+
+		$_id = new MongoId($id);
+
+		$projectdata = $project->get(array('_id'=>$_id));
+
+		return View::make('project.detail')
+			->with('title','Project Detail - '.$projectdata['title'])
+			->with('project', $projectdata)
+			->with('newbutton','New Schedule Item')
+			->with('newprogressbutton','New Progress Report')
 			->with('addurl','project/addschitem')
-			->with('ajaxsource',URL::to('project/scheduleitems'))
+			->with('ajaxsource',URL::to('project/scheduleitems/'.$id))
 			->with('ajaxdel',URL::to('project/del'));
+	}
+
+	public function get_scheduleitems($id)
+	{
+		$project = new Project();
+
+		$_id = new MongoId($id);
+
+		$schedule = $project->get(array('_id'=>$_id),array('schedules'));
+
+		$schedules = array();
+
+		if(isset($schedule)){
+			$seq = 0;
+			foreach ($schedule['schedules'] as $val) {
+				$from = $val['values'][0]['from']->sec * 1000;
+				$val['values'][0]['from'] = '/Date('.$from.')/';
+				
+				$to = $val['values'][0]['to']->sec * 1000;
+				$val['values'][0]['to'] = '/Date('.$to.')/';
+
+				$val['values'][0]['dataObj'] = array('item_id'=>$id.'_'.$seq);
+
+				$schedules[] = $val;
+
+				$seq++;
+
+			}			
+		}
+
+		return Response::json($schedules);
+	}
+
+	public function get_addscitem(){
+
+	}
+
+	public function get_postscitem(){
+		
 	}
 
 }
