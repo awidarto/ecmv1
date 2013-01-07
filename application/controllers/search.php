@@ -49,6 +49,7 @@ class Search_Controller extends Base_Controller {
 			->with('addurl','document/add')
 			->with('searchinput',$searchinput)
 			->with('ajaxsource',URL::to('document'))
+			->with('ajaxdel',URL::to('document'))
 			->with('heads',$heads);
 	}
 

@@ -31,6 +31,7 @@ class Activity_Controller extends Base_Controller {
 	*/
 
 	public $restful = true;
+	public $controller = 'activity';
 
 	public function __construct(){
 		$this->filter('before','auth');
@@ -46,9 +47,10 @@ class Activity_Controller extends Base_Controller {
 			->with('title','Document Library')
 			->with('newbutton','New Document')
 			->with('disablesort','0,5,6')
-			->with('addurl','document/add')
+			->with('addurl',$this->controller.'/add')
 			->with('searchinput',$searchinput)
-			->with('ajaxsource',URL::to('document'))
+			->with('ajaxsource',URL::to($this->controller))
+			->with('ajaxdel',URL::to($this->controller.'/del'))
 			->with('heads',$heads);
 	}
 
@@ -133,27 +135,27 @@ class Activity_Controller extends Base_Controller {
 
 	public function get_download()
 	{
-		$heads = array('#','Title','Created','Creator','Owner','Tags','Action');
-		$fields = array('seq','title','created','creator','owner','tags','action');
-		$searchinput = array(false,'title','created','creator','owner','tags',false);
+		$heads = array('#','Timestamp','User','Document','Action');
+		$searchinput = array(false,'timestamp','user','document',false);
 
 		return View::make('tables.simple')
 			->with('title','File Downloads')
 			->with('newbutton','New Document')
-			->with('disablesort','0,5,6')
-			->with('addurl','document/add')
+			->with('disablesort','')
+			->with('addurl','')
 			->with('searchinput',$searchinput)
-			->with('ajaxsource',URL::to('activity/download'))
+			->with('ajaxsource',URL::to($this->controller.'/download'))
+			->with('ajaxdel','')
 			->with('heads',$heads);
 	}
 
 	public function post_download()
 	{
-		$fields = array('title','createdDate','creatorName','creatorName','tags');
+		$fields = array('timestamp');
 
-		$rel = array('like','like','like','like','equ');
+		$rel = array('like');
 
-		$cond = array('both','both','both','both','equ');
+		$cond = array('both');
 
 		$idx = 0;
 		$q = array();
@@ -175,9 +177,11 @@ class Activity_Controller extends Base_Controller {
 			$idx++;
 		}
 
+		$q['event'] = 'document.download';
+
 		//print_r($q)
 
-		$document = new Document();
+		$document = new Activity();
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
@@ -204,11 +208,9 @@ class Activity_Controller extends Base_Controller {
 		foreach ($documents as $doc) {
 			$aadata[] = array(
 				$counter,
-				$doc['title'],
-				date('Y-m-d h:i:s',$doc['createdDate']),
-				$doc['creatorName'],
-				$doc['creatorName'],
-				implode(',',$doc['tag']),
+				date('Y-m-d H:i:s',$doc['timestamp']->sec),
+				$doc['user_id'],
+				$doc['doc_id'],
 				'<i class="foundicon-edit action"></i>&nbsp;<i class="foundicon-trash action"></i>'
 			);
 			$counter++;
@@ -228,27 +230,27 @@ class Activity_Controller extends Base_Controller {
 
 	public function get_upload()
 	{
-		$heads = array('#','Title','Created','Creator','Owner','Tags','Action');
-		$fields = array('seq','title','created','creator','owner','tags','action');
-		$searchinput = array(false,'title','created','creator','owner','tags',false);
+		$heads = array('#','Timestamp','User','Document','Action');
+		$searchinput = array(false,'timestamp','user','document',false);
 
 		return View::make('tables.simple')
 			->with('title','File Uploads')
 			->with('newbutton','New Document')
-			->with('disablesort','0,5,6')
-			->with('addurl','document/add')
+			->with('disablesort','')
+			->with('addurl','')
 			->with('searchinput',$searchinput)
-			->with('ajaxsource',URL::to('activity/upload'))
+			->with('ajaxsource',URL::to($this->controller.'/upload'))
+			->with('ajaxdel','')
 			->with('heads',$heads);
 	}
 
 	public function post_upload()
 	{
-		$fields = array('title','createdDate','creatorName','creatorName','tags');
+		$fields = array('timestamp');
 
-		$rel = array('like','like','like','like','equ');
+		$rel = array('like');
 
-		$cond = array('both','both','both','both','equ');
+		$cond = array('both');
 
 		$idx = 0;
 		$q = array();
@@ -270,9 +272,11 @@ class Activity_Controller extends Base_Controller {
 			$idx++;
 		}
 
+		$q['event'] = 'document.upload';
+
 		//print_r($q)
 
-		$document = new Document();
+		$document = new Activity();
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
@@ -299,11 +303,9 @@ class Activity_Controller extends Base_Controller {
 		foreach ($documents as $doc) {
 			$aadata[] = array(
 				$counter,
-				$doc['title'],
-				date('Y-m-d h:i:s',$doc['createdDate']),
-				$doc['creatorName'],
-				$doc['creatorName'],
-				implode(',',$doc['tag']),
+				(isset($doc['timestamp']))?date('Y-m-d H:i:s',$doc['timestamp']->sec):'no time record',
+				$doc['user_id']->__toString(),
+				(isset($doc['doc_id']))?$doc['doc_id']->__toString():'',
 				'<i class="foundicon-edit action"></i>&nbsp;<i class="foundicon-trash action"></i>'
 			);
 			$counter++;

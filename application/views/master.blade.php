@@ -28,6 +28,8 @@
 
   {{ HTML::script('js/jquery.dataTables.min.js') }}
 
+  {{ HTML::script('js/underscore-1.1.5.js') }}
+
   {{ HTML::script('js/jquery.tagsinput.min.js') }}
   {{ HTML::script('js/select2.min.js') }}
 
@@ -78,6 +80,7 @@
             <a href="#">Administration</a>
             <ul class="dropdown">
               <li>{{ HTML::link('document', 'Document Library' ) }}</li>
+              <li>{{ HTML::link('category', 'Category Manager' ) }}</li>
               <li>{{ HTML::link('users', 'Users Management' ) }}</li>
             </ul>
           </li>

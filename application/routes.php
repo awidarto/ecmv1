@@ -32,7 +32,7 @@
 |
 */
 
-Route::controller(array('document','user','message','project','tender','opportunity','search','activity','ajax'));
+Route::controller(array('document','user','message','project','tender','opportunity','search','activity','finance','hr','qc','warehouse','category','ajax'));
 
 
 Route::get('/',  array('before'=>'auth', function()
@@ -118,6 +118,9 @@ Route::get('users',array('before'=>'auth','uses'=>'user@users'));
 
 Route::post('users',array('before'=>'auth','uses'=>'user@users'));
 
+Route::get('hr',array('before'=>'auth','uses'=>'hr@users'));
+
+Route::post('hr',array('before'=>'auth','uses'=>'hr@users'));
 
 /*
 Route::get('document',array('before'=>'auth','uses'=>'document@index'));

@@ -35,7 +35,7 @@
 
     {{ $form->text('docTag','Tag','',array('class'=>'tag_keyword four','rows'=>'1', 'style'=>'width:100%')) }}
 
-    {{ $form->text('docShare','Shared to','',array('class'=>'tag_email four','style'=>'width:100%')) }}
+    {{ $form->text('docShare','Shared to','',array('class'=>'tag_shared four','style'=>'width:100%')) }}
 
     {{ $form->text('docApproval','Approved by','',array('class'=>'tag_email four', 'style'=>'width:100%')) }}
 

@@ -367,4 +367,13 @@ class Project_Controller extends Base_Controller {
 		print json_encode($result);
 	}
 
+	public function get_schedule(){
+		return View::make('project.gantt')
+			->with('title','Project Schedule')
+			->with('newbutton','New Item')
+			->with('addurl','project/addschitem')
+			->with('ajaxsource',URL::to('project/scheduleitems'))
+			->with('ajaxdel',URL::to('project/del'));
+	}
+
 }

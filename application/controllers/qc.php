@@ -1,6 +1,6 @@
 <?php
 
-class Document_Controller extends Base_Controller {
+class Qc_Controller extends Base_Controller {
 
 	/*
 	|--------------------------------------------------------------------------
@@ -31,6 +31,7 @@ class Document_Controller extends Base_Controller {
 	*/
 
 	public $restful = true;
+	public $controller = 'qc';
 
 	public function __construct(){
 		date_default_timezone_set('Asia/Jakarta');
@@ -43,13 +44,13 @@ class Document_Controller extends Base_Controller {
 		$searchinput = array(false,'title','created','last update','creator','filename','tags',false);
 
 		return View::make('tables.simple')
-			->with('title','Document Library')
+			->with('title','QA / QC Documents')
 			->with('newbutton','New Document')
 			->with('disablesort','0,5,6')
 			->with('addurl','document/add')
 			->with('searchinput',$searchinput)
-			->with('ajaxsource',URL::to('document'))
-			->with('ajaxdel',URL::to('document/del'))
+			->with('ajaxsource',URL::to($this->controller))
+			->with('ajaxdel',URL::to($this->controller.'/del'))
 			->with('heads',$heads);
 	}
 
@@ -338,18 +339,6 @@ class Document_Controller extends Base_Controller {
 
 			unset($data['csrf_token']);
 			unset($data['id']);
-
-			$sharelist = explode(',', $data['docShare']);
-			if(is_array($sharelist)){
-				$usr = new User();
-				$shd = array();
-				foreach($sharelist as $sh){
-					$shd[] = array('email'=>$sh);
-				}
-				$shared_ids = $usr->find(array('$or'=>$shd),array('id'));
-
-				$data['sharedIds'] = array_values($shared_ids) ;
-			}
 
 			$data['tags'] = explode(',',$data['docTag']);
 

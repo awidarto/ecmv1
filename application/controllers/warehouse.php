@@ -1,6 +1,6 @@
 <?php
 
-class Document_Controller extends Base_Controller {
+class Warehouse_Controller extends Base_Controller {
 
 	/*
 	|--------------------------------------------------------------------------
@@ -43,7 +43,7 @@ class Document_Controller extends Base_Controller {
 		$searchinput = array(false,'title','created','last update','creator','filename','tags',false);
 
 		return View::make('tables.simple')
-			->with('title','Document Library')
+			->with('title','Warehouse Documents')
 			->with('newbutton','New Document')
 			->with('disablesort','0,5,6')
 			->with('addurl','document/add')
@@ -338,18 +338,6 @@ class Document_Controller extends Base_Controller {
 
 			unset($data['csrf_token']);
 			unset($data['id']);
-
-			$sharelist = explode(',', $data['docShare']);
-			if(is_array($sharelist)){
-				$usr = new User();
-				$shd = array();
-				foreach($sharelist as $sh){
-					$shd[] = array('email'=>$sh);
-				}
-				$shared_ids = $usr->find(array('$or'=>$shd),array('id'));
-
-				$data['sharedIds'] = array_values($shared_ids) ;
-			}
 
 			$data['tags'] = explode(',',$data['docTag']);
 

@@ -1,6 +1,6 @@
 <?php
 
-class User_Controller extends Base_Controller {
+class Hr_Controller extends Base_Controller {
 
 	/*
 	|--------------------------------------------------------------------------
@@ -31,6 +31,7 @@ class User_Controller extends Base_Controller {
 	*/
 
 	public $restful = true;
+	public $controller = 'hr';
 
 	public function __construct(){
 		date_default_timezone_set('Asia/Jakarta');
@@ -111,14 +112,14 @@ class User_Controller extends Base_Controller {
 		$tags = $tag->find(array(), array(),array('count'=>-1));
 
 		return View::make('tables.simple')
-			->with('title','User Management')
-			->with('newbutton','New User')
+			->with('title','Human Resources')
+			->with('newbutton','New Employee')
 			->with('disablesort','0,4,5')
 			->with('addurl','user/add')
 			->with('searchinput',$searchinput)
 			->with('tags',$tags)
-			->with('ajaxsource',URL::to('users'))
-			->with('ajaxdel',URL::to('user/del'))
+			->with('ajaxsource',URL::to($this->controller))
+			->with('ajaxdel',URL::to($this->controller.'/del'))
 			->with('heads',$heads);
 	}
 
