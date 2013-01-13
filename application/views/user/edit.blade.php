@@ -43,7 +43,7 @@
     <div class="row">
       <div class="six columns">
         <h5>Role</h5>
-        {{$form->select('role','',Config::get('acl.roles'),array('class'=>'four'))}}
+        {{$form->select('role','',Config::get('parama.roles'),array('class'=>'four'))}}
       </div>
     </div>
   <div class="row">
@@ -52,9 +52,12 @@
       <h5>Permissions</h5>
 
       <ul>
-        @foreach(Config::get('acl.aclobjects') as $obj=>$title)
+        @foreach(Config::get('parama.department') as $obj=>$title)
             <li class="three columns">
-              {{ $form->checkbox($obj.'_set',$title,1)}} 
+              {{ $form->checkbox($obj,$title,1)}} 
+
+              <?php
+              /*
                 <ul>
                   @foreach(Config::get('acl.permissions') as $key=>$perm)
                       <li>
@@ -62,6 +65,8 @@
                       </li>
                   @endforeach
                 </ul>
+              */
+              ?>
             </li>
         @endforeach
       </ul>
@@ -70,6 +75,7 @@
   </div>
 
 </div>
+<hr />
 <div class="row right">
 {{ Form::submit('Save',array('class'=>'button'))}}&nbsp;&nbsp;
 {{ Form::reset('Reset',array('class'=>'button'))}}

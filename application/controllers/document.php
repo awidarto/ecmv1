@@ -213,8 +213,7 @@ class Document_Controller extends Base_Controller {
 		//print_r(Session::get('permission'));
 
 	    $rules = array(
-	        'title'  => 'required|max:50',
-	        'description' => 'required'
+	        'title'  => 'required|max:50'
 	    );
 
 	    $validation = Validator::make($input = Input::all(), $rules);
@@ -316,8 +315,7 @@ class Document_Controller extends Base_Controller {
 		//print_r(Session::get('permission'));
 
 	    $rules = array(
-	        'title'  => 'required|max:50',
-	        'description' => 'required'
+	        'title'  => 'required|max:50'
 	    );
 
 	    $validation = Validator::make($input = Input::all(), $rules);

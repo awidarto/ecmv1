@@ -63,30 +63,9 @@
     <!-- This is source ordered to be pulled to the left on larger screens -->
 @if(Auth::check())
     <nav class="top-bar main-bar">
-        <ul class="">
-          <!--<li class="divider"></li>-->
-          <li><h5>Fast Links</h5></li>
-          <li class="divider"></li>
-          <li>{{ HTML::link('document/type/progress_report', 'Progress Report' ) }}</li>
-          
-          <li>{{ HTML::link('document/type/opportunity', 'Opportunity' ) }}</li>
-          <li>{{ HTML::link('document/type/tender', 'Tender' ) }}</li>
-          <li>{{ HTML::link('document/type/project', 'Project' ) }}</li>
-          <li>{{ HTML::link('document/type/contract', 'Contracts' ) }}</li>
-          <li>{{ HTML::link('document/type/legal', 'Legal Docs' ) }}</li>
-        
-          <li class="divider"></li>
-          <li class="has-dropdown">
-            <a href="#">Administration</a>
-            <ul class="dropdown">
-              <li>{{ HTML::link('document', 'Document Library' ) }}</li>
-              <li>{{ HTML::link('category', 'Category Manager' ) }}</li>
-              <li>{{ HTML::link('users', 'Users Management' ) }}</li>
-            </ul>
-          </li>
-          <li>{{ HTML::link('logout', 'Logout') }}</li>
-        </ul>
-      
+
+      @yield('topnav');
+
     </nav>
     
 <!--
