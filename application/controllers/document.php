@@ -452,7 +452,7 @@ class Document_Controller extends Base_Controller {
 
 		//print_r($q)
 		if(!is_null($type)){
-			$q['docCategory'] = $type;
+			$q['docDepartment'] = $type;
 		}
 
 		$document = new Document();
