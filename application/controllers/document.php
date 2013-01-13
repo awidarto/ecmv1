@@ -393,8 +393,10 @@ class Document_Controller extends Base_Controller {
 		$heads = array('#','Title','Created','Last Update','Creator','Attachment','Tags','Action');
 		$searchinput = array(false,'title','created','last update','creator','filename','tags',false);
 
+		$title = Config::get('parama.department');
+
 		return View::make('tables.simple')
-			->with('title','Document Library')
+			->with('title',$title[$type])
 			->with('newbutton','New Document')
 			->with('disablesort','0,5,6')
 			->with('addurl','document/add')
