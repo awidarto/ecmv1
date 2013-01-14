@@ -91,6 +91,7 @@
   		'finance_balikpapan'=>'F&A Balikpapan',
   		'sales_kemang'=>'S&M Kemang',
   		'sales_balikpapan'=>'S&M Balikpapan',
+      'tender_balikpapan'=>'Bid & Tender Balikpapan',
   		'hr_admin'=>'HR Admin',
   		'warehouse'=>'Warehouse',
   		'qc'=>'Quality Control',

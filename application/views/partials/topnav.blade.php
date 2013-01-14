@@ -5,6 +5,12 @@
 
   <li>{{ HTML::link('document/type/general','General')}}</li>
   <li>{{ HTML::link('document/type/project_control','Project Control')}}</li>
+  <li class="has-dropdown">{{ HTML::link('document/type/outdoor_sales','Sales & Marketing')}}
+    <ul class="dropdown">
+      <li>{{ HTML::link('document/type/outdoor_sales','Outdoor Sales')}}</li>
+      <li>{{ HTML::link('document/type/indoor_sales','Indoor Sales')}}</li>
+    </ul>
+  </li>
   <li class="has-dropdown">{{ HTML::link('document/type/bod','Board of Director')}}
     <ul class="dropdown">
       <li>{{ HTML::link('document/type/president_director','President Director')}}</li>
@@ -12,19 +18,13 @@
       <li>{{ HTML::link('document/type/finance_hr_director','Finance & HR Director')}}</li>
     </ul>
   </li>
-  <li class="has-dropdown">{{ HTML::link('document/type/finance_pusat','Finance & Accounting')}}
-    <ul class="dropdown">
-      <li>{{ HTML::link('document/type/finance_pusat','F&A Pusat')}}</li>
-      <li>{{ HTML::link('document/type/finance_kemang','F&A Kemang')}}</li>
-      <li>{{ HTML::link('document/type/finance_balikpapan','F&A Balikpapan')}}</li>
-    </ul>
+  <li>{{ HTML::link('document/type/finance_pusat','Finance & Accounting')}}
   </li>
-  <li class="has-dropdown">{{ HTML::link('document/type/outdoor_sales','Sales & Marketing')}}
+  <li class="has-dropdown">{{ HTML::link('document/type/finance_pusat','Balikpapan Office')}}
     <ul class="dropdown">
-      <li>{{ HTML::link('document/type/outdoor_sales','Outdoor Sales')}}</li>
-      <li>{{ HTML::link('document/type/indoor_sales','Indoor Sales')}}</li>
+      <li>{{ HTML::link('document/type/tender_balikpapan','Bidding & Tendering')}}</li>
       <li>{{ HTML::link('document/type/sales_balikpapan','S&M Balikpapan')}}</li>
-      <li>{{ HTML::link('document/type/sales_kemang','S&M Kemang')}}</li>
+      <li>{{ HTML::link('document/type/finance_balikpapan','F&A Balikpapan')}}</li>
     </ul>
   </li>
 
