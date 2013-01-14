@@ -48,6 +48,20 @@ visibility:hidden;
 .row{
 	width:100%;
 }
+.toppanel{
+	margin:0px;
+	padding:5px;
+}
+
+.toppanel p{
+	margin:0px;
+}
+
+.toppanel a{
+	font-size: 1.2em;
+	font-weight: bold;
+}
+
 .sidepanel{
 	background-color: #fff;
 	border: 1px solid #d7d7d7;	
@@ -64,6 +78,14 @@ visibility:hidden;
 	background-color: #000;
 }
 
+.top-bar ul > li.has-dropdown a{
+	padding-right: 15px;
+}
+
+.top-bar ul > li.has-dropdown{
+	padding-right: 15px;
+}
+
 .top-bar ul > li.has-dropdown .dropdown li a{
 	display:block;
 }
@@ -71,7 +93,6 @@ visibility:hidden;
 .top-bar ul > li.has-dropdown .dropdown li a:hover{
 	background-color: #555;
 }
-
 
 .main-bar{
 	position: relative;

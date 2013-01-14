@@ -51,8 +51,10 @@
   <!-- Header and Nav -->
   <header class="row mainheader">
     
-      <h1 id="paramanusaLogo">ParamaNusa</h1>
-    
+      <h1 id="paramanusaLogo" class="six columns">ParamaNusa</h1>
+      <div class="four columns">
+            @yield('identity')
+      </div>
   </header>
 
   <!-- End Header and Nav -->
@@ -112,7 +114,6 @@
         </div>
         <aside class="two columns">
 
-            @yield('identity')
             @yield('tagcloud')
             @yield('messages')
 

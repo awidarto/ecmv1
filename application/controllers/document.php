@@ -42,15 +42,20 @@ class Document_Controller extends Base_Controller {
 		$heads = array('#','Title','Created','Last Update','Creator','Attachment','Tags','Action');
 		$searchinput = array(false,'title','created','last update','creator','filename','tags',false);
 
-		return View::make('tables.simple')
-			->with('title','Document Library')
-			->with('newbutton','New Document')
-			->with('disablesort','0,5,6')
-			->with('addurl','document/add')
-			->with('searchinput',$searchinput)
-			->with('ajaxsource',URL::to('document'))
-			->with('ajaxdel',URL::to('document/del'))
-			->with('heads',$heads);
+		if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
+			return View::make('tables.simple')
+				->with('title','Document Library')
+				->with('newbutton','New Document')
+				->with('disablesort','0,5,6')
+				->with('addurl','document/add')
+				->with('searchinput',$searchinput)
+				->with('ajaxsource',URL::to('document'))
+				->with('ajaxdel',URL::to('document/del'))
+				->with('heads',$heads);
+		}else{
+			return View::make('document.restricted')
+							->with('title',$title);			
+		}
 	}
 
 	public function post_index()
@@ -393,17 +398,33 @@ class Document_Controller extends Base_Controller {
 		$heads = array('#','Title','Created','Last Update','Creator','Attachment','Tags','Action');
 		$searchinput = array(false,'title','created','last update','creator','filename','tags',false);
 
-		$title = Config::get('parama.department');
+		$dept = Config::get('parama.department');
 
-		return View::make('tables.simple')
-			->with('title',$title[$type])
-			->with('newbutton','New Document')
-			->with('disablesort','0,5,6')
-			->with('addurl','document/add')
-			->with('searchinput',$searchinput)
-			->with('ajaxsource',URL::to('document/type/'.$type))
-			->with('ajaxdel',URL::to('document/del'))
-			->with('heads',$heads);
+		$title = $dept[$type];
+
+		$doc = new Document();
+
+		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
+
+		$shared = $doc->count(array('docShare'=>$sharecriteria));
+
+		$permissions = Auth::user()->permissions;
+
+		if($permissions->{$type} == true){
+			return View::make('tables.simple')
+				->with('title',$title)
+				->with('newbutton','New Document')
+				->with('disablesort','0,5,6')
+				->with('addurl','document/add')
+				->with('searchinput',$searchinput)
+				->with('ajaxsource',URL::to('document/type/'.$type))
+				->with('ajaxdel',URL::to('document/del'))
+				->with('heads',$heads);			
+		}else{
+			return View::make('document.restricted')
+							->with('title',$title);
+		}
+
 	}
 
 	public function post_type($type = null)

@@ -18,7 +18,10 @@
 
     <h4>Employee Info</h4>
     {{ $form->text('employee_jobtitle','Job Title','',array('class'=>'text')) }}
-    {{ $form->text('employee_department','Department','',array('class'=>'text')) }}
+    <div class="six columns">
+      <h5>Department</h5>
+      {{$form->select('department','',Config::get('parama.department'),array('class'=>'four'))}}
+    </div>
 
   </div>
   <div class="five columns right">
