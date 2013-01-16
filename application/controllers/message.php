@@ -38,14 +38,14 @@ class Message_Controller extends Base_Controller {
 
 	public function get_index()
 	{
-		$heads = array('#','Timestamp','Subject','To','From','Tags','Action');
-		$fields = array('seq','createdDate','subject','to','from','tags','action');
-		$searchinput = array(false,'createdDate','subject','to','from','tags',false);
+		$heads = array('#','Timestamp','Subject','To','From','Action');
+		$fields = array('seq','createdDate','subject','to','from','action');
+		$searchinput = array(false,'createdDate','subject','to','from',false);
 
 		return View::make('tables.simple')
 			->with('title','Messages')
 			->with('newbutton','New Message')
-			->with('disablesort','0,5,6')
+			->with('disablesort','0')
 			->with('addurl','message/new')
 			->with('searchinput',$searchinput)
 			->with('ajaxsource',URL::to('message'))
@@ -55,24 +55,41 @@ class Message_Controller extends Base_Controller {
 
 	public function post_index()
 	{
-		$fields = array('createdDate','subject','to','from','tags');
+		$fields = array('title','createdDate','lastUpdate','creatorName','docFilename','docTag');
 
-		$rel = array('like','like','like','like','equ');
+		$rel = array('like','like','like','like','like','like');
 
-		$cond = array('both','both','both','both','equ');
+		$cond = array('both','both','both','both','both','both');
+
+		$pagestart = Input::get('iDisplayStart');
+		$pagelength = Input::get('iDisplayLength');
+
+		$limit = array($pagelength, $pagestart);
+
+		$defsort = 1;
+		$defdir = -1;
 
 		$idx = 0;
 		$q = array();
+
+		$hilite = array();
+		$hilite_replace = array();
+
 		foreach($fields as $field){
 			if(Input::get('sSearch_'.$idx))
 			{
+
+				$hilite_item = Input::get('sSearch_'.$idx);
+				$hilite[] = $hilite_item;
+				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
+
 				if($rel[$idx] == 'like'){
 					if($cond[$idx] == 'both'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/');
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/');						
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
 					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/');						
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
 					}
 				}else if($rel[$idx] == 'equ'){
 					$q[$field] = Input::get('sSearch_'.$idx);
@@ -87,35 +104,38 @@ class Message_Controller extends Base_Controller {
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
-		$fidx = ($fidx > 0)?$fidx - 1:$fidx;
-		$sort_col = $fields[$fidx];
-		$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		if($fidx == 0){
+			$fidx = $defsort;			
+			$sort_col = $fields[$fidx];
+			$sort_dir = $defdir;
+		}else{
+			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+			$sort_col = $fields[$fidx];
+			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		}
 
 		$count_all = $document->count();
 
 		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir));
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
 			$count_display_all = $document->count($q);
 		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir));
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
 			$count_display_all = $document->count();
 		}
 
-
-
-
 		$aadata = array();
 
-		$counter = 1;
+		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
+
 			$aadata[] = array(
 				$counter,
-				date('Y-m-d h:i:s',$doc['createdDate']),
-				$doc['subject'],
-				implode(',',$doc['to']),
-				implode(',',$doc['from']),
-				implode(',',$doc['tag']),
-				'<i class="foundicon-edit action"></i>&nbsp;<i class="foundicon-trash action"></i>'
+				date('Y-m-d h:i:s', $doc['createdDate']->sec),
+				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['subject'].'</span>',
+				$doc['from'],
+				$doc['to'],
+				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 			);
 			$counter++;
 		}
@@ -129,7 +149,7 @@ class Message_Controller extends Base_Controller {
 			'qrs'=>$q
 		);
 
-		print json_encode($result);
+		return Response::json($result);
 	}
 
 	public function get_new()
@@ -142,6 +162,82 @@ class Message_Controller extends Base_Controller {
 	}
 
 	public function post_new(){
+
+		$rules = array(
+	        'subject'  => 'required'
+	    );
+
+	    $validation = Validator::make($input = Input::all(), $rules);
+
+	    if($validation->fails()){
+
+	    	return Redirect::to('message/new')->with_errors($validation)->with_input(Input::all());
+
+	    }else{
+
+			$data = Input::get();
+	    	
+	    	//print_r($data);
+
+			//pre save transform
+			unset($data['csrf_token']);
+
+			$data['createdDate'] = new MongoDate();
+			$data['lastUpdate'] = new MongoDate();
+			$data['creatorName'] = Auth::user()->fullname;
+			$data['creatorId'] = Auth::user()->id;
+
+			$data['from'] = Auth::user()->email;
+			
+			//$docupload = Input::file('docupload');
+
+			$data['recipients'] = explode(',',$data['to']);
+
+			$status = explode(',',$data['to']);
+
+			$data['status'] = array();
+
+			foreach ($status as $st) {
+				$data['status'][$st] = 'Delivered';
+			}
+
+			$document = new Message();
+
+			$newobj = $document->insert($data);
+
+			if($newobj){
+
+				/*
+				if($docupload['name'] != ''){
+
+					$newid = $newobj['_id']->__toString();
+
+					$newdir = realpath(Config::get('parama.storage')).'/'.$newid;
+
+					Input::upload('docupload',$newdir,$docupload['name']);
+					
+				}
+
+				$sharedto = explode(',',$data['docShare']);
+
+				if(count($sharedto) > 0  && $data['docShare'] != ''){
+					foreach($sharedto as $to){
+						Event::fire('document.share',array('id'=>$newobj['_id'],'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+					}
+				}
+				*/
+
+
+				Event::fire('message.send',array('id'=>$newobj['_id'],'result'=>'OK','department'=>Auth::user()->department,'creator'=>Auth::user()->id));
+
+		    	return Redirect::to('message')->with('notify_success','Message sent successfully');
+			}else{
+				Event::fire('message.send',array('id'=>$id,'result'=>'FAILED'));
+		    	return Redirect::to('message')->with('notify_success','Message sending failed');
+			}
+
+	    }
+
 		
 	}	
 

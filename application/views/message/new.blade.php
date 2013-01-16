@@ -6,7 +6,7 @@
 <h3>{{$title}}</h3>
 </div>
 
-{{$form->open_for_files('message/add','POST',array('class'=>'custom','id'=>'newmsg'))}}
+{{$form->open_for_files('message/new','POST',array('class'=>'custom','id'=>'newmsg'))}}
 <div class="row">
   <div class="twelve columns">
 
