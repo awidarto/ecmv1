@@ -32,7 +32,21 @@ class Home_Controller extends Base_Controller {
 
 	public function action_index()
 	{
-		return View::make('home.index');
+		$heads = array('#','Project','Tags','Action');
+		$colclass = array('one','','two','one');
+		//$searchinput = array(false,'title','created','last update','creator','project manager','tags',false);
+		$searchinput = array(false,'project','tags',false);
+
+		return View::make('tables.event')
+			->with('title','Events')
+			->with('newbutton','New Event')
+			->with('disablesort','0')
+			->with('addurl','project/add')
+			->with('colclass',$colclass)
+			->with('searchinput',$searchinput)
+			->with('ajaxsource',URL::to('project'))
+			->with('ajaxdel',URL::to('project/del'))
+			->with('heads',$heads);
 	}
 
 }

@@ -130,9 +130,6 @@ class Document_Controller extends Base_Controller {
 			$count_display_all = $document->count();
 		}
 
-
-
-
 		$aadata = array();
 
 		$counter = 1 + $pagestart;
@@ -276,7 +273,23 @@ class Document_Controller extends Base_Controller {
 					}
 				}
 
-				Event::fire('document.create',array('id'=>$newobj['_id'],'result'=>'OK'));
+				$sharedto = explode(',',$data['docShare']);
+
+				if(count($sharedto) > 0  && $data['docShare'] != ''){
+					foreach($sharedto as $to){
+						Event::fire('document.share',array('id'=>$newobj['_id'],'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+					}
+				}
+
+				$approvalby = explode(',',$data['docApproval']);
+
+				if(count($approvalby) > 0 && $data['docApproval'] != ''){
+					foreach($approvalby as $to){
+						Event::fire('request.approval',array('id'=>$newobj['_id'],'approvalby'=>$to));
+					}
+				}
+
+				Event::fire('document.create',array('id'=>$newobj['_id'],'result'=>'OK','department'=>Auth::user()->department,'creator'=>Auth::user()->id));
 
 		    	return Redirect::to('document')->with('notify_success','Document saved successfully');
 			}else{
@@ -379,6 +392,22 @@ class Document_Controller extends Base_Controller {
 
 				Event::fire('document.update',array('id'=>$id,'result'=>'OK'));
 
+				$sharedto = explode(',',$data['docShare']);
+
+				if(count($sharedto) > 0  && $data['docShare'] != ''){
+					foreach($sharedto as $to){
+						Event::fire('document.share',array('id'=>$id,'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+					}
+				}
+
+				$approvalby = explode(',',$data['docApproval']);
+
+				if(count($approvalby) > 0 && $data['docApproval'] != ''){
+					foreach($approvalby as $to){
+						Event::fire('request.approval',array('id'=>$id,'approvalby'=>$to));
+					}
+				}				
+
 		    	return Redirect::to('document')->with('notify_success','Document saved successfully');
 			}else{
 
@@ -410,7 +439,13 @@ class Document_Controller extends Base_Controller {
 
 		$permissions = Auth::user()->permissions;
 
-		if($permissions->{$type} == true){
+		$can_open = false;
+
+		if(Auth::user()->role == 'root' || 
+			Auth::user()->role == 'super' || 
+			Auth::user()->department == $title || 
+			$permissions->{$type} == true
+		){
 			return View::make('tables.simple')
 				->with('title',$title)
 				->with('newbutton','New Document')

@@ -2,7 +2,7 @@
 <div class="panel toppanel">
 	<div class=" row">
 	  <div class="two columns">
-	    <a href="#"><img src="http://placehold.it/80x80&text=[img]" /></a>
+	    <a href="#">{{getavatar(Auth::user()->id,Auth::user()->fullname,'avatar')}}</a>
 	  </div>
 	  <div class="ten columns left">
 	    <p>Logged in as, <strong>{{ Auth::user()->fullname }}</strong>

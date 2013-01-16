@@ -26,7 +26,7 @@
     <h4>Employee Info</h4>
     {{ $form->text('employee_jobtitle','Job Title','',array('class'=>'text')) }}
     {{ Form::label('department','Department')}}
-    {{$form->select('department','',Config::get('parama.department'),array('class'=>'four'))}}
+    {{$form->select('department','',Config::get('parama.department'),null,array('class'=>'four'))}}
 
   </div>
   <div class="five columns right">
@@ -44,7 +44,7 @@
     <div class="row">
       <div class="six columns">
         <h5>Role</h5>
-        {{$form->select('role','',Config::get('parama.roles'),array('class'=>'four'))}}
+        {{ $form->select('role','',Config::get('parama.roles'),null,array('class'=>'four'))}}
       </div>
     </div>
   <div class="row">

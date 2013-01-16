@@ -37,7 +37,16 @@ Route::controller(array('document','user','message','project','tender','opportun
 
 Route::get('/',  array('before'=>'auth', function()
 {
-	return View::make('home.index');
+    $heads = array('Event','Action');
+    //$searchinput = array(false,'title','created','last update','creator','project manager','tags',false);
+    $searchinput = array(false,'project','tags',false);
+
+    return View::make('tables.event')
+        ->with('title','Events')
+        ->with('newbutton','New Event')
+        ->with('disablesort','0')
+        ->with('searchinput',$searchinput)
+        ->with('ajaxsource',URL::to('activity'));
 }));
 
 Route::get('hashme/(:any)',function($mypass){

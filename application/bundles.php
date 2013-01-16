@@ -38,6 +38,7 @@ return array(
 	'docs' => array('handles' => 'docs'),
 	'former' => array('auto' => true),
 	'mongovel' => array('auto'=>true),
+	'resizer'=>array('auto'=>true),
 	'formly' => array(
 	    'autoloads' => array(
 	        'map' => array(

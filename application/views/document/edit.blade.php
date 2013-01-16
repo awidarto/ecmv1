@@ -26,9 +26,9 @@
   <div class="five columns right">
     <h4>Metadata</h4>
 
-    {{$form->select('docDepartment','Department of Origin',Config::get('parama.department'),array('class'=>'four'))}}
+    {{$form->select('docDepartment','Department of Origin',Config::get('parama.department'),null,array('class'=>'four'))}}
 
-    {{ $form->select('docCategory','Category',Config::get('parama.doc_type'),array('class'=>'four'))}}
+    {{ $form->select('docCategory','Category',Config::get('parama.doc_type'),null,array('class'=>'four'))}}
 
     {{ $form->text('docProject','Related Project #','',array('class'=>'tag_project four','rows'=>'1', 'style'=>'width:100%')) }}
     {{ $form->text('docTender','Related Tender #','',array('class'=>'tag_tender four','rows'=>'1', 'style'=>'width:100%')) }}

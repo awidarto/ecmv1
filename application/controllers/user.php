@@ -104,8 +104,9 @@ class User_Controller extends Base_Controller {
 
 	public function get_users()
 	{
-		$heads = array('#','Full Name','Username','Email','Role','Action');
-		$searchinput = array(false,'fullname','username','email','role',false);
+		$heads = array('#','','Full Name','Email','Department','Role','Action');
+		$searchinput = array(false,false,'fullname','email','department','role',false);
+		$colclass = array('','two','','','','','');
 
 		$tag = new Tag();
 		$tags = $tag->find(array(), array(),array('count'=>-1));
@@ -113,10 +114,11 @@ class User_Controller extends Base_Controller {
 		return View::make('tables.simple')
 			->with('title','User Management')
 			->with('newbutton','New User')
-			->with('disablesort','0,4,5')
+			->with('disablesort','0,1,4,5')
 			->with('addurl','user/add')
 			->with('searchinput',$searchinput)
 			->with('tags',$tags)
+			->with('colclass',$colclass)
 			->with('ajaxsource',URL::to('users'))
 			->with('ajaxdel',URL::to('user/del'))
 			->with('heads',$heads);
@@ -124,7 +126,7 @@ class User_Controller extends Base_Controller {
 
 	public function post_users()
 	{
-		$fields = array('fullname','username','email','role');
+		$fields = array('fullname','username','email','department','role');
 
 		$rel = array('like','like','like','like');
 
@@ -185,19 +187,33 @@ class User_Controller extends Base_Controller {
 		}
 
 
-
-
 		$aadata = array();
 
 		$counter = 1 + $pagestart;
+
 		foreach ($documents as $doc) {
+
+			/*
+			if(file_exists(Config::get('parama.avatarstorage').$doc['_id'].'/avatar.jpg')){
+				$photo = HTML::image('avatar/'.$doc['_id'].'/avatar.jpg', $doc['fullname'], array('class' => 'avatar-list'));
+			}else{
+				$photo = HTML::image('images/no-avatar.jpg', $doc['fullname'], array('class' => 'avatar-list'));				
+			}
+			*/
+
+			$photo = getavatar($doc['_id'],$doc['fullname'],'avatar-list');
+
 			$aadata[] = array(
 				$counter,
+				$photo,
 				'<span class="pop" rel="user/popprofile" id="'.$doc['_id'].'" >'.$doc['fullname'].'</span>',
 				//HTML::link('user/profile/'.$doc['_id'],$doc['fullname']),
-				$doc['username'],
+				//$doc['username'],
 				$doc['email'],
-				$doc['role'],
+				isset($doc['department'])?depttitle($doc['department']):'',
+				roletitle($doc['role']),
+				'<a href="'.URL::to('user/pass/'.$doc['_id']).'"><i class="foundicon-lock action"></i></a>&nbsp;'.
+				'<a href="'.URL::to('user/picture/'.$doc['_id']).'"><i class="foundicon-smiley action"></i></a>&nbsp;'.
 				'<a href="'.URL::to('user/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 			);
@@ -214,6 +230,115 @@ class User_Controller extends Base_Controller {
 		);
 
 		print json_encode($result);
+	}
+
+	public function get_picture($id = null){
+		$id = (is_null($id))?Auth::user()->id:$id;
+
+		$doc['_id'] = $id;
+
+		$form = Formly::make();
+
+		return View::make('user.pic')
+					->with('form',$form)
+					->with('doc',$doc)
+					->with('title','Change Photo');
+	}
+
+	public function post_picture($id = null){
+
+		//$id = (is_null($id))?Auth::user()->id:$id;
+
+		$picupload = Input::file('picupload');
+
+		$data = Input::get();
+
+		if($picupload['name'] != ''){
+
+			$newdir = realpath(Config::get('parama.avatarstorage')).'/'.$id;
+
+			if(!file_exists($newdir)){
+				mkdir($newdir,0777);
+			}
+
+			$success = Resizer::open( $picupload )
+        		->resize( 200 , 200 , 'crop' )
+        		->save( Config::get('parama.avatarstorage').$id.'/avatar.jpg' , 90 );
+
+			Input::upload('picupload',$newdir,$picupload['name']);
+
+			
+		}
+
+		$user = new User();
+
+		$_id = new MongoId($data['id']);
+		$data['lastUpdate'] = new MongoDate();
+
+		unset($data['csrf_token']);
+		unset($data['id']);		
+
+		
+		if($user->update(array('_id'=>$_id),array('$set'=>$data))){
+	    	return Redirect::to('users')->with('notify_success','User saved successfully');
+		}else{
+	    	return Redirect::to('users')->with('notify_success','User saving failed');
+		}
+
+	}
+
+	public function get_pass($id = null){
+
+		$id = (is_null($id))?Auth::user()->id:$id;
+
+		$doc['_id'] = $id;
+
+		$form = Formly::make();
+
+		return View::make('user.pass')
+					->with('form',$form)
+					->with('doc',$doc)
+					->with('title','Change Password');
+
+	}
+
+	public function post_pass($id = null){
+
+	    $rules = array(
+	        'pass' => 'same:repass',
+	        'repass'=> 'required'
+	    );
+
+	    $validation = Validator::make($input = Input::all(), $rules);
+
+	    if($validation->fails()){
+
+	    	return Redirect::to('user/pass/'.$id)->with_errors($validation)->with_input(Input::all());
+
+	    }else{
+
+			$data = Input::get();
+	    	
+
+			$data['pass'] = Hash::make($data['pass']);
+
+			unset($data['repass']);
+			unset($data['csrf_token']);
+
+			$_id = new MongoId($data['id']);
+			$data['lastUpdate'] = new MongoDate();
+
+			$user = new User();
+
+			if($user->update(array('_id'=>$_id),array('$set'=>$data))){
+		    	return Redirect::to('users')->with('notify_success','Password changed successfully');
+			}else{
+		    	return Redirect::to('users')->with('notify_success','Password change failed');
+			}
+			
+
+	    }		
+
 	}
 
 	public function get_edit($id = null){

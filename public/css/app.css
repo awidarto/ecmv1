@@ -433,3 +433,23 @@ label.check {
 	color:white;
 	padding:0 4px;
 }
+
+/* event styles */
+
+.timestamp {
+
+}
+
+.event-title {
+	font-weight: bold;
+	color:maroon;
+}
+
+img.avatar-list {
+	width:90px;
+	height:90px;
+}
+
+.avatar {
+	width:150px;
+}

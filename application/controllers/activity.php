@@ -39,41 +39,161 @@ class Activity_Controller extends Base_Controller {
 
 	public function get_index()
 	{
-		$heads = array('#','Title','Created','Creator','Owner','Tags','Action');
-		$fields = array('seq','title','created','creator','owner','tags','action');
-		$searchinput = array(false,'title','created','creator','owner','tags',false);
+		$heads = array('#','Project','Tags','Action');
+		$colclass = array('one','','two','one');
+		//$searchinput = array(false,'title','created','last update','creator','project manager','tags',false);
+		$searchinput = array(false,'project','tags',false);
 
 		return View::make('tables.simple')
-			->with('title','Document Library')
-			->with('newbutton','New Document')
-			->with('disablesort','0,5,6')
-			->with('addurl',$this->controller.'/add')
+			->with('title','Project')
+			->with('newbutton','New Project')
+			->with('disablesort','0,3')
+			->with('addurl','project/add')
+			->with('colclass',$colclass)
 			->with('searchinput',$searchinput)
-			->with('ajaxsource',URL::to($this->controller))
-			->with('ajaxdel',URL::to($this->controller.'/del'))
+			->with('ajaxsource',URL::to('project'))
+			->with('ajaxdel',URL::to('project/del'))
 			->with('heads',$heads);
 	}
 
-	public function post_index()
-	{
-		$fields = array('title','createdDate','creatorName','creatorName','tags');
+	public function post_index(){
 
-		$rel = array('like','like','like','like','equ');
 
-		$cond = array('both','both','both','both','equ');
+		$pagestart = Input::get('iDisplayStart');
+		$pagelength = Input::get('iDisplayLength');
+
+		$limit = array($pagelength, $pagestart);
+
+		$defsort = 1;
+		$defdir = -1;
 
 		$idx = 0;
 		$q = array();
+
+		$hilite = array();
+		$hilite_replace = array();
+
+		$document = new Activity();
+
+		$count_all = $document->count();
+
+		$sort_col = 'timestamp';
+		$sort_dir = -1;
+
+		//print_r(Auth::user());
+
+		$self_id = new MongoId(Auth::user()->id);
+
+		$q = array('$or'=>array(
+			array('user_id'=>$self_id),
+			array('updater_id'=>$self_id),
+			array('requester_id'=>$self_id),
+			array('department'=>Auth::user()->department),
+			array('shareto'=>Auth::user()->email),
+			array('approvalby'=>Auth::user()->email),
+			));
+
+		if(count($q) > 0){
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count($q);
+		}else{
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count();
+		}
+
+		$aadata = array();
+
+		foreach ($documents as $doc) {
+			if(isset($doc['tags'])){
+				$tags = array();
+
+				foreach($doc['tags'] as $t){
+					$tags[] = '<span class="tagitem">'.$t.'</span>';
+				}
+
+				$tags = implode('',$tags);
+
+			}else{
+				$tags = '';
+			}
+
+			$eventtitle = Config::get('parama.eventtitle');
+
+			$doc['title'] = $eventtitle[$doc['event']];
+
+			$item = View::make('activity.item')->with('doc',$doc)->with('popsrc','project/view')->with('tags',$tags)->render();
+
+			$item = str_replace($hilite, $hilite_replace, $item);
+
+			$aadata[] = array(
+				$item,
+				'<a href="'.URL::to('project/view/'.$doc['_id']).'"><i class="foundicon-clock action"></i></a>&nbsp;'.
+				'<a href="'.URL::to('project/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
+				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
+			);
+		}
+
+		
+		$result = array(
+			'sEcho'=> Input::get('sEcho'),
+			'iTotalRecords'=>$count_all,
+			'iTotalDisplayRecords'=> $count_display_all,
+			'aaData'=>$aadata,
+			'qrs'=>$q
+		);
+
+		return Response::json($result);
+	}
+
+	public function _post_index()
+	{
+		$fields = array(array('title','body'));
+
+		$rel = array('like','like');
+
+		$cond = array('both','both');
+
+		$pagestart = Input::get('iDisplayStart');
+		$pagelength = Input::get('iDisplayLength');
+
+		$limit = array($pagelength, $pagestart);
+
+		$defsort = 1;
+		$defdir = -1;
+
+		$idx = 0;
+		$q = array();
+		$hilite = array();
+		$hilite_replace = array();
 		foreach($fields as $field){
 			if(Input::get('sSearch_'.$idx))
 			{
+				$hilite_item = Input::get('sSearch_'.$idx);
+				$hilite[] = $hilite_item;
+				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
+
 				if($rel[$idx] == 'like'){
-					if($cond[$idx] == 'both'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/');
-					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/');						
-					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/');						
+					if(is_array($field)){
+						$q = array('$or'=>'');
+						$sub = array();
+						foreach($field as $f){
+							if($cond[$idx] == 'both'){
+								$sub[] = array($f=> new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i') );
+							}else if($cond[$idx] == 'before'){
+								$sub[] = array($f=> new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i') );						
+							}else if($cond[$idx] == 'after'){
+								$sub[] = array($f=> new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i') );						
+							}
+						}
+						$q['$or'] = $sub;
+					}else{
+						if($cond[$idx] == 'both'){
+							$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
+						}else if($cond[$idx] == 'before'){
+							$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
+						}else if($cond[$idx] == 'after'){
+							$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
+						}						
 					}
 				}else if($rel[$idx] == 'equ'){
 					$q[$field] = Input::get('sSearch_'.$idx);
@@ -82,23 +202,29 @@ class Activity_Controller extends Base_Controller {
 			$idx++;
 		}
 
-		//print_r($q)
 
-		$document = new Document();
+		$document = new Activity();
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
-		$fidx = ($fidx > 0)?$fidx - 1:$fidx;
-		$sort_col = $fields[$fidx];
-		$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		if($fidx == 0){
+			$fidx = $defsort;			
+			$sort_col = $fields[$fidx];
+			$sort_dir = $defdir;
+		}else{
+			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+			$sort_col = $fields[$fidx];
+			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		}
+
 
 		$count_all = $document->count();
 
 		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir));
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
 			$count_display_all = $document->count($q);
 		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir));
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
 			$count_display_all = $document->count();
 		}
 
@@ -107,16 +233,30 @@ class Activity_Controller extends Base_Controller {
 
 		$aadata = array();
 
-		$counter = 1;
+		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
+			if(isset($doc['tags'])){
+				$tags = array();
+
+				foreach($doc['tags'] as $t){
+					$tags[] = '<span class="tagitem">'.$t.'</span>';
+				}
+
+				$tags = implode('',$tags);
+
+			}else{
+				$tags = '';
+			}
+
+			$item = View::make('project.item')->with('doc',$doc)->with('popsrc','project/view')->with('tags',$tags)->render();
+
+			$item = str_replace($hilite, $hilite_replace, $item);
+
 			$aadata[] = array(
-				$counter,
-				$doc['title'],
-				date('Y-m-d h:i:s',$doc['createdDate']),
-				$doc['creatorName'],
-				$doc['creatorName'],
-				implode(',',$doc['tag']),
-				'<i class="foundicon-edit action"></i>&nbsp;<i class="foundicon-trash action"></i>'
+				$item,
+				'<a href="'.URL::to('project/view/'.$doc['_id']).'"><i class="foundicon-clock action"></i></a>&nbsp;'.
+				'<a href="'.URL::to('project/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
+				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 			);
 			$counter++;
 		}
@@ -130,7 +270,7 @@ class Activity_Controller extends Base_Controller {
 			'qrs'=>$q
 		);
 
-		print json_encode($result);
+		return Response::json($result);
 	}
 
 	public function get_download()

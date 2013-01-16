@@ -1,11 +1,12 @@
 <?php return array(
   'storage'=>'public/storage/',
+  'avatarstorage'=>'public/avatar/',
   'currencies'=>array( 'IDR'=>'IDR','USD'=>'USD','SGD'=>'SGD','EU'=>'EU','AUD'=>'AUD'),
   'roles'=>array( 
   		'root'=>'Root User',
   		'super'=>'Super User',
-  		'outdoor sales'=>'Outdoor Sales',
-  		'indoor sales'=>'Indoor Sales',
+  		'outdoor_sales'=>'Outdoor Sales',
+  		'indoor_sales'=>'Indoor Sales',
   		'project_control'=>'Project Control',
   		'bod'=>'Board of Director',
   		'president_director'=>'President Director',
@@ -99,4 +100,18 @@
   		'principal_vendor'=>'Principal / Vendors',
   		'subcon'=>'3rd Party / Sub-Con'
   		),
+  'eventtitle'=>array(
+      'document.upload'=>'New Document Created',
+      'document.create'=>'New Document Created',
+      'document.update'=>'A Document Updated',
+      'document.delete'=>'A Document Deleted',
+      'document.share'=>'A Document Shared',
+
+      'project.upload'=>'New Project Created',
+      'project.create'=>'New Project Created',
+      'project.update'=>'A Project Updated',
+      'project.delete'=>'A Project Deleted',
+
+      'request.approval'=>'Approval Requested'
+    ),
 );

@@ -2,6 +2,14 @@
 
 <ul class="">
   <!--<li class="divider"></li>-->
+@if(Auth::user()->role == 'client' || Auth::user()->role == 'principal_vendor' || Auth::user()->role == 'subcon')
+    
+    <li>{{ HTML::link('document/type/clients','Clients')}}</li>
+    <li>{{ HTML::link('document/type/principal_vendor','Principal / Vendors')}}</li>
+    <li>{{ HTML::link('document/type/subcon','3rd Party / Sub-Con')}}</li>
+
+@else
+
   <li class="has-dropdown">
     {{ HTML::link('document/type/bod','BoD')}}
     <ul class="dropdown">
@@ -38,7 +46,10 @@
     </ul>
   </li>
 
+@endif
 
+
+@if(Auth::user()->role == 'root' || Auth::user()->role == 'super')
   <li class="divider"></li>
   <li class="has-dropdown">
     <a href="#">Sys Admin</a>
@@ -47,6 +58,8 @@
       <li>{{ HTML::link('users', 'Users Management' ) }}</li>
     </ul>
   </li>
+@endif
+
 </ul>
 
 @endsection
