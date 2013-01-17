@@ -386,7 +386,7 @@ label.check {
 	text-transform: capitalize;
 }
 
-.fileview , .metaview{
+.fileview , .metaview, .messageview{
 	cursor: pointer;
 	text-decoration:underline;
 	color:brown;

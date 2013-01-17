@@ -27,4 +27,13 @@ function depttitle($dept){
 	return $depttitles[$dept];
 }
 
+function limitwords($string, $word_limit)
+{
+    $words = explode(" ",$string);
+    if(count($words) <= $word_limit){
+    	return $string;
+    }else{
+	    return implode(" ",array_splice($words,0,$word_limit)).'...';
+    }
+}
 ?>

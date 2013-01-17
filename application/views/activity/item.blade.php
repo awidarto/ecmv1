@@ -22,69 +22,6 @@ elseif($doc['event'] == 'request.approval'){
 	}
 }
 
-/*
-if($doc['event'] == 'document.create')
-
-	<p>
-		You have created new document,<br />
-		Review Document : {{$doc['doc_id']}}
-	</p>
-
-elseif($doc['event'] == 'document.share')
-
-	<p>
-		A document has been shared to you, <br />
-		Review Document : {{$doc['doc_id']}}
-	</p>
-
-elseif($doc['event'] == 'document.update')
-
-	<p>
-
-		A document has been updated, <br />
-		Review Document : {{$doc['doc_id']}}
-	</p>
-
-elseif($doc['event'] == 'document.delete')
-
-	<p>
-		A document has been deleted, <br />
-		Document : {{$doc['doc_id']}}
-	</p>
-
-elseif($doc['event'] == 'project.create')
-
-	<p>
-		A project has been created, <br />
-		Review Project : {{$doc['doc_id']}}
-	</p>
-
-elseif($doc['event'] == 'project.update'){
-
-}
-
-	<p>
-		A project has been updated, <br />
-		Review Project : {{$doc['doc_id']}}
-	</p>
-
-elseif($doc['event'] == 'project.delete')
-
-	<p>
-		A project has been deleted, <br />
-		Project : {{$doc['doc_id']}}
-	</p>
-	
-elseif($doc['event'] == 'request.approval')
-
-	<p>
-		Your approval is required for : <br />
-		Document : {{$doc['doc_id']}}
-	</p>
-
-endif
-
-*/
 ?>
 
 

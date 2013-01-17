@@ -3,30 +3,41 @@
     <h4><span class="foundicon-mail"></span>&nbsp;&nbsp;Messages</h4>
     <!--<p>Welcome back, {{ Auth::user()->fullname }}</p>-->
     <div class="message-list-side">
-      <div class="message-list-item">
-        <span class="category-info">e-mail</span><br/>
-        <span class="author-info">from:</span> vendor@vendor.co.id<br/>
-        <span class="author-info">date:</span> Nov 19, 2012 15.30 WIB<br/>
-        <span class="author-info">subject:</span> Quotation 1<br/>
-        <span class="content-info">Dear, Bpk Taufiq ini adalah .... <a href="#">(read more)</a></span>
-      </div>
 
-      <div class="message-list-item">
-        <span class="category-info">comments</span><br/>
-        <span class="author-info">from:</span> vendor@vendor.co.id<br/>
-        <span class="author-info">date:</span> Nov 19, 2012 15.30 WIB<br/>
-        <span class="author-info">subject:</span> Quotation 1<br/>
-        <span class="content-info">Dear, Bpk Taufiq ini adalah .... <a href="#">(read more)</a></span>
-      </div>
-
-      <div class="message-list-item">
-        <span class="category-info">e-mail</span><br/>
-        <span class="author-info">from:</span> vendor@vendor.co.id<br/>
-        <span class="author-info">date:</span> Nov 19, 2012 15.30 WIB<br/>
-        <span class="author-info">subject:</span> Quotation 1<br/>
-        <span class="content-info">Dear, Bpk Taufiq ini adalah .... <a href="#">(read more)</a></span>
-      </div>
-
+      @foreach($messages as $message)
+        <div class="message-list-item">
+          <span class="category-info">Internal</span><br/>
+          <span class="author-info">from : </span><br />{{$message['from']}}<br/>
+          <span class="author-info">date : </span>{{date('d-m-Y h:i:s',$message['createdDate']->sec)}}<br/>
+          <span class="author-info">subject : </span>{{$message['subject']}}<br/>
+          <p>
+            {{limitwords($message['body'],50)}}
+          </p>
+          <span class="content-info"><span class="messageview" id="{{ $message['_id'] }}">read more</span></span>
+        </div>
+      @endforeach
     </div>
   </div>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+      $('.sidepanel').click(function(e){
+
+        if ($(e.target).is('.messageview')) {
+          var doc_id = e.target.id;
+          var src = '{{ URL::to('message/view/')}}' + doc_id;
+
+          $.fancybox({
+            type:'iframe',
+            href: '{{ URL::to("message/view/") }}' + doc_id,
+            autosize: true
+          });
+        }
+
+      });
+
+    });
+</script>
+
+
 @endsection

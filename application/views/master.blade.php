@@ -101,7 +101,7 @@
             ?>
         </div>
         -->
-        <div id="maincontent" class="nine columns">
+        <div id="maincontent" class="eight columns">
 
             @if (Session::has('notify_success'))
               <div class="alert-box">
@@ -112,7 +112,7 @@
 
             @yield('content')
         </div>
-        <aside class="two columns">
+        <aside class="three columns">
 
             @yield('tagcloud')
             @yield('messages')

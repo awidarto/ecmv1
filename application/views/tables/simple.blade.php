@@ -182,7 +182,7 @@
 
 				$.fancybox({
 					type:'iframe',
-					href: '{{ URL::to("document/view/") }}' + _id,
+					href: '{{ URL::to("document/view/") }}' + doc_id,
 					autosize: true
 				});
 			}

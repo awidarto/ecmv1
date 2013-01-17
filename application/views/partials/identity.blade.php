@@ -2,7 +2,7 @@
 <div class="panel toppanel">
 	<div class=" row">
 	  <div class="two columns">
-	    <a href="#">{{getavatar(Auth::user()->id,Auth::user()->fullname,'avatar')}}</a>
+	    <a href="#">{{getavatar(Auth::user()->id,Auth::user()->fullname,'twelve')}}</a>
 	  </div>
 	  <div class="ten columns left">
 	    <p>Logged in as, <strong>{{ Auth::user()->fullname }}</strong>

@@ -38,22 +38,95 @@ class Message_Controller extends Base_Controller {
 
 	public function get_index()
 	{
-		$heads = array('#','Timestamp','Subject','To','From','Action');
-		$fields = array('seq','createdDate','subject','to','from','action');
-		$searchinput = array(false,'createdDate','subject','to','from',false);
 
-		return View::make('tables.simple')
-			->with('title','Messages')
-			->with('newbutton','New Message')
-			->with('disablesort','0')
+	    $heads = array('Message','Action');
+	    //$searchinput = array(false,'title','created','last update','creator','project manager','tags',false);
+	    $searchinput = array(false,'project','tags',false);
+
+	    return View::make('tables.event')
+	        ->with('title','Messages')
+	        ->with('newbutton','New Message')
 			->with('addurl','message/new')
-			->with('searchinput',$searchinput)
-			->with('ajaxsource',URL::to('message'))
-			->with('ajaxdel','')
-			->with('heads',$heads);
+	        ->with('disablesort','0')
+	        ->with('searchinput',$searchinput)
+	        ->with('ajaxsource',URL::to('message'));
+
 	}
 
-	public function post_index()
+	public function post_index(){
+
+
+		$pagestart = Input::get('iDisplayStart');
+		$pagelength = Input::get('iDisplayLength');
+
+		$limit = array($pagelength, $pagestart);
+
+		$defsort = 1;
+		$defdir = -1;
+
+		$idx = 0;
+		$q = array();
+
+		$hilite = array();
+		$hilite_replace = array();
+
+		$document = new Message();
+
+		$count_all = $document->count();
+
+		$sort_col = 'createdDate';
+		$sort_dir = -1;
+
+		//print_r(Auth::user());
+
+		$self_id = new MongoId(Auth::user()->id);
+
+		$self_email_regex = new MongoRegex('/'.Auth::user()->email.'/i');
+
+		$q = array('$or'=>array(
+			array('to'=>$self_email_regex)
+			));
+
+		//$q = array();
+
+		if(count($q) > 0){
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count($q);
+		}else{
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count();
+		}
+
+		$aadata = array();
+
+		foreach ($documents as $doc) {
+
+			$item = View::make('message.item')->with('doc',$doc)->with('popsrc','message/view')->render();
+
+			$item = str_replace($hilite, $hilite_replace, $item);
+
+			$aadata[] = array(
+				$item,
+				'<a href="'.URL::to('message/view/'.$doc['_id']).'"><i class="foundicon-clock action"></i></a>&nbsp;'.
+				'<a href="'.URL::to('message/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
+				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
+			);
+		}
+
+		
+		$result = array(
+			'sEcho'=> Input::get('sEcho'),
+			'iTotalRecords'=>$count_all,
+			'iTotalDisplayRecords'=> $count_display_all,
+			'aaData'=>$aadata,
+			'qrs'=>$q
+		);
+
+		return Response::json($result);
+	}
+
+
+	public function __post_index()
 	{
 		$fields = array('title','createdDate','lastUpdate','creatorName','docFilename','docTag');
 
