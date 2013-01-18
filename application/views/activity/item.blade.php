@@ -5,24 +5,24 @@ $doc_photo = getavatar($doc['creator_id'],$doc['creator_name'],'ten');
 $class = str_replace('.', '-', $doc['event']);
 
 if($doc['event'] == 'document.create'){
-	$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'ten');
+	$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'twelve');
 	$body = $doc['creator_name'].' have created '.$doc['doc_title'];
 
 }
 elseif($doc['event'] == 'document.upload'){
-	$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'ten');
+	$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'twelve');
 	$body = $doc['creator_name'].' have created '.$doc['doc_title'];
 }
 elseif($doc['event'] == 'document.share'){
-	$main_photo = getavatar($doc['sharer_id'],$doc['sharer_name'],'ten');
+	$main_photo = getavatar($doc['sharer_id'],$doc['sharer_name'],'twelve');
 	$body = $doc['sharer_name'].' have shared '.$doc['doc_title'];
 }
 elseif($doc['event'] == 'document.update'){
-	$main_photo = getavatar($doc['updater_id'],$doc['updater_name'],'ten');	
+	$main_photo = getavatar($doc['updater_id'],$doc['updater_name'],'twelve');	
 	$body = $doc['updater_name'].' have updated '.$doc['doc_title'];
 }
 elseif($doc['event'] == 'request.approval'){
-	$main_photo = getavatar($doc['requester_id'],$doc['requester_name'],'ten');
+	$main_photo = getavatar($doc['requester_id'],$doc['requester_name'],'twelve');
 	if($doc['approvalby'] == Auth::user()->email){
 		$body = $doc['requester_name'].' have requested document approval from you, please review : <span class="metaview" id="'.$doc['_id'].'">'.$doc['doc_title'].'</span>';
 	}else{
@@ -33,15 +33,15 @@ elseif($doc['event'] == 'request.approval'){
 ?>
 
 
-<div class="row {{ $class }}">
-	<div class="two columns">{{ $main_photo }}</div>
-	<div class="ten columns">
+<div class="event-item {{ $class }}">
+	<div class="one columns">{{ $main_photo }}</div>
+	<div class="eleven columns">
 	  <p>
 	  	<span class="timestamp">{{date('Y-m-d H:i:s',$doc['timestamp']->sec)}}</span> <strong>{{$doc['title']}}</strong><br />
 	  	{{ $body }}<hr />
 	  <div class="row">
-	    <div class="two columns">{{ $doc_photo }}</div>
-	    <div class="ten columns">
+	    <div class="one columns">{{ $doc_photo }}</div>
+	    <div class="eleven columns">
 	    	<p>
 				<span class="metaview" id="{{$doc['_id']}}">{{$doc['doc_title']}}</span>
 	    	</p>

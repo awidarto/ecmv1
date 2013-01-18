@@ -44,7 +44,7 @@ Route::get('/',  array('before'=>'auth', function()
     $crumb = new Breadcrumb();
 
     return View::make('tables.event')
-        ->with('title','Events')
+        ->with('title','')
         ->with('newbutton','New Event')
         ->with('disablesort','0')
         ->with('crumb',$crumb)

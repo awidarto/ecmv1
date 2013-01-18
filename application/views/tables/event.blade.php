@@ -1,12 +1,15 @@
 @layout('master')
 
 @section('content')
+@if($title != '')
 <div class="tableHeader">
-<h3>{{$title}}</h3>
+		<h3>{{$title}}</h3>
 	@if(isset($addurl))
 		<a class="foundicon-add-doc button right newdoc action clearfix" href="{{URL::to($addurl)}}">&nbsp;&nbsp;<span>{{$newbutton}}</span></a>
 	@endif
 </div>
+@endif
+
 <div class="row">
 	<table class="dataTable">
 	    <tbody>

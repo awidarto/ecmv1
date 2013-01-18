@@ -454,6 +454,20 @@ img.avatar-list {
 	width:150px;
 }
 
+.event-item{
+	width:100%;
+	margin-right: 10px;
+	margin-left: 10px;
+}
+
+.event-item hr{
+	margin:5px;
+}
+
+.event-item p{
+	margin-bottom: 5px;
+}
+
 .document-upload, .document-create{
 	background-color: #95f6c4;
 }
