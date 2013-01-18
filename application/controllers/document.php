@@ -32,13 +32,21 @@ class Document_Controller extends Base_Controller {
 
 	public $restful = true;
 
+	public $crumb;
+
+
 	public function __construct(){
+		$this->crumb = new Breadcrumb();
+		$this->crumb->add('document','Document');
+
 		date_default_timezone_set('Asia/Jakarta');
 		$this->filter('before','auth');
 	}
 
 	public function get_index()
 	{
+		$this->crumb->add('document','Document');
+
 		$heads = array('#','Title','Created','Last Update','Creator','Attachment','Tags','Action');
 		$searchinput = array(false,'title','created','last update','creator','filename','tags',false);
 
@@ -201,18 +209,34 @@ class Document_Controller extends Base_Controller {
 	}
 
 
-	public function get_add(){
+	public function get_add($type = null){
+
+		if(is_null($type)){
+			$this->crumb->add('document/add','New Document');
+		}else{
+			$this->crumb->add('document/type/'.$type,depttitle($type));
+			$this->crumb->add('document/add','New Document');
+		}
+
 
 		$form = new Formly();
 		return View::make('document.new')
 					->with('form',$form)
+					->with('type',$type)
+					->with('crumb',$this->crumb)
 					->with('title','New Document');
 
 	}
 
-	public function post_add(){
+	public function post_add($type = null){
 
 		//print_r(Session::get('permission'));
+
+		if(is_null($type)){
+			$back = 'document';
+		}else{
+			$back = 'document/type/'.$type;
+		}
 
 	    $rules = array(
 	        'title'  => 'required|max:50'
@@ -222,7 +246,7 @@ class Document_Controller extends Base_Controller {
 
 	    if($validation->fails()){
 
-	    	return Redirect::to('document/add')->with_errors($validation)->with_input(Input::all());
+	    	return Redirect::to('document/add/'.$type)->with_errors($validation)->with_input(Input::all());
 
 	    }else{
 
@@ -291,10 +315,10 @@ class Document_Controller extends Base_Controller {
 
 				Event::fire('document.create',array('id'=>$newobj['_id'],'result'=>'OK','department'=>Auth::user()->department,'creator'=>Auth::user()->id));
 
-		    	return Redirect::to('document')->with('notify_success','Document saved successfully');
+		    	return Redirect::to($back)->with('notify_success','Document saved successfully');
 			}else{
 				Event::fire('document.create',array('id'=>$id,'result'=>'FAILED'));
-		    	return Redirect::to('document')->with('notify_success','Document saving failed');
+		    	return Redirect::to($back)->with('notify_success','Document saving failed');
 			}
 
 	    }
@@ -302,7 +326,15 @@ class Document_Controller extends Base_Controller {
 		
 	}
 
-	public function get_edit($id = null){
+	public function get_edit($id = null,$type = null){
+
+		if(is_null($type)){
+			$this->crumb->add('document/add','Edit Document');
+		}else{
+			$this->crumb->add('document/type/'.$type,depttitle($type),false);
+			$this->crumb->add('document/edit/'.$id,'Edit',false);
+		}
+
 
 		$doc = new Document();
 
@@ -318,19 +350,33 @@ class Document_Controller extends Base_Controller {
 		$doc_data['expiryDate'] = date('Y-m-d', $doc_data['expiryDate']->sec);
 
 
+		if(is_null($type)){
+			$this->crumb->add('document/edit/'.$id,$doc_data['title']);
+		}else{
+			$this->crumb->add('document/edit/'.$id.'/'.$type,$doc_data['title']);
+		}
+
 		$form = Formly::make($doc_data);
 
 		return View::make('document.edit')
 					->with('doc',$doc_data)
 					->with('form',$form)
+					->with('type',$type)
+					->with('crumb',$this->crumb)
 					->with('title','Edit Document');
 
 	}
 
 
-	public function post_edit($id){
+	public function post_edit($id,$type = null){
 
 		//print_r(Session::get('permission'));
+
+		if(is_null($type)){
+			$back = 'document';
+		}else{
+			$back = 'document/type/'.$type;
+		}
 
 	    $rules = array(
 	        'title'  => 'required|max:50'
@@ -340,7 +386,7 @@ class Document_Controller extends Base_Controller {
 
 	    if($validation->fails()){
 
-	    	return Redirect::to('document/edit/'.$id)->with_errors($validation)->with_input(Input::all());
+	    	return Redirect::to('document/edit/'.$id.'/'.$type)->with_errors($validation)->with_input(Input::all());
 
 	    }else{
 
@@ -408,12 +454,12 @@ class Document_Controller extends Base_Controller {
 					}
 				}				
 
-		    	return Redirect::to('document')->with('notify_success','Document saved successfully');
+		    	return Redirect::to($back)->with('notify_success','Document saved successfully');
 			}else{
 
 				Event::fire('document.update',array('id'=>$id,'result'=>'FAILED'));
 
-		    	return Redirect::to('document')->with('notify_success','Document saving failed');
+		    	return Redirect::to($back)->with('notify_success','Document saving failed');
 			}
 
 	    }
@@ -424,6 +470,8 @@ class Document_Controller extends Base_Controller {
 
 	public function get_type($type = null)
 	{
+		$this->crumb->add('document/type/'.$type,depttitle($type));
+
 		$heads = array('#','Title','Created','Last Update','Creator','Attachment','Tags','Action');
 		$searchinput = array(false,'title','created','last update','creator','filename','tags',false);
 
@@ -450,14 +498,16 @@ class Document_Controller extends Base_Controller {
 				->with('title',$title)
 				->with('newbutton','New Document')
 				->with('disablesort','0,5,6')
-				->with('addurl','document/add')
+				->with('addurl','document/add/'.$type)
 				->with('searchinput',$searchinput)
 				->with('ajaxsource',URL::to('document/type/'.$type))
 				->with('ajaxdel',URL::to('document/del'))
+				->with('crumb',$this->crumb)
 				->with('heads',$heads);			
 		}else{
 			return View::make('document.restricted')
-							->with('title',$title);
+				->with('crumb',$this->crumb)
+				->with('title',$title);
 		}
 
 	}
@@ -568,7 +618,8 @@ class Document_Controller extends Base_Controller {
 				$doc['creatorName'],
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
-				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
+				'<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
+				'<i class="foundicon-edit action"></i></a>&nbsp;'.
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 			);
 			$counter++;

@@ -7,7 +7,9 @@
 <div class="row">
 	<div class="profileContent">
 		<div class="two columns">
-			{{ getavatar($profile['_id'])}}
+			{{ getavatar($profile['_id'])}}<br />
+			{{ HTML::link('user/picture','Change Photo')}}<br />
+			{{ HTML::link('user/pass','Change Password')}}<br />
 		</div>
 		<div class="ten columns">
 			<h5>{{ $profile['fullname'] }}</h5>

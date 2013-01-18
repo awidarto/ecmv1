@@ -6,7 +6,7 @@
 <div class="row">
 	<div class="profileContent">
 		<div class="two columns">
-			<img src="http://placehold.it/80x80&text=[img]" />
+			{{ getavatar($profile['_id'])}}
 		</div>
 		<div class="ten columns">
 			<h5>{{ $profile['fullname'] }}</h5>
@@ -22,7 +22,7 @@
 				<tr>
 					<td class="detail-title">Roles</td>
 					<td class="detail-info">	
-						<span>{{$profile['role']}}</span>
+						<span>{{roletitle($profile['role'])}}</span>
 					</td>
 				</tr>
 				<tr>
@@ -31,7 +31,7 @@
 				</tr>
 				<tr>
 					<td class="detail-title">Department</td>
-					<td class="detail-info">{{ $profile['employee_department'] }}</td>
+					<td class="detail-info">{{ depttitle($profile['department']) }}</td>
 				</tr>
 
 			</table>

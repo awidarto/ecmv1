@@ -1,13 +1,21 @@
 <?
 $doc_photo = getavatar($doc['creator_id'],$doc['creator_name'],'ten');
+//$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'ten');
+
+$class = str_replace('.', '-', $doc['event']);
 
 if($doc['event'] == 'document.create'){
 	$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'ten');
-	$body = $doc['creator_name'].' have updated '.$doc['doc_title'];
+	$body = $doc['creator_name'].' have created '.$doc['doc_title'];
+
+}
+elseif($doc['event'] == 'document.upload'){
+	$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'ten');
+	$body = $doc['creator_name'].' have created '.$doc['doc_title'];
 }
 elseif($doc['event'] == 'document.share'){
 	$main_photo = getavatar($doc['sharer_id'],$doc['sharer_name'],'ten');
-	$body = $doc['sharer_name'].' have updated '.$doc['doc_title'];
+	$body = $doc['sharer_name'].' have shared '.$doc['doc_title'];
 }
 elseif($doc['event'] == 'document.update'){
 	$main_photo = getavatar($doc['updater_id'],$doc['updater_name'],'ten');	
@@ -25,7 +33,7 @@ elseif($doc['event'] == 'request.approval'){
 ?>
 
 
-<div class="row">
+<div class="row {{ $class }}">
 	<div class="two columns">{{ $main_photo }}</div>
 	<div class="ten columns">
 	  <p>

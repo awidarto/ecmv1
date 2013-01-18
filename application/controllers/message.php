@@ -33,6 +33,9 @@ class Message_Controller extends Base_Controller {
 	public $restful = true;
 
 	public function __construct(){
+		$this->crumb = new Breadcrumb();
+		$this->crumb->add('message','Messages');
+
 		$this->filter('before','auth');
 	}
 
@@ -48,6 +51,7 @@ class Message_Controller extends Base_Controller {
 	        ->with('newbutton','New Message')
 			->with('addurl','message/new')
 	        ->with('disablesort','0')
+	        ->with('crumb',$this->crumb)
 	        ->with('searchinput',$searchinput)
 	        ->with('ajaxsource',URL::to('message'));
 

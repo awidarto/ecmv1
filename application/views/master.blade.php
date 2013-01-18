@@ -101,7 +101,11 @@
             ?>
         </div>
         -->
+
         <div id="maincontent" class="eight columns">
+          @if(isset($crumb))
+            {{ $this->crumb->generate() }}
+          @endif
 
             @if (Session::has('notify_success'))
               <div class="alert-box">

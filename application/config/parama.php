@@ -96,7 +96,7 @@
   		'hr_admin'=>'HR Admin',
   		'warehouse'=>'Warehouse',
   		'qc'=>'Quality Control',
-  		'clients'=>'Quality Control',
+  		'clients'=>'Clients',
   		'principal_vendor'=>'Principal / Vendors',
   		'subcon'=>'3rd Party / Sub-Con'
   		),

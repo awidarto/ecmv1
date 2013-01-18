@@ -6,7 +6,7 @@
 <h3>{{$title}}</h3>
 </div>
 
-{{$form->open_for_files('document/edit/'.$doc['_id'],'POST',array('class'=>'custom'))}}
+{{$form->open_for_files('document/edit/'.$doc['_id'].'/'.$type,'POST',array('class'=>'custom'))}}
 <div class="row">
   <div class="six columns left">
     <h4>Document Info</h4>

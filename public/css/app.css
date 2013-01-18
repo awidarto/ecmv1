@@ -453,3 +453,15 @@ img.avatar-list {
 .avatar {
 	width:150px;
 }
+
+.document-upload, .document-create{
+	background-color: #95f6c4;
+}
+
+.document-update{
+
+}
+
+.request-approval{
+	background-color: #71f4a2;
+}

@@ -33,7 +33,11 @@ class Activity_Controller extends Base_Controller {
 	public $restful = true;
 	public $controller = 'activity';
 
+	public $crumb;
+
 	public function __construct(){
+		$this->crumb = new Breadcrumb();
+
 		$this->filter('before','auth');
 	}
 
@@ -53,6 +57,7 @@ class Activity_Controller extends Base_Controller {
 			->with('searchinput',$searchinput)
 			->with('ajaxsource',URL::to('project'))
 			->with('ajaxdel',URL::to('project/del'))
+	        ->with('crumb',$this->crumb)
 			->with('heads',$heads);
 	}
 
@@ -103,25 +108,15 @@ class Activity_Controller extends Base_Controller {
 
 		$aadata = array();
 
+		//print_r($documents);
+
 		foreach ($documents as $doc) {
-			if(isset($doc['tags'])){
-				$tags = array();
-
-				foreach($doc['tags'] as $t){
-					$tags[] = '<span class="tagitem">'.$t.'</span>';
-				}
-
-				$tags = implode('',$tags);
-
-			}else{
-				$tags = '';
-			}
 
 			$eventtitle = Config::get('parama.eventtitle');
 
 			$doc['title'] = $eventtitle[$doc['event']];
 
-			$item = View::make('activity.item')->with('doc',$doc)->with('popsrc','project/view')->with('tags',$tags)->render();
+			$item = View::make('activity.item')->with('doc',$doc)->with('popsrc','project/view')->render();
 
 			$item = str_replace($hilite, $hilite_replace, $item);
 

@@ -46,6 +46,13 @@ return array(
 	        ),
 	    ),
 	),
+	'bread' => array(
+	    'autoloads' => array(
+	        'map' => array(
+	            'Bread\\Crumb' => '(:bundle)/crumb.php',
+	        ),
+	    ),
+	),
 	'breadcrumb' => array(
 		'auto'=>true,
 	    'autoloads' => array(

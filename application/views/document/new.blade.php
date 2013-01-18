@@ -6,7 +6,7 @@
 <h3>{{$title}}</h3>
 </div>
 
-{{$form->open_for_files('document/add','POST',array('class'=>'custom','id'=>'newdoc'))}}
+{{$form->open_for_files('document/add/'.$type,'POST',array('class'=>'custom','id'=>'newdoc'))}}
 <div class="row">
   <div class="six columns left">
     <h4>Document Info</h4>
@@ -25,7 +25,13 @@
   <div class="five columns right">
     <h4>Metadata</h4>
 
-    {{$form->select('docDepartment','Department of Origin',Config::get('parama.department'),array('class'=>'four'))}}
+    @if(is_null($type))
+      {{$form->select('docDepartment','Department of Origin',Config::get('parama.department'),array('class'=>'four'))}}
+    @else
+      {{ Form::label('docDepartment','Department of Origin : '.depttitle($type))}}
+      {{ $form->hidden('docDepartment',$type)}}
+    @endif
+
 
     {{ $form->select('docCategory','Category',Config::get('parama.doc_type'),array('class'=>'four'))}}
 

@@ -34,6 +34,8 @@ class Project_Controller extends Base_Controller {
 
 	public function __construct(){
 		$this->filter('before','auth');
+		$this->crumb = new Breadcrumb();
+		$this->crumb->add('project','Projects');
 	}
 
 	public function get_index()
@@ -44,7 +46,7 @@ class Project_Controller extends Base_Controller {
 		$searchinput = array(false,'project','tags',false);
 
 		return View::make('tables.simple')
-			->with('title','Project')
+			->with('title','Projects')
 			->with('newbutton','New Project')
 			->with('disablesort','0,3')
 			->with('addurl','project/add')
@@ -52,6 +54,7 @@ class Project_Controller extends Base_Controller {
 			->with('searchinput',$searchinput)
 			->with('ajaxsource',URL::to('project'))
 			->with('ajaxdel',URL::to('project/del'))
+	        ->with('crumb',$this->crumb)
 			->with('heads',$heads);
 	}
 
@@ -188,9 +191,12 @@ class Project_Controller extends Base_Controller {
 
 	public function get_add(){
 
+		$this->crumb->add('project/add','New Project');
+
 		$form = new Formly();
 		return View::make('project.new')
 					->with('form',$form)
+					->with('crumb',$this->crumb)
 					->with('title','New Project');
 
 	}
@@ -255,6 +261,8 @@ class Project_Controller extends Base_Controller {
 
 	public function get_edit($id = null){
 
+		$this->crumb->add('project/edit/'.$id,'Edit',false);
+
 		$doc = new Project();
 
 		$id = (is_null($id))?Auth::user()->id:$id;
@@ -268,13 +276,15 @@ class Project_Controller extends Base_Controller {
 		$doc_data['startDate'] = date('Y-m-d', $doc_data['startDate']->sec);
 		$doc_data['estCompleteDate'] = date('Y-m-d', $doc_data['estCompleteDate']->sec);
 
+		$this->crumb->add('project/edit/'.$id,$doc_data['title']);
 
 		$form = Formly::make($doc_data);
 
 		return View::make('project.edit')
 					->with('doc',$doc_data)
 					->with('form',$form)
-					->with('title','Edit Document');
+					->with('crumb',$this->crumb)
+					->with('title','Edit Project');
 
 	}
 

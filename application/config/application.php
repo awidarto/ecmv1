@@ -195,6 +195,7 @@ return array(
 		'View'       	=> 'Laravel\\View',
 		'Former' 		=> 'Former\\Former',
 		'Formly' 		=> 'Flare\\Formly',
+		'Breadcrumb' 		=> 'Bread\\Crumb',
 		//'Breadcrumb'	=> 'Noherczeg\\Breadcrumb\\Breadcrumb'
 	),
 

@@ -33,6 +33,10 @@ class User_Controller extends Base_Controller {
 	public $restful = true;
 
 	public function __construct(){
+
+		$this->crumb = new Breadcrumb();
+		$this->crumb->add('user/users','Users');
+
 		date_default_timezone_set('Asia/Jakarta');
 		$this->filter('before','auth');
 	}	
@@ -61,7 +65,12 @@ class User_Controller extends Base_Controller {
 
 		$user_profile = $user->get(array('_id'=>$id));
 
-		return View::make('user.profile')->with('profile',$user_profile);
+		$this->crumb->add('project/profile','Profile',false);
+		$this->crumb->add('project/profile',$user_profile['fullname']);
+
+		return View::make('user.profile')
+			->with('crumb',$this->crumb)
+			->with('profile',$user_profile);
 	}
 
 	public function get_popprofile($id = null){
@@ -104,6 +113,7 @@ class User_Controller extends Base_Controller {
 
 	public function get_users()
 	{
+
 		$heads = array('#','','Full Name','Email','Department','Role','Action');
 		$searchinput = array(false,false,'fullname','email','department','role',false);
 		$colclass = array('','two','','','','','');
@@ -121,6 +131,7 @@ class User_Controller extends Base_Controller {
 			->with('colclass',$colclass)
 			->with('ajaxsource',URL::to('users'))
 			->with('ajaxdel',URL::to('user/del'))
+			->with('crumb',$this->crumb)
 			->with('heads',$heads);
 	}
 
@@ -233,21 +244,30 @@ class User_Controller extends Base_Controller {
 	}
 
 	public function get_picture($id = null){
-		$id = (is_null($id))?Auth::user()->id:$id;
 
-		$doc['_id'] = $id;
+		$_id = (is_null($id))?Auth::user()->id:$id;
+
+		$doc['_id'] = $_id;
 
 		$form = Formly::make();
 
 		return View::make('user.pic')
 					->with('form',$form)
+					->with('id',$id)
 					->with('doc',$doc)
 					->with('title','Change Photo');
 	}
 
 	public function post_picture($id = null){
 
+		if(is_null($id)){
+			$back = 'user/profile';
+		}else{
+			$back = 'users';
+		}
+
 		//$id = (is_null($id))?Auth::user()->id:$id;
+		$id = (is_null($id))?Auth::user()->id:$id;
 
 		$picupload = Input::file('picupload');
 
@@ -280,9 +300,9 @@ class User_Controller extends Base_Controller {
 
 		
 		if($user->update(array('_id'=>$_id),array('$set'=>$data))){
-	    	return Redirect::to('users')->with('notify_success','User saved successfully');
+	    	return Redirect::to($back)->with('notify_success','Picture saved successfully');
 		}else{
-	    	return Redirect::to('users')->with('notify_success','User saving failed');
+	    	return Redirect::to($back)->with('notify_success','Picture saving failed');
 		}
 
 	}
@@ -303,6 +323,12 @@ class User_Controller extends Base_Controller {
 	}
 
 	public function post_pass($id = null){
+
+		if(is_null($id)){
+			$back = 'user/profile';
+		}else{
+			$back = 'users';
+		}
 
 	    $rules = array(
 	        'pass' => 'same:repass',
@@ -331,9 +357,9 @@ class User_Controller extends Base_Controller {
 			$user = new User();
 
 			if($user->update(array('_id'=>$_id),array('$set'=>$data))){
-		    	return Redirect::to('users')->with('notify_success','Password changed successfully');
+		    	return Redirect::to($back)->with('notify_success','Password changed successfully');
 			}else{
-		    	return Redirect::to('users')->with('notify_success','Password change failed');
+		    	return Redirect::to($back)->with('notify_success','Password change failed');
 			}
 			
 
@@ -448,9 +474,13 @@ class User_Controller extends Base_Controller {
 
 	public function get_add(){
 
+		$this->crumb->add('project/add','Management',false);
+		$this->crumb->add('project/add','New User');
+
 		$form = new Formly();
 		return View::make('user.new')
 					->with('form',$form)
+					->with('crumb',$this->crumb)
 					->with('title','New User');
 
 	}
