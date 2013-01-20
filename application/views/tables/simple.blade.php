@@ -195,6 +195,7 @@
 
 				$.fancybox({
 					type:'iframe',
+					width:'500',
 					href: '{{ URL::to("document/approve/") }}' + doc_id,
 					autosize: true
 				});

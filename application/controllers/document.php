@@ -857,4 +857,16 @@ class Document_Controller extends Base_Controller {
 		return View::make('pop.fileview')->with('doc',$doc)->with('href',$file);
 	}
 
+	public function get_approve($id){
+		$id = new MongoId($id);
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$id));
+
+		$form = new Formly();
+		
+		return View::make('pop.approval')->with('doc',$doc)->with('form',$form);
+	}	
+
 }

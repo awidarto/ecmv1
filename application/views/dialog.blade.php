@@ -20,7 +20,6 @@
 
   {{ HTML::style('css/jquery.tagsinput.css') }}
   {{ HTML::style('css/select2.css') }}
-  {{ HTML::style('css/colorbox.css') }}
 
 
   {{ HTML::script('js/jquery-1.8.3.min.js') }}
@@ -31,25 +30,18 @@
   {{ HTML::script('js/jquery.tagsinput.min.js') }}
   {{ HTML::script('js/select2.min.js') }}
 
-  {{ HTML::script('js/jquery.colorbox.js') }}
-
-  <!--[if (!IE)|(gte IE 8)]><!-->
-    {{ HTML::style('css/visualsearch/visualsearch-datauri.css') }}
-  <!--<![endif]-->
-  <!--[if lte IE 7]><!-->
-    {{ HTML::style('css/visualsearch/visualsearch.css') }}
-  <!--<![endif]-->
-
   <!--[if lt IE 8]>
     {{ HTML::style('css/general_enclosed_foundicons_ie7.css') }}
   <![endif]-->
 </head>
 <body>
 
-    <div class="row">
-        <div class="twelve columns">
+    <div class="row container-content clearfix">
+
+        <div id="maincontent" class="twelve columns">
             @yield('content')
         </div>
+
     </div>
 
   <footer class="row">

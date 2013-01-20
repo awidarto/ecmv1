@@ -170,7 +170,7 @@ class Approval_Controller extends Base_Controller {
 
 			foreach ($doc['approvalRequestIds'] as $r) {
 				if($r['_id'] == $self_id){
-					$requestTo .= '<li><span class="fileview" id="'.$doc['_id'].'">'.$r['fullname'].'</span></li>';
+					$requestTo .= '<li><span class="approvalview" id="'.$doc['_id'].'">'.$r['fullname'].'</span></li>';
 				}else{
 					$requestTo .= '<li>'.$r['fullname'].'</li>';
 				}

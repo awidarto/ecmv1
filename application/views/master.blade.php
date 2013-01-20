@@ -35,12 +35,6 @@
 
   {{ HTML::script('js/jquery.fancybox.js') }}
 
-  <!--[if (!IE)|(gte IE 8)]><!-->
-    {{ HTML::style('css/visualsearch/visualsearch-datauri.css') }}
-  <!--<![endif]-->
-  <!--[if lte IE 7]><!-->
-    {{ HTML::style('css/visualsearch/visualsearch.css') }}
-  <!--<![endif]-->
 
   <!--[if lt IE 8]>
     {{ HTML::style('css/general_enclosed_foundicons_ie7.css') }}
