@@ -18,13 +18,15 @@
     <p><strong>Current Active Attachment :</strong><br />{{ (isset($doc['docFiledata']['uploadTime']))?date('d-m-Y h:i:s',$doc['docFiledata']['uploadTime']->sec):'' }} <strong>{{$doc['docFiledata']['name']}}</strong></p>
 
     <p><strong>Attachment History :</strong><br />
-      <ol>
-        @foreach($doc['docFileList'] as $f)
-        <li>
-          {{ (isset($f['uploadTime']))?date('d-m-Y h:i:s',$f['uploadTime']->sec):'' }} <strong>{{$f['name']}}</strong>
-        </li>
-        @endforeach
-      </ol>
+      @if(isset($doc['docFileList']))
+        <ol>
+          @foreach($doc['docFileList'] as $f)
+          <li>
+            {{ (isset($f['uploadTime']))?date('d-m-Y h:i:s',$f['uploadTime']->sec):'' }} <strong>{{$f['name']}}</strong>
+          </li>
+          @endforeach
+        </ol>
+      @endif
     </p>
 
     {{ $form->file('docupload','Document File')}}
