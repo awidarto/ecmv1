@@ -19,10 +19,6 @@
 					<td class="detail-info">{{ $profile['email'] }}</td>
 				</tr>
 				<tr>
-					<td class="detail-title">Username</td>
-					<td class="detail-info">{{ $profile['username'] }}</td>
-				</tr>
-				<tr>
 					<td class="detail-title">Roles</td>
 					<td class="detail-info">	
 						<span>{{roletitle($profile['role'])}}</span>

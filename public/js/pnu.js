@@ -64,7 +64,7 @@
 				}
 			},
 		   	'height':'100px',
-		   	'width':'300px',
+		   	'width':'100%',
 		   	'interactive':true,
 		   	'onChange' : function(c){
 		   			console.log(c);
@@ -90,7 +90,7 @@
 				}
 			},
 		   	'height':'100px',
-		   	'width':'300px',
+		   	'width':'100%',
 		   	'interactive':true,
 		   	'onChange' : function(c){
 		   			console.log(sharelist);
@@ -111,7 +111,7 @@
 		$('.tag_rev').tagsInput({
 			'autocomplete_url': base + 'ajax/rev',
 		   	'height':'100px',
-		   	'width':'300px',
+		   	'width':'100%',
 		   	'interactive':true,
 		   	'onChange' : function(c){
 
@@ -132,7 +132,7 @@
 		$('.tag_keyword').tagsInput({
 			'autocomplete_url': base + 'ajax/tag',
 		   'height':'100px',
-		   'width':'300px',
+		   'width':'100%',
 		   'interactive':true,
 		   'onChange' : function(c){
 
@@ -166,5 +166,77 @@
 			}
 		});
 
+		$('.auto_pm').autocomplete({
+			source: base + 'ajax/user',
+			select: function(event, ui){
+				$('#pm_id').val(ui.item.id);
+				$('#pm_name').val(ui.item.value);				
+				$('#pm_email').val(ui.item.email);				
+			}
+		});
+
+		$('.auto_client').autocomplete({
+			source: base + 'ajax/email',
+			select: function(event, ui){
+				$('#client_id').val(ui.item.id);
+				$('#client_name').val(ui.item.label);				
+			}
+		});
+
+		//project
+
+		$('.auto_project_number').autocomplete({
+			source: base + 'ajax/project',
+			select: function(event, ui){
+				$('#project_id').val(ui.item.id);
+				$('#project_title').val(ui.item.title);				
+			}
+		});
+
+
+		$('.auto_project_name').autocomplete({
+			source: base + 'ajax/projectname',
+			select: function(event, ui){
+				$('#project_id').val(ui.item.id);
+				$('#project_number').val(ui.item.number);			
+			}
+		});
+
+		//tender
+
+		$('.auto_tender_number').autocomplete({
+			source: base + 'ajax/tender',
+			select: function(event, ui){
+				$('#tender_id').val(ui.item.id);
+				$('#tender_title').val(ui.item.title);				
+			}
+		});
+
+
+		$('.auto_tender_name').autocomplete({
+			source: base + 'ajax/tendername',
+			select: function(event, ui){
+				$('#tender_id').val(ui.item.id);
+				$('#tender_number').val(ui.item.number);			
+			}
+		});
+
+		//opportunity
+
+		$('.auto_opportunity_number').autocomplete({
+			source: base + 'ajax/opportunity',
+			select: function(event, ui){
+				$('#opportunity_id').val(ui.item.id);
+				$('#opportunity_title').val(ui.item.title);				
+			}
+		});
+
+		$('.auto_opportunity_name').autocomplete({
+			source: base + 'ajax/opportunityname',
+			select: function(event, ui){
+				$('#opportunity_id').val(ui.item.id);
+				$('#opportunity_number').val(ui.item.number);			
+			}
+		});		
 
     });

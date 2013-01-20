@@ -69,38 +69,10 @@
       @yield('topnav');
 
     </nav>
-    
-<!--
-        <ul class="right">
-          <li class="divider"></li>
-          <li class="has-dropdown">
-            <a href="#">{{ Auth::user()->fullname }}</a>
-            <ul class="dropdown">
-              <li>{{ HTML::link('passwd', 'Change Password') }}li>
-              <li><a href="#">Options</a></li>
-            </ul>
-          </li>
-        </ul>
--->
-      
+          
     <div class="row container-content clearfix">
 
         @yield('sidenav')
-        <!--
-        <div id="breadcrumb" class="eleven columns">
-            <?php
-              $bc = new Noherczeg\Breadcrumb\Breadcrumb( URL::base());
-
-              $curr = explode('/',URL::current());
-
-              $bc->from($curr);
-
-              //print_r($bc);
-
-              print $bc->build('foundation');
-            ?>
-        </div>
-        -->
 
         <div id="maincontent" class="eight columns">
           @if(isset($crumb))

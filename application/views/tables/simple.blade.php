@@ -170,9 +170,11 @@
 			if ($(e.target).is('.fileview')) {
 				var _id = e.target.id;
 
+				console.log(e);
+
 				$.fancybox({
 					type:'iframe',
-					href: '{{ URL::to("document/fileview/") }}' + _id,
+					href: '{{ URL::base().'/storage/' }}' + _id + '/' + e.target.innerHTML,
 					autosize: true
 				});
 
@@ -180,11 +182,20 @@
 
 			if ($(e.target).is('.metaview')) {
 				var doc_id = e.target.id;
-				var src = '{{ URL::to('document/view/')}}' + doc_id;
 
 				$.fancybox({
 					type:'iframe',
 					href: '{{ URL::to("document/view/") }}' + doc_id,
+					autosize: true
+				});
+			}
+
+			if ($(e.target).is('.approvalview')) {
+				var doc_id = e.target.id;
+
+				$.fancybox({
+					type:'iframe',
+					href: '{{ URL::to("document/approve/") }}' + doc_id,
 					autosize: true
 				});
 			}

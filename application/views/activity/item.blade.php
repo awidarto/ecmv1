@@ -21,6 +21,24 @@ elseif($doc['event'] == 'document.update'){
 	$main_photo = getavatar($doc['updater_id'],$doc['updater_name'],'twelve');	
 	$body = $doc['updater_name'].' have updated '.$doc['doc_title'];
 }
+
+elseif($doc['event'] == 'project.create'){
+	$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'twelve');
+	$body = $doc['creator_name'].' have created '.$doc['doc_title'];
+
+}
+elseif($doc['event'] == 'project.upload'){
+	$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'twelve');
+	$body = $doc['creator_name'].' have created '.$doc['doc_title'];
+}
+elseif($doc['event'] == 'project.share'){
+	$main_photo = getavatar($doc['sharer_id'],$doc['sharer_name'],'twelve');
+	$body = $doc['sharer_name'].' have shared '.$doc['doc_title'];
+}
+elseif($doc['event'] == 'project.update'){
+	$main_photo = getavatar($doc['updater_id'],$doc['updater_name'],'twelve');	
+	$body = $doc['updater_name'].' have updated '.$doc['doc_number'].' - '.$doc['doc_title'];
+}
 elseif($doc['event'] == 'request.approval'){
 	$main_photo = getavatar($doc['requester_id'],$doc['requester_name'],'twelve');
 	if($doc['approvalby'] == Auth::user()->email){
@@ -28,6 +46,9 @@ elseif($doc['event'] == 'request.approval'){
 	}else{
 		$body = 'You have requested document approval to '.$doc['approvalby'].' for document : <span class="metaview" id="'.$doc['_id'].'">'.$doc['doc_title'].'</span>';
 	}
+}else{
+	$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'twelve');
+	$body = $doc['creator_name'].' have done '.eventtitle($doc['event']);
 }
 
 ?>

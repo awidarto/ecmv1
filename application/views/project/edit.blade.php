@@ -12,6 +12,8 @@
     <h4>Project Info</h4>
     {{ $form->hidden('id',$doc['_id'])}}
 
+    {{ $form->text('projectNumber','Project Number.req','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+
     {{ $form->text('title','Title.req','',array('class'=>'text')) }}
 
     {{ $form->textarea('description','Description.req','',array('class'=>'text')) }}
@@ -22,7 +24,7 @@
 
     {{ $form->text('projectShare','Shared to','',array('class'=>'tag_email four','style'=>'width:100%')) }}
 
-    {{ $form->select('projectDepartment','Department of Origin',Config::get('parama.department'),array('class'=>'four'))}}
+    {{ $form->select('projectDepartment','Department of Origin',Config::get('parama.department'),null,array('class'=>'four'))}}
 
     {{ $form->text('projectTender','Related Tender','',array('class'=>'tag_tender four','rows'=>'1', 'style'=>'width:100%')) }}
 
@@ -36,12 +38,11 @@
 
     {{ $form->text('estCompleteDate','Estimated Completion Date','',array('class'=>'five date')) }}
 
-    {{ $form->text('projectNumber','Project Number','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+    {{ $form->text('projectManager','Project Manager','',array('id'=>'project_manager','class'=>'auto_pm four','rows'=>'1', 'style'=>'width:100%')) }}
 
+    {{ $form->hidden('projectManagerId','',array('id'=>'pm_id')) }}
 
-    {{ $form->text('projectManager','Project Manager','',array('id'=>'project_manager','class'=>'auto_user four','rows'=>'1', 'style'=>'width:100%')) }}
-
-    {{ $form->hidden('projectManagerId','',array('id'=>'user_id')) }}
+    {{ $form->text('projectManagerEmail','Project Manager Email','',array('id'=>'pm_email','class'=>'auto_pm four','rows'=>'1', 'style'=>'width:100%')) }}
 
     {{ $form->text('projectClient','Client','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
 

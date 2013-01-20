@@ -50,69 +50,25 @@
     <!-- This is source ordered to be pulled to the left on larger screens -->
 @if(Auth::check())
     <nav class="top-bar main-bar">
-        <ul class="">
-          <!--<li class="divider"></li>-->
-          <li>{{ HTML::link('/', 'Doc Type' ) }}</li>
-          <li class="divider"></li>
-          <li>{{ HTML::link('document/type/opportunity', 'Opportunity' ) }}</li>
-          <li>{{ HTML::link('document/type/tender', 'Tender' ) }}</li>
-          <li>{{ HTML::link('document/type/proposal', 'Tech Proposal' ) }}</li>
-          <li>{{ HTML::link('document/type/techbid', 'Tech Bid' ) }}</li>
-          <li>{{ HTML::link('document/type/commbid', 'Commercial Bid' ) }}</li>
-          <li>{{ HTML::link('document/type/contract', 'Contracts' ) }}</li>
-          <li>{{ HTML::link('document/type/legal', 'Legal Docs' ) }}</li>
-          <li>{{ HTML::link('document/type/warehouse', 'Warehouse' ) }}</li>
-          <li>{{ HTML::link('document/type/qc', 'QA / QC' ) }}</li>
-          <li class="has-dropdown">
-            <a href="#">Administration</a>
-            <ul class="dropdown">
-              <li>{{ HTML::link('document', 'Document Library' ) }}</li>
-              <li>{{ HTML::link('users', 'Users Management' ) }}</li>
-            </ul>
-          </li>
-          <li>{{ HTML::link('logout', 'Logout') }}</li>
-        </ul>
-      
+
+      @yield('topnav');
+
     </nav>
-    
-<!--
-        <ul class="right">
-          <li class="divider"></li>
-          <li class="has-dropdown">
-            <a href="#">{{ Auth::user()->fullname }}</a>
-            <ul class="dropdown">
-              <li>{{ HTML::link('passwd', 'Change Password') }}li>
-              <li><a href="#">Options</a></li>
-            </ul>
-          </li>
-        </ul>
--->
-      
-    <div class="row container-content clearfix">
-        <div class="one columns mobile">     
-          <dl class="vertical tabs">
-            <dd><a href="{{ URL::base() }}"><i class="foundicon-home sidemenu"></i> <br/>Home</a></dd>
-            <dd><a href="{{ URL::to('message') }}"><i class="foundicon-mail sidemenu"></i> <br/>Messages</a></dd>
-            <dd><a href="{{ URL::to('tender') }}"><i class="foundicon-idea sidemenu"></i> <br/>Tender</a></dd>
-            <dd><a href="{{ URL::to('project') }}"><i class="foundicon-star sidemenu"></i> <br/>Projects</a></dd>
-            <dd><a href="{{ URL::to('qc') }}"><i class="foundicon-checkmark sidemenu"></i> <br/>Quality</a></dd>
-            <dd><a href="{{ URL::to('warehouse') }}"><i class="foundicon-cart sidemenu"></i> <br/>Warehouse</a></dd>
-            <dd><a href="{{ URL::to('finance') }}"><i class="foundicon-graph sidemenu"></i> <br/>Finance</a></dd>
-            <dd><a href="{{ URL::to('hr') }}"><i class="foundicon-people sidemenu"></i> <br/>HRD</a></dd>
-            <dd><a href="{{ URL::to('activity/download') }}"><i class="foundicon-down-arrow sidemenu"></i> <br/>Download</a></dd>
-            <dd><a href="{{ URL::to('activity/upload') }}"><i class="foundicon-up-arrow sidemenu"></i> <br/>Upload</a></dd>
-            <dd><a href="{{ URL::to('user/people') }}"><i class="foundicon-address-book sidemenu"></i> <br/>People</a></dd>
-            <dd><a href="{{ URL::to('search') }}"><i class="foundicon-search sidemenu"></i> <br/>Search</a></dd>
-            <dd><a href="{{ URL::to('help') }}"><i class="foundicon-smiley sidemenu"></i> <br/>Help</a></dd>
-          </dl>
           
-        </div>
-        <div id="maincontent" class="eleven columns">
+    <div class="row container-content clearfix">
+
+        @yield('sidenav')
+
+        <div id="maincontent" class="ten columns left noaside">
+          @if(isset($crumb))
+            {{ $this->crumb->generate() }}
+          @endif
 
             @if (Session::has('notify_success'))
-                <div class="row">
-                    <span class="success">{{Session::get('notify_success')}}</span>
-                </div>
+              <div class="alert-box">
+                {{Session::get('notify_success')}}
+                <a href="" class="close">&times;</a>
+              </div>
             @endif
 
             @yield('content')

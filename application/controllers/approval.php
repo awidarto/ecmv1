@@ -1,6 +1,6 @@
 <?php
 
-class Document_Controller extends Base_Controller {
+class Approval_Controller extends Base_Controller {
 
 	/*
 	|--------------------------------------------------------------------------
@@ -37,7 +37,7 @@ class Document_Controller extends Base_Controller {
 
 	public function __construct(){
 		$this->crumb = new Breadcrumb();
-		$this->crumb->add('document','Document');
+		$this->crumb->add('approval','Approval Requests');
 
 		date_default_timezone_set('Asia/Jakarta');
 		$this->filter('before','auth');
@@ -45,32 +45,32 @@ class Document_Controller extends Base_Controller {
 
 	public function get_index()
 	{
-		$this->crumb->add('document','Super Manager');
 
-		$heads = array('#','Title','Created','Last Update','Creator','Attachment','Tags','Action');
-		$searchinput = array(false,'title','created','last update','creator','filename','tags',false);
+		$heads = array('#','Title','Created','Requester','Requesting Approval From','Attachment','Tags','Action');
+		$searchinput = array(false,'title','created','creator','approval from','filename','tags',false);
 
-		if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
+		//if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
 			return View::make('tables.simple')
-				->with('title','Document Library')
+				->with('title','Approval Requests')
 				->with('newbutton','New Document')
 				->with('disablesort','0,5,6')
-				->with('addurl','document/add')
 				->with('searchinput',$searchinput)
-				->with('ajaxsource',URL::to('document'))
-				->with('ajaxdel',URL::to('document/del'))
+				->with('ajaxsource',URL::to('approval'))
+				->with('ajaxdel',URL::to('approval/del'))
 				->with('crumb',$this->crumb)
 				->with('heads',$heads);
+		/*
 		}else{
 			return View::make('document.restricted')
 							->with('title',$title);			
 		}
+		*/
 	}
 
 	public function post_index()
 	{
 
-		$fields = array('title','createdDate','lastUpdate','creatorName','docFilename','docTag');
+		$fields = array('title','createdDate','creatorName','docApproval','docFilename','docTag');
 
 		$rel = array('like','like','like','like','like','like');
 
@@ -86,6 +86,15 @@ class Document_Controller extends Base_Controller {
 
 		$idx = 0;
 		$q = array();
+
+		$self_id = new MongoId(Auth::user()->id);
+
+		$q['$or'] = array(
+			array('approvalRequestIds.id'=>$self_id),
+			array('docApproval'=> new MongoRegex('/'.Auth::user()->email.'/i'))
+		);
+
+		$q = array('approvalRequestIds._id'=>$self_id);
 
 		$hilite = array();
 		$hilite_replace = array();
@@ -143,6 +152,7 @@ class Document_Controller extends Base_Controller {
 
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
+
 			if(isset($doc['tags'])){
 				$tags = array();
 
@@ -156,6 +166,18 @@ class Document_Controller extends Base_Controller {
 				$tags = '';
 			}
 
+			$requestTo = '<ol>';
+
+			foreach ($doc['approvalRequestIds'] as $r) {
+				if($r['_id'] == $self_id){
+					$requestTo .= '<li><span class="fileview" id="'.$doc['_id'].'">'.$r['fullname'].'</span></li>';
+				}else{
+					$requestTo .= '<li>'.$r['fullname'].'</li>';
+				}
+			}
+
+			$requestTo .= '</ol>';
+
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
@@ -163,12 +185,11 @@ class Document_Controller extends Base_Controller {
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
 				date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
 				$doc['creatorName'],
+				$requestTo,
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
-				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
-				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
+				'<i class="foundicon-checkmark action approve" id="'.$doc['_id'].'"></i>'
 			);
 			$counter++;
 		}
@@ -265,50 +286,18 @@ class Document_Controller extends Base_Controller {
 			$data['lastUpdate'] = new MongoDate();
 			$data['creatorName'] = Auth::user()->fullname;
 			$data['creatorId'] = Auth::user()->id;
-
-
-			$sharelist = explode(',', $data['docShare']);
-			if(is_array($sharelist)){
-				$usr = new User();
-				$shd = array();
-				foreach($sharelist as $sh){
-					$shd[] = array('email'=>$sh);
-				}
-				$shared_ids = $usr->find(array('$or'=>$shd),array('id'));
-
-				$data['sharedEmails'] = $sharelist ;
-				$data['sharedIds'] = array_values($shared_ids) ;
-			}
-
-			$approvallist = explode(',', $data['docApprovalRequest']);
-			if(is_array($approvallist)){
-				$usr = new User();
-				$shd = array();
-				foreach($approvallist as $sh){
-					$appval[] = array('email'=>$sh);
-				}
-				$approval_ids = $usr->find(array('$or'=>$appval),array('id','fullname'));
-
-				$data['approvalRequestEmails'] = $approvallist ;
-				$data['approvalRequestIds'] = array_values($approval_ids) ;
-			}
 			
 			$docupload = Input::file('docupload');
-
-			$docupload['uploadTime'] = new MongoDate();
 
 			$data['docFilename'] = $docupload['name'];
 
 			$data['docFiledata'] = $docupload;
-
-			$data['docFileList'][] = $docupload;
 
 			$data['tags'] = explode(',',$data['docTag']);
 
 			$document = new Document();
 
 			$newobj = $document->insert($data);
-
 
 			if($newobj){
 
@@ -338,9 +327,9 @@ class Document_Controller extends Base_Controller {
 					}
 				}
 
-				$approvalby = explode(',',$data['docApprovalRequest']);
+				$approvalby = explode(',',$data['docApproval']);
 
-				if(count($approvalby) > 0 && $data['docApprovalRequest'] != ''){
+				if(count($approvalby) > 0 && $data['docApproval'] != ''){
 					foreach($approvalby as $to){
 						Event::fire('request.approval',array('id'=>$newobj['_id'],'approvalby'=>$to));
 					}
@@ -362,7 +351,7 @@ class Document_Controller extends Base_Controller {
 	public function get_edit($id = null,$type = null){
 
 		if(is_null($type)){
-			$this->crumb->add('document/add','Edit',false);
+			$this->crumb->add('document/add','Edit Document');
 		}else{
 			$this->crumb->add('document/type/'.$type,depttitle($type),false);
 			$this->crumb->add('document/edit/'.$id,'Edit',false);
@@ -432,8 +421,6 @@ class Document_Controller extends Base_Controller {
 			$data['lastUpdate'] = new MongoDate();
 
 			unset($data['csrf_token']);
-
-			$docId = $data['id'];
 			unset($data['id']);
 
 			$sharelist = explode(',', $data['docShare']);
@@ -445,23 +432,8 @@ class Document_Controller extends Base_Controller {
 				}
 				$shared_ids = $usr->find(array('$or'=>$shd),array('id'));
 
-				$data['sharedEmails'] = $sharelist ;
 				$data['sharedIds'] = array_values($shared_ids) ;
 			}
-
-			$approvallist = explode(',', $data['docApprovalRequest']);
-			if(is_array($approvallist)){
-				$usr = new User();
-				$shd = array();
-				foreach($approvallist as $sh){
-					$appval[] = array('email'=>$sh);
-				}
-				$approval_ids = $usr->find(array('$or'=>$appval),array('id','fullname'));
-
-				$data['approvalRequestEmails'] = $approvallist ;
-				$data['approvalRequestIds'] = array_values($approval_ids) ;
-			}
-
 
 			$data['tags'] = explode(',',$data['docTag']);
 
@@ -483,44 +455,8 @@ class Document_Controller extends Base_Controller {
 			}
 
 			unset($data['oldTag']);
-
-			// upload new file , additive
-
-			$docupload = Input::file('docupload');
-
-			$withfile = false;
-
-			if($docupload['name'] != ''){
-
-				$docupload['uploadTime'] = new MongoDate();
-
-				$dirname = $docId;
-
-				$dirname = realpath(Config::get('parama.storage')).'/'.$dirname;
-
-				$uploadresult = Input::upload('docupload',$dirname,$docupload['name']);
-
-				if($uploadresult){
-
-					$data['docFilename'] = $docupload['name'];
-
-					$data['docFiledata'] = $docupload;
-
-					$withfile = true;
-
-				}
-
-			}
-
-			if($withfile == true){
-				$updatequery = array('$set'=>$data,'$push'=>array('docFileList'=>$docupload));
-			}else{
-				$updatequery = array('$set'=>$data);
-			}
-
-			//print_r($data);
-
-			if($doc->update(array('_id'=>$id),$updatequery)){
+			
+			if($doc->update(array('_id'=>$id),array('$set'=>$data))){
 
 				Event::fire('document.update',array('id'=>$id,'result'=>'OK'));
 
@@ -532,9 +468,9 @@ class Document_Controller extends Base_Controller {
 					}
 				}
 
-				$approvalby = explode(',',$data['docApprovalRequest']);
+				$approvalby = explode(',',$data['docApproval']);
 
-				if(count($approvalby) > 0 && $data['docApprovalRequest'] != ''){
+				if(count($approvalby) > 0 && $data['docApproval'] != ''){
 					foreach($approvalby as $to){
 						Event::fire('request.approval',array('id'=>$id,'approvalby'=>$to));
 					}
@@ -840,7 +776,7 @@ class Document_Controller extends Base_Controller {
 
 		$doc = $document->get(array('_id'=>$id));
 
-		return View::make('pop.docview')->with('profile',$doc);
+		return View::make('document.view')->with('doc',$doc);
 	}
 
 	public function get_fileview($id){
@@ -850,11 +786,9 @@ class Document_Controller extends Base_Controller {
 
 		$doc = $document->get(array('_id'=>$_id));
 
-		//$file = URL::to(Config::get('parama.storage').$id.'/'.$doc['docFilename']);
+		$file = URL::to(Config::get('parama.storage').$id.'/'.$doc['docFilename']);
 
-		$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
-
-		return View::make('pop.fileview')->with('doc',$doc)->with('href',$file);
+		return View::make('document.fileview')->with('doc',$doc)->with('href',$file);
 	}
 
 }

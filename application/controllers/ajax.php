@@ -51,16 +51,34 @@ class Ajax_Controller extends Base_Controller {
 		$user = new User();
 		$qemail = new MongoRegex('/'.$q.'/i');
 
-		$res = $user->find(array('email'=>$qemail),array('email','fullname'));
+		$res = $user->find(array('$or'=>array(array('email'=>$qemail),array('fullname'=>$qemail)) ),array('email','fullname'));
 
 		$result = array();
 
 		foreach($res as $r){
-			$result[] = array('id'=>$r['_id']->__toString(),'value'=>$r['email'],'label'=>$r['fullname'].' | '.$r['email']);
+			$result[] = array('id'=>$r['_id']->__toString(),'value'=>$r['email'],'name'=>$r['fullname'],'label'=>$r['fullname'].' ( '.$r['email'].' )');
 		}
 
 		return Response::json($result);		
 	}
+
+	public function get_user()
+	{
+		$q = Input::get('term');
+
+		$user = new User();
+		$qemail = new MongoRegex('/'.$q.'/i');
+
+		$res = $user->find(array('$or'=>array(array('email'=>$qemail),array('fullname'=>$qemail)) ),array('email','fullname'));
+
+		$result = array();
+
+		foreach($res as $r){
+			$result[] = array('id'=>$r['_id']->__toString(),'value'=>$r['fullname'],'email'=>$r['email'],'label'=>$r['fullname'].' ( '.$r['email'].' )');
+		}
+
+		return Response::json($result);		
+	}	
 
 	public function get_rev()
 	{
@@ -84,19 +102,110 @@ class Ajax_Controller extends Base_Controller {
 	{
 		$q = Input::get('term');
 
-		$doc = new Document();
-		$qdoc = new MongoRegex('/'.$q.'/i');
+		$proj = new Project();
+		$qproj = new MongoRegex('/'.$q.'/i');
 
-		$res = $doc->find(array('title'=>$qdoc),array('title'));
+		$res = $proj->find(array('$or'=>array(array('title'=>$qproj),array('projectNumber'=>$qproj)) ),array('title','projectNumber'));
 
 		$result = array();
 
 		foreach($res as $r){
-			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['title'],'value'=>$r['_id']->__toString());
+			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['projectNumber'].' - '.$r['title'],'title'=>$r['title'],'value'=>$r['projectNumber']);
 		}
 
 		return Response::json($result);		
 	}
+
+	public function get_projectname()
+	{
+		$q = Input::get('term');
+
+		$proj = new Project();
+		$qproj = new MongoRegex('/'.$q.'/i');
+
+		$res = $proj->find(array('$or'=>array(array('title'=>$qproj),array('projectNumber'=>$qproj)) ),array('title','projectNumber'));
+
+		$result = array();
+
+		foreach($res as $r){
+			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['projectNumber'].' - '.$r['title'],'number'=>$r['projectNumber'],'value'=>$r['title']);
+		}
+
+		return Response::json($result);		
+	}
+
+
+	public function get_tender()
+	{
+		$q = Input::get('term');
+
+		$proj = new Tender();
+		$qproj = new MongoRegex('/'.$q.'/i');
+
+		$res = $proj->find(array('$or'=>array(array('title'=>$qproj),array('tenderNumber'=>$qproj)) ),array('title','tenderNumber'));
+
+		$result = array();
+
+		foreach($res as $r){
+			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['tenderNumber'].' - '.$r['title'],'title'=>$r['title'],'value'=>$r['tenderNumber']);
+		}
+
+		return Response::json($result);		
+	}
+
+	public function get_tendername()
+	{
+		$q = Input::get('term');
+
+		$proj = new Tender();
+		$qproj = new MongoRegex('/'.$q.'/i');
+
+		$res = $proj->find(array('$or'=>array(array('title'=>$qproj),array('tenderNumber'=>$qproj)) ),array('title','tenderNumber'));
+
+		$result = array();
+
+		foreach($res as $r){
+			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['tenderNumber'].' - '.$r['title'],'number'=>$r['tenderNumber'],'value'=>$r['title']);
+		}
+
+		return Response::json($result);		
+	}
+
+	public function get_opportunity()
+	{
+		$q = Input::get('term');
+
+		$proj = new Opportunity();
+		$qproj = new MongoRegex('/'.$q.'/i');
+
+		$res = $proj->find(array('$or'=>array(array('title'=>$qproj),array('opportunityNumber'=>$qproj)) ),array('title','opportunityNumber'));
+
+		$result = array();
+
+		foreach($res as $r){
+			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['opportunityNumber'].' - '.$r['title'],'title'=>$r['title'],'value'=>$r['opportunityNumber']);
+		}
+
+		return Response::json($result);		
+	}
+
+	public function get_opportunityname()
+	{
+		$q = Input::get('term');
+
+		$proj = new Opportunity();
+		$qproj = new MongoRegex('/'.$q.'/i');
+
+		$res = $proj->find(array('$or'=>array(array('title'=>$qproj),array('opportunityNumber'=>$qproj)) ),array('title','opportunityNumber'));
+
+		$result = array();
+
+		foreach($res as $r){
+			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['opportunityNumber'].' - '.$r['title'],'number'=>$r['opportunityNumber'],'value'=>$r['title']);
+		}
+
+		return Response::json($result);		
+	}	
 
 	public function get_tag()
 	{

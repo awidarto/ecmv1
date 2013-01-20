@@ -57,6 +57,10 @@ class User_Controller extends Base_Controller {
 
 	public function get_profile($id = null){
 
+		if(is_null($id)){
+			$this->crumb = new Breadcrumb();
+		}
+
 		$user = new User();
 
 		$id = (is_null($id))?Auth::user()->id:$id;
@@ -212,7 +216,7 @@ class User_Controller extends Base_Controller {
 			}
 			*/
 
-			$photo = getavatar($doc['_id'],$doc['fullname'],'avatar-list');
+			$photo = getavatar($doc['_id'],$doc['fullname'],'twelve');
 
 			$aadata[] = array(
 				$counter,

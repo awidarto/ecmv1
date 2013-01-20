@@ -9,8 +9,15 @@
 </div>
 <div class="row">
 		<div class="eight columns">
-			<h5>{{ $project['title'] }}</h5>
 			<table class="profile-info">
+				<tr>
+					<td class="detail-title">Project Number</td>
+					<td class="detail-info">{{ $project['projectNumber'] }}</td>
+				</tr>
+				<tr>
+					<td class="detail-title">Project Name</td>
+					<td class="detail-info">{{ $project['title'] }}</td>
+				</tr>
 				<tr>
 					<td class="detail-title">Managed By</td>
 					<td class="detail-info">{{ $project['projectManager'] }}</td>

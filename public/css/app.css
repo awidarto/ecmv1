@@ -402,6 +402,10 @@ label.check {
 	vertical-align: middle;
 }
 
+.tagsinput{
+	width:100%;
+}
+
 .tagitem{
 	background: #a3a3a3 url('tag-open.png') no-repeat center left;
 
@@ -478,4 +482,22 @@ img.avatar-list {
 
 .request-approval{
 	background-color: #71f4a2;
+}
+
+.dataTable h1,.dataTable h2,.dataTable h3,.dataTable h4,.dataTable h5{
+	margin:0px;
+	margin-bottom: 5px;
+	color: #000;
+}
+
+.dataTable .label{
+	margin:0px;
+	padding-left: 0px;
+	font-size: 12px;
+	background-color: transparent;
+	color:#000;
+}
+
+#maincontent.noaside{
+	float:left;
 }

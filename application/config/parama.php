@@ -76,6 +76,7 @@
 			'license'=>'License',
 		)
   	),
+
   'doc_format'=>array( 'letter'=>'Letter','fax'=>'Fax','email'=>'Email','scan'=>'Scan','other'=>'Other'),
 
   'department'=>array(
@@ -100,6 +101,7 @@
   		'principal_vendor'=>'Principal / Vendors',
   		'subcon'=>'3rd Party / Sub-Con'
   		),
+
   'eventtitle'=>array(
       'document.upload'=>'New Document Created',
       'document.create'=>'New Document Created',
@@ -113,5 +115,15 @@
       'project.delete'=>'A Project Deleted',
 
       'request.approval'=>'Approval Requested'
+    ),
+
+  'contentsection'=>array(
+      'help'=>'Help',
+      'faq'=>'FAQ',
+    ),
+
+  'contentcategory'=>array(
+      'help'=>'Help',
+      'faq'=>'FAQ',
     ),
 );

@@ -26,9 +26,29 @@ function getavatarbyemail($email,$alt = 'avatar-image',$class = 'avatar'){
 	return $photo;
 }
 
+function getuser($id){
+	$_id = new MongoId($id);
+	$usr = new User();
+	$usr = $usr->get(array('_id'=>$_id));
+	return $usr;
+}
+
+function getuserbyemail($email){
+	$usr = new User();
+	$usr = $usr->get(array('email'=>$email));
+	return $usr;
+}
+
 function getdocument($id){
     $_id = new MongoId($id);
     $document = new Document();
+    $doc = $document->get(array('_id'=>$_id));
+    return $doc;
+}
+
+function getproject($id){
+    $_id = new MongoId($id);
+    $document = new Project();
     $doc = $document->get(array('_id'=>$_id));
     return $doc;
 }
