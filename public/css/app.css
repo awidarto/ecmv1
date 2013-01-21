@@ -153,7 +153,7 @@ table.dataTable{
 }
 .container-content{
 	float: none;
-	margin-top: 0px;
+	margin-top: 10px;
 }
 #paramanusaLogo{
 	background: transparent url(../images/logo.png);
