@@ -35,7 +35,7 @@
   <![endif]-->
 </head>
 <body>
-    <div class="row container-content dialog clearfix">
+    <div class="row container-content dialog clearfix" id="dialog-container">
         <div id="maincontent" class="twelve columns dialog">
             @yield('content')
         </div>

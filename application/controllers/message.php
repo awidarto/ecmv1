@@ -399,4 +399,15 @@ class Message_Controller extends Base_Controller {
 		
 	}	
 
+
+	public function get_view($id){
+		$id = new MongoId($id);
+
+		$document = new Message();
+
+		$doc = $document->get(array('_id'=>$id));
+
+		return View::make('pop.message')->with('doc',$doc);
+	}
+
 }
