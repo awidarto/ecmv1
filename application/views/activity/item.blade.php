@@ -40,11 +40,13 @@ elseif($doc['event'] == 'project.update'){
 	$body = $doc['updater_name'].' have updated '.$doc['doc_number'].' - '.$doc['doc_title'];
 }
 elseif($doc['event'] == 'request.approval'){
+	
 	$main_photo = getavatar($doc['requester_id'],$doc['requester_name'],'twelve');
+
 	if($doc['approvalby'] == Auth::user()->email){
-		$body = $doc['requester_name'].' have requested document approval from you, please review : <span class="metaview" id="'.$doc['_id'].'">'.$doc['doc_title'].'</span>';
+		$body = $doc['requester_name'].' have requested document approval from you, please review : <span class="approvalview" id="'.$doc['doc_id'].'">'.$doc['doc_title'].'</span>';
 	}else{
-		$body = 'You have requested document approval to '.$doc['approvalby'].' for document : <span class="metaview" id="'.$doc['_id'].'">'.$doc['doc_title'].'</span>';
+		$body = 'You have requested document approval to '.$doc['approvalby'].' for document : <span class="fileview" id="'.$doc['doc_id'].'">'.$doc['doc_filename'].'</span>';
 	}
 }else{
 	$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'twelve');
@@ -64,7 +66,8 @@ elseif($doc['event'] == 'request.approval'){
 	    <div class="one columns">{{ $doc_photo }}</div>
 	    <div class="eleven columns">
 	    	<p>
-				<span class="metaview" id="{{$doc['_id']}}">{{$doc['doc_title']}}</span>
+				Document Title : <span class="metaview" id="{{$doc['doc_id']}}">{{$doc['doc_title']}}</span><br />
+				Attachment : <span class="fileview" id="{{$doc['doc_id']}}">{{$doc['doc_filename']}}</span>
 	    	</p>
 	    </div>
 	  </div>

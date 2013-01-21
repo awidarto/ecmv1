@@ -25,9 +25,11 @@
     <div class="one columns mobile">     
       <dl class="vertical tabs">
         <dd><a href="{{ URL::base() }}"><i class="foundicon-home sidemenu"></i> <br/>Home</a></dd>
-        <dd><a href="{{ URL::to('approval') }}"><i class="foundicon-checkmark sidemenu"></i> <br/>Approval</a></dd>
+        <dd><a href="{{ URL::to('approval') }}"><i class="foundicon-down-arrow sidemenu"></i> <br/>Incoming Requests</a></dd>
+        <dd><a href="{{ URL::to('requests') }}"><i class="foundicon-up-arrow sidemenu"></i> <br/>Outgoing Requests</a></dd>
         <dd><a href="{{ URL::to('message') }}"><i class="foundicon-mail sidemenu"></i> <br/>Messages</a></dd>
         <dd><a href="{{ URL::to('project') }}"><i class="foundicon-idea sidemenu"></i> <br/>Projects</a></dd>
+        <dd><a href="{{ URL::to('employee') }}"><i class="foundicon-people sidemenu"></i> <br/>Employees</a></dd>
         <dd><a href="{{ URL::to('user/profile') }}"><i class="foundicon-settings sidemenu"></i> <br/>Profile</a></dd>
         <dd><a href="{{ URL::to('search') }}"><i class="foundicon-search sidemenu"></i> <br/>Search</a></dd>
         <dd><a href="{{ URL::to('content/view/help') }}"><i class="foundicon-smiley sidemenu"></i> <br/>Help</a></dd>

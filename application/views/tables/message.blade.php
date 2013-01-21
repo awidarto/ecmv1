@@ -1,60 +1,65 @@
 @layout('master')
 
 @section('content')
+@if($title != '')
 <div class="tableHeader">
-	@if($title != '')
 		<h3>{{$title}}</h3>
-	@endif
 	@if(isset($addurl))
 		<a class="foundicon-add-doc button right newdoc action clearfix" href="{{URL::to($addurl)}}">&nbsp;&nbsp;<span>{{$newbutton}}</span></a>
 	@endif
 </div>
+@endif
+
+<h4><i class="foundicon-down-arrow"></i>&nbsp;Inbox</h4>
 <div class="row">
-	<table class="dataTable">
-	    <thead>
-	        <tr>
-	        	<?php
-		        	if(!isset($colclass)){
-		        		$colclass = array();
-		        	}
-	        		$hid = 0;
-	        	?>
-	        	@foreach($heads as $head)
-	        		<th 
-	        			@if(isset($colclass[$hid]))
-	        				class="{{$colclass[$hid]}}"
-	        			@endif
-	        			<?php $hid++ ?>
-	        		>
-	        			{{ $head }}
-	        		</th>
-	        	@endforeach
-	        </tr>
-	    </thead>
+	<table class="dataTable" id="inbox">
 	    <tbody>
 	    </tbody>
-	    <tfoot>
-	    <tr>
-	    	@foreach($searchinput as $in)
-	    		@if($in)
-	        		<td><input type="text" name="search_{{$in}}" id="search_{{$in}}" value="Search {{$in}}" class="search_init" /></td>
-	    		@else
-	        		<td>&nbsp;</td>
-	    		@endif
-	    	@endforeach        	
-	    </tr>
-	    </tfoot>
+	</table>
+</div>
+
+<h4><i class="foundicon-up-arrow"></i>&nbsp;Outbox</h4>
+<div class="row">
+	<table class="dataTable" id="outbox">
+	    <tbody>
+	    </tbody>
 	</table>
 </div>
 
   <script type="text/javascript">
     $(document).ready(function(){
 		var asInitVals = new Array();
-        var oTable = $('.dataTable').DataTable(
+        var oTable = $('#inbox').DataTable(
 			{
 				"bProcessing": true,
 		        "bServerSide": true,
 		        "sAjaxSource": "{{$ajaxsource}}",
+				"oLanguage": { "sSearch": "Search "},
+				"sPaginationType": "full_numbers",
+				"sDom": 'T<"clear">lfrtip',
+				"oTableTools": {
+					"sSwfPath": "assets/swf/copy_csv_xls_pdf.swf"
+				},
+				"aoColumnDefs": [ 
+				    { "bSortable": false, "aTargets": [ {{ $disablesort }} ] }
+				 ],
+			    "fnServerData": function ( sSource, aoData, fnCallback ) {
+		            $.ajax( {
+		                "dataType": 'json', 
+		                "type": "POST", 
+		                "url": sSource, 
+		                "data": aoData, 
+		                "success": fnCallback
+		            } );
+		        }
+			}
+        );
+
+        var outTable = $('#outbox').DataTable(
+			{
+				"bProcessing": true,
+		        "bServerSide": true,
+		        "sAjaxSource": "{{$ajaxsourceoutbox}}",
 				"oLanguage": { "sSearch": "Search "},
 				"sPaginationType": "full_numbers",
 				"sDom": 'T<"clear">lfrtip',
@@ -138,22 +143,6 @@
 		} );
 
 		$('table.dataTable').click(function(e){
-
-			if ($(e.target).is('.del')) {
-				var _id = e.target.id;
-				var answer = confirm("Are you sure you want to delete this item ?");
-				if (answer){
-					$.post('{{ URL::to($ajaxdel) }}',{'id':_id}, function(data) {
-						if(data.status == 'OK'){
-							//redraw table
-							oTable.fnDraw();
-							alert("Item id : " + _id + " deleted");
-						}
-					},'json');
-				}else{
-					alert("Deletion cancelled");
-				}
-		   	}
 
 			if ($(e.target).is('.pop')) {
 				var _id = e.target.id;

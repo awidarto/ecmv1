@@ -1,6 +1,6 @@
 <?php
 
-class User_Controller extends Base_Controller {
+class Employee_Controller extends Base_Controller {
 
 	/*
 	|--------------------------------------------------------------------------
@@ -35,87 +35,15 @@ class User_Controller extends Base_Controller {
 	public function __construct(){
 
 		$this->crumb = new Breadcrumb();
-		$this->crumb->add('user/users','Users');
+		$this->crumb->add('employee/employees','Employees');
 
 		date_default_timezone_set('Asia/Jakarta');
 		$this->filter('before','auth');
 	}	
 
+
+
 	public function get_index()
-	{
-		$user = new User();
-
-		$user_profile = $user->get(array('email'=>Auth::user()->email));
-
-		return View::make('user.profile')->with('profile',$user_profile);
-	}
-
-	public function post_index()
-	{
-		return View::make('user.index');
-	}
-
-	public function get_profile($id = null){
-
-		if(is_null($id)){
-			$this->crumb = new Breadcrumb();
-		}
-
-		$user = new User();
-
-		$id = (is_null($id))?Auth::user()->id:$id;
-
-		$id = new MongoId($id);
-
-		$user_profile = $user->get(array('_id'=>$id));
-
-		$this->crumb->add('project/profile','Profile',false);
-		$this->crumb->add('project/profile',$user_profile['fullname']);
-
-		return View::make('user.profile')
-			->with('crumb',$this->crumb)
-			->with('profile',$user_profile);
-	}
-
-	public function get_popprofile($id = null){
-
-		$user = new User();
-
-		$id = (is_null($id))?Auth::user()->id:$id;
-
-		$id = new MongoId($id);
-
-		$user_profile = $user->get(array('_id'=>$id));
-
-		return View::make('pop.userprofile')->with('profile',$user_profile);
-	}
-
-	public function post_profile(){
-		
-	}
-
-	public function post_del(){
-		$id = Input::get('id');
-
-		$user = new User();
-
-		if(is_null($id)){
-			$result = array('status'=>'ERR','data'=>'NOID');
-		}else{
-
-			$id = new MongoId($id);
-
-			if($user->delete(array('_id'=>$id))){
-				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
-			}else{
-				$result = array('status'=>'ERR','data'=>'DELETEFAILED');				
-			}
-		}
-
-		print json_encode($result);
-	}
-
-	public function get_users()
 	{
 
 		$heads = array('#','','Full Name','Email','Department','Role','Action');
@@ -126,20 +54,20 @@ class User_Controller extends Base_Controller {
 		$tags = $tag->find(array(), array(),array('count'=>-1));
 
 		return View::make('tables.simple')
-			->with('title','User Management')
-			->with('newbutton','New User')
+			->with('title','Employee Management')
+			->with('newbutton','New Employee')
 			->with('disablesort','0,1,4,5')
-			->with('addurl','user/add')
+			->with('addurl','employee/add')
 			->with('searchinput',$searchinput)
 			->with('tags',$tags)
 			->with('colclass',$colclass)
-			->with('ajaxsource',URL::to('users'))
-			->with('ajaxdel',URL::to('user/del'))
+			->with('ajaxsource',URL::to('employee'))
+			->with('ajaxdel',URL::to('employee/del'))
 			->with('crumb',$this->crumb)
 			->with('heads',$heads);
 	}
 
-	public function post_users()
+	public function post_index()
 	{
 		$fields = array('fullname','username','email','department','role');
 
@@ -177,7 +105,7 @@ class User_Controller extends Base_Controller {
 
 		//print_r($q)
 
-		$document = new User();
+		$document = new Employee();
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
@@ -216,20 +144,19 @@ class User_Controller extends Base_Controller {
 			}
 			*/
 
-			$photo = getavatar($doc['_id'],$doc['fullname'],'twelve');
+			$photo = getphoto($doc['_id'],$doc['fullname'],'twelve');
 
 			$aadata[] = array(
 				$counter,
 				$photo,
-				'<span class="pop" rel="user/popprofile" id="'.$doc['_id'].'" >'.$doc['fullname'].'</span>',
-				//HTML::link('user/profile/'.$doc['_id'],$doc['fullname']),
+				'<span class="pop" rel="employee/popprofile" id="'.$doc['_id'].'" >'.$doc['fullname'].'</span>',
+				//HTML::link('employee/profile/'.$doc['_id'],$doc['fullname']),
 				//$doc['username'],
 				$doc['email'],
 				isset($doc['department'])?depttitle($doc['department']):'',
-				roletitle($doc['role']),
-				'<a href="'.URL::to('user/pass/'.$doc['_id']).'"><i class="foundicon-lock action"></i></a>&nbsp;'.
-				'<a href="'.URL::to('user/picture/'.$doc['_id']).'"><i class="foundicon-smiley action"></i></a>&nbsp;'.
-				'<a href="'.URL::to('user/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
+				(isset($doc['role']))?roletitle($doc['role']):'no role',
+				'<a href="'.URL::to('employee/picture/'.$doc['_id']).'"><i class="foundicon-smiley action"></i></a>&nbsp;'.
+				'<a href="'.URL::to('employee/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 			);
 			$counter++;
@@ -247,23 +174,97 @@ class User_Controller extends Base_Controller {
 		print json_encode($result);
 	}
 
+	public function get_userlist()
+	{
+		$user = new Employee();
+
+		$user_profile = $user->get(array('email'=>Auth::user()->email));
+
+		return View::make('employee.profile')->with('profile',$user_profile);
+	}
+
+	public function post_userlist()
+	{
+		return View::make('employee.index');
+	}
+
+	public function get_profile($id = null){
+
+		if(is_null($id)){
+			$this->crumb = new Breadcrumb();
+		}
+
+		$user = new Employee();
+
+		$id = (is_null($id))?Auth::user()->id:$id;
+
+		$id = new MongoId($id);
+
+		$user_profile = $user->get(array('_id'=>$id));
+
+		$this->crumb->add('project/profile','Profile',false);
+		$this->crumb->add('project/profile',$user_profile['fullname']);
+
+		return View::make('employee.profile')
+			->with('crumb',$this->crumb)
+			->with('profile',$user_profile);
+	}
+
+	public function get_popprofile($id = null){
+
+		$user = new Employee();
+
+		$id = (is_null($id))?Auth::user()->id:$id;
+
+		$id = new MongoId($id);
+
+		$user_profile = $user->get(array('_id'=>$id));
+
+		return View::make('pop.employeeprofile')->with('profile',$user_profile);
+	}
+
+	public function post_profile(){
+		
+	}
+
+	public function post_del(){
+		$id = Input::get('id');
+
+		$user = new Employee();
+
+		if(is_null($id)){
+			$result = array('status'=>'ERR','data'=>'NOID');
+		}else{
+
+			$id = new MongoId($id);
+
+			if($user->delete(array('_id'=>$id))){
+				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
+			}else{
+				$result = array('status'=>'ERR','data'=>'DELETEFAILED');				
+			}
+		}
+
+		print json_encode($result);
+	}
+
 	public function get_picture($id = null){
 
-		$this->crumb->add('user/picture','Change Picture',false);
+		$this->crumb->add('employee/picture','Change Picture',false);
 
 		$_id = (is_null($id))?Auth::user()->id:$id;
 
 		$_id = new MongoId($_id);
 
-		$emp = new User();
+		$emp = new Employee();
 
 		$employee = $emp->get(array('_id'=>$_id));
 
-		$this->crumb->add('user/picture',$employee['fullname'],false);
+		$this->crumb->add('employee/picture',$employee['fullname'],false);
 
 		$form = Formly::make();
 
-		return View::make('user.pic')
+		return View::make('employee.pic')
 					->with('form',$form)
 					->with('id',$id)
 					->with('doc',$employee)
@@ -274,9 +275,9 @@ class User_Controller extends Base_Controller {
 	public function post_picture($id = null){
 
 		if(is_null($id)){
-			$back = 'user/profile';
+			$back = 'employee/profile';
 		}else{
-			$back = 'users';
+			$back = 'employee';
 		}
 
 		//$id = (is_null($id))?Auth::user()->id:$id;
@@ -288,22 +289,22 @@ class User_Controller extends Base_Controller {
 
 		if($picupload['name'] != ''){
 
-			$newdir = realpath(Config::get('parama.avatarstorage')).'/'.$id;
+			$newdir = realpath(Config::get('parama.photostorage')).'/'.$id;
 
 			if(!file_exists($newdir)){
 				mkdir($newdir,0777);
 			}
 
 			$success = Resizer::open( $picupload )
-        		->resize( 200 , 200 , 'crop' )
-        		->save( Config::get('parama.avatarstorage').$id.'/avatar.jpg' , 90 );
+        		->resize( 200 , 250 , 'crop' )
+        		->save( Config::get('parama.photostorage').$id.'/formal.jpg' , 90 );
 
 			Input::upload('picupload',$newdir,$picupload['name']);
 
 			
 		}
 
-		$user = new User();
+		$user = new Employee();
 
 		$_id = new MongoId($data['id']);
 		$data['lastUpdate'] = new MongoDate();
@@ -328,7 +329,7 @@ class User_Controller extends Base_Controller {
 
 		$form = Formly::make();
 
-		return View::make('user.pass')
+		return View::make('employee.pass')
 					->with('form',$form)
 					->with('doc',$doc)
 					->with('title','Change Password');
@@ -338,7 +339,7 @@ class User_Controller extends Base_Controller {
 	public function post_pass($id = null){
 
 		if(is_null($id)){
-			$back = 'user/profile';
+			$back = 'employee/profile';
 		}else{
 			$back = 'users';
 		}
@@ -352,7 +353,7 @@ class User_Controller extends Base_Controller {
 
 	    if($validation->fails()){
 
-	    	return Redirect::to('user/pass/'.$id)->with_errors($validation)->with_input(Input::all());
+	    	return Redirect::to('employee/pass/'.$id)->with_errors($validation)->with_input(Input::all());
 
 	    }else{
 
@@ -367,7 +368,7 @@ class User_Controller extends Base_Controller {
 			$_id = new MongoId($data['id']);
 			$data['lastUpdate'] = new MongoDate();
 
-			$user = new User();
+			$user = new Employee();
 
 			if($user->update(array('_id'=>$_id),array('$set'=>$data))){
 		    	return Redirect::to($back)->with('notify_success','Password changed successfully');
@@ -384,7 +385,7 @@ class User_Controller extends Base_Controller {
 
 		$this->crumb->add('user/edit','Edit',false);
 
-		$user = new User();
+		$user = new Employee();
 
 		$id = (is_null($id))?Auth::user()->id:$id;
 
@@ -394,18 +395,9 @@ class User_Controller extends Base_Controller {
 
 		$this->crumb->add('user/edit',$user_profile['fullname']);
 
-		foreach($user_profile['permissions'] as $key=>$val){
-			$user_profile[$key] = ($val)?1:0;
-			/*
-			foreach($val as $k=>$v){
-				$user_profile[$key.'_'.$k] = $v;
-			}
-			*/
-		}
-
 		$form = Formly::make($user_profile);
 
-		return View::make('user.edit')
+		return View::make('employee.edit')
 					->with('user',$user_profile)
 					->with('form',$form)
 					->with('crumb',$this->crumb)
@@ -426,61 +418,24 @@ class User_Controller extends Base_Controller {
 
 	    if($validation->fails()){
 
-	    	return Redirect::to('user/edit/'.$id)->with_errors($validation)->with_input(Input::all());
+	    	return Redirect::to('employee/edit/'.$id)->with_errors($validation)->with_input(Input::all());
 
 	    }else{
 
 			$data = Input::get();
 	    	
-			$obj = Config::get('parama.department');
-
-			$pitem = Config::get('acl.permissions');
-
-			$permissions = array();
-
-			foreach($obj as $o=>$t){
-				if(isset($data[$o])){
-					$permissions[$o] = true;
-					unset($data[$o]);
-				}else{
-					$permissions[$o] = false;
-				}
-
-				/*
-				if(isset($data[$o.'_set'])){
-					$permissions[$o]['set'] = $data[$o.'_set'];
-					unset($data[$o.'_set']);
-				}else{
-					$permissions[$o]['set'] = 0;
-				}
-				foreach($pitem as $p){
-					if(isset($data[$o.'_'.$p])){
-						$permissions[$o][$p] = $data[$o.'_'.$p];
-						unset($data[$o.'_'.$p]);
-					}else{
-						$permissions[$o][$p] = 0;
-					}
-				}
-				*/
-			}
-
-			$data['permissions'] = $permissions;
-
 			$id = new MongoId($data['id']);
 			$data['lastUpdate'] = new MongoDate();
 
 			unset($data['csrf_token']);
 			unset($data['id']);
 
-			$user = new User();
-
-			//print_r($data);
-
+			$user = new Employee();
 			
 			if($user->update(array('_id'=>$id),array('$set'=>$data))){
-		    	return Redirect::to('users')->with('notify_success','User saved successfully');
+		    	return Redirect::to('employee')->with('notify_success','Employee saved successfully');
 			}else{
-		    	return Redirect::to('users')->with('notify_success','User saving failed');
+		    	return Redirect::to('employee')->with('notify_success','Employee saving failed');
 			}
 
 	    }
@@ -496,7 +451,7 @@ class User_Controller extends Base_Controller {
 		$this->crumb->add('project/add','New User');
 
 		$form = new Formly();
-		return View::make('user.new')
+		return View::make('employee.new')
 					->with('form',$form)
 					->with('crumb',$this->crumb)
 					->with('title','New User');
@@ -508,60 +463,20 @@ class User_Controller extends Base_Controller {
 		//print_r(Session::get('permission'));
 
 	    $rules = array(
-	        'fullname'  => 'required|max:50',
-	        'email' => 'required|email|unique:user',
-	        'username' => 'required|unique:user',
-	        'pass' => 'required|same:repass',
-	        'repass'=> 'required'
+	        'fullname'  => 'required|max:150',
+	        'email' => 'required|email'
 	    );
 
 	    $validation = Validator::make($input = Input::all(), $rules);
 
 	    if($validation->fails()){
 
-	    	return Redirect::to('user/add')->with_errors($validation)->with_input(Input::all());
+	    	return Redirect::to('employee/add')->with_errors($validation)->with_input(Input::all());
 
 	    }else{
 
 			$data = Input::get();
 	    	
-			$obj = Config::get('parama.department');
-
-			$pitem = Config::get('acl.permissions');
-
-			$permissions = array();
-
-			foreach($obj as $o=>$t){
-
-				if(isset($data[$o])){
-					$permissions[$o] = true;
-				}else{
-					$permissions[$o] = false;
-				}
-
-				/*
-				if(isset($data[$o.'_set'])){
-					$permissions[$o]['set'] = $data[$o.'_set'];
-					unset($data[$o.'_set']);
-				}else{
-					$permissions[$o]['set'] = 0;
-				}
-
-				foreach($pitem as $p){
-					if(isset($data[$o.'_'.$p])){
-						$permissions[$o][$p] = $data[$o.'_'.$p];
-						unset($data[$o.'_'.$p]);
-					}else{
-						$permissions[$o][$p] = 0;
-					}
-				}
-				*/
-			}
-
-			$data['pass'] = Hash::make($data['pass']);
-			$data['permissions'] = $permissions;
-
-			unset($data['repass']);
 			unset($data['csrf_token']);
 
 			$data['createdDate'] = new MongoDate();
@@ -569,12 +484,12 @@ class User_Controller extends Base_Controller {
 			$data['creatorName'] = Auth::user()->fullname;
 			$data['creatorId'] = Auth::user()->id;
 
-			$user = new User();
+			$user = new Employee();
 
 			if($user->insert($data)){
-		    	return Redirect::to('user')->with('notify_success','User saved successfully');
+		    	return Redirect::to('employee')->with('notify_success','Employee saved successfully');
 			}else{
-		    	return Redirect::to('user')->with('notify_success','User saving failed');
+		    	return Redirect::to('employee')->with('notify_success','Employee saving failed');
 			}
 			
 
@@ -593,10 +508,10 @@ class User_Controller extends Base_Controller {
 			->with('title','People')
 			->with('newbutton','New User')
 			->with('disablesort','0,5,6')
-			->with('addurl','user/add')
+			->with('addurl','employee/add')
 			->with('searchinput',$searchinput)
-			->with('ajaxsource',URL::to('user/people'))
-			->with('ajaxdel',URL::to('user/del'))
+			->with('ajaxsource',URL::to('employee/people'))
+			->with('ajaxdel',URL::to('employee/del'))
 			->with('heads',$heads);
 	}
 
@@ -630,7 +545,7 @@ class User_Controller extends Base_Controller {
 
 		//print_r($q)
 
-		$document = new User();
+		$document = new Employee();
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');

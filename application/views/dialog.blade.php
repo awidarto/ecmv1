@@ -35,26 +35,16 @@
   <![endif]-->
 </head>
 <body>
-
-    <div class="row container-content clearfix">
-
-        <div id="maincontent" class="twelve columns">
+    <div class="row container-content dialog clearfix">
+        <div id="maincontent" class="twelve columns dialog">
             @yield('content')
         </div>
-
     </div>
 
-  <footer class="row">
-    
-      <hr />
-        <p>&copy; Copyright 2012. ParamaNusa.</p>
-    
-  </footer>
     {{ HTML::script('js/jquery.foundation.forms.js') }}
     <script type="text/javascript">
       base = '{{ URL::base() }}/';
     </script>
     {{ HTML::script('js/pnu.js') }}
-
 </body>
 </html>

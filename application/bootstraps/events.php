@@ -16,6 +16,7 @@ Event::listen('document.create',function($id, $result){
         'department'=>$doc['docDepartment'],
         'doc_id'=>$id,
         'doc_title'=>$doc['title'],
+        'doc_filename'=>$doc['docFilename'],
         'result'=>$result
     );
 
@@ -43,6 +44,7 @@ Event::listen('document.update',function($id,$result){
         'department'=>$doc['docDepartment'],
         'doc_id'=>$id,
         'doc_title'=>$doc['title'],
+        'doc_filename'=>$doc['docFilename'],
         'result'=>$result
     );
 
@@ -86,6 +88,7 @@ Event::listen('document.share',function($id,$sharer_id,$shareto){
         'sharer_name'=>Auth::user()->fullname,
         'shareto'=>$shareto,
         'doc_id'=>$id,
+        'doc_filename'=>$doc['docFilename'],
         'doc_title'=>$doc['title']
     );
 
@@ -195,6 +198,7 @@ Event::listen('request.approval',function($id,$approvalby){
         'shareto'=>'',
         'approvalby'=>$approvalby,
         'doc_id'=>$id,
+        'doc_filename'=>$doc['docFilename'],
         'doc_title'=>$doc['title']
     );
 

@@ -1,6 +1,7 @@
 <?php return array(
   'storage'=>'public/storage/',
   'avatarstorage'=>'public/avatar/',
+  'photostorage'=>'public/employees/',
   'currencies'=>array( 'IDR'=>'IDR','USD'=>'USD','SGD'=>'SGD','EU'=>'EU','AUD'=>'AUD'),
   'roles'=>array( 
   		'root'=>'Root User',

@@ -13,7 +13,7 @@
 			<table class="profile-info">
 				<tr>
 					<td class="detail-title">Department of Origin</td>
-					<td class="detail-info">{{ depttitle($profile['docDepartment']) }}</td>
+					<td class="detail-info">{{ (isset($profile['docDepartment']))? depttitle($profile['docDepartment']):''; }}</td>
 				</tr>
 
 				<tr>

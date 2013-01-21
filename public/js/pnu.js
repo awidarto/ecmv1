@@ -237,6 +237,65 @@
 				$('#opportunity_id').val(ui.item.id);
 				$('#opportunity_number').val(ui.item.number);			
 			}
-		});		
+		});
+
+
+		$('.auto_userdata').autocomplete({
+			source: base + 'ajax/userdata',
+			select: function(event, ui){
+				$('#emp_user_id').val(ui.item.id);
+				$('#emp_email').val(ui.item.userdata.email);	
+
+				$('#emp_jobtitle').val(ui.item.userdata.employee_jobtitle);			
+				
+				$('#emp_department').select2('val',ui.item.userdata.department);
+
+				$('#emp_mobile').val(ui.item.userdata.mobile);			
+				$('#emp_phone').val(ui.item.userdata.home);			
+				$('#emp_street').val(ui.item.userdata.street);			
+				$('#emp_city').val(ui.item.userdata.city);			
+				$('#emp_zip').val(ui.item.userdata.zip);							
+			}
+		});
+
+		$('.auto_userdatabyemail').autocomplete({
+			source: base + 'ajax/userdatabyemail',
+			select: function(event, ui){
+				$('#emp_user_id').val(ui.item.id);
+				$('#emp_fullname').val(ui.item.userdata.fullname);			
+
+				$('#emp_jobtitle').val(ui.item.userdata.employee_jobtitle);			
+				
+				$('#emp_department').select2('val',ui.item.userdata.department);
+
+				$('#emp_mobile').val(ui.item.userdata.mobile);			
+				$('#emp_phone').val(ui.item.userdata.home);			
+				$('#emp_street').val(ui.item.userdata.street);			
+				$('#emp_city').val(ui.item.userdata.city);			
+				$('#emp_zip').val(ui.item.userdata.zip);			
+
+
+			}
+		});
+
+		$('.auto_idbyemail').autocomplete({
+			source: base + 'ajax/useridbyemail',
+			select: function(event, ui){
+				$('#emp_user_id').val(ui.item.id);
+				$('#emp_fullname').val(ui.item.userdata.fullname);			
+
+				$('#emp_jobtitle').val(ui.item.userdata.employee_jobtitle);			
+				
+				$('#emp_department').select2('val',ui.item.userdata.department);
+
+				$('#emp_mobile').val(ui.item.userdata.mobile);			
+				$('#emp_phone').val(ui.item.userdata.home);			
+				$('#emp_street').val(ui.item.userdata.street);			
+				$('#emp_city').val(ui.item.userdata.city);			
+				$('#emp_zip').val(ui.item.userdata.zip);			
+
+
+			}
+		});
 
     });

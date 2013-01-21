@@ -80,6 +80,60 @@ class Ajax_Controller extends Base_Controller {
 		return Response::json($result);		
 	}	
 
+	public function get_userdata()
+	{
+		$q = Input::get('term');
+
+		$user = new User();
+		$qemail = new MongoRegex('/'.$q.'/i');
+
+		$res = $user->find(array('$or'=>array(array('email'=>$qemail),array('fullname'=>$qemail)) ));
+
+		$result = array();
+
+		foreach($res as $r){
+			$result[] = array('id'=>$r['_id']->__toString(),'value'=>$r['fullname'],'email'=>$r['email'],'label'=>$r['fullname'].' ( '.$r['email'].' )','userdata'=>$r);
+		}
+
+		return Response::json($result);		
+	}		
+
+	public function get_userdatabyemail()
+	{
+		$q = Input::get('term');
+
+		$user = new User();
+		$qemail = new MongoRegex('/'.$q.'/i');
+
+		$res = $user->find(array('$or'=>array(array('email'=>$qemail),array('fullname'=>$qemail)) ));
+
+		$result = array();
+
+		foreach($res as $r){
+			$result[] = array('id'=>$r['_id']->__toString(),'value'=>$r['email'],'email'=>$r['email'],'label'=>$r['fullname'].' ( '.$r['email'].' )','userdata'=>$r);
+		}
+
+		return Response::json($result);		
+	}		
+
+	public function get_useridbyemail()
+	{
+		$q = Input::get('term');
+
+		$user = new User();
+		$qemail = new MongoRegex('/'.$q.'/i');
+
+		$res = $user->find(array('$or'=>array(array('email'=>$qemail),array('fullname'=>$qemail)) ));
+
+		$result = array();
+
+		foreach($res as $r){
+			$result[] = array('id'=>$r['_id']->__toString(),'value'=>$r['_id']->__toString(),'email'=>$r['email'],'label'=>$r['fullname'].' ( '.$r['email'].' )');
+		}
+
+		return Response::json($result);		
+	}		
+
 	public function get_rev()
 	{
 		$q = Input::get('term');

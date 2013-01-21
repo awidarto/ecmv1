@@ -1,6 +1,6 @@
 <?php
 
-class Document_Controller extends Base_Controller {
+class Requests_Controller extends Base_Controller {
 
 	/*
 	|--------------------------------------------------------------------------
@@ -115,7 +115,7 @@ class Document_Controller extends Base_Controller {
 
 		//print_r($q)
 
-		$document = new Document();
+		$document = new Requests();
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
@@ -188,7 +188,7 @@ class Document_Controller extends Base_Controller {
 	public function post_del(){
 		$id = Input::get('id');
 
-		$user = new Document();
+		$user = new Requests();
 
 		if(is_null($id)){
 			$result = array('status'=>'ERR','data'=>'NOID');
@@ -305,7 +305,7 @@ class Document_Controller extends Base_Controller {
 
 			$data['tags'] = explode(',',$data['docTag']);
 
-			$document = new Document();
+			$document = new Requests();
 
 			$newobj = $document->insert($data);
 
@@ -369,7 +369,7 @@ class Document_Controller extends Base_Controller {
 		}
 
 
-		$doc = new Document();
+		$doc = new Requests();
 
 		$id = (is_null($id))?Auth::user()->id:$id;
 
@@ -465,7 +465,7 @@ class Document_Controller extends Base_Controller {
 
 			$data['tags'] = explode(',',$data['docTag']);
 
-			$doc = new Document();
+			$doc = new Requests();
 
 			//print_r($data);
 			$oldtags = explode(',',$data['oldTag']);
@@ -565,7 +565,7 @@ class Document_Controller extends Base_Controller {
 
 		$title = $dept[$type];
 
-		$doc = new Document();
+		$doc = new Requests();
 
 		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
 
@@ -649,7 +649,7 @@ class Document_Controller extends Base_Controller {
 			$q['docDepartment'] = $type;
 		}
 
-		$document = new Document();
+		$document = new Requests();
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
@@ -783,7 +783,7 @@ class Document_Controller extends Base_Controller {
 
 		//print_r($q)
 
-		$document = new Document();
+		$document = new Requests();
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
@@ -836,7 +836,7 @@ class Document_Controller extends Base_Controller {
 	public function get_view($id){
 		$id = new MongoId($id);
 
-		$document = new Document();
+		$document = new Requests();
 
 		$doc = $document->get(array('_id'=>$id));
 
@@ -846,7 +846,7 @@ class Document_Controller extends Base_Controller {
 	public function get_fileview($id){
 		$_id = new MongoId($id);
 
-		$document = new Document();
+		$document = new Requests();
 
 		$doc = $document->get(array('_id'=>$_id));
 
@@ -860,15 +860,13 @@ class Document_Controller extends Base_Controller {
 	public function get_approve($id){
 		$id = new MongoId($id);
 
-		$document = new Document();
+		$document = new Requests();
 
 		$doc = $document->get(array('_id'=>$id));
 
 		$form = new Formly();
-
-		$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
 		
-		return View::make('pop.approval')->with('doc',$doc)->with('form',$form)->with('href',$file);
+		return View::make('pop.approval')->with('doc',$doc)->with('form',$form);
 	}	
 
 }

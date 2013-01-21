@@ -46,12 +46,12 @@ class Approval_Controller extends Base_Controller {
 	public function get_index()
 	{
 
-		$heads = array('#','Title','Created','Requester','Requesting Approval From','Attachment','Tags','Action');
+		$heads = array('#','Title','Created','Requester','Requesting','Attachment','Tags','Action');
 		$searchinput = array(false,'title','created','creator','approval from','filename','tags',false);
 
 		//if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
 			return View::make('tables.simple')
-				->with('title','Approval Requests')
+				->with('title','Incoming Requests')
 				->with('newbutton','New Document')
 				->with('disablesort','0,5,6')
 				->with('searchinput',$searchinput)
@@ -170,13 +170,20 @@ class Approval_Controller extends Base_Controller {
 
 			foreach ($doc['approvalRequestIds'] as $r) {
 				if($r['_id'] == $self_id){
-					$requestTo .= '<li><span class="approvalview" id="'.$doc['_id'].'">'.$r['fullname'].'</span></li>';
+					//$requestTo .= '<li><span class="approvalview" id="'.$doc['_id'].'">'.$r['fullname'].'</span></li>';
+					$requestTo .= '<li><strong>'.$r['fullname'].' (You)</strong></li>';
 				}else{
 					$requestTo .= '<li>'.$r['fullname'].'</li>';
 				}
 			}
 
 			$requestTo .= '</ol>';
+
+			if(count($doc['approvalRequestIds']) > 0){
+				$request_type = 'Approval';
+			}else{
+				$request_type = 'General';
+			}
 
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
@@ -186,10 +193,12 @@ class Approval_Controller extends Base_Controller {
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
 				date('Y-m-d H:i:s', $doc['createdDate']->sec),
 				$doc['creatorName'],
-				$requestTo,
+				//$requestTo,
+				$request_type,
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
-				'<i class="foundicon-checkmark action approve" id="'.$doc['_id'].'"></i>'
+				'<i class="foundicon-checkmark action approvalview" id="'.$doc['_id'].'"></i>&nbsp;'.
+				'<i class="foundicon-right-arrow action forwardview" id="'.$doc['_id'].'"></i>'
 			);
 			$counter++;
 		}

@@ -26,6 +26,35 @@ function getavatarbyemail($email,$alt = 'avatar-image',$class = 'avatar'){
 	return $photo;
 }
 
+// get employee formal photo
+
+function getphoto($id,$alt = 'avatar-image',$class = 'avatar'){
+	if(file_exists(Config::get('parama.photostorage').$id.'/formal.jpg')){
+		$photo = HTML::image('employees/'.$id.'/formal.jpg', $alt, array('class' => $class));
+	}else{
+		$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class));				
+	}
+
+	return $photo;
+}
+
+function getphotobyemail($email,$alt = 'avatar-image',$class = 'avatar'){
+	$usr = new User();
+
+	$usr = $usr->get(array('email'=>$email),array('id','email'));
+
+	$id = $usr['_id'];
+
+	if(file_exists(Config::get('parama.photostorage').$id.'/avatar.jpg')){
+		$photo = HTML::image('employees/'.$id.'/formal.jpg', $alt, array('class' => $class));
+	}else{
+		$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class));				
+	}
+
+	return $photo;
+}
+
+
 function getuser($id){
 	$_id = new MongoId($id);
 	$usr = new User();
