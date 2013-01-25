@@ -249,6 +249,11 @@ class User_Controller extends Base_Controller {
 
 	public function get_picture($id = null){
 
+		if(is_null($id)){
+			$this->crumb = new Breadcrumb();
+			$this->crumb->add('user/profile','Profile');
+		}
+
 		$this->crumb->add('user/picture','Change Picture',false);
 
 		$_id = (is_null($id))?Auth::user()->id:$id;
@@ -322,15 +327,31 @@ class User_Controller extends Base_Controller {
 
 	public function get_pass($id = null){
 
+		if(is_null($id)){
+			$this->crumb = new Breadcrumb();
+			$this->crumb->add('user/profile','Profile');
+		}
+
+		$this->crumb->add('user/pass','Change Password',false);
+
 		$id = (is_null($id))?Auth::user()->id:$id;
 
 		$doc['_id'] = $id;
 
 		$form = Formly::make();
 
+		$_id = new MongoId($id);
+
+		$user = new User();
+
+		$user_profile = $user->get(array('_id'=>$_id));
+
+		$this->crumb->add('user/picture',$user_profile['fullname'],false);
+
 		return View::make('user.pass')
 					->with('form',$form)
 					->with('doc',$doc)
+					->with('crumb',$this->crumb)
 					->with('title','Change Password');
 
 	}

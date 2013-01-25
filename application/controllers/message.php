@@ -141,6 +141,8 @@ class Message_Controller extends Base_Controller {
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
 
+		$search = Input::get('sSearch');
+
 		$limit = array($pagelength, $pagestart);
 
 		$defsort = 1;
@@ -165,11 +167,20 @@ class Message_Controller extends Base_Controller {
 
 		$self_email_regex = new MongoRegex('/'.Auth::user()->email.'/i');
 
-		//$q = array('$or'=>array(
-		//	array('to'=>$self_email_regex)
-		//	));
+		if($search != ''){
+			$search = new MongoRegex('/'.$search.'/i');
+			$q['from'] = $self_email_regex;
+			$q['$or'] = array(
+				array('from'=>$search),
+				array('to'=>$search),
+				array('subject'=>$search),
+				array('body'=>$search)
+			);
+		}else{
+			$q = array('from'=>$self_email_regex);
+		}
 
-		$q = array('from'=>$self_email_regex);
+
 
 		//$q = array();
 
@@ -209,106 +220,6 @@ class Message_Controller extends Base_Controller {
 		return Response::json($result);
 	}
 
-
-
-	public function __post_index()
-	{
-		$fields = array('title','createdDate','lastUpdate','creatorName','docFilename','docTag');
-
-		$rel = array('like','like','like','like','like','like');
-
-		$cond = array('both','both','both','both','both','both');
-
-		$pagestart = Input::get('iDisplayStart');
-		$pagelength = Input::get('iDisplayLength');
-
-		$limit = array($pagelength, $pagestart);
-
-		$defsort = 1;
-		$defdir = -1;
-
-		$idx = 0;
-		$q = array();
-
-		$hilite = array();
-		$hilite_replace = array();
-
-		foreach($fields as $field){
-			if(Input::get('sSearch_'.$idx))
-			{
-
-				$hilite_item = Input::get('sSearch_'.$idx);
-				$hilite[] = $hilite_item;
-				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
-
-				if($rel[$idx] == 'like'){
-					if($cond[$idx] == 'both'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
-					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
-					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
-					}
-				}else if($rel[$idx] == 'equ'){
-					$q[$field] = Input::get('sSearch_'.$idx);
-				}
-			}
-			$idx++;
-		}
-
-		//print_r($q)
-
-		$document = new Message();
-
-		/* first column is always sequence number, so must be omitted */
-		$fidx = Input::get('iSortCol_0');
-		if($fidx == 0){
-			$fidx = $defsort;			
-			$sort_col = $fields[$fidx];
-			$sort_dir = $defdir;
-		}else{
-			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
-			$sort_col = $fields[$fidx];
-			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
-		}
-
-		$count_all = $document->count();
-
-		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count($q);
-		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count();
-		}
-
-		$aadata = array();
-
-		$counter = 1 + $pagestart;
-		foreach ($documents as $doc) {
-
-			$aadata[] = array(
-				$counter,
-				date('Y-m-d h:i:s', $doc['createdDate']->sec),
-				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['subject'].'</span>',
-				$doc['from'],
-				$doc['to'],
-				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
-			);
-			$counter++;
-		}
-
-		
-		$result = array(
-			'sEcho'=> Input::get('sEcho'),
-			'iTotalRecords'=>$count_all,
-			'iTotalDisplayRecords'=> $count_display_all,
-			'aaData'=>$aadata,
-			'qrs'=>$q
-		);
-
-		return Response::json($result);
-	}
 
 	public function get_new()
 	{
