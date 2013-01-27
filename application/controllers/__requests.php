@@ -37,7 +37,7 @@ class Requests_Controller extends Base_Controller {
 
 	public function __construct(){
 		$this->crumb = new Breadcrumb();
-		$this->crumb->add('requests','Requests',false);
+		$this->crumb->add('document','Document');
 
 		date_default_timezone_set('Asia/Jakarta');
 		$this->filter('before','auth');
@@ -45,32 +45,32 @@ class Requests_Controller extends Base_Controller {
 
 	public function get_index()
 	{
+		$this->crumb->add('document','Super Manager');
 
-		$heads = array('#','Title','Created','Requester','Requesting','Attachment','Tags','Action');
-		$searchinput = array(false,'title','created','creator','approval from','filename','tags',false);
+		$heads = array('#','Title','Created','Last Update','Creator','Attachment','Tags','Action');
+		$searchinput = array(false,'title','created','last update','creator','filename','tags',false);
 
-		//if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
+		if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
 			return View::make('tables.simple')
-				->with('title','Incoming Requests')
+				->with('title','Document Library')
 				->with('newbutton','New Document')
 				->with('disablesort','0,5,6')
+				->with('addurl','document/add')
 				->with('searchinput',$searchinput)
-				->with('ajaxsource',URL::to('approval'))
-				->with('ajaxdel',URL::to('approval/del'))
+				->with('ajaxsource',URL::to('document'))
+				->with('ajaxdel',URL::to('document/del'))
 				->with('crumb',$this->crumb)
 				->with('heads',$heads);
-		/*
 		}else{
 			return View::make('document.restricted')
 							->with('title',$title);			
 		}
-		*/
 	}
 
 	public function post_index()
 	{
 
-		$fields = array('title','createdDate','creatorName','docApproval','docFilename','docTag');
+		$fields = array('title','createdDate','lastUpdate','creatorName','docFilename','docTag');
 
 		$rel = array('like','like','like','like','like','like');
 
@@ -86,15 +86,6 @@ class Requests_Controller extends Base_Controller {
 
 		$idx = 0;
 		$q = array();
-
-		$self_id = new MongoId(Auth::user()->id);
-
-		$q['$or'] = array(
-			array('approvalRequestIds.id'=>$self_id),
-			array('docApproval'=> new MongoRegex('/'.Auth::user()->email.'/i'))
-		);
-
-		$q = array('approvalRequestIds._id'=>$self_id);
 
 		$hilite = array();
 		$hilite_replace = array();
@@ -124,7 +115,7 @@ class Requests_Controller extends Base_Controller {
 
 		//print_r($q)
 
-		$document = new Document();
+		$document = new Requests();
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
@@ -152,7 +143,6 @@ class Requests_Controller extends Base_Controller {
 
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
-
 			if(isset($doc['tags'])){
 				$tags = array();
 
@@ -166,25 +156,6 @@ class Requests_Controller extends Base_Controller {
 				$tags = '';
 			}
 
-			$requestTo = '<ol>';
-
-			foreach ($doc['approvalRequestIds'] as $r) {
-				if($r['_id'] == $self_id){
-					//$requestTo .= '<li><span class="approvalview" id="'.$doc['_id'].'">'.$r['fullname'].'</span></li>';
-					$requestTo .= '<li><strong>'.$r['fullname'].' (You)</strong></li>';
-				}else{
-					$requestTo .= '<li>'.$r['fullname'].'</li>';
-				}
-			}
-
-			$requestTo .= '</ol>';
-
-			if(count($doc['approvalRequestIds']) > 0){
-				$request_type = 'Approval';
-			}else{
-				$request_type = 'General';
-			}
-
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
@@ -192,13 +163,12 @@ class Requests_Controller extends Base_Controller {
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
 				date('Y-m-d H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
 				$doc['creatorName'],
-				//$requestTo,
-				$request_type,
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
-				'<i class="foundicon-checkmark action approvalview" id="'.$doc['_id'].'"></i>&nbsp;'.
-				'<i class="foundicon-right-arrow action forwardview" id="'.$doc['_id'].'"></i>'
+				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
+				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 			);
 			$counter++;
 		}
@@ -214,367 +184,11 @@ class Requests_Controller extends Base_Controller {
 
 		return Response::json($result);
 	}
-
-// incoming
-
-	public function get_incoming()
-	{
-
-		$this->crumb->add('requests/incoming','Incoming',false);
-
-		$heads = array('#','Title','Created','Requester','Requesting','Attachment','Tags','Action');
-		$searchinput = array(false,'title','created','creator','approval from','filename','tags',false);
-
-		//if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
-			return View::make('tables.simple')
-				->with('title','Incoming Requests')
-				->with('newbutton','')
-				->with('disablesort','0,5,6')
-				->with('searchinput',$searchinput)
-				->with('ajaxsource',URL::to('requests/incoming'))
-				->with('ajaxdel',URL::to('requests/del'))
-				->with('crumb',$this->crumb)
-				->with('heads',$heads);
-		/*
-		}else{
-			return View::make('document.restricted')
-							->with('title',$title);			
-		}
-		*/
-	}
-
-	public function post_incoming()
-	{
-
-		$fields = array('title','createdDate','creatorName','docApproval','docFilename','docTag');
-
-		$rel = array('like','like','like','like','like','like');
-
-		$cond = array('both','both','both','both','both','both');
-
-		$pagestart = Input::get('iDisplayStart');
-		$pagelength = Input::get('iDisplayLength');
-
-		$limit = array($pagelength, $pagestart);
-
-		$defsort = 1;
-		$defdir = -1;
-
-		$idx = 0;
-		$q = array();
-
-		$self_id = new MongoId(Auth::user()->id);
-
-		$q['$or'] = array(
-			array('approvalRequestIds.id'=>$self_id),
-			array('docApproval'=> new MongoRegex('/'.Auth::user()->email.'/i'))
-		);
-
-		$q = array('approvalRequestIds._id'=>$self_id);
-
-		$hilite = array();
-		$hilite_replace = array();
-
-		foreach($fields as $field){
-			if(Input::get('sSearch_'.$idx))
-			{
-
-				$hilite_item = Input::get('sSearch_'.$idx);
-				$hilite[] = $hilite_item;
-				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
-
-				if($rel[$idx] == 'like'){
-					if($cond[$idx] == 'both'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
-					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
-					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
-					}
-				}else if($rel[$idx] == 'equ'){
-					$q[$field] = Input::get('sSearch_'.$idx);
-				}
-			}
-			$idx++;
-		}
-
-		//print_r($q)
-
-		$document = new Document();
-
-		/* first column is always sequence number, so must be omitted */
-		$fidx = Input::get('iSortCol_0');
-		if($fidx == 0){
-			$fidx = $defsort;			
-			$sort_col = $fields[$fidx];
-			$sort_dir = $defdir;
-		}else{
-			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
-			$sort_col = $fields[$fidx];
-			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
-		}
-
-		$count_all = $document->count();
-
-		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count($q);
-		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count();
-		}
-
-		$aadata = array();
-
-		$counter = 1 + $pagestart;
-		foreach ($documents as $doc) {
-
-			if(isset($doc['tags'])){
-				$tags = array();
-
-				foreach($doc['tags'] as $t){
-					$tags[] = '<span class="tagitem">'.$t.'</span>';
-				}
-
-				$tags = implode('',$tags);
-
-			}else{
-				$tags = '';
-			}
-
-			$requestTo = '<ol>';
-
-			foreach ($doc['approvalRequestIds'] as $r) {
-				if($r['_id'] == $self_id){
-					//$requestTo .= '<li><span class="approvalview" id="'.$doc['_id'].'">'.$r['fullname'].'</span></li>';
-					$requestTo .= '<li><strong>'.$r['fullname'].' (You)</strong></li>';
-				}else{
-					$requestTo .= '<li>'.$r['fullname'].'</li>';
-				}
-			}
-
-			$requestTo .= '</ol>';
-
-			if(count($doc['approvalRequestIds']) > 0){
-				$request_type = 'Approval';
-			}else{
-				$request_type = 'General';
-			}
-
-			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
-			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
-
-			$aadata[] = array(
-				$counter,
-				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
-				date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				$doc['creatorName'],
-				//$requestTo,
-				$request_type,
-				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
-				$tags,
-				'<i class="foundicon-checkmark action approvalview" id="'.$doc['_id'].'"></i>&nbsp;'.
-				'<i class="foundicon-right-arrow action forwardview" id="'.$doc['_id'].'"></i>'
-			);
-			$counter++;
-		}
-
-		
-		$result = array(
-			'sEcho'=> Input::get('sEcho'),
-			'iTotalRecords'=>$count_all,
-			'iTotalDisplayRecords'=> $count_display_all,
-			'aaData'=>$aadata,
-			'qrs'=>$q
-		);
-
-		return Response::json($result);
-	}
-
-//outgoing
-
-	public function get_outgoing()
-	{
-
-		$this->crumb->add('requests/outgoing','Outgoing',false);
-
-		$heads = array('#','Title','Created','Requester','Requesting','Attachment','Tags','Action');
-		$searchinput = array(false,'title','created','creator','approval from','filename','tags',false);
-
-		//if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
-			return View::make('tables.simple')
-				->with('title','Outgoing Requests')
-				->with('newbutton','')
-				->with('disablesort','0,5,6')
-				->with('searchinput',$searchinput)
-				->with('ajaxsource',URL::to('requests/outgoing'))
-				->with('ajaxdel',URL::to('requests/del'))
-				->with('crumb',$this->crumb)
-				->with('heads',$heads);
-		/*
-		}else{
-			return View::make('document.restricted')
-							->with('title',$title);			
-		}
-		*/
-	}
-
-	public function post_outgoing()
-	{
-
-		$fields = array('title','createdDate','creatorName','docApproval','docFilename','docTag');
-
-		$rel = array('like','like','like','like','like','like');
-
-		$cond = array('both','both','both','both','both','both');
-
-		$pagestart = Input::get('iDisplayStart');
-		$pagelength = Input::get('iDisplayLength');
-
-		$limit = array($pagelength, $pagestart);
-
-		$defsort = 1;
-		$defdir = -1;
-
-		$idx = 0;
-		$q = array();
-
-		$self_id = new MongoId(Auth::user()->id);
-
-		$q['$or'] = array(
-			array('approvalRequestIds.id'=>$self_id),
-			array('docApproval'=> new MongoRegex('/'.Auth::user()->email.'/i'))
-		);
-
-		$q = array('approvalRequestIds._id'=>$self_id);
-
-		$hilite = array();
-		$hilite_replace = array();
-
-		foreach($fields as $field){
-			if(Input::get('sSearch_'.$idx))
-			{
-
-				$hilite_item = Input::get('sSearch_'.$idx);
-				$hilite[] = $hilite_item;
-				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
-
-				if($rel[$idx] == 'like'){
-					if($cond[$idx] == 'both'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
-					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
-					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
-					}
-				}else if($rel[$idx] == 'equ'){
-					$q[$field] = Input::get('sSearch_'.$idx);
-				}
-			}
-			$idx++;
-		}
-
-		//print_r($q)
-
-		$document = new Document();
-
-		/* first column is always sequence number, so must be omitted */
-		$fidx = Input::get('iSortCol_0');
-		if($fidx == 0){
-			$fidx = $defsort;			
-			$sort_col = $fields[$fidx];
-			$sort_dir = $defdir;
-		}else{
-			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
-			$sort_col = $fields[$fidx];
-			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
-		}
-
-		$count_all = $document->count();
-
-		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count($q);
-		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count();
-		}
-
-		$aadata = array();
-
-		$counter = 1 + $pagestart;
-		foreach ($documents as $doc) {
-
-			if(isset($doc['tags'])){
-				$tags = array();
-
-				foreach($doc['tags'] as $t){
-					$tags[] = '<span class="tagitem">'.$t.'</span>';
-				}
-
-				$tags = implode('',$tags);
-
-			}else{
-				$tags = '';
-			}
-
-			$requestTo = '<ol>';
-
-			foreach ($doc['approvalRequestIds'] as $r) {
-				if($r['_id'] == $self_id){
-					//$requestTo .= '<li><span class="approvalview" id="'.$doc['_id'].'">'.$r['fullname'].'</span></li>';
-					$requestTo .= '<li><strong>'.$r['fullname'].' (You)</strong></li>';
-				}else{
-					$requestTo .= '<li>'.$r['fullname'].'</li>';
-				}
-			}
-
-			$requestTo .= '</ol>';
-
-			if(count($doc['approvalRequestIds']) > 0){
-				$request_type = 'Approval';
-			}else{
-				$request_type = 'General';
-			}
-
-			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
-			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
-
-			$aadata[] = array(
-				$counter,
-				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
-				date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				$doc['creatorName'],
-				//$requestTo,
-				$request_type,
-				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
-				$tags,
-				'<i class="foundicon-checkmark action approvalview" id="'.$doc['_id'].'"></i>&nbsp;'.
-				'<i class="foundicon-right-arrow action forwardview" id="'.$doc['_id'].'"></i>'
-			);
-			$counter++;
-		}
-
-		
-		$result = array(
-			'sEcho'=> Input::get('sEcho'),
-			'iTotalRecords'=>$count_all,
-			'iTotalDisplayRecords'=> $count_display_all,
-			'aaData'=>$aadata,
-			'qrs'=>$q
-		);
-
-		return Response::json($result);
-	}
-
-
-
-
 
 	public function post_del(){
 		$id = Input::get('id');
 
-		$user = new Document();
+		$user = new Requests();
 
 		if(is_null($id)){
 			$result = array('status'=>'ERR','data'=>'NOID');
@@ -651,18 +265,50 @@ class Requests_Controller extends Base_Controller {
 			$data['lastUpdate'] = new MongoDate();
 			$data['creatorName'] = Auth::user()->fullname;
 			$data['creatorId'] = Auth::user()->id;
+
+
+			$sharelist = explode(',', $data['docShare']);
+			if(is_array($sharelist)){
+				$usr = new User();
+				$shd = array();
+				foreach($sharelist as $sh){
+					$shd[] = array('email'=>$sh);
+				}
+				$shared_ids = $usr->find(array('$or'=>$shd),array('id'));
+
+				$data['sharedEmails'] = $sharelist ;
+				$data['sharedIds'] = array_values($shared_ids) ;
+			}
+
+			$approvallist = explode(',', $data['docApprovalRequest']);
+			if(is_array($approvallist)){
+				$usr = new User();
+				$shd = array();
+				foreach($approvallist as $sh){
+					$appval[] = array('email'=>$sh);
+				}
+				$approval_ids = $usr->find(array('$or'=>$appval),array('id','fullname'));
+
+				$data['approvalRequestEmails'] = $approvallist ;
+				$data['approvalRequestIds'] = array_values($approval_ids) ;
+			}
 			
 			$docupload = Input::file('docupload');
+
+			$docupload['uploadTime'] = new MongoDate();
 
 			$data['docFilename'] = $docupload['name'];
 
 			$data['docFiledata'] = $docupload;
 
+			$data['docFileList'][] = $docupload;
+
 			$data['tags'] = explode(',',$data['docTag']);
 
-			$document = new Document();
+			$document = new Requests();
 
 			$newobj = $document->insert($data);
+
 
 			if($newobj){
 
@@ -692,9 +338,9 @@ class Requests_Controller extends Base_Controller {
 					}
 				}
 
-				$approvalby = explode(',',$data['docApproval']);
+				$approvalby = explode(',',$data['docApprovalRequest']);
 
-				if(count($approvalby) > 0 && $data['docApproval'] != ''){
+				if(count($approvalby) > 0 && $data['docApprovalRequest'] != ''){
 					foreach($approvalby as $to){
 						Event::fire('request.approval',array('id'=>$newobj['_id'],'approvalby'=>$to));
 					}
@@ -716,14 +362,14 @@ class Requests_Controller extends Base_Controller {
 	public function get_edit($id = null,$type = null){
 
 		if(is_null($type)){
-			$this->crumb->add('document/add','Edit Document');
+			$this->crumb->add('document/add','Edit',false);
 		}else{
 			$this->crumb->add('document/type/'.$type,depttitle($type),false);
 			$this->crumb->add('document/edit/'.$id,'Edit',false);
 		}
 
 
-		$doc = new Document();
+		$doc = new Requests();
 
 		$id = (is_null($id))?Auth::user()->id:$id;
 
@@ -786,6 +432,8 @@ class Requests_Controller extends Base_Controller {
 			$data['lastUpdate'] = new MongoDate();
 
 			unset($data['csrf_token']);
+
+			$docId = $data['id'];
 			unset($data['id']);
 
 			$sharelist = explode(',', $data['docShare']);
@@ -797,12 +445,27 @@ class Requests_Controller extends Base_Controller {
 				}
 				$shared_ids = $usr->find(array('$or'=>$shd),array('id'));
 
+				$data['sharedEmails'] = $sharelist ;
 				$data['sharedIds'] = array_values($shared_ids) ;
 			}
 
+			$approvallist = explode(',', $data['docApprovalRequest']);
+			if(is_array($approvallist)){
+				$usr = new User();
+				$shd = array();
+				foreach($approvallist as $sh){
+					$appval[] = array('email'=>$sh);
+				}
+				$approval_ids = $usr->find(array('$or'=>$appval),array('id','fullname'));
+
+				$data['approvalRequestEmails'] = $approvallist ;
+				$data['approvalRequestIds'] = array_values($approval_ids) ;
+			}
+
+
 			$data['tags'] = explode(',',$data['docTag']);
 
-			$doc = new Document();
+			$doc = new Requests();
 
 			//print_r($data);
 			$oldtags = explode(',',$data['oldTag']);
@@ -820,8 +483,44 @@ class Requests_Controller extends Base_Controller {
 			}
 
 			unset($data['oldTag']);
-			
-			if($doc->update(array('_id'=>$id),array('$set'=>$data))){
+
+			// upload new file , additive
+
+			$docupload = Input::file('docupload');
+
+			$withfile = false;
+
+			if($docupload['name'] != ''){
+
+				$docupload['uploadTime'] = new MongoDate();
+
+				$dirname = $docId;
+
+				$dirname = realpath(Config::get('parama.storage')).'/'.$dirname;
+
+				$uploadresult = Input::upload('docupload',$dirname,$docupload['name']);
+
+				if($uploadresult){
+
+					$data['docFilename'] = $docupload['name'];
+
+					$data['docFiledata'] = $docupload;
+
+					$withfile = true;
+
+				}
+
+			}
+
+			if($withfile == true){
+				$updatequery = array('$set'=>$data,'$push'=>array('docFileList'=>$docupload));
+			}else{
+				$updatequery = array('$set'=>$data);
+			}
+
+			//print_r($data);
+
+			if($doc->update(array('_id'=>$id),$updatequery)){
 
 				Event::fire('document.update',array('id'=>$id,'result'=>'OK'));
 
@@ -833,9 +532,9 @@ class Requests_Controller extends Base_Controller {
 					}
 				}
 
-				$approvalby = explode(',',$data['docApproval']);
+				$approvalby = explode(',',$data['docApprovalRequest']);
 
-				if(count($approvalby) > 0 && $data['docApproval'] != ''){
+				if(count($approvalby) > 0 && $data['docApprovalRequest'] != ''){
 					foreach($approvalby as $to){
 						Event::fire('request.approval',array('id'=>$id,'approvalby'=>$to));
 					}
@@ -866,7 +565,7 @@ class Requests_Controller extends Base_Controller {
 
 		$title = $dept[$type];
 
-		$doc = new Document();
+		$doc = new Requests();
 
 		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
 
@@ -950,7 +649,7 @@ class Requests_Controller extends Base_Controller {
 			$q['docDepartment'] = $type;
 		}
 
-		$document = new Document();
+		$document = new Requests();
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
@@ -1084,7 +783,7 @@ class Requests_Controller extends Base_Controller {
 
 		//print_r($q)
 
-		$document = new Document();
+		$document = new Requests();
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
@@ -1137,23 +836,37 @@ class Requests_Controller extends Base_Controller {
 	public function get_view($id){
 		$id = new MongoId($id);
 
-		$document = new Document();
+		$document = new Requests();
 
 		$doc = $document->get(array('_id'=>$id));
 
-		return View::make('document.view')->with('doc',$doc);
+		return View::make('pop.docview')->with('profile',$doc);
 	}
 
 	public function get_fileview($id){
 		$_id = new MongoId($id);
 
-		$document = new Document();
+		$document = new Requests();
 
 		$doc = $document->get(array('_id'=>$_id));
 
-		$file = URL::to(Config::get('parama.storage').$id.'/'.$doc['docFilename']);
+		//$file = URL::to(Config::get('parama.storage').$id.'/'.$doc['docFilename']);
 
-		return View::make('document.fileview')->with('doc',$doc)->with('href',$file);
+		$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+
+		return View::make('pop.fileview')->with('doc',$doc)->with('href',$file);
 	}
+
+	public function get_approve($id){
+		$id = new MongoId($id);
+
+		$document = new Requests();
+
+		$doc = $document->get(array('_id'=>$id));
+
+		$form = new Formly();
+		
+		return View::make('pop.approval')->with('doc',$doc)->with('form',$form);
+	}	
 
 }

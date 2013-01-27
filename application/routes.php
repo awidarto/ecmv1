@@ -123,6 +123,7 @@ Route::get('logout',function(){
 	return Redirect::to('login');
 });
 
+Route::get('requests',array('before'=>'auth','uses'=>'requests@incoming'));
 
 Route::get('user/profile',array('before'=>'auth','uses'=>'user@profile'));
 

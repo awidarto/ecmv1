@@ -47,8 +47,10 @@ class Document_Controller extends Base_Controller {
 	{
 		$this->crumb->add('document','Super Manager');
 
-		$heads = array('#','Title','Created','Last Update','Creator','Attachment','Tags','Action');
-		$searchinput = array(false,'title','created','last update','creator','filename','tags',false);
+		print_r(Auth::user());
+
+		$heads = array('#','Title','Created','Last Update','Creator','Access','Attachment','Tags','Action');
+		$searchinput = array(false,'title','created','last update','creator','access','filename','tags',false);
 
 		if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
 			return View::make('tables.simple')
@@ -70,11 +72,11 @@ class Document_Controller extends Base_Controller {
 	public function post_index()
 	{
 
-		$fields = array('title','createdDate','lastUpdate','creatorName','docFilename','docTag');
+		$fields = array('title','createdDate','lastUpdate','creatorName','access','docFilename','docTag');
 
-		$rel = array('like','like','like','like','like','like');
+		$rel = array('like','like','like','like','like','like','like');
 
-		$cond = array('both','both','both','both','both','both');
+		$cond = array('both','both','both','both','both','both','both');
 
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
@@ -165,6 +167,7 @@ class Document_Controller extends Base_Controller {
 				date('Y-m-d H:i:s', $doc['createdDate']->sec),
 				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
 				$doc['creatorName'],
+				isset($doc['access'])?ucfirst($doc['access']):'',
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
 				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
@@ -215,6 +218,9 @@ class Document_Controller extends Base_Controller {
 		if(is_null($type)){
 			$this->crumb->add('document/add','New Document');
 		}else{
+			$this->crumb = new Breadcrumb();
+			$this->crumb->add('document/type/'.$type,'Document');
+
 			$this->crumb->add('document/type/'.$type,depttitle($type));
 			$this->crumb->add('document/add','New Document');
 		}
@@ -364,6 +370,9 @@ class Document_Controller extends Base_Controller {
 		if(is_null($type)){
 			$this->crumb->add('document/add','Edit',false);
 		}else{
+			$this->crumb = new Breadcrumb();
+			$this->crumb->add('document/type/'.$type,'Document');
+
 			$this->crumb->add('document/type/'.$type,depttitle($type),false);
 			$this->crumb->add('document/edit/'.$id,'Edit',false);
 		}
@@ -556,10 +565,12 @@ class Document_Controller extends Base_Controller {
 
 	public function get_type($type = null)
 	{
+		$this->crumb = new Breadcrumb();
+		$this->crumb->add('document/type/'.$type,'Document');
 		$this->crumb->add('document/type/'.$type,depttitle($type));
 
-		$heads = array('#','Title','Created','Last Update','Creator','Attachment','Tags','Action');
-		$searchinput = array(false,'title','created','last update','creator','filename','tags',false);
+		$heads = array('#','Title','Created','Last Update','Creator','Access','Attachment','Tags','Action');
+		$searchinput = array(false,'title','created','last update','creator','access','filename','tags',false);
 
 		$dept = Config::get('parama.department');
 
@@ -567,24 +578,41 @@ class Document_Controller extends Base_Controller {
 
 		$doc = new Document();
 
+		//check is shared
 		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
+		$shared = $doc->count(array('docDepartment'=>$type,'docShare'=>$sharecriteria));
 
-		$shared = $doc->count(array('docShare'=>$sharecriteria));
+		//check if creator
+		$created = $doc->count(array('docDepartment'=>$type,'creatorId'=>Auth::user()->id));
 
 		$permissions = Auth::user()->permissions;
 
 		$can_open = false;
 
-		if(Auth::user()->role == 'root' || 
+		if(	Auth::user()->role == 'root' || 
 			Auth::user()->role == 'super' || 
 			Auth::user()->department == $title || 
-			$permissions->{$type} == true
+			$permissions->{$type}->read == true ||
+			$shared > 0 ||
+			$created > 0
 		){
+			$can_open = true;
+		}
+
+		if( $can_open == true ){
+
+
+			if($permissions->{$type}->create == 1 || Auth::user()->department == $type ){
+				$addurl = 'document/add/'.$type;
+			}else{
+				$addurl = '';
+			}
+
 			return View::make('tables.simple')
 				->with('title',$title)
 				->with('newbutton','New Document')
 				->with('disablesort','0,5,6')
-				->with('addurl','document/add/'.$type)
+				->with('addurl',$addurl)
 				->with('searchinput',$searchinput)
 				->with('ajaxsource',URL::to('document/type/'.$type))
 				->with('ajaxdel',URL::to('document/del'))
@@ -649,6 +677,19 @@ class Document_Controller extends Base_Controller {
 			$q['docDepartment'] = $type;
 		}
 
+		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
+		
+		if(Auth::user()->department == $type){
+			$q['$or'] = array(
+				array('access'=>'general'),
+				array('docShare'=>$sharecriteria)
+			);
+		}else{
+			$q['docShare'] = $sharecriteria;
+		}
+
+		$permissions = Auth::user()->permissions;
+
 		$document = new Document();
 
 		/* first column is always sequence number, so must be omitted */
@@ -696,17 +737,41 @@ class Document_Controller extends Base_Controller {
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
+
+			if($doc['creatorId'] == Auth::user()->creatorId || $doc['docDepartment'] == Auth::user()->department){
+				$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
+						'<i class="foundicon-edit action"></i></a>&nbsp;';
+				$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
+			}else{
+				if($permissions->{$type}->edit == 1){
+					$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
+							'<i class="foundicon-edit action"></i></a>&nbsp;';
+				}else{
+					$edit = '';
+				}
+
+				if($permissions->{$type}->delete == 1){
+					$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
+				}else{
+					$del = '';
+				}
+			}
+
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
 				date('Y-m-d H:i:s', $doc['createdDate']->sec),
 				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
 				$doc['creatorName'],
+				isset($doc['access'])?ucfirst($doc['access']):'',
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
+				$edit.$del
+				/*
 				'<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
 				'<i class="foundicon-edit action"></i></a>&nbsp;'.
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
+				*/
 			);
 			$counter++;
 		}

@@ -6,6 +6,10 @@
 <h3>{{$title}}</h3>
 </div>
 
+<?php
+  //print_r($doc);
+?>
+
 {{$form->open_for_files('document/edit/'.$doc['_id'].'/'.$type,'POST',array('class'=>'custom'))}}
 <div class="row">
   <div class="six columns left">
@@ -41,6 +45,20 @@
         {{ $form->text('expiryDate','Expiry Date','',array('class'=>'twelve date')) }}
       </div>
     </div>
+
+    {{ Form::label('access','This document is')}}
+    <div class="row">
+      <div class="five columns left">
+        {{ $form->radio('access','Confidential','confidential')}} 
+      </div>   
+      <div class="five columns right">
+        {{ $form->radio('access','General','general')}} 
+      </div>   
+    </div>
+    <p>
+      <strong>Private</strong> document ( default ) can only be seen by its creator and people it was shared with.<br />
+      <strong>Public</strong> document will be able to be seen by creator's peers at the same department, and superiors with higher access level. 
+    </p>
 
     {{ $form->text('docShare','Shared to ( default to all department member )','',array('class'=>'tag_email four','style'=>'width:100%')) }}
 

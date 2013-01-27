@@ -47,9 +47,7 @@
 
     {{ $form->select('projectCurrency','Currency',Config::get('parama.currencies'),array('class'=>'one'))}}
     
-    {{ $form->text('projectGrossValue','Gross Value','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
-
-    {{ $form->text('projectNetValue','Nett Value','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+    {{ $form->text('projectValue','Value','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
 
     {{ $form->text('projectTag','Tag','',array('class'=>'tag_keyword four','rows'=>'1', 'style'=>'width:100%')) }}
 

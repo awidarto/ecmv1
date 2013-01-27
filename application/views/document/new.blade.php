@@ -28,8 +28,22 @@
       </div>
     </div>
 
+    {{ Form::label('access','This document is')}}
+    <div class="row">
+      <div class="five columns left">
+        {{ $form->radio('access','Confidential','confidential',true)}} 
+      </div>   
+      <div class="five columns right">
+        {{ $form->radio('access','General','general')}} 
+      </div>   
+    </div>
+    <p>
+      <strong>Private</strong> document ( default ) can only be seen by its creator and people it was shared with.<br />
+      <strong>Public</strong> document will be able to be seen by creator's peers at the same department, and superiors with higher access level. 
+    </p>
 
-    {{ $form->text('docShare','Shared to ( default to all department member )','',array('class'=>'tag_shared four','style'=>'width:100%')) }}
+
+    {{ $form->text('docShare','Shared to','',array('class'=>'tag_shared four','style'=>'width:100%')) }}
 
     {{ $form->text('docApprovalRequest','Request Approval From','',array('class'=>'tag_email four', 'style'=>'width:100%')) }}
 

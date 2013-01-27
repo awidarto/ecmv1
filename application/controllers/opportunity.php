@@ -34,6 +34,8 @@ class Opportunity_Controller extends Base_Controller {
 
 	public function __construct(){
 		$this->filter('before','auth');
+		$this->crumb = new Breadcrumb();
+		$this->crumb->add('opportunity','Opportunity');
 	}
 
 	public function get_index()
@@ -52,6 +54,7 @@ class Opportunity_Controller extends Base_Controller {
 			->with('searchinput',$searchinput)
 			->with('ajaxsource',URL::to('opportunity'))
 			->with('ajaxdel',URL::to('opportunity/del'))
+	        ->with('crumb',$this->crumb)
 			->with('heads',$heads);
 	}
 
@@ -189,9 +192,12 @@ class Opportunity_Controller extends Base_Controller {
 
 	public function get_add(){
 
+		$this->crumb->add('project/add','New Project');
+
 		$form = new Formly();
 		return View::make('opportunity.new')
 					->with('form',$form)
+					->with('crumb',$this->crumb)
 					->with('title','New Opportunity');
 
 	}
@@ -256,6 +262,8 @@ class Opportunity_Controller extends Base_Controller {
 
 	public function get_edit($id = null){
 
+		$this->crumb->add('opportunity/edit/'.$id,'Edit',false);
+
 		$doc = new Opportunity();
 
 		$id = (is_null($id))?Auth::user()->id:$id;
@@ -269,12 +277,14 @@ class Opportunity_Controller extends Base_Controller {
 		$doc_data['startDate'] = date('Y-m-d', $doc_data['startDate']->sec);
 		$doc_data['estCompleteDate'] = date('Y-m-d', $doc_data['estCompleteDate']->sec);
 
+		$this->crumb->add('opportunity/edit/'.$id,$doc_data['title']);
 
 		$form = Formly::make($doc_data);
 
 		return View::make('opportunity.edit')
 					->with('doc',$doc_data)
 					->with('form',$form)
+					->with('crumb',$this->crumb)
 					->with('title','Edit Document');
 
 	}

@@ -416,13 +416,15 @@ class User_Controller extends Base_Controller {
 		$this->crumb->add('user/edit',$user_profile['fullname']);
 
 		foreach($user_profile['permissions'] as $key=>$val){
-			$user_profile[$key] = ($val)?1:0;
-			/*
-			foreach($val as $k=>$v){
-				$user_profile[$key.'_'.$k] = $v;
+			//$user_profile[$key] = ($val)?1:0;
+			if(is_array($val)){
+				foreach($val as $k=>$v){
+					$user_profile[$key.'_'.$k] = $v;
+				}
 			}
-			*/
 		}
+
+		//print_r($user_profile);
 
 		$form = Formly::make($user_profile);
 
@@ -460,20 +462,21 @@ class User_Controller extends Base_Controller {
 			$permissions = array();
 
 			foreach($obj as $o=>$t){
+
+				/*
 				if(isset($data[$o])){
 					$permissions[$o] = true;
 					unset($data[$o]);
 				}else{
 					$permissions[$o] = false;
 				}
-
-				/*
 				if(isset($data[$o.'_set'])){
 					$permissions[$o]['set'] = $data[$o.'_set'];
 					unset($data[$o.'_set']);
 				}else{
 					$permissions[$o]['set'] = 0;
 				}
+				*/
 				foreach($pitem as $p){
 					if(isset($data[$o.'_'.$p])){
 						$permissions[$o][$p] = $data[$o.'_'.$p];
@@ -482,7 +485,6 @@ class User_Controller extends Base_Controller {
 						$permissions[$o][$p] = 0;
 					}
 				}
-				*/
 			}
 
 			$data['permissions'] = $permissions;
@@ -503,7 +505,7 @@ class User_Controller extends Base_Controller {
 			}else{
 		    	return Redirect::to('users')->with('notify_success','User saving failed');
 			}
-
+			
 	    }
 
 		

@@ -34,6 +34,8 @@ class Tender_Controller extends Base_Controller {
 
 	public function __construct(){
 		$this->filter('before','auth');
+		$this->crumb = new Breadcrumb();
+		$this->crumb->add('tender','Tender');
 	}
 
 	public function get_index()
@@ -52,6 +54,7 @@ class Tender_Controller extends Base_Controller {
 			->with('searchinput',$searchinput)
 			->with('ajaxsource',URL::to('tender'))
 			->with('ajaxdel',URL::to('tender/del'))
+	        ->with('crumb',$this->crumb)
 			->with('heads',$heads);
 	}
 
@@ -187,9 +190,12 @@ class Tender_Controller extends Base_Controller {
 
 	public function get_add(){
 
+		$this->crumb->add('tender/add','New Tender');
+
 		$form = new Formly();
 		return View::make('tender.new')
 					->with('form',$form)
+					->with('crumb',$this->crumb)
 					->with('title','New Tender');
 
 	}
@@ -255,6 +261,8 @@ class Tender_Controller extends Base_Controller {
 
 	public function get_edit($id = null){
 
+		$this->crumb->add('tender/edit/'.$id,'Edit',false);
+
 		$doc = new Tender();
 
 		$id = (is_null($id))?Auth::user()->id:$id;
@@ -269,12 +277,14 @@ class Tender_Controller extends Base_Controller {
 		$doc_data['startDate'] = date('Y-m-d', $doc_data['prepStartDate']->sec);
 		$doc_data['estCompleteDate'] = date('Y-m-d', $doc_data['estCompleteDate']->sec);
 
+		$this->crumb->add('tender/edit/'.$id,$doc_data['title']);
 
 		$form = Formly::make($doc_data);
 
 		return View::make('tender.edit')
 					->with('doc',$doc_data)
 					->with('form',$form)
+					->with('crumb',$this->crumb)
 					->with('title','Edit Document');
 
 	}

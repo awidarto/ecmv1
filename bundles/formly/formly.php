@@ -286,7 +286,9 @@ class Formly
 	public function radio($name, $label = '', $value = 1, $checked = false, $attributes = array())
 	{
 		$attributes = array_merge($attributes,array('style'=>'display:none'));
-		$checked = $this->calculate_value($name, $checked);
+		$checked = $this->calculate_value($name,$checked);
+		//silly hack, but works		
+		$checked = ($checked == $value)?true:false;
 		$attributes = $this->set_attributes($name, $attributes);
 		$field = Form::radio($name, $value, $checked, $attributes);
 		return $this->build_wrapper($field, $name, $label,$checked,false,true);
@@ -439,6 +441,7 @@ class Formly
 		{
 			$result = $this->defaults->$name;
 		}
+
         return $result;
 	}
 
