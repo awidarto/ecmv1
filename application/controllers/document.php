@@ -721,6 +721,8 @@ class Document_Controller extends Base_Controller {
 
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
+
+
 			if(isset($doc['tags'])){
 				$tags = array();
 
@@ -738,7 +740,7 @@ class Document_Controller extends Base_Controller {
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
 
-			if($doc['creatorId'] == Auth::user()->creatorId || $doc['docDepartment'] == Auth::user()->department){
+			if($doc['creatorId'] == Auth::user()->id || $doc['docDepartment'] == Auth::user()->department){
 				$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
 						'<i class="foundicon-edit action"></i></a>&nbsp;';
 				$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
