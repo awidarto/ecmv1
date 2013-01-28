@@ -6,12 +6,13 @@
 <h4>User Profile</h4>
 <div class="row">
 	<div class="profileContent">
-		<div class="two columns">
-			{{ getavatar($profile['_id'])}}<br />
-			{{ HTML::link('user/picture','Change Photo')}}<br />
-			{{ HTML::link('user/pass','Change Password')}}<br />
+		<div class="three columns">
+			{{ getavatar($profile['_id'])}}
+			<a href="{{ URL::to('user/picture')}}" class="inlink" ><i class="foundicon-smiley action"></i> Change Picture</a>
+			<a href="{{ URL::to('user/pass')}}" class="inlink" ><i class="foundicon-lock action"></i> Change Password</a>
+			<a href="{{ URL::to('user/editprofile')}}" class="inlink" ><i class="foundicon-edit action"></i> Edit Profile</a><br />
 		</div>
-		<div class="ten columns">
+		<div class="nine columns">
 			<h5>{{ $profile['fullname'] }}</h5>
 			<table class="profile-info">
 				<tr>

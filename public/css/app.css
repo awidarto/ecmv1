@@ -549,3 +549,7 @@ iframe.fileviewer{
 #dialog-container #maincontent{
 	padding:10px;
 }
+
+a.inlink {
+	display: block;
+}
