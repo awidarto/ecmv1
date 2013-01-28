@@ -47,7 +47,7 @@ class Document_Controller extends Base_Controller {
 	{
 		$this->crumb->add('document','Super Manager');
 
-		print_r(Auth::user());
+		//print_r(Auth::user());
 
 		$heads = array('#','Title','Created','Last Update','Creator','Access','Attachment','Tags','Action');
 		$searchinput = array(false,'title','created','last update','creator','access','filename','tags',false);
