@@ -39,6 +39,7 @@ return array(
 	'former' => array('auto' => true),
 	'mongovel' => array('auto'=>true),
 	'resizer'=>array('auto'=>true),
+	'html2pdf' => array('auto' => true),
 	'formly' => array(
 	    'autoloads' => array(
 	        'map' => array(
@@ -52,20 +53,6 @@ return array(
 	            'Bread\\Crumb' => '(:bundle)/crumb.php',
 	        ),
 	    ),
-	),
-	'breadcrumb' => array(
-		'auto'=>true,
-	    'autoloads' => array(
-	    	'namespaces'=>array(
-	    		'Noherczeg\\Breadcrumb'=>'(:bundle)/src/Noherczeg/Breadcrumb',
-	    		//'Noherczeg\\Breadcrumb\\Builders'=>'(:bundle)/src/Noherczeg/Breadcrumb/Builders',
-	    		),
-	    	'map'=>array(
-	    		'\\Noherczeg\\Breadcrumb\\Segment'=>'(:bundle)/src/Noherczeg/Breadcrumb/Segment.php',	    		
-	    		'\\Noherczeg\\Breadcrumb\\Builders\\Builder'=>'(:bundle)/src/Noherczeg/Breadcrumb/Builders/Builder.php',	    		
-	    		'\\Noherczeg\\Breadcrumb\\Builders\\FoundationBuilder'=>'(:bundle)/src/Noherczeg/Breadcrumb/Builders/FoundationBuilder.php',	    		
-	    		),
-	    )
 	),
 
 );
