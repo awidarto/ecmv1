@@ -92,6 +92,7 @@ class Activity_Controller extends Base_Controller {
 		$q = array('$or'=>array(
 			array('user_id'=>$self_id),
 			array('updater_id'=>$self_id),
+			array('downloader_id'=>$self_id),
 			array('requester_id'=>$self_id),
 			array('department'=>Auth::user()->department),
 			array('shareto'=>Auth::user()->email),

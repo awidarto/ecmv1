@@ -744,6 +744,8 @@ class Document_Controller extends Base_Controller {
 				$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
 						'<i class="foundicon-edit action"></i></a>&nbsp;';
 				$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
+				$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
+							'<i class="foundicon-inbox action"></i></a>&nbsp;';
 			}else{
 				if($permissions->{$type}->edit == 1){
 					$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
@@ -757,6 +759,14 @@ class Document_Controller extends Base_Controller {
 				}else{
 					$del = '';
 				}
+
+				if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1){
+					$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
+							'<i class="foundicon-inbox action"></i></a>&nbsp;';
+				}else{
+					$download = '';
+				}
+
 			}
 
 			$aadata[] = array(
@@ -768,7 +778,7 @@ class Document_Controller extends Base_Controller {
 				isset($doc['access'])?ucfirst($doc['access']):'',
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
-				$edit.$del
+				$edit.$download.$del
 				/*
 				'<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
 				'<i class="foundicon-edit action"></i></a>&nbsp;'.
@@ -791,114 +801,25 @@ class Document_Controller extends Base_Controller {
 	}
 
 
-	public function __get_type($type = null)
-	{
-		$menutitle = array(
-			'opportunity'=>'Opportunity',
-			'tender'=>'Tender',
-			'commbid'=>'Commercial Bid',
-			'proposal'=>'Tech Proposal',
-			'techbid'=>'Tech Bid',
-			'contract'=>'Contracts',
-			'legal'=>'Legal Docs',
-			'qc'=>'QA / QC',
-			'warehouse'=>'Warehouse'
-			);
-
-		$heads = array('#','Title','Created','Creator','Owner','Tags','Action');
-		$fields = array('seq','title','created','creator','owner','tags','action');
-		$searchinput = array(false,'title','created','creator','owner','tags',false);
-
-		return View::make('tables.simple')
-			->with('title',(is_null($type))?'Document - All':'Document - '.$menutitle[$type])
-			->with('newbutton','New Document')
-			->with('disablesort','0,5,6')
-			->with('addurl','document/add')
-			->with('searchinput',$searchinput)
-			->with('ajaxsource',URL::to('document/type/'.$type))
-			->with('ajaxdel',URL::to('document/del'))
-			->with('heads',$heads);
-	}
-
-	public function __post_type($type = null)
-	{
-		$fields = array('title','createdDate','creatorName','creatorName','tags');
-
-		$rel = array('like','like','like','like','equ');
-
-		$cond = array('both','both','both','both','equ');
-
-		$idx = 0;
-		$q = array();
-		foreach($fields as $field){
-			if(Input::get('sSearch_'.$idx))
-			{
-				if($rel[$idx] == 'like'){
-					if($cond[$idx] == 'both'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/');
-					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/');						
-					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/');						
-					}
-				}else if($rel[$idx] == 'equ'){
-					$q[$field] = Input::get('sSearch_'.$idx);
-				}
-			}
-			$idx++;
-		}
-
-		//print_r($q)
+	public function get_dl($id){
+		$_id = new MongoId($id);
 
 		$document = new Document();
 
-		/* first column is always sequence number, so must be omitted */
-		$fidx = Input::get('iSortCol_0');
-		$fidx = ($fidx > 0)?$fidx - 1:$fidx;
-		$sort_col = $fields[$fidx];
-		$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		$doc = $document->get(array('_id'=>$_id));
 
-		$count_all = $document->count();
+		$path = Config::get('parama.storage').$id.'/'.$doc['docFilename'];
 
-		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir));
-			$count_display_all = $document->count($q);
+		if(file_exists($path)){
+			Event::fire('document.update',array('id'=>$id,'result'=>'OK'));
+			$filename = $doc['docFilename'];
+			return Response::download($path, $filename);
 		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir));
-			$count_display_all = $document->count();
+			Event::fire('document.update',array('id'=>$id,'result'=>'FILENOTFOUND'));
+			return false;
 		}
 
-
-
-
-		$aadata = array();
-
-		$counter = 1;
-		foreach ($documents as $doc) {
-			$aadata[] = array(
-				$counter,
-				$doc['title'],
-				date('Y-m-d h:i:s',$doc['createdDate']),
-				$doc['creatorName'],
-				$doc['creatorName'],
-				implode(',',$doc['tag']),
-				'<i class="foundicon-edit action"></i>&nbsp;<i class="foundicon-trash action"></i>'
-			);
-			$counter++;
-		}
-
-		
-		$result = array(
-			'sEcho'=> Input::get('sEcho'),
-			'iTotalRecords'=>$count_all,
-			'iTotalDisplayRecords'=> $count_display_all,
-			'aaData'=>$aadata,
-			'qrs'=>$q
-		);
-
-		print json_encode($result);
 	}
-
 
 	public function get_view($id){
 		$id = new MongoId($id);

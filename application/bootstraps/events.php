@@ -56,6 +56,37 @@ Event::listen('document.update',function($id,$result){
 
 });
 
+Event::listen('document.download',function($id,$result){
+    $activity = new Activity();
+
+    $doc = getdocument($id);
+
+    $ev = array('event'=>'document.update',
+        'timestamp'=>new MongoDate(),
+        'creator_id'=>new MongoId($doc['creatorId']),
+        'creator_name'=>$doc['creatorName'],
+        'updater_id'=>new MongoId(Auth::user()->id),
+        'updater_name'=>Auth::user()->fullname,
+        'downloader_id'=>new MongoId(Auth::user()->id),
+        'downloader_name'=>Auth::user()->fullname,
+        'sharer_id'=>'',
+        'sharer_name'=>'',
+        'department'=>$doc['docDepartment'],
+        'doc_id'=>$id,
+        'doc_title'=>$doc['title'],
+        'doc_filename'=>$doc['docFilename'],
+        'result'=>$result
+    );
+
+    if($activity->insert($ev)){
+        return true;
+    }else{
+        return false;
+    }
+
+});
+
+
 Event::listen('document.delete',function($id,$creator_id,$result){
     $activity = new Activity();
 

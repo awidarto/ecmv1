@@ -1,4 +1,5 @@
 <?php return array(
+  // do not forget to trail slash all path configurations
   'storage'=>'public/storage/',
   'avatarstorage'=>'public/avatar/',
   'photostorage'=>'public/employees/',

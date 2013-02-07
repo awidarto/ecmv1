@@ -6,20 +6,25 @@ $class = str_replace('.', '-', $doc['event']);
 
 if($doc['event'] == 'document.create'){
 	$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'twelve');
-	$body = $doc['creator_name'].' have created '.$doc['doc_title'];
+	$body = $doc['creator_name'].' has created '.$doc['doc_title'];
 
 }
 elseif($doc['event'] == 'document.upload'){
 	$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'twelve');
-	$body = $doc['creator_name'].' have created '.$doc['doc_title'];
+	$body = $doc['creator_name'].' has created '.$doc['doc_title'];
 }
 elseif($doc['event'] == 'document.share'){
 	$main_photo = getavatar($doc['sharer_id'],$doc['sharer_name'],'twelve');
-	$body = $doc['sharer_name'].' have shared '.$doc['doc_title'];
+	$body = $doc['sharer_name'].' has shared '.$doc['doc_title'];
 }
 elseif($doc['event'] == 'document.update'){
 	$main_photo = getavatar($doc['updater_id'],$doc['updater_name'],'twelve');	
-	$body = $doc['updater_name'].' have updated '.$doc['doc_title'];
+	$body = $doc['updater_name'].' has updated '.$doc['doc_title'];
+}
+
+elseif($doc['event'] == 'document.download'){
+	$main_photo = getavatar($doc['downloader_id'],$doc['downloader_name'],'twelve');	
+	$body = $doc['downloader_name'].' has downloaded '.$doc['doc_title'];
 }
 
 elseif($doc['event'] == 'project.create'){
