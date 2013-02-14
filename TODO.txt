@@ -1,0 +1,21 @@
+Some quick notes:
+
+Design: We probably need Taufiq to re-style the dashboard once you've completed it functions. There some design and styling issues that he can probably help polish.
+
+*FIXED* 3rd Party view: I've created user that belongs to the group '3rd party', the top menu: Client, Principal / Vendors, 3rd Party / Sub-Con aren't working. (unhandled exception)
+
+*DONE* Left Menu: As a 3rd party, all items on the left vertical menu are still all visible to me.
+
+*DONE* Messages: when creating a new message, the button says "save" message instead of "send".
+
+*DONE* Messages: internal messaging system works but now it only provides "to" field. Can we include "cc" and "bcc"? Or in the context of an internal messaging system "cc" and "bcc" aren't necessary?
+
+*NONE* Messages: We promised integration with external messaging / email. Can it be done? Will it be lumped together with the internal messaging view or separated?
+
+*DONE* Approval system: I haven't been able to test the approval system. I tried on some docs that show notfication "Approval Requested" but didn't seem to go through. Nothing happened after I check "approve", input my password and click OK. (this performed under your username).
+
+*OMIT* Home timeline: There are "Reply" and "Share" on each event entry, they aren't working.
+
+Templates page:  not in place yet
+
+Auto reminder:  For document tagged with expiration date, the system should give a notification the document creator and the people with whom the document is shared.

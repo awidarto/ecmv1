@@ -1,6 +1,6 @@
 <?php
 
-class Document_Controller extends Base_Controller {
+class Template_Controller extends Base_Controller {
 
 	/*
 	|--------------------------------------------------------------------------
@@ -37,7 +37,7 @@ class Document_Controller extends Base_Controller {
 
 	public function __construct(){
 		$this->crumb = new Breadcrumb();
-		$this->crumb->add('document','Document');
+		$this->crumb->add('template','Document');
 
 		date_default_timezone_set('Asia/Jakarta');
 		$this->filter('before','auth');
@@ -45,34 +45,29 @@ class Document_Controller extends Base_Controller {
 
 	public function get_index()
 	{
-		$this->crumb->add('document','Super Manager');
+		$this->crumb->add('template','Super Manager');
 
 		//print_r(Auth::user());
 
 		$heads = array('#','Title','Created','Last Update','Creator','Access','Attachment','Tags','Action');
 		$searchinput = array(false,'title','created','last update','creator','access','filename','tags',false);
 
-		$title = 'Document Library';
+		return View::make('tables.simple')
+			->with('title','Document Template')
+			->with('newbutton','New Document')
+			->with('disablesort','0,5,6')
+			->with('addurl','template/add')
+			->with('searchinput',$searchinput)
+			->with('ajaxsource',URL::to('template'))
+			->with('ajaxdel',URL::to('template/del'))
+			->with('crumb',$this->crumb)
+			->with('heads',$heads);
 
-		if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
-			return View::make('tables.simple')
-				->with('title',$title)
-				->with('newbutton','New Document')
-				->with('disablesort','0,5,6')
-				->with('addurl','document/add')
-				->with('searchinput',$searchinput)
-				->with('ajaxsource',URL::to('document'))
-				->with('ajaxdel',URL::to('document/del'))
-				->with('crumb',$this->crumb)
-				->with('heads',$heads);
-		}else{
-			return View::make('document.restricted')
-							->with('title',$title);
-		}
 	}
 
 	public function post_index()
 	{
+		$type = 'template';
 
 		$fields = array('title','createdDate','lastUpdate','creatorName','access','docFilename','docTag');
 
@@ -90,6 +85,9 @@ class Document_Controller extends Base_Controller {
 
 		$idx = 0;
 		$q = array();
+
+		$q['docDepartment'] = 'template';
+
 
 		$hilite = array();
 		$hilite_replace = array();
@@ -118,8 +116,9 @@ class Document_Controller extends Base_Controller {
 		}
 
 		//print_r($q)
+		$permissions = Auth::user()->permissions;
 
-		$document = new Document();
+		$template = new Document();
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
@@ -133,20 +132,20 @@ class Document_Controller extends Base_Controller {
 			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
 		}
 
-		$count_all = $document->count();
+		$count_all = $template->count();
 
 		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count($q);
+			$templates = $template->find($q,array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $template->count($q);
 		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count();
+			$templates = $template->find(array(),array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $template->count();
 		}
 
 		$aadata = array();
 
 		$counter = 1 + $pagestart;
-		foreach ($documents as $doc) {
+		foreach ($templates as $doc) {
 			if(isset($doc['tags'])){
 				$tags = array();
 
@@ -163,6 +162,39 @@ class Document_Controller extends Base_Controller {
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
+			if($doc['creatorId'] == Auth::user()->id || $doc['docDepartment'] == Auth::user()->department){
+				$edit = '<a href="'.URL::to('template/edit/'.$doc['_id'].'/'.$type).'">'.
+						'<i class="foundicon-edit action"></i></a>&nbsp;';
+				$download = '<a href="'.URL::to('template/download/'.$doc['_id'].'/'.$type).'">'.
+						'<i class="foundicon-download action"></i></a>&nbsp;';
+				$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
+			}else{
+				if($permissions->{$type}->edit == 1){
+					$edit = '<a href="'.URL::to('template/edit/'.$doc['_id'].'/'.$type).'">'.
+							'<i class="foundicon-edit action"></i></a>&nbsp;';
+				}else{
+					$edit = '';
+				}
+
+				if($permissions->{$type}->delete == 1){
+					$download = '<a href="'.URL::to('template/download/'.$doc['_id'].'/'.$type).'">'.
+							'<i class="foundicon-download action"></i></a>&nbsp;';
+
+				}else{
+					$download = '';
+				}
+				if($permissions->{$type}->delete == 1){
+					$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
+				}else{
+					$del = '';
+				}
+			}
+
+			// by default everybody can download template
+
+			$download = '<a href="'.URL::to('template/download/'.$doc['_id']).'">'.
+					'<i class="foundicon-down-arrow action"></i></a>&nbsp;';
+
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
@@ -172,8 +204,7 @@ class Document_Controller extends Base_Controller {
 				isset($doc['access'])?ucfirst($doc['access']):'',
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
-				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
-				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
+				$download.$edit.$del
 			);
 			$counter++;
 		}
@@ -203,10 +234,10 @@ class Document_Controller extends Base_Controller {
 
 
 			if($user->delete(array('_id'=>$id))){
-				Event::fire('document.delete',array('id'=>$id,'result'=>'OK'));
+				Event::fire('template.delete',array('id'=>$id,'result'=>'OK'));
 				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
 			}else{
-				Event::fire('document.delete',array('id'=>$id,'result'=>'FAILED'));
+				Event::fire('template.delete',array('id'=>$id,'result'=>'FAILED'));
 				$result = array('status'=>'ERR','data'=>'DELETEFAILED');
 			}
 		}
@@ -218,20 +249,45 @@ class Document_Controller extends Base_Controller {
 	public function get_add($type = null){
 
 		if(is_null($type)){
-			$this->crumb->add('document/add','New Document');
+			$this->crumb->add('template/add','New Document');
 		}else{
 			$this->crumb = new Breadcrumb();
-			$this->crumb->add('document/type/'.$type,'Document');
+			$this->crumb->add('template/type/'.$type,'Document');
 
-			$this->crumb->add('document/type/'.$type,depttitle($type));
-			$this->crumb->add('document/add','New Document');
+			$this->crumb->add('template/type/'.$type,depttitle($type));
+			$this->crumb->add('template/add','New Document');
 		}
 
 
 		$form = new Formly();
-		return View::make('document.new')
+		return View::make('template.new')
 					->with('form',$form)
 					->with('type',$type)
+					->with('crumb',$this->crumb)
+					->with('title','New Document');
+
+	}
+
+	public function get_download($id){
+
+		$this->crumb = new Breadcrumb();
+		
+		$this->crumb->add('template','Document Template');
+
+		$this->crumb->add('template/download/'.$id,'Download Request');
+
+		$_id = new MongoId($id);
+
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$_id));
+
+
+		$form = new Formly();
+		return View::make('template.downloadrequest')
+					->with('form',$form)
+					->with('doc',$doc)
 					->with('crumb',$this->crumb)
 					->with('title','New Document');
 
@@ -242,9 +298,9 @@ class Document_Controller extends Base_Controller {
 		//print_r(Session::get('permission'));
 
 		if(is_null($type)){
-			$back = 'document';
+			$back = 'template';
 		}else{
-			$back = 'document/type/'.$type;
+			$back = 'template/type/'.$type;
 		}
 
 	    $rules = array(
@@ -255,7 +311,7 @@ class Document_Controller extends Base_Controller {
 
 	    if($validation->fails()){
 
-	    	return Redirect::to('document/add/'.$type)->with_errors($validation)->with_input(Input::all());
+	    	return Redirect::to('template/add/'.$type)->with_errors($validation)->with_input(Input::all());
 
 	    }else{
 
@@ -313,9 +369,9 @@ class Document_Controller extends Base_Controller {
 
 			$data['tags'] = explode(',',$data['docTag']);
 
-			$document = new Document();
+			$template = new Document();
 
-			$newobj = $document->insert($data);
+			$newobj = $template->insert($data);
 
 
 			if($newobj){
@@ -325,7 +381,7 @@ class Document_Controller extends Base_Controller {
 
 					$newid = $newobj['_id']->__toString();
 
-					$newdir = realpath(Config::get('parama.storage')).'/'.$newid;
+					$newdir = realpath(Config::get('kickstart.storage')).'/'.$newid;
 
 					Input::upload('docupload',$newdir,$docupload['name']);
 
@@ -342,7 +398,7 @@ class Document_Controller extends Base_Controller {
 
 				if(count($sharedto) > 0  && $data['docShare'] != ''){
 					foreach($sharedto as $to){
-						Event::fire('document.share',array('id'=>$newobj['_id'],'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+						Event::fire('template.share',array('id'=>$newobj['_id'],'sharer_id'=>Auth::user()->id,'shareto'=>$to));
 					}
 				}
 
@@ -354,11 +410,11 @@ class Document_Controller extends Base_Controller {
 					}
 				}
 
-				Event::fire('document.create',array('id'=>$newobj['_id'],'result'=>'OK','department'=>Auth::user()->department,'creator'=>Auth::user()->id));
+				Event::fire('template.create',array('id'=>$newobj['_id'],'result'=>'OK','department'=>Auth::user()->department,'creator'=>Auth::user()->id));
 
 		    	return Redirect::to($back)->with('notify_success','Document saved successfully');
 			}else{
-				Event::fire('document.create',array('id'=>$id,'result'=>'FAILED'));
+				Event::fire('template.create',array('id'=>$id,'result'=>'FAILED'));
 		    	return Redirect::to($back)->with('notify_success','Document saving failed');
 			}
 
@@ -370,13 +426,13 @@ class Document_Controller extends Base_Controller {
 	public function get_edit($id = null,$type = null){
 
 		if(is_null($type)){
-			$this->crumb->add('document/add','Edit',false);
+			$this->crumb->add('template/add','Edit',false);
 		}else{
 			$this->crumb = new Breadcrumb();
-			$this->crumb->add('document/type/'.$type,'Document');
+			$this->crumb->add('template/type/'.$type,'Document');
 
-			$this->crumb->add('document/type/'.$type,depttitle($type),false);
-			$this->crumb->add('document/edit/'.$id,'Edit',false);
+			$this->crumb->add('template/type/'.$type,depttitle($type),false);
+			$this->crumb->add('template/edit/'.$id,'Edit',false);
 		}
 
 
@@ -395,14 +451,14 @@ class Document_Controller extends Base_Controller {
 
 
 		if(is_null($type)){
-			$this->crumb->add('document/edit/'.$id,$doc_data['title']);
+			$this->crumb->add('template/edit/'.$id,$doc_data['title']);
 		}else{
-			$this->crumb->add('document/edit/'.$id.'/'.$type,$doc_data['title']);
+			$this->crumb->add('template/edit/'.$id.'/'.$type,$doc_data['title']);
 		}
 
 		$form = Formly::make($doc_data);
 
-		return View::make('document.edit')
+		return View::make('template.edit')
 					->with('doc',$doc_data)
 					->with('form',$form)
 					->with('type',$type)
@@ -417,9 +473,9 @@ class Document_Controller extends Base_Controller {
 		//print_r(Session::get('permission'));
 
 		if(is_null($type)){
-			$back = 'document';
+			$back = 'template';
 		}else{
-			$back = 'document/type/'.$type;
+			$back = 'template/type/'.$type;
 		}
 
 	    $rules = array(
@@ -430,7 +486,7 @@ class Document_Controller extends Base_Controller {
 
 	    if($validation->fails()){
 
-	    	return Redirect::to('document/edit/'.$id.'/'.$type)->with_errors($validation)->with_input(Input::all());
+	    	return Redirect::to('template/edit/'.$id.'/'.$type)->with_errors($validation)->with_input(Input::all());
 
 	    }else{
 
@@ -507,7 +563,7 @@ class Document_Controller extends Base_Controller {
 
 				$dirname = $docId;
 
-				$dirname = realpath(Config::get('parama.storage')).'/'.$dirname;
+				$dirname = realpath(Config::get('kickstart.storage')).'/'.$dirname;
 
 				$uploadresult = Input::upload('docupload',$dirname,$docupload['name']);
 
@@ -533,13 +589,13 @@ class Document_Controller extends Base_Controller {
 
 			if($doc->update(array('_id'=>$id),$updatequery)){
 
-				Event::fire('document.update',array('id'=>$id,'result'=>'OK'));
+				Event::fire('template.update',array('id'=>$id,'result'=>'OK'));
 
 				$sharedto = explode(',',$data['docShare']);
 
 				if(count($sharedto) > 0  && $data['docShare'] != ''){
 					foreach($sharedto as $to){
-						Event::fire('document.share',array('id'=>$id,'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+						Event::fire('template.share',array('id'=>$id,'sharer_id'=>Auth::user()->id,'shareto'=>$to));
 					}
 				}
 
@@ -554,7 +610,7 @@ class Document_Controller extends Base_Controller {
 		    	return Redirect::to($back)->with('notify_success','Document saved successfully');
 			}else{
 
-				Event::fire('document.update',array('id'=>$id,'result'=>'FAILED'));
+				Event::fire('template.update',array('id'=>$id,'result'=>'FAILED'));
 
 		    	return Redirect::to($back)->with('notify_success','Document saving failed');
 			}
@@ -568,13 +624,13 @@ class Document_Controller extends Base_Controller {
 	public function get_type($type = null)
 	{
 		$this->crumb = new Breadcrumb();
-		$this->crumb->add('document/type/'.$type,'Document');
-		$this->crumb->add('document/type/'.$type,depttitle($type));
+		$this->crumb->add('template/type/'.$type,'Document');
+		$this->crumb->add('template/type/'.$type,depttitle($type));
 
 		$heads = array('#','Title','Created','Last Update','Creator','Access','Attachment','Tags','Action');
 		$searchinput = array(false,'title','created','last update','creator','access','filename','tags',false);
 
-		$dept = Config::get('parama.department');
+		$dept = Config::get('kickstart.department');
 
 		$title = $dept[$type];
 
@@ -582,66 +638,32 @@ class Document_Controller extends Base_Controller {
 
 		//check is shared
 		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
+		$shared = $doc->count(array('docDepartment'=>$type,'docShare'=>$sharecriteria));
 
-		// empty query object
-		$q = array();
-		// default filter by department
-		$q['docDepartment'] = $type;
-
-		// by default can not open the page
-		$can_open = false;
-
-		if( Auth::user()->role == 'root' ||
-			Auth::user()->role == 'super' ||
-			Auth::user()->role == 'president_director' ||
-			Auth::user()->role == 'bod'
-			){
-
-			// these roles are super users
-
-			$can_open = true;
-
-		}else if( Auth::user()->role == 'client' ||
-			Auth::user()->role == 'principal_vendor' ||
-			Auth::user()->role == 'subcon'){
-
-			$q['$or'] = array(
-				array('creatorId'=>Auth::user()->id),
-				array('docShare'=>$sharecriteria)
-			);
-
-			$shared = $doc->count($q);
-			$created = $doc->count($q);
-
-			if($shared > 0 || $created > 0){
-				$can_open = true;
-			}
-
-		}else{
-
-			if(Auth::user()->department == $type){
-				$q['$or'] = array(
-					array('access'=>'general'),
-					array('docShare'=>$sharecriteria)
-				);
-			}else{
-				$q['docShare'] = $sharecriteria;
-			}
-
-			$shared = $doc->count($q);
-			$created = $doc->count($q);
-
-			if($shared > 0 || $created > 0){
-				$can_open = true;
-			}
-		}
+		//check if creator
+		$created = $doc->count(array('docDepartment'=>$type,'creatorId'=>Auth::user()->id));
 
 		$permissions = Auth::user()->permissions;
 
+		$can_open = false;
+
+		if(	Auth::user()->role == 'root' ||
+			Auth::user()->role == 'super' ||
+			Auth::user()->department == $title ||
+			$permissions->{$type}->read == true ||
+			$shared > 0 ||
+			$created > 0
+		){
+			$can_open = true;
+		}
+
+		$can_open = true;
+
 		if( $can_open == true ){
 
+
 			if($permissions->{$type}->create == 1 || Auth::user()->department == $type ){
-				$addurl = 'document/add/'.$type;
+				$addurl = 'template/add/'.$type;
 			}else{
 				$addurl = '';
 			}
@@ -652,12 +674,12 @@ class Document_Controller extends Base_Controller {
 				->with('disablesort','0,5,6')
 				->with('addurl',$addurl)
 				->with('searchinput',$searchinput)
-				->with('ajaxsource',URL::to('document/type/'.$type))
-				->with('ajaxdel',URL::to('document/del'))
+				->with('ajaxsource',URL::to('template/type/'.$type))
+				->with('ajaxdel',URL::to('template/del'))
 				->with('crumb',$this->crumb)
 				->with('heads',$heads);
 		}else{
-			return View::make('document.restricted')
+			return View::make('template.restricted')
 				->with('crumb',$this->crumb)
 				->with('title',$title);
 		}
@@ -717,38 +739,18 @@ class Document_Controller extends Base_Controller {
 
 		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
 
-		if( Auth::user()->role == 'root' ||
-			Auth::user()->role == 'super' ||
-			Auth::user()->role == 'president_director' ||
-			Auth::user()->role == 'bod'
-			){
-
-
-		}else if( Auth::user()->role == 'client' ||
-			Auth::user()->role == 'principal_vendor' ||
-			Auth::user()->role == 'subcon'){
-
+		if(Auth::user()->department == $type){
 			$q['$or'] = array(
-				array('creatorId'=>Auth::user()->id),
+				array('access'=>'general'),
 				array('docShare'=>$sharecriteria)
 			);
-
 		}else{
-
-			if(Auth::user()->department == $type){
-				$q['$or'] = array(
-					array('access'=>'general'),
-					array('docShare'=>$sharecriteria)
-				);
-			}else{
-				$q['docShare'] = $sharecriteria;
-			}
+			$q['docShare'] = $sharecriteria;
 		}
-
 
 		$permissions = Auth::user()->permissions;
 
-		$document = new Document();
+		$template = new Document();
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
@@ -762,14 +764,14 @@ class Document_Controller extends Base_Controller {
 			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
 		}
 
-		$count_all = $document->count();
+		$count_all = $template->count();
 
 		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count($q);
+			$templates = $template->find($q,array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $template->count($q);
 		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count();
+			$templates = $template->find(array(),array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $template->count();
 		}
 
 
@@ -778,7 +780,7 @@ class Document_Controller extends Base_Controller {
 		$aadata = array();
 
 		$counter = 1 + $pagestart;
-		foreach ($documents as $doc) {
+		foreach ($templates as $doc) {
 
 
 			if(isset($doc['tags'])){
@@ -799,32 +801,31 @@ class Document_Controller extends Base_Controller {
 
 
 			if($doc['creatorId'] == Auth::user()->id || $doc['docDepartment'] == Auth::user()->department){
-				$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
+				$edit = '<a href="'.URL::to('template/edit/'.$doc['_id'].'/'.$type).'">'.
 						'<i class="foundicon-edit action"></i></a>&nbsp;';
+				$download = '<a href="'.URL::to('template/download/'.$doc['_id'].'/'.$type).'">'.
+						'<i class="foundicon-download action"></i></a>&nbsp;';
 				$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
-				$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
-							'<i class="foundicon-inbox action"></i></a>&nbsp;';
 			}else{
 				if($permissions->{$type}->edit == 1){
-					$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
+					$edit = '<a href="'.URL::to('template/edit/'.$doc['_id'].'/'.$type).'">'.
 							'<i class="foundicon-edit action"></i></a>&nbsp;';
 				}else{
 					$edit = '';
 				}
 
 				if($permissions->{$type}->delete == 1){
+					$download = '<a href="'.URL::to('template/download/'.$doc['_id'].'/'.$type).'">'.
+							'<i class="foundicon-download action"></i></a>&nbsp;';
+
+				}else{
+					$download = '';
+				}
+				if($permissions->{$type}->delete == 1){
 					$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
 				}else{
 					$del = '';
 				}
-
-				if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1){
-					$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
-							'<i class="foundicon-inbox action"></i></a>&nbsp;';
-				}else{
-					$download = '';
-				}
-
 			}
 
 			$aadata[] = array(
@@ -836,9 +837,9 @@ class Document_Controller extends Base_Controller {
 				isset($doc['access'])?ucfirst($doc['access']):'',
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
-				$edit.$download.$del
+				$download.$edit.$del
 				/*
-				'<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
+				'<a href="'.URL::to('template/edit/'.$doc['_id'].'/'.$type).'">'.
 				'<i class="foundicon-edit action"></i></a>&nbsp;'.
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 				*/
@@ -859,32 +860,121 @@ class Document_Controller extends Base_Controller {
 	}
 
 
-	public function get_dl($id){
-		$_id = new MongoId($id);
+	public function __get_type($type = null)
+	{
+		$menutitle = array(
+			'opportunity'=>'Opportunity',
+			'tender'=>'Tender',
+			'commbid'=>'Commercial Bid',
+			'proposal'=>'Tech Proposal',
+			'techbid'=>'Tech Bid',
+			'contract'=>'Contracts',
+			'legal'=>'Legal Docs',
+			'qc'=>'QA / QC',
+			'warehouse'=>'Warehouse'
+			);
 
-		$document = new Document();
+		$heads = array('#','Title','Created','Creator','Owner','Tags','Action');
+		$fields = array('seq','title','created','creator','owner','tags','action');
+		$searchinput = array(false,'title','created','creator','owner','tags',false);
 
-		$doc = $document->get(array('_id'=>$_id));
+		return View::make('tables.simple')
+			->with('title',(is_null($type))?'Document - All':'Document - '.$menutitle[$type])
+			->with('newbutton','New Document')
+			->with('disablesort','0,5,6')
+			->with('addurl','template/add')
+			->with('searchinput',$searchinput)
+			->with('ajaxsource',URL::to('template/type/'.$type))
+			->with('ajaxdel',URL::to('template/del'))
+			->with('heads',$heads);
+	}
 
-		$path = Config::get('parama.storage').$id.'/'.$doc['docFilename'];
+	public function __post_type($type = null)
+	{
+		$fields = array('title','createdDate','creatorName','creatorName','tags');
 
-		if(file_exists($path)){
-			Event::fire('document.update',array('id'=>$id,'result'=>'OK'));
-			$filename = $doc['docFilename'];
-			return Response::download($path, $filename);
-		}else{
-			Event::fire('document.update',array('id'=>$id,'result'=>'FILENOTFOUND'));
-			return false;
+		$rel = array('like','like','like','like','equ');
+
+		$cond = array('both','both','both','both','equ');
+
+		$idx = 0;
+		$q = array();
+		foreach($fields as $field){
+			if(Input::get('sSearch_'.$idx))
+			{
+				if($rel[$idx] == 'like'){
+					if($cond[$idx] == 'both'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/');
+					}else if($cond[$idx] == 'before'){
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/');
+					}else if($cond[$idx] == 'after'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/');
+					}
+				}else if($rel[$idx] == 'equ'){
+					$q[$field] = Input::get('sSearch_'.$idx);
+				}
+			}
+			$idx++;
 		}
 
+		//print_r($q)
+
+		$template = new Document();
+
+		/* first column is always sequence number, so must be omitted */
+		$fidx = Input::get('iSortCol_0');
+		$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+		$sort_col = $fields[$fidx];
+		$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+
+		$count_all = $template->count();
+
+		if(count($q) > 0){
+			$templates = $template->find($q,array(),array($sort_col=>$sort_dir));
+			$count_display_all = $template->count($q);
+		}else{
+			$templates = $template->find(array(),array(),array($sort_col=>$sort_dir));
+			$count_display_all = $template->count();
+		}
+
+
+
+
+		$aadata = array();
+
+		$counter = 1;
+		foreach ($templates as $doc) {
+			$aadata[] = array(
+				$counter,
+				$doc['title'],
+				date('Y-m-d h:i:s',$doc['createdDate']),
+				$doc['creatorName'],
+				$doc['creatorName'],
+				implode(',',$doc['tag']),
+				'<i class="foundicon-edit action"></i>&nbsp;<i class="foundicon-trash action"></i>'
+			);
+			$counter++;
+		}
+
+
+		$result = array(
+			'sEcho'=> Input::get('sEcho'),
+			'iTotalRecords'=>$count_all,
+			'iTotalDisplayRecords'=> $count_display_all,
+			'aaData'=>$aadata,
+			'qrs'=>$q
+		);
+
+		print json_encode($result);
 	}
+
 
 	public function get_view($id){
 		$id = new MongoId($id);
 
-		$document = new Document();
+		$template = new Document();
 
-		$doc = $document->get(array('_id'=>$id));
+		$doc = $template->get(array('_id'=>$id));
 
 		return View::make('pop.docview')->with('profile',$doc);
 	}
@@ -892,11 +982,11 @@ class Document_Controller extends Base_Controller {
 	public function get_fileview($id){
 		$_id = new MongoId($id);
 
-		$document = new Document();
+		$template = new Document();
 
-		$doc = $document->get(array('_id'=>$_id));
+		$doc = $template->get(array('_id'=>$_id));
 
-		//$file = URL::to(Config::get('parama.storage').$id.'/'.$doc['docFilename']);
+		//$file = URL::to(Config::get('kickstart.storage').$id.'/'.$doc['docFilename']);
 
 		$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
 
@@ -906,112 +996,15 @@ class Document_Controller extends Base_Controller {
 	public function get_approve($id){
 		$id = new MongoId($id);
 
-		$document = new Document();
+		$template = new Document();
 
-		$doc = $document->get(array('_id'=>$id));
-
-		$form = new Formly();
-
-		$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
-
-		return View::make('pop.approval')->with('doc',$doc)->with('form',$form)->with('href',$file)->with('ajaxpost','document/approve');
-	}
-
-	public function get_forward($id){
-		$id = new MongoId($id);
-
-		$document = new Document();
-
-		$doc = $document->get(array('_id'=>$id));
+		$doc = $template->get(array('_id'=>$id));
 
 		$form = new Formly();
 
 		$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
 
-		return View::make('pop.forwarder')->with('doc',$doc)->with('form',$form)->with('href',$file)->with('ajaxpost','document/forward');
-	}
-
-	public function post_forward(){
-
-		$response = Input::all();
-
-		$_id = new MongoId($response['docid']);
-
-		$users = new User();
-
-		$user = $users->get(array('email'=>trim($response['fwdto'])));
-
-		$doc = new Document();
-
-		$now = new MongoDate();
-
-
-		$res1['approvalResponds'] = array(
-				'approval'=>'transfer',
-				'transferedTo'=>$user['_id'],
-				'approverId'=>Auth::user()->id,
-				'approvalDate'=>$now,
-				'approvalNote'=>$response['note']
-			);
-
-		
-
-		$res2['approvalRequestIds'] = array(
-				'_id'=>$user['_id'],
-				'fullname'=>$user['fullname']
-			);
-
-		$res3['approvalRequestEmails'] = trim($response['fwdto']);
-		
-		//print_r($res);
-
-		if($document = $doc->update(array('_id'=>$_id),array('$push'=>$res1),array('upsert'=>true))){
-
-			$doc->update(array('_id'=>$_id),array('$push'=>$res2),array('upsert'=>true));
-
-			$doc->update(array('_id'=>$_id),array('$push'=>$res3),array('upsert'=>true));
-
-			$docobj = $doc->get(array('_id'=>$_id));
-
-			//print_r($document);
-
-			$docApprovalRequest = $docobj['docApprovalRequest'].','.trim($response['fwdto']);
-
-			$set = array('docApprovalRequest'=>$docApprovalRequest);
-
-			$doc->update(array('_id'=>$_id),array('$set'=>$set),array('upsert'=>true));
-
-			return Response::json(array('status'=>'OK','doc'=>$document));
-		}else{
-			return Response::json(array('status'=>'FAILED'));
-		}
-
-	}
-
-	public function post_approve(){
-
-		$response = Input::all();
-
-		$_id = new MongoId($response['docid']);
-
-		$doc = new Document();
-
-		$now = new MongoDate();
-
-		$res['approvalResponds'] = array(
-				'approval'=>$response['approval'],
-				'approverId'=>Auth::user()->id,
-				'approvalDate'=>$now,
-				'approvalNote'=>$response['note']
-			);
-
-		if($document = $doc->update(array('_id'=>$_id),array('$push'=>$res),array('upsert'=>true))){
-			return Response::json(array('status'=>'OK'));
-		}else{
-			return Response::json(array('status'=>'FAILED'));
-		}
-
-
+		return View::make('pop.approval')->with('doc',$doc)->with('form',$form)->with('href',$file);
 	}
 
 }

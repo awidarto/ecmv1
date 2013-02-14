@@ -32,7 +32,7 @@
 |
 */
 
-Route::controller(array('document','user','message','project','tender','opportunity','search','activity','finance','hr','qc','warehouse','employee','requests','approval','category','content','ajax'));
+Route::controller(array('document','user','message','template','project','tender','opportunity','search','activity','finance','hr','qc','warehouse','employee','requests','approval','category','content','ajax'));
 
 
 Route::get('/',  array('before'=>'auth', function()

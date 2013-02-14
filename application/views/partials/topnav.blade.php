@@ -4,9 +4,15 @@
   <!--<li class="divider"></li>-->
 @if(Auth::user()->role == 'client' || Auth::user()->role == 'principal_vendor' || Auth::user()->role == 'subcon')
     
-    <li>{{ HTML::link('document/type/clients','Clients')}}</li>
-    <li>{{ HTML::link('document/type/principal_vendor','Principal / Vendors')}}</li>
-    <li>{{ HTML::link('document/type/subcon','3rd Party / Sub-Con')}}</li>
+    @if(Auth::user()->role == 'client')
+      <li>{{ HTML::link('document/type/clients','Clients')}}</li>
+    @elseif(Auth::user()->role == 'principal_vendor')
+      <li>{{ HTML::link('document/type/principal_vendor','Principal / Vendors')}}</li>
+    @elseif(Auth::user()->role == 'subcon')
+      <li>{{ HTML::link('document/type/subcon','3rd Party / Sub-Con')}}</li>
+    @endif    
+
+
 
 @else
 

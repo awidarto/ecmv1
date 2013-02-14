@@ -6,13 +6,16 @@
 <h3>{{$title}}</h3>
 </div>
 
-{{$form->open_for_files('message/new','POST',array('class'=>'custom','id'=>'newmsg'))}}
+{{$form->open_for_files('message/replyall/'.$id,'POST',array('class'=>'custom','id'=>'newmsg'))}}
 <div class="row">
   <div class="twelve columns">
 
     {{ $form->hidden('from',Auth::user()->email )}}
 
     {{ $form->hidden('fromId',Auth::user()->id )}}
+
+    {{ $form->hidden('prevbcc','' )}}
+
     <div class="row">
         <span style="margin-left:0px"><strong>From</strong></span><span style="padding-left:20px;">{{Auth::user()->fullname}} ( {{ Auth::user()->email }} )</span>
     </div>

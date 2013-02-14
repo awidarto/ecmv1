@@ -201,6 +201,19 @@
 				});
 			}
 
+			if ($(e.target).is('.forwardview')) {
+				var doc_id = e.target.id;
+
+				$.fancybox({
+					type:'iframe',
+					width:'1000',
+					href: '{{ URL::to("document/forward/") }}' + doc_id,
+					autosize: false
+				});
+
+				
+			}
+
 		});
 
     });

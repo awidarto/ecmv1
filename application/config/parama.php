@@ -83,6 +83,7 @@
 
   'department'=>array(
   		'general'=>'General',
+      'template'=>'Template',
   		'outdoor_sales'=>'Outdoor Sales',
   		'indoor_sales'=>'Indoor Sales',
   		'project_control'=>'Project Control',

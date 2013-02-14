@@ -66,6 +66,8 @@ class Message_Controller extends Base_Controller {
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
 
+		$search = Input::get('sSearch');
+
 		$limit = array($pagelength, $pagestart);
 
 		$defsort = 1;
@@ -90,13 +92,49 @@ class Message_Controller extends Base_Controller {
 
 		$self_email_regex = new MongoRegex('/'.Auth::user()->email.'/i');
 
-		//$q = array('$or'=>array(
-		//	array('to'=>$self_email_regex)
-		//	));
+		if($search != ''){
+			$search = new MongoRegex('/'.$search.'/i');
+			//$q['from'] = $self_email_regex;
 
-		$q = array('to'=>$self_email_regex);
+			$q['$and'] = array(
+				array('$or'=>array(
+						array('from'=>$search),
+						array('to'=>$search),
+						array('subject'=>$search),
+						array('body'=>$search)
+					)
+				),
+				array('$or'=>array(
+						array('to'=>$self_email_regex),
+						array('cc'=>$self_email_regex),
+						array('bcc'=>$self_email_regex)
+					)
+				),
+			);
 
-		//$q = array();
+			/*
+			$q['$or'] = array(
+				array('from'=>$search),
+				array('to'=>$search),
+				array('subject'=>$search),
+				array('body'=>$search)
+			);
+			$q = array('$or'=>array(
+				array('to'=>$self_email_regex),
+				array('cc'=>$self_email_regex),
+				array('bcc'=>$self_email_regex),
+			));
+			*/
+
+		}else{
+			$q = array('$or'=>array(
+				array('to'=>$self_email_regex),
+				array('cc'=>$self_email_regex),
+				array('bcc'=>$self_email_regex)
+			));
+		}
+
+
 
 		if(count($q) > 0){
 			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
@@ -219,6 +257,343 @@ class Message_Controller extends Base_Controller {
 
 		return Response::json($result);
 	}
+
+	public function get_reply($id)
+	{
+		$this->crumb->add('message/reply/'.$id,'Reply');
+
+		$msg = new Message();
+
+		$_id = new MongoId($id);
+
+		$message = $msg->get(array('_id'=>$_id));
+
+		$message['to'] = $message['from'];
+
+		$message['from'] = Auth::user()->email;
+
+		$message['subject'] = 'Re: '.$message['subject'];
+
+		$body = explode("\n",$message['body']);
+
+		for($i = 0;$i < count($body);$i++){
+			$body[$i] = '>'.$body[$i];
+		}
+
+		$message['body'] = implode("\n", $body);
+
+		$form = new Formly($message);
+
+		return View::make('message.reply')
+			->with('id',$id)
+			->with('form',$form)
+	        ->with('crumb',$this->crumb)
+			->with('title','Reply to Message');
+	}
+
+	public function post_reply($id){
+
+		$rules = array(
+	        'subject'  => 'required'
+	    );
+
+	    $validation = Validator::make($input = Input::all(), $rules);
+
+	    if($validation->fails()){
+
+	    	return Redirect::to('message/reply/'.$id)->with_errors($validation)->with_input(Input::all());
+
+	    }else{
+
+			$data = Input::get();
+	    	
+	    	//print_r($data);
+
+			//pre save transform
+			unset($data['csrf_token']);
+
+			$data['createdDate'] = new MongoDate();
+			$data['lastUpdate'] = new MongoDate();
+			$data['creatorName'] = Auth::user()->fullname;
+			$data['creatorId'] = Auth::user()->id;
+
+			$data['inreplyto'] = $id;
+
+			$data['from'] = Auth::user()->email;
+			
+			//$docupload = Input::file('docupload');
+
+			$data['recipients'] = explode(',',$data['to']);
+
+			$status = explode(',',$data['to']);
+
+			$data['status'] = array();
+
+			foreach ($status as $st) {
+				$data['status'][$st] = 'Delivered';
+			}
+
+			$document = new Message();
+
+			$newobj = $document->insert($data);
+
+			if($newobj){
+
+				/*
+				if($docupload['name'] != ''){
+
+					$newid = $newobj['_id']->__toString();
+
+					$newdir = realpath(Config::get('parama.storage')).'/'.$newid;
+
+					Input::upload('docupload',$newdir,$docupload['name']);
+					
+				}
+
+				$sharedto = explode(',',$data['docShare']);
+
+				if(count($sharedto) > 0  && $data['docShare'] != ''){
+					foreach($sharedto as $to){
+						Event::fire('document.share',array('id'=>$newobj['_id'],'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+					}
+				}
+				*/
+
+
+				Event::fire('message.send',array('id'=>$newobj['_id'],'result'=>'OK','department'=>Auth::user()->department,'creator'=>Auth::user()->id));
+
+		    	return Redirect::to('message')->with('notify_success','Message sent successfully');
+			}else{
+				Event::fire('message.send',array('id'=>$id,'result'=>'FAILED'));
+		    	return Redirect::to('message')->with('notify_success','Message sending failed');
+			}
+
+	    }
+
+		
+	}	
+
+	public function get_forward($id)
+	{
+		$this->crumb->add('message/forward/'.$id,'Forward');
+
+		$msg = new Message();
+
+		$_id = new MongoId($id);
+
+		$message = $msg->get(array('_id'=>$_id));
+
+
+		$message['forwardfrom'] = $message['from'];
+
+		$message['to'] = '';
+
+		$message['body'] = 'Forwarded From : '.$message['forwardfrom']."\r\n===============================\r\n".$message['body'];
+
+		$message['from'] = Auth::user()->email;
+
+		$message['subject'] = 'Fwd: '.$message['subject'];
+
+		$form = new Formly($message);
+
+		return View::make('message.forward')
+			->with('id',$id)
+			->with('form',$form)
+	        ->with('crumb',$this->crumb)
+			->with('title','Forward Message');
+	}
+
+	public function post_forward($id){
+
+		$rules = array(
+	        'subject'  => 'required'
+	    );
+
+	    $validation = Validator::make($input = Input::all(), $rules);
+
+	    if($validation->fails()){
+
+	    	return Redirect::to('message/forward/'.$id)->with_errors($validation)->with_input(Input::all());
+
+	    }else{
+
+			$data = Input::get();
+	    	
+	    	//print_r($data);
+
+			//pre save transform
+			unset($data['csrf_token']);
+
+			$data['createdDate'] = new MongoDate();
+			$data['lastUpdate'] = new MongoDate();
+			$data['creatorName'] = Auth::user()->fullname;
+			$data['creatorId'] = Auth::user()->id;
+
+			$data['from'] = Auth::user()->email;
+			
+			//$docupload = Input::file('docupload');
+
+			$data['recipients'] = explode(',',$data['to']);
+
+			$status = explode(',',$data['to']);
+
+			$data['status'] = array();
+
+			foreach ($status as $st) {
+				$data['status'][$st] = 'Delivered';
+			}
+
+			$document = new Message();
+
+			$newobj = $document->insert($data);
+
+			if($newobj){
+
+				/*
+				if($docupload['name'] != ''){
+
+					$newid = $newobj['_id']->__toString();
+
+					$newdir = realpath(Config::get('parama.storage')).'/'.$newid;
+
+					Input::upload('docupload',$newdir,$docupload['name']);
+					
+				}
+
+				$sharedto = explode(',',$data['docShare']);
+
+				if(count($sharedto) > 0  && $data['docShare'] != ''){
+					foreach($sharedto as $to){
+						Event::fire('document.share',array('id'=>$newobj['_id'],'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+					}
+				}
+				*/
+
+
+				Event::fire('message.send',array('id'=>$newobj['_id'],'result'=>'OK','department'=>Auth::user()->department,'creator'=>Auth::user()->id));
+
+		    	return Redirect::to('message')->with('notify_success','Message sent successfully');
+			}else{
+				Event::fire('message.send',array('id'=>$id,'result'=>'FAILED'));
+		    	return Redirect::to('message')->with('notify_success','Message sending failed');
+			}
+
+	    }
+
+		
+	}	
+
+
+	public function get_replyall($id)
+	{
+		$this->crumb->add('message/replyall/'.$id,'Reply All');
+
+		$msg = new Message();
+
+		$_id = new MongoId($id);
+
+		$message = $msg->get(array('_id'=>$_id));
+
+		$message['to'] = $message['from'];
+
+		$message['from'] = Auth::user()->email;
+
+		$message['subject'] = 'Re: '.$message['subject'];
+
+		$message['prevbcc'] = $message['bcc'];
+
+		$message['bcc'] = '';
+
+		$form = new Formly($message);
+
+		return View::make('message.replyall')
+			->with('id',$id)
+			->with('form',$form)
+	        ->with('crumb',$this->crumb)
+			->with('title','Reply All');
+	}
+
+	public function post_replyall($id){
+
+		$rules = array(
+	        'subject'  => 'required'
+	    );
+
+	    $validation = Validator::make($input = Input::all(), $rules);
+
+	    if($validation->fails()){
+
+	    	return Redirect::to('message/replyall/'.$id)->with_errors($validation)->with_input(Input::all());
+
+	    }else{
+
+			$data = Input::get();
+	    	
+	    	//print_r($data);
+
+			//pre save transform
+			unset($data['csrf_token']);
+
+			$data['createdDate'] = new MongoDate();
+			$data['lastUpdate'] = new MongoDate();
+			$data['creatorName'] = Auth::user()->fullname;
+			$data['creatorId'] = Auth::user()->id;
+
+			$data['from'] = Auth::user()->email;
+			
+			//$docupload = Input::file('docupload');
+
+			$data['bcc'] = implode(',',array($data['bcc'],$data['prevbcc']));
+
+			$data['recipients'] = explode(',',$data['to']);
+
+			$status = explode(',',$data['to']);
+
+			$data['status'] = array();
+
+			foreach ($status as $st) {
+				$data['status'][$st] = 'Delivered';
+			}
+
+			$document = new Message();
+
+			$newobj = $document->insert($data);
+
+			if($newobj){
+
+				/*
+				if($docupload['name'] != ''){
+
+					$newid = $newobj['_id']->__toString();
+
+					$newdir = realpath(Config::get('parama.storage')).'/'.$newid;
+
+					Input::upload('docupload',$newdir,$docupload['name']);
+					
+				}
+
+				$sharedto = explode(',',$data['docShare']);
+
+				if(count($sharedto) > 0  && $data['docShare'] != ''){
+					foreach($sharedto as $to){
+						Event::fire('document.share',array('id'=>$newobj['_id'],'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+					}
+				}
+				*/
+
+
+				Event::fire('message.send',array('id'=>$newobj['_id'],'result'=>'OK','department'=>Auth::user()->department,'creator'=>Auth::user()->id));
+
+		    	return Redirect::to('message')->with('notify_success','Message sent successfully');
+			}else{
+				Event::fire('message.send',array('id'=>$id,'result'=>'FAILED'));
+		    	return Redirect::to('message')->with('notify_success','Message sending failed');
+			}
+
+	    }
+
+		
+	}	
 
 
 	public function get_new()

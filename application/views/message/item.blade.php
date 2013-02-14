@@ -25,8 +25,9 @@
 		-->
 	  </p>
 	  <ul class="inline-list">
-	    <li><a href="">Reply</a></li>
-	    <li><a href="">Forward</a></li>
+	    <li>{{ HTML::link('message/reply/'.$doc['_id'],'Reply')}}</li>
+	    <li>{{ HTML::link('message/replyall/'.$doc['_id'],'Reply All')}}</li>
+	    <li>{{ HTML::link('message/forward/'.$doc['_id'],'Forward')}}</li>
 	  </ul>
 
 	<!--

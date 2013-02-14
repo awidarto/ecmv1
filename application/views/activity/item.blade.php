@@ -77,12 +77,13 @@ elseif($doc['event'] == 'request.approval'){
 	    </div>
 	  </div>
 	  </p>
+
+	<!--
 	  <ul class="inline-list">
 	    <li><a href="">Reply</a></li>
 	    <li><a href="">Share</a></li>
 	  </ul>
-
-	<!--
+	
 	  <h6>2 Comments</h6>
 	  <div class="row">
 	    <div class="two columns"><img src="http://placehold.it/50x50&text=[img]" /></div>

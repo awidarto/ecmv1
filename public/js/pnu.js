@@ -23,7 +23,7 @@
 
 		$('.tag_email_inline').tagsInput({
 			'autocomplete_url': base + 'ajax/email',
-		   	'height':'80px',
+		   	'height':'40px',
 		   	'width':'100%',
 		   	'interactive':true,
 		   	'onChange' : function(c){
