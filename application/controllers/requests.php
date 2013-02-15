@@ -442,12 +442,16 @@ class Requests_Controller extends Base_Controller {
 
 		$self_id = new MongoId(Auth::user()->id);
 
+		/*
 		$q['$or'] = array(
 			array('approvalRequestIds.id'=>$self_id),
 			array('docApproval'=> new MongoRegex('/'.Auth::user()->email.'/i'))
 		);
 
 		$q = array('approvalRequestIds._id'=>$self_id);
+		*/
+		$q = array('creatorId'=>Auth::user()->id);
+
 
 		$hilite = array();
 		$hilite_replace = array();
@@ -521,22 +525,28 @@ class Requests_Controller extends Base_Controller {
 
 			$requestTo = '<ol>';
 
-			foreach ($doc['approvalRequestIds'] as $r) {
-				if($r['_id'] == $self_id){
-					//$requestTo .= '<li><span class="approvalview" id="'.$doc['_id'].'">'.$r['fullname'].'</span></li>';
-					$requestTo .= '<li><strong>'.$r['fullname'].' (You)</strong></li>';
-				}else{
-					$requestTo .= '<li>'.$r['fullname'].'</li>';
+			if(isset($doc['approvalRequestIds'])){
+				foreach ($doc['approvalRequestIds'] as $r) {
+					if($r['_id'] == $self_id){
+						//$requestTo .= '<li><span class="approvalview" id="'.$doc['_id'].'">'.$r['fullname'].'</span></li>';
+						$requestTo .= '<li><strong>'.$r['fullname'].' (You)</strong></li>';
+					}else{
+						$requestTo .= '<li>'.$r['fullname'].'</li>';
+					}
 				}
+
+				if(count($doc['approvalRequestIds']) > 0){
+					$request_type = 'Approval';
+				}else{
+					$request_type = 'General';
+				}
+
+			}else{
+				$requestTo .= '<li>No approval requested</li>';
 			}
 
 			$requestTo .= '</ol>';
 
-			if(count($doc['approvalRequestIds']) > 0){
-				$request_type = 'Approval';
-			}else{
-				$request_type = 'General';
-			}
 
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
@@ -550,8 +560,9 @@ class Requests_Controller extends Base_Controller {
 				$request_type,
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
-				'<i class="foundicon-checkmark action approvalview" id="'.$doc['_id'].'"></i>&nbsp;'.
-				'<i class="foundicon-right-arrow action forwardview" id="'.$doc['_id'].'"></i>'
+				''
+				//'<i class="foundicon-checkmark action approvalview" id="'.$doc['_id'].'"></i>&nbsp;'.
+				//'<i class="foundicon-right-arrow action forwardview" id="'.$doc['_id'].'"></i>'
 			);
 			$counter++;
 		}
@@ -583,12 +594,7 @@ class Requests_Controller extends Base_Controller {
 	public function post_submit($type = null){
 
 		//print_r(Session::get('permission'));
-
-		if(is_null($type)){
-			$back = 'document';
-		}else{
-			$back = 'document/type/'.$type;
-		}
+		$back = 'requests/outgoing';
 
 	    $rules = array(
 	        'title'  => 'required|max:50'
@@ -598,7 +604,7 @@ class Requests_Controller extends Base_Controller {
 
 	    if($validation->fails()){
 
-	    	return Redirect::to('document/add/'.$type)->with_errors($validation)->with_input(Input::all());
+	    	return Redirect::to('requests/submit')->with_errors($validation)->with_input(Input::all());
 
 	    }else{
 
