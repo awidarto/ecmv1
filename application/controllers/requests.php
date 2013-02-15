@@ -404,7 +404,8 @@ class Requests_Controller extends Base_Controller {
 		//if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
 			return View::make('tables.simple')
 				->with('title','Outgoing Requests')
-				->with('newbutton','')
+				->with('newbutton','Submit Request')
+				->with('addurl','requests/submit')
 				->with('disablesort','0,5,6')
 				->with('searchinput',$searchinput)
 				->with('ajaxsource',URL::to('requests/outgoing'))
@@ -567,7 +568,147 @@ class Requests_Controller extends Base_Controller {
 		return Response::json($result);
 	}
 
+	public function get_submit(){
+		$this->crumb->add('requests/submit','Submit Request Document');
 
+		$form = new Formly();
+		return View::make('requests.new')
+					->with('form',$form)
+					->with('crumb',$this->crumb)
+					->with('title','Submit Request Document');
+
+	}
+
+
+	public function post_submit($type = null){
+
+		//print_r(Session::get('permission'));
+
+		if(is_null($type)){
+			$back = 'document';
+		}else{
+			$back = 'document/type/'.$type;
+		}
+
+	    $rules = array(
+	        'title'  => 'required|max:50'
+	    );
+
+	    $validation = Validator::make($input = Input::all(), $rules);
+
+	    if($validation->fails()){
+
+	    	return Redirect::to('document/add/'.$type)->with_errors($validation)->with_input(Input::all());
+
+	    }else{
+
+			$data = Input::get();
+
+	    	//print_r($data);
+
+			//pre save transform
+			unset($data['csrf_token']);
+
+			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
+			$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+
+			$data['createdDate'] = new MongoDate();
+			$data['lastUpdate'] = new MongoDate();
+			$data['creatorName'] = Auth::user()->fullname;
+			$data['creatorId'] = Auth::user()->id;
+
+
+			$sharelist = explode(',', $data['docShare']);
+			if(is_array($sharelist)){
+				$usr = new User();
+				$shd = array();
+				foreach($sharelist as $sh){
+					$shd[] = array('email'=>$sh);
+				}
+				$shared_ids = $usr->find(array('$or'=>$shd),array('id'));
+
+				$data['sharedEmails'] = $sharelist ;
+				$data['sharedIds'] = array_values($shared_ids) ;
+			}
+
+			$approvallist = explode(',', $data['docApprovalRequest']);
+			if(is_array($approvallist)){
+				$usr = new User();
+				$shd = array();
+				foreach($approvallist as $sh){
+					$appval[] = array('email'=>$sh);
+				}
+				$approval_ids = $usr->find(array('$or'=>$appval),array('id','fullname'));
+
+				$data['approvalRequestEmails'] = $approvallist ;
+				$data['approvalRequestIds'] = array_values($approval_ids) ;
+			}
+
+			$docupload = Input::file('docupload');
+
+			$docupload['uploadTime'] = new MongoDate();
+
+			$data['docFilename'] = $docupload['name'];
+
+			$data['docFiledata'] = $docupload;
+
+			$data['docFileList'][] = $docupload;
+
+			$data['tags'] = explode(',',$data['docTag']);
+
+			$document = new Document();
+
+			$newobj = $document->insert($data);
+
+
+			if($newobj){
+
+
+				if($docupload['name'] != ''){
+
+					$newid = $newobj['_id']->__toString();
+
+					$newdir = realpath(Config::get('parama.storage')).'/'.$newid;
+
+					Input::upload('docupload',$newdir,$docupload['name']);
+
+				}
+
+				if(count($data['tags']) > 0){
+					$tag = new Tag();
+					foreach($data['tags'] as $t){
+						$tag->update(array('tag'=>$t),array('$inc'=>array('count'=>1)),array('upsert'=>true));
+					}
+				}
+
+				$sharedto = explode(',',$data['docShare']);
+
+				if(count($sharedto) > 0  && $data['docShare'] != ''){
+					foreach($sharedto as $to){
+						Event::fire('document.share',array('id'=>$newobj['_id'],'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+					}
+				}
+
+				$approvalby = explode(',',$data['docApprovalRequest']);
+
+				if(count($approvalby) > 0 && $data['docApprovalRequest'] != ''){
+					foreach($approvalby as $to){
+						Event::fire('request.approval',array('id'=>$newobj['_id'],'approvalby'=>$to));
+					}
+				}
+
+				Event::fire('document.create',array('id'=>$newobj['_id'],'result'=>'OK','department'=>Auth::user()->department,'creator'=>Auth::user()->id));
+
+		    	return Redirect::to($back)->with('notify_success','Document saved successfully');
+			}else{
+				Event::fire('document.create',array('id'=>$id,'result'=>'FAILED'));
+		    	return Redirect::to($back)->with('notify_success','Document saving failed');
+			}
+
+	    }
+
+
+	}
 
 
 

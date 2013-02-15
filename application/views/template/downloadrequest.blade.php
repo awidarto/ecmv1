@@ -2,6 +2,8 @@
 
 @section('content')
 
+{{$form->open_for_files('template/download/'.$profile['_id'],'POST',array('class'=>'custom','id'=>'newdoc'))}}
+
 <h4>Document Detail : {{ $profile['title'] }}</h4>
 <div class="row">
 	<div class="profileContent">
@@ -39,15 +41,15 @@
 </div>
 <div class="row">
 	<div class="twelve columns">
-		{{$form->open_for_files('template/download/'.$profile['_id'],'POST',array('class'=>'custom','id'=>'newdoc'))}}
 
 		{{ $form->hidden('docId',$profile['_id']) }}
 
 		{{ Form::submit('Download',array('class'=>'button'))}}
-		{{$form->close()}}
 
 	</div>
 </div>
+
+{{$form->close()}}
 
 @endsection
 
