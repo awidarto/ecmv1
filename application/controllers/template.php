@@ -37,7 +37,7 @@ class Template_Controller extends Base_Controller {
 
 	public function __construct(){
 		$this->crumb = new Breadcrumb();
-		$this->crumb->add('template','Document');
+		$this->crumb->add('template','Document Template');
 
 		date_default_timezone_set('Asia/Jakarta');
 		$this->filter('before','auth');
@@ -45,7 +45,7 @@ class Template_Controller extends Base_Controller {
 
 	public function get_index()
 	{
-		$this->crumb->add('template','Super Manager');
+		$this->crumb->add('template','Template');
 
 		//print_r(Auth::user());
 
@@ -283,11 +283,26 @@ class Template_Controller extends Base_Controller {
 
 		$doc = $document->get(array('_id'=>$_id));
 
+		$path = Config::get('parama.storage').$id.'/'.$doc['docFilename'];
+
+		if(file_exists($path)){
+
+			//return Response::download($path, $filename);
+		}else{
+			Event::fire('document.update',array('id'=>$id,'result'=>'FILENOTFOUND'));
+			return false;
+		}
+
+		$seq = new Sequence();
+
+		$gseq = $seq->find_and_modify(array('_id'=>$id),array('$inc'=>array('seq'=>1)),array('seq'=>1),array('new'=>true,'upsert'=>true));
+
 
 		$form = new Formly();
 		return View::make('template.downloadrequest')
 					->with('form',$form)
-					->with('doc',$doc)
+					->with('docnumber',$gseq['seq'])
+					->with('profile',$doc)
 					->with('crumb',$this->crumb)
 					->with('title','New Document');
 

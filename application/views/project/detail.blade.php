@@ -35,11 +35,7 @@
 					</td>
 				</tr>
 				<tr>
-					<td class="detail-title">Gross Value</td>
-					<td class="detail-info">{{ $project['projectCurrency'].' '.number_format($project['projectGrossValue'],2,',','.') }}</td>
-				</tr>
-				<tr>
-					<td class="detail-title">Nett Value</td>
+					<td class="detail-title">Value</td>
 					<td class="detail-info">{{ $project['projectCurrency'].' '.number_format($project['projectNetValue'],2,',','.') }}</td>
 				</tr>
 				<tr>

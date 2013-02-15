@@ -86,6 +86,42 @@ class Model {
 		return iterator_to_array($find);
 	}
 
+
+
+	/**
+	 * Find and Modify documents
+	 *
+	 * @param  array $query
+	 * @param  array $fields
+	 * @return MongoDB Object
+	 */
+	public function find_and_modify(array $query = array(), array $update = array(), array $fields = array(),array $options = array())
+	{
+
+		//$find =  $this->_db->find_and_modify($this->_collection, $query, $update ,$fields, $options);
+
+		$find = $this->_db->command(
+			array('findandmodify' => 'sequences',
+                  'query' => $query,
+                  'update' => $update,
+                  'fields' => $fields,
+                  'options' => $options
+            )
+		);
+
+		/*
+		if($find->count()==0)
+		{
+			return array();
+		}
+		*/
+
+		//return iterator_to_array($find);
+
+		return $find['value'];
+	}
+
+
 	public function count($query = array())
 	{
 		$count =  $this->_db->count($this->_collection,$query);
@@ -98,7 +134,7 @@ class Model {
 	 * @param  array $criteria
 	 * @return null
 	 */
-	public function delete(array$criteria)
+	public function delete(array $criteria)
 	{
 		return $this->_db->remove($this->_collection, $criteria, array());
 	}

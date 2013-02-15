@@ -420,14 +420,256 @@ class Tender_Controller extends Base_Controller {
 
 		$projectdata = $project->get(array('_id'=>$_id));
 
+		$heads = array('#','Title','Last Update','Creator','Attachment','Action');
+		$searchinput = array(false,'title','last update','creator','filename',false);
+
+		$doc = new Document();
+
+		//check is shared
+		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
+
+		// empty query object
+		$q = array();
+		// default filter by department
+		$q['docProjectId'] = $id;
+
+		// by default can not open the page
+		$can_open = false;
+
+		if( Auth::user()->role == 'root' ||
+			Auth::user()->role == 'super' ||
+			Auth::user()->role == 'president_director' ||
+			Auth::user()->role == 'bod'
+			){
+
+			// these roles are super users
+
+			$can_open = true;
+
+		}else if( Auth::user()->role == 'client' ||
+			Auth::user()->role == 'principal_vendor' ||
+			Auth::user()->role == 'subcon'){
+
+			$q['$or'] = array(
+				array('creatorId'=>Auth::user()->id),
+				array('docShare'=>$sharecriteria)
+			);
+
+			$shared = $doc->count($q);
+			$created = $doc->count($q);
+
+			if($shared > 0 || $created > 0){
+				$can_open = true;
+			}
+
+		}else{
+
+			if(Auth::user()->department == $type){
+				$q['$or'] = array(
+					array('access'=>'general'),
+					array('docShare'=>$sharecriteria)
+				);
+			}else{
+				$q['docShare'] = $sharecriteria;
+			}
+
+			$shared = $doc->count($q);
+			$created = $doc->count($q);
+
+			if($shared > 0 || $created > 0){
+				$can_open = true;
+			}
+		}
+
+		$permissions = Auth::user()->permissions;
+
 		return View::make('tender.detail')
 			->with('title','Tender Detail - '.$projectdata['title'])
-			->with('project', $projectdata)
+			->with('tender', $projectdata)
 			->with('newbutton','New Schedule Item')
 			->with('newprogressbutton','New Progress Report')
 			->with('addurl','tender/addschitem')
 			->with('ajaxsource',URL::to('tender/scheduleitems/'.$id))
+			->with('disablesort','0')
+			->with('ajaxsourcedoc',URL::to('tender/doc/'.$id))
+			->with('searchinput',$searchinput)
+			->with('heads',$heads)
 			->with('ajaxdel',URL::to('tender/del'));
+	}
+
+	public function post_doc($id = null)
+	{
+
+		$fields = array('title','createdDate','creatorName','docFilename');
+
+		$rel = array('like','like','like','like');
+
+		$cond = array('both','both','both','both');
+
+		$pagestart = Input::get('iDisplayStart');
+		$pagelength = Input::get('iDisplayLength');
+
+		$limit = array($pagelength, $pagestart);
+
+		$defsort = 1;
+		$defdir = -1;
+
+		$idx = 0;
+		$q = array();
+
+		$hilite = array();
+		$hilite_replace = array();
+
+		foreach($fields as $field){
+			if(Input::get('sSearch_'.$idx))
+			{
+
+				$hilite_item = Input::get('sSearch_'.$idx);
+				$hilite[] = $hilite_item;
+				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
+
+				if($rel[$idx] == 'like'){
+					if($cond[$idx] == 'both'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
+					}else if($cond[$idx] == 'before'){
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
+					}else if($cond[$idx] == 'after'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
+					}
+				}else if($rel[$idx] == 'equ'){
+					$q[$field] = Input::get('sSearch_'.$idx);
+				}
+			}
+			$idx++;
+		}
+
+		//print_r($q)
+		if(!is_null($id)){
+			$q['docTenderId'] = $id;
+		}
+
+		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
+
+		if( Auth::user()->role == 'root' ||
+			Auth::user()->role == 'super' ||
+			Auth::user()->role == 'president_director' ||
+			Auth::user()->role == 'bod'
+			){
+
+
+		}else if( Auth::user()->role == 'client' ||
+			Auth::user()->role == 'principal_vendor' ||
+			Auth::user()->role == 'subcon'){
+
+			$q['$or'] = array(
+				array('creatorId'=>Auth::user()->id),
+				array('docShare'=>$sharecriteria)
+			);
+
+		}else{
+
+			if(Auth::user()->department == $type){
+				$q['$or'] = array(
+					array('access'=>'general'),
+					array('docShare'=>$sharecriteria)
+				);
+			}else{
+				$q['docShare'] = $sharecriteria;
+			}
+		}
+
+
+		$permissions = Auth::user()->permissions;
+
+		$document = new Document();
+
+		/* first column is always sequence number, so must be omitted */
+		$fidx = Input::get('iSortCol_0');
+		if($fidx == 0){
+			$fidx = $defsort;
+			$sort_col = $fields[$fidx];
+			$sort_dir = $defdir;
+		}else{
+			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+			$sort_col = $fields[$fidx];
+			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		}
+
+		$count_all = $document->count();
+
+		if(count($q) > 0){
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count($q);
+		}else{
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count();
+		}
+
+
+
+
+		$aadata = array();
+
+		$counter = 1 + $pagestart;
+		foreach ($documents as $doc) {
+
+
+			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
+			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
+
+			/*
+			if($doc['creatorId'] == Auth::user()->id || $doc['docDepartment'] == Auth::user()->department){
+				$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
+						'<i class="foundicon-edit action"></i></a>&nbsp;';
+				$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
+				$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
+							'<i class="foundicon-inbox action"></i></a>&nbsp;';
+			}else{
+				if($permissions->{$type}->edit == 1){
+					$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
+							'<i class="foundicon-edit action"></i></a>&nbsp;';
+				}else{
+					$edit = '';
+				}
+
+				if($permissions->{$type}->delete == 1){
+					$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
+				}else{
+					$del = '';
+				}
+
+				if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1){
+					$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
+							'<i class="foundicon-inbox action"></i></a>&nbsp;';
+				}else{
+					$download = '';
+				}
+
+			}
+			*/
+
+			$aadata[] = array(
+				$counter,
+				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
+				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				$doc['creatorName'],
+				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
+				''//$edit.$download.$del
+			);
+			$counter++;
+		}
+
+
+		$result = array(
+			'sEcho'=> Input::get('sEcho'),
+			'iTotalRecords'=>$count_all,
+			'iTotalDisplayRecords'=> $count_display_all,
+			'aaData'=>$aadata,
+			'qrs'=>$q
+		);
+
+		return Response::json($result);
 	}
 
 	public function get_addscitem(){

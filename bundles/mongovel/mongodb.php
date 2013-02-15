@@ -272,6 +272,19 @@ class MongoDB {
 		));
 	}
 
+	//find_and_modify($this->_collection, $query, $update ,$fields, $options)
+
+	public function find_and_modify($collection_name, array $query = array(), array $update = array(), array $fields = array(), array $options = array())
+	{
+		return $this->_call('find_and_modify', array(
+			'collection_name' => $collection_name,
+			'query'           => $query,
+			'update'           => $update,
+			'fields'          => $fields,
+			'options'		  => $options
+		));
+	}
+
 	public function group( $collection_name, $keys , array $initial , $reduce, array $condition= array() )
 	{
 		return $this->_call('group', array(
@@ -416,6 +429,9 @@ class MongoDB {
 			break;
 			case 'find_one':
 				$r = $c->findOne($query, $fields);
+			break;
+			case 'find_and_modify':
+				$r = $c->findAndModify($query,$update,$fields,$options);
 			break;
 			case 'find':
 				if(count($limit) < 1){

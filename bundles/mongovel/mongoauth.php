@@ -29,6 +29,56 @@ class MongoAuth extends \Laravel\Auth\Drivers\Driver {
 	}
 
 	/**
+	 * Get the current attendee of the application.
+	 *
+	 * If the user is a guest, null should be returned.
+	 *
+	 * @param  int         $id
+	 * @return mixed|null
+	 */
+	public function attendeeretrieve($id)
+	{
+		//if (filter_var($id, FILTER_VALIDATE_INT) !== false)
+		//{
+			$user = $this->attmodel()->get(array('_id'=>$id));
+
+			if(is_null($user)){
+				return null;
+			}else{
+				$user['id'] = $user['_id']->__toString();
+				unset($user['password']);
+				$user = $this->array_to_object($user);
+				return $user;
+			}
+
+		//}
+	}	
+
+	/**
+	 * Get the current user of the application.
+	 *
+	 * If the user is a guest, null should be returned.
+	 *
+	 * @return mixed|null
+	 */
+	public function attendee()
+	{
+		if ( ! is_null($this->user)) return $this->user;
+
+		return $this->user = $this->attendeeretrieve($this->token);
+	}
+
+	/**
+	 * Determine if the user is logged in.
+	 *
+	 * @return bool
+	 */
+	public function attendeecheck()
+	{
+		return ! is_null($this->attendee());
+	}	
+
+	/**
 	 * Attempt to log a user into the application.
 	 *
 	 * @param  array  $arguments
@@ -58,6 +108,43 @@ class MongoAuth extends \Laravel\Auth\Drivers\Driver {
 
 		return false;
 	}
+
+	/**
+	 * Attempt to log a user into the application.
+	 *
+	 * @param  array  $arguments
+	 * @return void
+	 */
+	public function attendeeattempt($arguments = array())
+	{
+		$username = Config::get('auth.username');
+
+		$user = $this->attmodel()->get(array($username=>$arguments['username']));
+
+		$passfield = Config::get('auth.password');
+
+		// This driver uses a basic username and password authentication scheme
+		// so if the credentials match what is in the database we will just
+		// log the user into the application and remember them if asked.
+		$password = $arguments['password'];
+
+		if ( ! is_null($user) and Hash::check($password, $user[$passfield]))
+		{
+
+			//print_r($user);
+
+			//$user = $this->array_to_object($user);
+			
+			//Log::info('User '.$username->username.' id : '.$username->_id->toString().' Logged In');
+			return $this->login($user['_id'], array_get($arguments, 'remember'));
+		}
+		//else{
+		//	print 'failed to login';
+		//}
+
+
+		return false;
+	}	
 
 	/**
 	 * Change password.
@@ -117,6 +204,18 @@ class MongoAuth extends \Laravel\Auth\Drivers\Driver {
 	protected function model()
 	{
 		$model = Config::get('auth.model');
+
+		return new $model;
+	}
+
+	/**
+	 * Get a fresh model instance.
+	 *
+	 * @return Eloquent
+	 */
+	protected function attmodel()
+	{
+		$model = Config::get('auth.attendeemodel');
 
 		return new $model;
 	}
