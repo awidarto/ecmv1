@@ -10,7 +10,7 @@
   //print_r($doc);
 ?>
 
-{{$form->open_for_files('document/edit/'.$doc['_id'].'/'.$type,'POST',array('class'=>'custom'))}}
+{{$form->open_for_files('template/edit/'.$doc['_id'].'/'.$type,'POST',array('class'=>'custom'))}}
 <div class="row">
   <div class="six columns left">
     <h4>Document Info</h4>
@@ -100,6 +100,14 @@
     {{ $form->hidden('docOpportunityId','',array('id'=>'opportunity_id')) }}
 
     {{ $form->text('docOpportunityTitle','Opportunity Name','',array('id'=>'opportunity_title','class'=>'auto_opportunity_name four','rows'=>'1', 'style'=>'width:100%')) }}
+    <hr />
+    <h3>Template</h3>
+    {{ $form->checkbox('useAsTemplate','Use as Downloadable Template','Yes',false)}}
+
+    {{ $form->hidden('oldTemplateName','')}}
+    {{ $form->text('templateName','Template Name','',array('id'=>'template_name','class'=>'four', 'style'=>'width:100%')) }}
+
+    {{ $form->text('templateNumberStart','Numbering Start','',array('class'=>'two')) }}
 
   </div>
 </div>

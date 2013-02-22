@@ -44,13 +44,20 @@
 
     {{ $form->hidden('tenderManagerId','',array('id'=>'user_id')) }}
 
+    <div class="row">
+      <div class="two columns">
+        {{ $form->select('bidCurrency','Currency',Config::get('parama.currencies'),array('style'=>'width:100%'))}}
+      </div>
+      <div class="nine columns">
+        {{ $form->text('bidPrice','Bid Price','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+      </div>
+    </div>
+
     {{ $form->text('tenderClient','Client','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
 
-    {{ $form->select('tenderCurrency','Currency',Config::get('parama.currencies'),array('class'=>'one'))}}
     
-    {{ $form->text('tenderGrossValue','Gross Value','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
 
-    {{ $form->text('tenderNetValue','Nett Value','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+    {{ $form->text('tenderEquivValue','Equivalent Bid Price ( USD )','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
 
     {{ $form->text('tenderTag','Tag','',array('class'=>'tag_keyword four','rows'=>'1', 'style'=>'width:100%')) }}
 
@@ -70,7 +77,9 @@
 {{$form->close()}}
 
 <script type="text/javascript">
-  $('select').select2();
+  $('select').select2({
+    width : 'resolve'
+  });
 
   $('#field_role').change(function(){
       //alert($('#field_role').val());

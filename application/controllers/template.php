@@ -52,11 +52,17 @@ class Template_Controller extends Base_Controller {
 		$heads = array('#','Title','Created','Last Update','Creator','Access','Attachment','Tags','Action');
 		$searchinput = array(false,'title','created','last update','creator','access','filename','tags',false);
 
+		if(Auth::user()->role == 'root' || Auth::user()->role == 'super' || Auth::user()->role == 'root'){
+			$addurl = 'template/add';
+		}else{
+			$addurl = '';
+		}
+
 		return View::make('tables.simple')
 			->with('title','Document Template')
 			->with('newbutton','New Document')
 			->with('disablesort','0,5,6')
-			->with('addurl','template/add')
+			->with('addurl',$addurl)
 			->with('searchinput',$searchinput)
 			->with('ajaxsource',URL::to('template'))
 			->with('ajaxdel',URL::to('template/del'))
@@ -86,7 +92,8 @@ class Template_Controller extends Base_Controller {
 		$idx = 0;
 		$q = array();
 
-		$q['docDepartment'] = 'template';
+		//$q['docDepartment'] = 'template';
+		$q['useAsTemplate'] = 'Yes';
 
 
 		$hilite = array();
@@ -285,26 +292,65 @@ class Template_Controller extends Base_Controller {
 
 		$path = Config::get('parama.storage').$id.'/'.$doc['docFilename'];
 
-		if(file_exists($path)){
-
-			//return Response::download($path, $filename);
-		}else{
-			Event::fire('document.update',array('id'=>$id,'result'=>'FILENOTFOUND'));
-			return false;
-		}
-
 		$seq = new Sequence();
 
-		$gseq = $seq->find_and_modify(array('_id'=>$id),array('$inc'=>array('seq'=>1)),array('seq'=>1),array('new'=>true,'upsert'=>true));
+		$currseq = $seq->get(array('_id'=>$doc['templateName']));
+
+		$lastseq = $currseq['seq'] - 1;
+
+		//$gseq = $seq->find_and_modify(array('_id'=>$doc['templateName']),array('$inc'=>array('seq'=>1)),array('seq'=>1),array('new'=>true,'upsert'=>true));
 
 
 		$form = new Formly();
 		return View::make('template.downloadrequest')
 					->with('form',$form)
-					->with('docnumber',$gseq['seq'])
+					->with('docnumber',$lastseq)
 					->with('profile',$doc)
 					->with('crumb',$this->crumb)
 					->with('title','New Document');
+
+	}
+
+	public function post_download($id){
+		$_id = new MongoId($id);
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$_id));
+
+		$path = Config::get('parama.storage').$id.'/'.$doc['docFilename'];
+
+		if(file_exists($path)){
+			$seq = new Sequence();
+
+			$gseq = $seq->find_and_modify(array('_id'=>$doc['templateName']),array('$inc'=>array('seq'=>1)),array('seq'=>1),array('new'=>true,'upsert'=>true));
+
+			$doc_number = str_pad($gseq['seq'], 6, '0', STR_PAD_LEFT);
+
+			$filename = $doc_number.'_'.$doc['templateName'];
+
+			$ext = File::extension($path);
+
+			$dlobj = array(
+				'template'=>$doc,
+				'downloader'=>Auth::user(),
+				'downloadedfullfilename'=>$filename.'.'.$ext,
+				'downloadedfilename'=>$filename,
+				'downloadedfileext'=>$ext,
+				'templatename'=>$doc['templateName'],
+				'doc_number'=>$doc_number,
+				'timestamp'=>new MongoDate()
+			);
+
+			$dlog = new Download();
+			$dlog->insert($dlobj);
+
+
+			return Response::download($path, $filename);
+		}else{
+			Event::fire('document.update',array('id'=>$id,'result'=>'FILENOTFOUND'));
+			return false;
+		}
 
 	}
 
@@ -344,6 +390,8 @@ class Template_Controller extends Base_Controller {
 			$data['lastUpdate'] = new MongoDate();
 			$data['creatorName'] = Auth::user()->fullname;
 			$data['creatorId'] = Auth::user()->id;
+
+			$data['useAsTemplate'] = (isset($data['useAsTemplate']))?$data['useAsTemplate']:'No';
 
 
 			$sharelist = explode(',', $data['docShare']);
@@ -391,6 +439,20 @@ class Template_Controller extends Base_Controller {
 
 			if($newobj){
 
+				if($newobj['useAsTemplate'] == 'Yes'){
+					$templatename = trim(strtolower($newobj['templateName']));
+					$startFrom = ($newobj['templateNumberStart'] == '')?1:$newobj['templateNumberStart'];
+					$startFrom = new MongoInt64($startFrom);
+					// set new sequencer
+					$sequencer = new Sequence();
+					if($obj = $sequencer->get(array('_id'=>$templatename))){
+						if(count($obj) < 0){
+							$sequencer->insert(array('_id'=>$templatename,'seq'=>$startFrom),array('upsert'=>true));
+						}
+					}else{
+						$sequencer->insert(array('_id'=>$templatename,'seq'=>$startFrom),array('upsert'=>true));
+					}
+				}
 
 				if($docupload['name'] != ''){
 
@@ -471,6 +533,8 @@ class Template_Controller extends Base_Controller {
 			$this->crumb->add('template/edit/'.$id.'/'.$type,$doc_data['title']);
 		}
 
+		$doc_data['oldTemplateName'] = $doc_data['templateName'];
+
 		$form = Formly::make($doc_data);
 
 		return View::make('template.edit')
@@ -517,6 +581,21 @@ class Template_Controller extends Base_Controller {
 
 			$docId = $data['id'];
 			unset($data['id']);
+
+			if($data['useAsTemplate'] == 'Yes' && ($data['oldTemplateName'] != $data['templateName'])){
+				$templatename = trim(strtolower($data['templateName']));
+				$startFrom = ($data['templateNumberStart'] == '')?1:$data['templateNumberStart'];
+				$startFrom = new MongoInt64($startFrom);
+				// set new sequencer
+				$sequencer = new Sequence();
+				if($obj = $sequencer->get(array('_id'=>$templatename))){
+					if(count($obj) < 0){
+						$sequencer->insert(array('_id'=>$templatename,'seq'=>$startFrom),array('upsert'=>true));
+					}
+				}else{
+					$sequencer->insert(array('_id'=>$templatename,'seq'=>$startFrom),array('upsert'=>true));
+				}
+			}
 
 			$sharelist = explode(',', $data['docShare']);
 			if(is_array($sharelist)){

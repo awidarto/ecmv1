@@ -61,6 +61,7 @@
     <a href="#">Sys Admin</a>
     <ul class="dropdown">
       <li>{{ HTML::link('document', 'Document Super Manager' ) }}</li>
+      <li>{{ HTML::link('download', 'Download Log' ) }}</li>
       <li>{{ HTML::link('content', 'Article Manager' ) }}</li>
       <li>{{ HTML::link('users', 'User Manager' ) }}</li>
     </ul>

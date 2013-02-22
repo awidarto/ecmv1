@@ -105,6 +105,7 @@
     <h3>Template</h3>
     {{ $form->checkbox('useAsTemplate','Use as Downloadable Template','Yes',false)}}
 
+    {{ $form->hidden('oldTemplateName','')}}
     {{ $form->text('templateName','Template Name','',array('id'=>'template_name','class'=>'four', 'style'=>'width:100%')) }}
 
     {{ $form->text('templateNumberStart','Numbering Start','',array('class'=>'two')) }}

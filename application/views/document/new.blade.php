@@ -94,7 +94,7 @@
 
     {{ $form->text('templateName','Template Name','',array('id'=>'template_name','class'=>'four', 'style'=>'width:100%')) }}
 
-    {{ $form->text('templateNumberStart','Numbering Start','',array('class'=>'two')) }}
+    {{ $form->text('templateNumberStart','Numbering Start','1',array('class'=>'two')) }}
 
   </div>
 </div>

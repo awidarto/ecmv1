@@ -621,13 +621,23 @@ class User_Controller extends Base_Controller {
 
 			foreach($obj as $o=>$t){
 
+				foreach($pitem as $p){
+					if(isset($data[$o.'_'.$p])){
+						$permissions[$o][$p] = $data[$o.'_'.$p];
+						unset($data[$o.'_'.$p]);
+					}else{
+						$permissions[$o][$p] = 0;
+					}
+				}
+
+
+				/*
 				if(isset($data[$o])){
 					$permissions[$o] = true;
 				}else{
 					$permissions[$o] = false;
 				}
 
-				/*
 				if(isset($data[$o.'_set'])){
 					$permissions[$o]['set'] = $data[$o.'_set'];
 					unset($data[$o.'_set']);
@@ -660,9 +670,9 @@ class User_Controller extends Base_Controller {
 			$user = new User();
 
 			if($user->insert($data)){
-		    	return Redirect::to('user')->with('notify_success','User saved successfully');
+		    	return Redirect::to('users')->with('notify_success','User saved successfully');
 			}else{
-		    	return Redirect::to('user')->with('notify_success','User saving failed');
+		    	return Redirect::to('users')->with('notify_success','User saving failed');
 			}
 			
 

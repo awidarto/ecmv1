@@ -49,8 +49,8 @@ class Document_Controller extends Base_Controller {
 
 		//print_r(Auth::user());
 
-		$heads = array('#','Title','Created','Last Update','Creator','Access','Attachment','Tags','Action');
-		$searchinput = array(false,'title','created','last update','creator','access','filename','tags',false);
+		$heads = array('#','Title','Created','Last Update','Creator','Access','Attachment','Is Template','Tags','Action');
+		$searchinput = array(false,'title','created','last update','creator','access','filename','useAsTemplate','tags',false);
 
 		$title = 'Document Library';
 
@@ -74,11 +74,11 @@ class Document_Controller extends Base_Controller {
 	public function post_index()
 	{
 
-		$fields = array('title','createdDate','lastUpdate','creatorName','access','docFilename','docTag');
+		$fields = array('title','createdDate','lastUpdate','creatorName','access','docFilename','useAsTemplate','docTag');
 
-		$rel = array('like','like','like','like','like','like','like');
+		$rel = array('like','like','like','like','like','like','like','like');
 
-		$cond = array('both','both','both','both','both','both','both');
+		$cond = array('both','both','both','both','both','both','both','both');
 
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
@@ -171,6 +171,7 @@ class Document_Controller extends Base_Controller {
 				$doc['creatorName'],
 				isset($doc['access'])?ucfirst($doc['access']):'',
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
+				isset($doc['useAsTemplate'])?$doc['useAsTemplate']:'No',
 				$tags,
 				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
@@ -241,15 +242,24 @@ class Document_Controller extends Base_Controller {
 
 		//print_r(Session::get('permission'));
 
+		$postdata = Input::get();
+
 		if(is_null($type)){
 			$back = 'document';
 		}else{
 			$back = 'document/type/'.$type;
 		}
 
-	    $rules = array(
-	        'title'  => 'required|max:50'
-	    );
+		if(isset($postdata['useAsTemplate']) && $postdata['useAsTemplate'] == 'Yes'){
+		    $rules = array(
+		        'title'  => 'required|max:50',
+		        'templateName' => 'required'
+		    );
+		}else{
+		    $rules = array(
+		        'title'  => 'required|max:50'
+		    );
+		}
 
 	    $validation = Validator::make($input = Input::all(), $rules);
 
@@ -274,6 +284,7 @@ class Document_Controller extends Base_Controller {
 			$data['creatorName'] = Auth::user()->fullname;
 			$data['creatorId'] = Auth::user()->id;
 
+			$data['useAsTemplate'] = (isset($data['useAsTemplate']))?$data['useAsTemplate']:'No';
 
 			$sharelist = explode(',', $data['docShare']);
 			if(is_array($sharelist)){
@@ -320,6 +331,16 @@ class Document_Controller extends Base_Controller {
 
 			if($newobj){
 
+				if($newobj['useAsTemplate'] == 'Yes'){
+					$templatename = trim(strtolower($newobj['templateName']));
+					$startFrom = ($newobj['templateNumberStart'] == '')?1:$newobj['templateNumberStart'];
+					$startFrom = new MongoInt64($startFrom);
+					// set new sequencer
+					$sequencer = new Sequence();
+
+					$sequencer->insert(array('_id'=>$templatename,'seq'=>$startFrom));
+
+				}
 
 				if($docupload['name'] != ''){
 
@@ -400,6 +421,8 @@ class Document_Controller extends Base_Controller {
 			$this->crumb->add('document/edit/'.$id.'/'.$type,$doc_data['title']);
 		}
 
+		$doc_data['oldTemplateName'] = $doc_data['templateName'];
+
 		$form = Formly::make($doc_data);
 
 		return View::make('document.edit')
@@ -446,6 +469,22 @@ class Document_Controller extends Base_Controller {
 
 			$docId = $data['id'];
 			unset($data['id']);
+
+			if($data['useAsTemplate'] == 'Yes' && ($data['oldTemplateName'] != $data['templateName'])){
+				$templatename = trim(strtolower($data['templateName']));
+				$startFrom = ($newobj['templateNumberStart'] == '')?1:$data['templateNumberStart'];
+				$startFrom = new MongoInt64($startFrom);
+				// set new sequencer
+				$sequencer = new Sequence();
+				if($obj = $sequencer->get(array('_id'=>$templatename))){
+					if(count($obj) < 0){
+						$sequencer->insert(array('_id'=>$templatename,'seq'=>$startFrom),array('upsert'=>true));
+					}
+				}else{
+					$sequencer->insert(array('_id'=>$templatename,'seq'=>$startFrom),array('upsert'=>true));
+				}
+			}
+
 
 			$sharelist = explode(',', $data['docShare']);
 			if(is_array($sharelist)){

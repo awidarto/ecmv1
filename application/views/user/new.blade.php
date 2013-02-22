@@ -48,9 +48,18 @@
       <ul>
         @foreach(Config::get('parama.department') as $obj=>$title)
             <li class="three columns">
-              {{ $form->checkbox($obj,$title,1)}} 
+              {{ Form::label($obj, $title)}}
+                <ul>
+                  @foreach(Config::get('acl.permissions') as $key=>$perm)
+                      <li>
+                        {{ $form->checkbox($obj.'_'.$perm, $key,null,false,array('id'=>$obj,'class'=>$perm))}}
+                      </li>
+                  @endforeach
+                </ul>
+
                 <?php
                 /*
+                {{ $form->checkbox($obj,$title,1)}} 
                 <ul>
                   @foreach(Config::get('acl.permissions') as $key=>$perm)
                       <li>

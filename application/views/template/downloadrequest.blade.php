@@ -29,7 +29,7 @@
 					<td class="detail-info">{{ (isset($profile['docFiledata']['uploadTime']))?date('d-m-Y h:i:s',$profile['docFiledata']['uploadTime']->sec):'' }} <strong>{{$profile['docFiledata']['name']}}</strong></td>
 				</tr>
 				<tr>
-					<td>Document Sequence</td>
+					<td>Last Document Number</td>
 					<td>
 						{{ $docnumber }}
 

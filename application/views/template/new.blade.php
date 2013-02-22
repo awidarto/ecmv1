@@ -88,6 +88,14 @@
 
     {{ $form->text('docOpportunityTitle','Opportunity Name','',array('id'=>'opportunity_title','class'=>'auto_opportunity_name four','rows'=>'1', 'style'=>'width:100%')) }}
 
+    <hr />
+    <h3>Template</h3>
+    {{ $form->checkbox('useAsTemplate','Use as Downloadable Template','Yes',true)}}
+
+    {{ $form->text('templateName','Template Name','',array('id'=>'template_name','class'=>'four', 'style'=>'width:100%')) }}
+
+    {{ $form->text('templateNumberStart','Numbering Start','',array('class'=>'two')) }}
+
   </div>
 </div>
 <hr />
