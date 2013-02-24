@@ -35,7 +35,7 @@ class Employee_Controller extends Base_Controller {
 	public function __construct(){
 
 		$this->crumb = new Breadcrumb();
-		$this->crumb->add('employee/employees','Employees');
+		$this->crumb->add('employee','Employees');
 
 		date_default_timezone_set('Asia/Jakarta');
 		$this->filter('before','auth');

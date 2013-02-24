@@ -150,7 +150,6 @@ Event::listen('project.create',function($id, $result){
         'department'=>$doc['projectDepartment'],
         'doc_id'=>$id,
         'doc_number'=>$doc['projectNumber'],
-        'doc_title'=>$doc['title'],
         'result'=>$result
     );
 
@@ -178,7 +177,6 @@ Event::listen('project.update',function($id,$result){
         'department'=>$doc['projectDepartment'],
         'doc_id'=>$id,
         'doc_number'=>$doc['projectNumber'],
-        'doc_title'=>$doc['title'],
         'result'=>$result
     );
 

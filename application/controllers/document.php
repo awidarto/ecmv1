@@ -421,7 +421,7 @@ class Document_Controller extends Base_Controller {
 			$this->crumb->add('document/edit/'.$id.'/'.$type,$doc_data['title']);
 		}
 
-		$doc_data['oldTemplateName'] = $doc_data['templateName'];
+		$doc_data['oldTemplateName'] = (isset($doc_data['templateName']))?$doc_data['templateName']:'';
 
 		$form = Formly::make($doc_data);
 
@@ -470,7 +470,7 @@ class Document_Controller extends Base_Controller {
 			$docId = $data['id'];
 			unset($data['id']);
 
-			if($data['useAsTemplate'] == 'Yes' && ($data['oldTemplateName'] != $data['templateName'])){
+			if(isset($data['useAsTemplate']) && $data['useAsTemplate'] == 'Yes' && ($data['oldTemplateName'] != $data['templateName'])){
 				$templatename = trim(strtolower($data['templateName']));
 				$startFrom = ($newobj['templateNumberStart'] == '')?1:$data['templateNumberStart'];
 				$startFrom = new MongoInt64($startFrom);

@@ -91,7 +91,7 @@
 
     {{ $form->hidden('docTenderId','',array('id'=>'tender_id')) }}
 
-    {{ $form->text('docTenderTitle','Tender Name','',array('id'=>'tender_title','class'=>'auto_tender_name four','rows'=>'1', 'style'=>'width:100%')) }}
+    {{ $form->text('docTenderClient','Tender Client','',array('id'=>'tender_client','class'=>'auto_tender_client four','rows'=>'1', 'style'=>'width:100%')) }}
 
     <hr />
     <!-- related opportunity -->

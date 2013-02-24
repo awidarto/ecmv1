@@ -62,6 +62,24 @@ class Ajax_Controller extends Base_Controller {
 		return Response::json($result);		
 	}
 
+	public function get_initial()
+	{
+		$q = Input::get('term');
+
+		$user = new User();
+		$qemail = new MongoRegex('/'.$q.'/i');
+
+		$res = $user->find(array('initial'=>$qemail),array('initial'=>true,'email'=>true,'fullname'=>true));
+
+		$result = array();
+
+		foreach($res as $r){
+			$result[] = array('id'=>$r['_id']->__toString(),'value'=>$r['initial'],'name'=>$r['fullname'],'label'=>$r['initial'].' ( '.$r['fullname'].' )');
+		}
+
+		return Response::json($result);		
+	}
+
 	public function get_user()
 	{
 		$q = Input::get('term');
@@ -152,6 +170,43 @@ class Ajax_Controller extends Base_Controller {
 		return Response::json($result);		
 	}
 
+	public function get_clientcontact()
+	{
+		$q = Input::get('term');
+
+		$user = new Client();
+		$qemail = new MongoRegex('/'.$q.'/i');
+
+		$res = $user->find(array('clientCompany'=>$qemail));
+
+		$result = array();
+
+		foreach($res as $r){
+			$result[] = array('id'=>$r['_id']->__toString(),'value'=>$r['clientCompany'],'data'=>$r,'label'=>$r['clientCompany']);
+		}
+
+		return Response::json($result);		
+	}
+
+	public function get_vendorcontact()
+	{
+		$q = Input::get('term');
+
+		$user = new Vendor();
+		$qemail = new MongoRegex('/'.$q.'/i');
+
+		$res = $user->find(array('vendorCompany'=>$qemail));
+
+		$result = array();
+
+		foreach($res as $r){
+			$result[] = array('id'=>$r['_id']->__toString(),'value'=>$r['vendorCompany'],'data'=>$r,'label'=>$r['vendorCompany']);
+		}
+
+		return Response::json($result);		
+	}
+
+
 	public function get_project()
 	{
 		$q = Input::get('term');
@@ -159,12 +214,12 @@ class Ajax_Controller extends Base_Controller {
 		$proj = new Project();
 		$qproj = new MongoRegex('/'.$q.'/i');
 
-		$res = $proj->find(array('$or'=>array(array('title'=>$qproj),array('projectNumber'=>$qproj)) ),array('title','projectNumber'));
+		$res = $proj->find(array('projectNumber'=>$qproj));
 
 		$result = array();
 
 		foreach($res as $r){
-			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['projectNumber'].' - '.$r['title'],'title'=>$r['title'],'value'=>$r['projectNumber']);
+			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['projectNumber'].' - '.$r['clientName'],'title'=>$r['clientName'],'value'=>$r['projectNumber']);
 		}
 
 		return Response::json($result);		
@@ -177,12 +232,12 @@ class Ajax_Controller extends Base_Controller {
 		$proj = new Project();
 		$qproj = new MongoRegex('/'.$q.'/i');
 
-		$res = $proj->find(array('$or'=>array(array('title'=>$qproj),array('projectNumber'=>$qproj)) ),array('title','projectNumber'));
+		$res = $proj->find(array('$or'=>array(array('clientName'=>$qproj),array('projectNumber'=>$qproj)) ));
 
 		$result = array();
 
 		foreach($res as $r){
-			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['projectNumber'].' - '.$r['title'],'number'=>$r['projectNumber'],'value'=>$r['title']);
+			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['projectNumber'].' - '.$r['clientName'],'number'=>$r['projectNumber'],'value'=>$r['clientName']);
 		}
 
 		return Response::json($result);		
@@ -196,30 +251,31 @@ class Ajax_Controller extends Base_Controller {
 		$proj = new Tender();
 		$qproj = new MongoRegex('/'.$q.'/i');
 
-		$res = $proj->find(array('$or'=>array(array('title'=>$qproj),array('tenderNumber'=>$qproj)) ),array('title','tenderNumber'));
+		//$res = $proj->find(array('$or'=>array(array('title'=>$qproj),array('tenderNumber'=>$qproj)) ),array('title','tenderNumber'));
+		$res = $proj->find(array('tenderNumber'=>$qproj));
 
 		$result = array();
 
 		foreach($res as $r){
-			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['tenderNumber'].' - '.$r['title'],'title'=>$r['title'],'value'=>$r['tenderNumber']);
+			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['tenderNumber'],'title'=>$r['clientName'],'value'=>$r['tenderNumber']);
 		}
 
 		return Response::json($result);		
 	}
 
-	public function get_tendername()
+	public function get_tenderclient()
 	{
 		$q = Input::get('term');
 
 		$proj = new Tender();
 		$qproj = new MongoRegex('/'.$q.'/i');
 
-		$res = $proj->find(array('$or'=>array(array('title'=>$qproj),array('tenderNumber'=>$qproj)) ),array('title','tenderNumber'));
+		$res = $proj->find(array('clientName'=>$qproj));
 
 		$result = array();
 
 		foreach($res as $r){
-			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['tenderNumber'].' - '.$r['title'],'number'=>$r['tenderNumber'],'value'=>$r['title']);
+			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['tenderNumber'].' - '.$r['clientName'],'number'=>$r['tenderNumber'],'value'=>$r['clientName']);
 		}
 
 		return Response::json($result);		

@@ -13,6 +13,7 @@
   <!-- Included CSS Files -->
   {{ HTML::style('css/foundation.min.css') }}
   {{ HTML::style('css/jquery-datatables/demo_table.css') }}
+  {{ HTML::style('css/jquery-datatables/ColVis.css') }}
   {{ HTML::style('css/flick/jquery-ui-1.9.2.custom.min.css') }}
   {{ HTML::style('css/app.css') }}
   {{ HTML::style('css/general_enclosed_foundicons.css') }}
@@ -24,6 +25,7 @@
   {{ HTML::script('js/jquery-1.8.3.min.js') }}
   {{ HTML::script('js/jquery-ui-1.9.2.custom.min.js') }}
   {{ HTML::script('js/jquery.dataTables.min.js') }}
+  {{ HTML::script('js/jquery-datatables/ColVis.min.js') }}
   {{ HTML::script('js/select2.min.js') }}
   {{ HTML::script('js/jquery.tagsinput.min.js') }}
   {{ HTML::script('js/jquery.fancybox.js') }}
@@ -106,7 +108,6 @@
       base = '{{ URL::base() }}/';
     </script>
     {{ HTML::script('js/pnu.js') }}
-    {{ HTML::script('js/pnu_gantt.js') }}
 
 </body>
 </html>

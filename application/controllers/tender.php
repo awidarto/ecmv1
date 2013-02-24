@@ -40,16 +40,69 @@ class Tender_Controller extends Base_Controller {
 
 	public function get_index()
 	{
-		$heads = array('#','Tender','Tags','Action');
-		$colclass = array('one','','two','one');
-		//$searchinput = array(false,'title','created','last update','creator','tender manager','tags',false);
-		$searchinput = array(false,'tender','tags',false);
+		$heads = array(
+			'#',
+			'Tender Date',
+			'Tender Number',
+			'Client Tender Number',
+			'Client Name',
+			'Brief Scope Description',
+			'Delivery Term',
+			'Closing Date',
+			'Tender System',
+			'Tender PIC',
+			'Bid Currency',
+			'Bid Price',
+			'Equivalent Bid Currency',
+			'Equivalent Bid Price',
+			'Tender Status',
+			'Tender Remark',
+			//'Tender Approval',
+			//'Tender Share',
+			//'Tender Department',
+			//'Tender Lead',
+			//'Created Date',
+			//'Last Update',
+			'Tags',
+			'Action'
+		);
 
-		return View::make('tables.simple')
+		$colclass = array('one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one');
+		//$colclass = false;
+		//$searchinput = array(false,'title','created','last update','creator','tender manager','tags',false);
+		$searchinput = array(false,
+
+			'tenderDate',
+			'tenderNumber',
+			'clientTenderNumber',
+			'clientName',
+			'briefScopeDescription',
+			'deliveryTerm',
+			'closingDate',
+			'tenderSystem',
+			'tenderPIC',
+			'bidCurrency',
+			'bidPrice',
+			'equivalentBidCurrency',
+			'equivalentBidPrice',
+			'tenderStatus',
+			'tenderRemark',
+			//'tenderApproval',
+			//'tenderShare',
+			//'tenderDepartment',
+			//'tenderLead',
+			//'createdDate',
+			//'lastUpdate',
+			'tenderTag'
+
+			,false);
+
+		return View::make('tables.noaside')
 			->with('title','Tender')
 			->with('newbutton','New Tender')
 			->with('disablesort','0,3')
 			->with('addurl','tender/add')
+			->with('excludecol','14,15,16,17,18,19,20,21,22')
 			->with('colclass',$colclass)
 			->with('searchinput',$searchinput)
 			->with('ajaxsource',URL::to('tender'))
@@ -58,7 +111,165 @@ class Tender_Controller extends Base_Controller {
 			->with('heads',$heads);
 	}
 
+
 	public function post_index()
+	{
+
+
+
+		$fields = array(
+			'tenderDate',
+			'tenderNumber',
+			'clientTenderNumber',
+			'clientName',
+			'briefScopeDescription',
+			'deliveryTerm',
+			'closingDate',
+			'tenderSystem',
+			'tenderPIC',
+			'bidCurrency',
+			'bidPrice',
+			'equivalentBidCurrency',
+			'equivalentBidPrice',
+			'tenderStatus',
+			'tenderRemark',
+			//'tenderApproval',
+			//'tenderShare',
+			//'tenderDepartment',
+			//'tenderLead',
+			//'createdDate',
+			//'lastUpdate',
+			'tenderTag'
+		);
+
+		$rel = array('like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like');
+
+		$cond = array('both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both');
+
+		$pagestart = Input::get('iDisplayStart');
+		$pagelength = Input::get('iDisplayLength');
+
+		$limit = array($pagelength, $pagestart);
+
+		$defsort = 1;
+		$defdir = -1;
+
+		$idx = 0;
+		$q = array();
+
+		$hilite = array();
+		$hilite_replace = array();
+
+		foreach($fields as $field){
+			if(Input::get('sSearch_'.$idx))
+			{
+
+				$hilite_item = Input::get('sSearch_'.$idx);
+				$hilite[] = $hilite_item;
+				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
+
+				if($rel[$idx] == 'like'){
+					if($cond[$idx] == 'both'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
+					}else if($cond[$idx] == 'before'){
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
+					}else if($cond[$idx] == 'after'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
+					}
+				}else if($rel[$idx] == 'equ'){
+					$q[$field] = Input::get('sSearch_'.$idx);
+				}
+			}
+			$idx++;
+		}
+
+		//print_r($q)
+
+		$document = new Tender();
+
+		/* first column is always sequence number, so must be omitted */
+		$fidx = Input::get('iSortCol_0');
+		if($fidx == 0){
+			$fidx = $defsort;
+			$sort_col = $fields[$fidx];
+			$sort_dir = $defdir;
+		}else{
+			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+			$sort_col = $fields[$fidx];
+			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		}
+
+		$count_all = $document->count();
+
+		if(count($q) > 0){
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count($q);
+		}else{
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count();
+		}
+
+		$aadata = array();
+
+		$counter = 1 + $pagestart;
+		foreach ($documents as $doc) {
+			if(isset($doc['tags'])){
+				$tags = array();
+
+				foreach($doc['tags'] as $t){
+					$tags[] = '<span class="tagitem">'.$t.'</span>';
+				}
+
+				$tags = implode('',$tags);
+
+			}else{
+				$tags = '';
+			}
+
+			$aadata[] = array(
+				$counter,
+				date('Y-m-d', $doc['tenderDate']->sec),
+				HTML::link('tender/view/'.$doc['_id'],$doc['tenderNumber']),
+				$doc['clientTenderNumber'],
+				$doc['clientName'],
+				$doc['briefScopeDescription'],
+				$doc['deliveryTerm'],
+				date('Y-m-d', $doc['closingDate']->sec),
+				$doc['tenderSystem'],
+				$doc['tenderPIC'],
+				$doc['bidCurrency'],
+				number_format($doc['bidPrice'],2,',','.'),
+				$doc['equivalentBidCurrency'],
+				number_format($doc['equivalentBidPrice'],2,',','.'),
+				$doc['tenderStatus'],
+				$doc['tenderRemark'],
+				//$doc['tenderApproval'],
+				//$doc['tenderShare'],
+				//$doc['tenderDepartment'],
+				//$doc['tenderLead'],
+				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
+				//isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				$tags,
+				'<a href="'.URL::to('tender/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
+				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
+			);
+			$counter++;
+		}
+
+
+		$result = array(
+			'sEcho'=> Input::get('sEcho'),
+			'iTotalRecords'=>$count_all,
+			'iTotalDisplayRecords'=> $count_display_all,
+			'aaData'=>$aadata,
+			'qrs'=>$q
+		);
+
+		return Response::json($result);
+	}
+
+
+	public function __post_index()
 	{
 		$fields = array(array('title','body'),'tenderTag');
 
@@ -205,8 +416,8 @@ class Tender_Controller extends Base_Controller {
 		//print_r(Session::get('permission'));
 
 	    $rules = array(
-	        'title'  => 'required|max:50',
-	        'description' => 'required'
+	        'tenderNumber'  => 'required|max:50',
+	        'briefScopeDescription' => 'required'
 	    );
 
 	    $validation = Validator::make($input = Input::all(), $rules);
@@ -224,9 +435,8 @@ class Tender_Controller extends Base_Controller {
 			//pre save transform
 			unset($data['csrf_token']);
 
-			$data['submitDate'] = new MongoDate(strtotime($data['submitDate']." 00:00:00"));
-			$data['prepStartDate'] = new MongoDate(strtotime($data['prepStartDate']." 00:00:00"));
-			$data['estCompleteDate'] = new MongoDate(strtotime($data['estCompleteDate']." 00:00:00"));
+			$data['tenderDate'] = new MongoDate(strtotime($data['tenderDate']." 00:00:00"));
+			$data['closingDate'] = new MongoDate(strtotime($data['closingDate']." 00:00:00"));
 
 			$data['createdDate'] = new MongoDate();
 			$data['lastUpdate'] = new MongoDate();
@@ -273,11 +483,10 @@ class Tender_Controller extends Base_Controller {
 
 		$doc_data['oldTag'] = $doc_data['tenderTag'];
 
-		$doc_data['submitDate'] = date('Y-m-d', $doc_data['submitDate']->sec);
-		$doc_data['startDate'] = date('Y-m-d', $doc_data['prepStartDate']->sec);
-		$doc_data['estCompleteDate'] = date('Y-m-d', $doc_data['estCompleteDate']->sec);
+		$doc_data['tenderDate'] = (isset($doc_data['tenderDate']))?date('Y-m-d', $doc_data['tenderDate']->sec):'';
+		$doc_data['closingDate'] = (isset($doc_data['closingDate']))?date('Y-m-d', $doc_data['closingDate']->sec):'';
 
-		$this->crumb->add('tender/edit/'.$id,$doc_data['title']);
+		$this->crumb->add('tender/edit/'.$id,$doc_data['tenderNumber']);
 
 		$form = Formly::make($doc_data);
 
@@ -285,7 +494,7 @@ class Tender_Controller extends Base_Controller {
 					->with('doc',$doc_data)
 					->with('form',$form)
 					->with('crumb',$this->crumb)
-					->with('title','Edit Document');
+					->with('title','Edit Tender');
 
 	}
 
@@ -295,8 +504,8 @@ class Tender_Controller extends Base_Controller {
 		//print_r(Session::get('permission'));
 
 	    $rules = array(
-	        'title'  => 'required|max:50',
-	        'description' => 'required'
+	        'tenderNumber'  => 'required|max:50',
+	        'briefScopeDescription' => 'required'
 	    );
 
 	    $validation = Validator::make($input = Input::all(), $rules);
@@ -311,9 +520,8 @@ class Tender_Controller extends Base_Controller {
 	    	
 			$id = new MongoId($data['id']);
 
-			$data['submitDate'] = new MongoDate(strtotime($data['submitDate']." 00:00:00"));
-			$data['prepStartDate'] = new MongoDate(strtotime($data['prepStartDate']." 00:00:00"));
-			$data['estCompleteDate'] = new MongoDate(strtotime($data['estCompleteDate']." 00:00:00"));
+			$data['tenderDate'] = new MongoDate(strtotime($data['tenderDate']." 00:00:00"));
+			$data['closingDate'] = new MongoDate(strtotime($data['closingDate']." 00:00:00"));
 			$data['lastUpdate'] = new MongoDate();
 
 			unset($data['csrf_token']);
@@ -414,11 +622,15 @@ class Tender_Controller extends Base_Controller {
 
 	public function get_view($id = null){
 
+		$this->crumb->add('tender/view/'.$id,'View',false);
+
 		$project = new Tender();
 
 		$_id = new MongoId($id);
 
 		$projectdata = $project->get(array('_id'=>$_id));
+
+		$this->crumb->add('tender/view/'.$id,$projectdata['tenderNumber'],false);
 
 		$heads = array('#','Title','Last Update','Creator','Attachment','Action');
 		$searchinput = array(false,'title','last update','creator','filename',false);
@@ -484,7 +696,7 @@ class Tender_Controller extends Base_Controller {
 		$permissions = Auth::user()->permissions;
 
 		return View::make('tender.detail')
-			->with('title','Tender Detail - '.$projectdata['title'])
+			->with('title','Tender Detail - '.$projectdata['tenderNumber'])
 			->with('tender', $projectdata)
 			->with('newbutton','New Schedule Item')
 			->with('newprogressbutton','New Progress Report')
@@ -494,6 +706,7 @@ class Tender_Controller extends Base_Controller {
 			->with('ajaxsourcedoc',URL::to('tender/doc/'.$id))
 			->with('searchinput',$searchinput)
 			->with('heads',$heads)
+			->with('crumb',$this->crumb)
 			->with('ajaxdel',URL::to('tender/del'));
 	}
 

@@ -12,11 +12,11 @@
     <h4>User Info</h4>
     {{ $form->text('email','Email.req','',array('class'=>'text')) }}
     {{ $form->text('fullname','Full Name.req','',array('class'=>'text')) }}
-    {{ $form->text('username','User Name.req','',array('class'=>'text')) }}
     {{ $form->password('pass','Password','',array('class'=>'text')) }}
     {{ $form->password('repass','Repeat Password','',array('class'=>'text')) }}
 
     <h4>Employee Info</h4>
+    {{ $form->text('initial','Initial.req','',array('class'=>'text four')) }}
     {{ $form->text('employee_jobtitle','Job Title','',array('class'=>'text')) }}
     {{ Form::label('Department','department')}}
     {{$form->select('department','',Config::get('parama.department'),null,array('class'=>'four'))}}

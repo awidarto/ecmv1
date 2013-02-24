@@ -35,74 +35,21 @@ class Project_Controller extends Base_Controller {
 	public function __construct(){
 		$this->filter('before','auth');
 		$this->crumb = new Breadcrumb();
-		$this->crumb->add('project','Project');
+		$this->crumb->add('project','Projects');
 	}
 
 	public function get_index()
 	{
-		$heads = array(
-			'#',
-			'Project Date',
-			'Project Number',
-			'Client Project Number',
-			'Client Name',
-			'Brief Scope Description',
-			'Delivery Term',
-			'Closing Date',
-			'Project System',
-			'Project PIC',
-			'Bid Currency',
-			'Bid Price',
-			'Equivalent Bid Currency',
-			'Equivalent Bid Price',
-			'Project Status',
-			'Project Remark',
-			//'Project Approval',
-			//'Project Share',
-			//'Project Department',
-			//'Project Lead',
-			//'Created Date',
-			//'Last Update',
-			'Tags',
-			'Action'
-		);
-
-		$colclass = array('one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one');
-		//$colclass = false;
+		$heads = array('#','Project','Tags','Action');
+		$colclass = array('one','','two','one');
 		//$searchinput = array(false,'title','created','last update','creator','project manager','tags',false);
-		$searchinput = array(false,
+		$searchinput = array(false,'project','tags',false);
 
-			'projectDate',
-			'projectNumber',
-			'clientProjectNumber',
-			'clientName',
-			'briefScopeDescription',
-			'deliveryTerm',
-			'closingDate',
-			'projectSystem',
-			'projectPIC',
-			'bidCurrency',
-			'bidPrice',
-			'equivalentBidCurrency',
-			'equivalentBidPrice',
-			'projectStatus',
-			'projectRemark',
-			//'projectApproval',
-			//'projectShare',
-			//'projectDepartment',
-			//'projectLead',
-			//'createdDate',
-			//'lastUpdate',
-			'projectTag'
-
-			,false);
-
-		return View::make('tables.noaside')
-			->with('title','Project')
+		return View::make('tables.simple')
+			->with('title','Projects')
 			->with('newbutton','New Project')
 			->with('disablesort','0,3')
 			->with('addurl','project/add')
-			->with('excludecol','14,15,16,17,18,19,20,21,22')
 			->with('colclass',$colclass)
 			->with('searchinput',$searchinput)
 			->with('ajaxsource',URL::to('project'))
@@ -111,166 +58,7 @@ class Project_Controller extends Base_Controller {
 			->with('heads',$heads);
 	}
 
-
 	public function post_index()
-	{
-
-
-
-		$fields = array(
-			'effectiveDate',
-			'projectNumber',
-			'clientPONumber',
-			'clientName',
-			'briefScopeDescription',
-			'deliveryTerm',
-			'effectiveDate',
-			'dueDate',
-			'projectVendor',
-			'projectPIC',
-			'contractCurrency',
-			'contractPrice',
-			'equivalentContractCurrency',
-			'equivalentContractPrice',
-			'projectStatus',
-			'projectRemark',
-			//'projectApproval',
-			//'projectShare',
-			//'projectDepartment',
-			//'projectLead',
-			//'createdDate',
-			//'lastUpdate',
-			'projectTag'
-		);
-
-		$rel = array('like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like');
-
-		$cond = array('both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both');
-
-		$pagestart = Input::get('iDisplayStart');
-		$pagelength = Input::get('iDisplayLength');
-
-		$limit = array($pagelength, $pagestart);
-
-		$defsort = 1;
-		$defdir = -1;
-
-		$idx = 0;
-		$q = array();
-
-		$hilite = array();
-		$hilite_replace = array();
-
-		foreach($fields as $field){
-			if(Input::get('sSearch_'.$idx))
-			{
-
-				$hilite_item = Input::get('sSearch_'.$idx);
-				$hilite[] = $hilite_item;
-				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
-
-				if($rel[$idx] == 'like'){
-					if($cond[$idx] == 'both'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
-					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
-					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
-					}
-				}else if($rel[$idx] == 'equ'){
-					$q[$field] = Input::get('sSearch_'.$idx);
-				}
-			}
-			$idx++;
-		}
-
-		//print_r($q)
-
-		$document = new Project();
-
-		/* first column is always sequence number, so must be omitted */
-		$fidx = Input::get('iSortCol_0');
-		if($fidx == 0){
-			$fidx = $defsort;
-			$sort_col = $fields[$fidx];
-			$sort_dir = $defdir;
-		}else{
-			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
-			$sort_col = $fields[$fidx];
-			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
-		}
-
-		$count_all = $document->count();
-
-		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count($q);
-		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count();
-		}
-
-		$aadata = array();
-
-		$counter = 1 + $pagestart;
-		foreach ($documents as $doc) {
-			if(isset($doc['tags'])){
-				$tags = array();
-
-				foreach($doc['tags'] as $t){
-					$tags[] = '<span class="tagitem">'.$t.'</span>';
-				}
-
-				$tags = implode('',$tags);
-
-			}else{
-				$tags = '';
-			}
-
-			$aadata[] = array(
-				$counter,
-				HTML::link('project/view/'.$doc['_id'],$doc['projectNumber']),
-				$doc['clientPONumber'],
-				$doc['clientName'],
-				$doc['briefScopeDescription'],
-				$doc['deliveryTerm'],
-				date('Y-m-d', $doc['effectiveDate']->sec),
-				date('Y-m-d', $doc['dueDate']->sec),
-				$doc['projectVendor'],
-				$doc['projectPIC'],
-				$doc['contractCurrency'],
-				($doc['contractPrice'] != '')?number_format($doc['contractPrice'],2,',','.'):'',
-				$doc['equivalentContractCurrency'],
-				($doc['equivalentContractPrice'] != '')?number_format($doc['equivalentContractPrice'],2,',','.'):'',
-				$doc['projectStatus'],
-				$doc['projectRemark'],
-				//$doc['projectApproval'],
-				//$doc['projectShare'],
-				//$doc['projectDepartment'],
-				//$doc['projectLead'],
-				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				//isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
-				$tags,
-				'<a href="'.URL::to('project/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
-				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
-			);
-			$counter++;
-		}
-
-
-		$result = array(
-			'sEcho'=> Input::get('sEcho'),
-			'iTotalRecords'=>$count_all,
-			'iTotalDisplayRecords'=> $count_display_all,
-			'aaData'=>$aadata,
-			'qrs'=>$q
-		);
-
-		return Response::json($result);
-	}
-
-
-	public function __post_index()
 	{
 		$fields = array(array('title','body'),'projectTag');
 
@@ -381,6 +169,7 @@ class Project_Controller extends Base_Controller {
 				$counter,
 				$item,
 				$tags,
+				'<a href="'.URL::to('project/view/'.$doc['_id']).'"><i class="foundicon-clock action"></i></a>&nbsp;'.
 				'<a href="'.URL::to('project/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 			);
@@ -417,8 +206,9 @@ class Project_Controller extends Base_Controller {
 		//print_r(Session::get('permission'));
 
 	    $rules = array(
-	        'projectNumber'  => 'required|max:50',
-	        'briefScopeDescription' => 'required'
+	        'title'  => 'required|max:50',
+	        'description' => 'required',
+	        'projectNumber'=> 'required'
 	    );
 
 	    $validation = Validator::make($input = Input::all(), $rules);
@@ -436,8 +226,8 @@ class Project_Controller extends Base_Controller {
 			//pre save transform
 			unset($data['csrf_token']);
 
-			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
-			$data['dueDate'] = new MongoDate(strtotime($data['dueDate']." 00:00:00"));
+			$data['startDate'] = new MongoDate(strtotime($data['startDate']." 00:00:00"));
+			$data['estCompleteDate'] = new MongoDate(strtotime($data['estCompleteDate']." 00:00:00"));
 
 			$data['createdDate'] = new MongoDate();
 			$data['lastUpdate'] = new MongoDate();
@@ -484,14 +274,10 @@ class Project_Controller extends Base_Controller {
 
 		$doc_data['oldTag'] = $doc_data['projectTag'];
 
-		$doc_data['effectiveDate'] = (isset($doc_data['effectiveDate']))?date('Y-m-d', $doc_data['effectiveDate']->sec):'';
-		$doc_data['dueDate'] = (isset($doc_data['dueDate']))?date('Y-m-d', $doc_data['dueDate']->sec):'';
+		$doc_data['startDate'] = date('Y-m-d', $doc_data['startDate']->sec);
+		$doc_data['estCompleteDate'] = date('Y-m-d', $doc_data['estCompleteDate']->sec);
 
-		$doc_data['contractPrice'] = ($doc_data['contractPrice'] != '')?$doc_data['contractPrice']:0;
-		$doc_data['equivalentContractPrice'] = ($doc_data['equivalentContractPrice'] != '')?$doc_data['equivalentContractPrice']:0;
-
-
-		$this->crumb->add('project/edit/'.$id,$doc_data['projectNumber']);
+		$this->crumb->add('project/edit/'.$id,$doc_data['title']);
 
 		$form = Formly::make($doc_data);
 
@@ -509,8 +295,9 @@ class Project_Controller extends Base_Controller {
 		//print_r(Session::get('permission'));
 
 	    $rules = array(
-	        'projectNumber'  => 'required|max:50',
-	        'briefScopeDescription' => 'required'
+	        'title'  => 'required|max:50',
+	        'description' => 'required',
+	        'projectNumber'=> 'required'
 	    );
 
 	    $validation = Validator::make($input = Input::all(), $rules);
@@ -525,8 +312,8 @@ class Project_Controller extends Base_Controller {
 	    	
 			$id = new MongoId($data['id']);
 
-			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
-			$data['dueDate'] = new MongoDate(strtotime($data['dueDate']." 00:00:00"));
+			$data['startDate'] = new MongoDate(strtotime($data['startDate']." 00:00:00"));
+			$data['estCompleteDate'] = new MongoDate(strtotime($data['estCompleteDate']." 00:00:00"));
 			$data['lastUpdate'] = new MongoDate();
 
 			unset($data['csrf_token']);
@@ -557,12 +344,12 @@ class Project_Controller extends Base_Controller {
 
 				Event::fire('project.update',array('id'=>$id,'result'=>'OK'));
 
-		    	return Redirect::to('project')->with('notify_success','Project saved successfully');
+		    	return Redirect::to('project')->with('notify_success','Document saved successfully');
 			}else{
 
 				Event::fire('project.update',array('id'=>$id,'result'=>'FAILED'));
 
-		    	return Redirect::to('project')->with('notify_success','Project saving failed');
+		    	return Redirect::to('project')->with('notify_success','Document saving failed');
 			}
 
 	    }
@@ -593,41 +380,7 @@ class Project_Controller extends Base_Controller {
 		print json_encode($result);
 	}
 
-	public function get_scheduleitems($id)
-	{
-		$project = new Project();
-
-		$_id = new MongoId($id);
-
-		$schedule = $project->get(array('_id'=>$_id),array('schedules'));
-
-		$schedules = array();
-
-		if(isset($schedule)){
-			$seq = 0;
-			foreach ($schedule['schedules'] as $val) {
-				$from = $val['values'][0]['from']->sec * 1000;
-				$val['values'][0]['from'] = '/Date('.$from.')/';
-				
-				$to = $val['values'][0]['to']->sec * 1000;
-				$val['values'][0]['to'] = '/Date('.$to.')/';
-
-				$val['values'][0]['dataObj'] = array('item_id'=>$id.'_'.$seq);
-
-				$schedules[] = $val;
-
-				$seq++;
-
-			}			
-		}
-
-		return Response::json($schedules);
-	}
-
-
 	public function get_view($id = null){
-
-		$this->crumb->add('project/view/'.$id,'View',false);
 
 		$project = new Project();
 
@@ -635,7 +388,10 @@ class Project_Controller extends Base_Controller {
 
 		$projectdata = $project->get(array('_id'=>$_id));
 
-		$this->crumb->add('project/view/'.$id,$projectdata['projectNumber'],false);
+
+		// setup related docs
+
+//'title','createdDate','lastUpdate','creatorName','docFilename');
 
 		$heads = array('#','Title','Last Update','Creator','Attachment','Action');
 		$searchinput = array(false,'title','last update','creator','filename',false);
@@ -700,19 +456,31 @@ class Project_Controller extends Base_Controller {
 
 		$permissions = Auth::user()->permissions;
 
+
+		$this->crumb->add('project/view/'.$id,$projectdata['projectNumber'].' - '.$projectdata['title']);
+
 		return View::make('project.detail')
-			->with('title','Project Detail - '.$projectdata['projectNumber'])
+			->with('title', $projectdata['projectNumber'].' - '.$projectdata['title'])
 			->with('project', $projectdata)
 			->with('newbutton','New Schedule Item')
 			->with('newprogressbutton','New Progress Report')
 			->with('addurl','project/addschitem')
 			->with('ajaxsource',URL::to('project/scheduleitems/'.$id))
 			->with('disablesort','0')
-			->with('ajaxsourcedoc',URL::to('project/doc/'.$id))
 			->with('searchinput',$searchinput)
-			->with('heads',$heads)
+			->with('ajaxsourcedoc',URL::to('project/doc/'.$id))
 			->with('crumb',$this->crumb)
+			->with('heads',$heads)
 			->with('ajaxdel',URL::to('project/del'));
+
+			/*
+				->with('disablesort','0,5,6')
+				->with('ajaxsourcedoc',URL::to('document/type/'.$type))
+				->with('ajaxdeldoc',URL::to('document/del'))
+				->with('crumb',$this->crumb)
+				->with('heads',$heads);
+			*/
+
 	}
 
 	public function post_doc($id = null)
@@ -890,6 +658,38 @@ class Project_Controller extends Base_Controller {
 		return Response::json($result);
 	}
 
+
+	public function get_scheduleitems($id)
+	{
+		$project = new Project();
+
+		$_id = new MongoId($id);
+
+		$schedule = $project->get(array('_id'=>$_id),array('schedules'));
+
+		$schedules = array();
+
+		if(isset($schedule) && count($schedules) > 0){
+			$seq = 0;
+			foreach ($schedule['schedules'] as $val) {
+				$from = $val['values'][0]['from']->sec * 1000;
+				$val['values'][0]['from'] = '/Date('.$from.')/';
+				
+				$to = $val['values'][0]['to']->sec * 1000;
+				$val['values'][0]['to'] = '/Date('.$to.')/';
+
+				$val['values'][0]['dataObj'] = array('item_id'=>$id.'_'.$seq);
+
+				$schedules[] = $val;
+
+				$seq++;
+
+			}			
+		}
+
+		return Response::json($schedules);
+	}
+
 	public function get_addscitem(){
 
 	}
@@ -897,6 +697,5 @@ class Project_Controller extends Base_Controller {
 	public function get_postscitem(){
 		
 	}
-
 
 }

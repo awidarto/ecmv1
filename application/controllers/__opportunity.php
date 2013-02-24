@@ -40,79 +40,16 @@ class Opportunity_Controller extends Base_Controller {
 
 	public function get_index()
 	{
-		$heads = array(
-			'#',
-			'Date',
-			'Opportunity Number',
-			'Company',
-			//'clientStreet',
-			//'clientCity',
-			//'clientZIP',
-			//'clientPhone',
-			//'clientFax',
-			//'clientEmail',
-			//'clientWebsite',
-			'Project Name',
-			'Target Scope Description',
-			'Closing Date',
-			'Opportunity PIC',
-			'Estimated Currency',
-			'Estimated Value',
-			'Equivalent Estimated Currency',
-			'Equivalent Estimated Value',
-			'Opportunity Status',
-			'Opportunity Remark',
-			//'opportunityApproval',
-			//'opportunityShare',
-			//'opportunityDepartment',
-			//'opportunityLead',
-			//'createdDate',
-			//'lastUpdate',
-			'Tags',
-			'Action'
-		);
-
-		$colclass = array('one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one');
-		//$colclass = false;
+		$heads = array('#','Opportunity','Tags','Action');
+		$colclass = array('one','','two','two');
 		//$searchinput = array(false,'title','created','last update','creator','opportunity manager','tags',false);
-		$searchinput = array(false,
+		$searchinput = array(false,'opportunity','tags',false);
 
-			'opportunityDate',
-			'opportunityNumber',
-			'clientCompany',
-			//'clientStreet',
-			//'clientCity',
-			//'clientZIP',
-			//'clientPhone',
-			//'clientFax',
-			//'clientEmail',
-			//'clientWebsite',
-			'projectName',
-			'targetScopeDescription',
-			'closingDate',
-			'opportunityPIC',
-			'estimatedCurrency',
-			'estimatedValue',
-			'equivalentEstimatedCurrency',
-			'equivalentEstimatedValue',
-			'opportunityStatus',
-			'opportunityRemark',
-			//'opportunityApproval',
-			//'opportunityShare',
-			//'opportunityDepartment',
-			//'opportunityLead',
-			//'createdDate',
-			//'lastUpdate',
-			'opportunityTag'
-
-			,false);
-
-		return View::make('tables.noaside')
+		return View::make('tables.simple')
 			->with('title','Opportunity')
 			->with('newbutton','New Opportunity')
 			->with('disablesort','0,3')
 			->with('addurl','opportunity/add')
-			->with('excludecol','14,15,16,17,18,19,20,21,22')
 			->with('colclass',$colclass)
 			->with('searchinput',$searchinput)
 			->with('ajaxsource',URL::to('opportunity'))
@@ -121,200 +58,7 @@ class Opportunity_Controller extends Base_Controller {
 			->with('heads',$heads);
 	}
 
-
 	public function post_index()
-	{
-
-
-
-		$fields = array(
-			'opportunityDate',
-			'opportunityNumber',
-			'clientCompany',
-			//'clientStreet',
-			//'clientCity',
-			//'clientZIP',
-			//'clientPhone',
-			//'clientFax',
-			//'clientEmail',
-			//'clientWebsite',
-			'projectName',
-			'targetScopeDescription',
-			'closingDate',
-			'opportunityPIC',
-			'estimatedCurrency',
-			'estimatedValue',
-			'equivalentEstimatedCurrency',
-			'equivalentEstimatedValue',
-			'opportunityStatus',
-			'opportunityRemark',
-			//'opportunityApproval',
-			//'opportunityShare',
-			//'opportunityDepartment',
-			//'opportunityLead',
-			//'createdDate',
-			//'lastUpdate',
-			'opportunityTag'
-		);
-
-		$rel = array('like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like','like');
-
-		$cond = array('both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both','both');
-
-		$pagestart = Input::get('iDisplayStart');
-		$pagelength = Input::get('iDisplayLength');
-
-		$limit = array($pagelength, $pagestart);
-
-		$defsort = 1;
-		$defdir = -1;
-
-		$idx = 0;
-		$q = array();
-
-		$hilite = array();
-		$hilite_replace = array();
-
-		foreach($fields as $field){
-			if(Input::get('sSearch_'.$idx))
-			{
-
-				$hilite_item = Input::get('sSearch_'.$idx);
-				$hilite[] = $hilite_item;
-				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
-
-				if($rel[$idx] == 'like'){
-					if($cond[$idx] == 'both'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
-					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
-					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
-					}
-				}else if($rel[$idx] == 'equ'){
-					$q[$field] = Input::get('sSearch_'.$idx);
-				}
-			}
-			$idx++;
-		}
-
-		//print_r($q)
-
-		$document = new Opportunity();
-
-		/* first column is always sequence number, so must be omitted */
-		$fidx = Input::get('iSortCol_0');
-		if($fidx == 0){
-			$fidx = $defsort;
-			$sort_col = $fields[$fidx];
-			$sort_dir = $defdir;
-		}else{
-			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
-			$sort_col = $fields[$fidx];
-			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
-		}
-
-		$count_all = $document->count();
-
-		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count($q);
-		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count();
-		}
-
-		$aadata = array();
-
-		$counter = 1 + $pagestart;
-		foreach ($documents as $doc) {
-			if(isset($doc['tags'])){
-				$tags = array();
-
-				foreach($doc['tags'] as $t){
-					$tags[] = '<span class="tagitem">'.$t.'</span>';
-				}
-
-				$tags = implode('',$tags);
-
-			}else{
-				$tags = '';
-			}
-
-			$aadata[] = array(
-				$counter,
-
-			/*
-			'opportunityNumber',
-			'clientCompany',
-			//'clientStreet',
-			//'clientCity',
-			//'clientZIP',
-			//'clientPhone',
-			//'clientFax',
-			//'clientEmail',
-			//'clientWebsite',
-			'projectName',
-			'targetScopeDescription',
-			'closingDate',
-			'opportunitySystem',
-			'opportunityPIC',
-			'estimatedCurrency',
-			'estimatedPrice',
-			'equivalentEstimatedCurrency',
-			'equivalentEstimatedPrice',
-			'opportunityStatus',
-			'opportunityRemark',
-			//'opportunityApproval',
-			//'opportunityShare',
-			//'opportunityDepartment',
-			//'opportunityLead',
-			//'createdDate',
-			//'lastUpdate',
-			'opportunityTag'
-
-			*/
-
-				date('Y-m-d', $doc['opportunityDate']->sec),
-				HTML::link('opportunity/view/'.$doc['_id'],$doc['opportunityNumber']),
-				$doc['clientCompany'],
-				$doc['projectName'],
-				$doc['targetScopeDescription'],
-				date('Y-m-d', $doc['closingDate']->sec),
-				$doc['opportunityPIC'],
-				$doc['estimatedCurrency'],
-				number_format($doc['estimatedValue'],2,',','.'),
-				$doc['equivalentEstimatedCurrency'],
-				number_format($doc['equivalentEstimatedValue'],2,',','.'),
-				$doc['opportunityStatus'],
-				$doc['opportunityRemark'],
-				//$doc['opportunityApproval'],
-				//$doc['opportunityShare'],
-				//$doc['opportunityDepartment'],
-				//$doc['opportunityLead'],
-				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				//isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
-				$tags,
-				'<a href="'.URL::to('opportunity/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
-				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
-			);
-			$counter++;
-		}
-
-
-		$result = array(
-			'sEcho'=> Input::get('sEcho'),
-			'iTotalRecords'=>$count_all,
-			'iTotalDisplayRecords'=> $count_display_all,
-			'aaData'=>$aadata,
-			'qrs'=>$q
-		);
-
-		return Response::json($result);
-	}
-
-
-	public function __post_index()
 	{
 		$fields = array(array('title','body'),'opportunityTag');
 
@@ -426,7 +170,9 @@ class Opportunity_Controller extends Base_Controller {
 				$item,
 				$tags,
 				'<a href="'.URL::to('opportunity/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
-				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
+				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i><br />'.
+				'<a href="'.URL::to('opportunity/totender/'.$doc['_id']).'"><i class="foundicon-right-arrow action"></i> To Tender</a><br />'.
+				'<a href="'.URL::to('opportunity/toproject/'.$doc['_id']).'"><i class="foundicon-right-arrow action"></i> To Project</a>'
 			);
 			$counter++;
 		}
@@ -446,7 +192,7 @@ class Opportunity_Controller extends Base_Controller {
 
 	public function get_add(){
 
-		$this->crumb->add('opportunity/add','New Opportunity');
+		$this->crumb->add('project/add','New Project');
 
 		$form = new Formly();
 		return View::make('opportunity.new')
@@ -461,8 +207,8 @@ class Opportunity_Controller extends Base_Controller {
 		//print_r(Session::get('permission'));
 
 	    $rules = array(
-	        'opportunityNumber'  => 'required|max:50',
-	        'targetScopeDescription' => 'required'
+	        'title'  => 'required|max:50',
+	        'description' => 'required'
 	    );
 
 	    $validation = Validator::make($input = Input::all(), $rules);
@@ -480,8 +226,8 @@ class Opportunity_Controller extends Base_Controller {
 			//pre save transform
 			unset($data['csrf_token']);
 
-			$data['opportunityDate'] = new MongoDate(strtotime($data['opportunityDate']." 00:00:00"));
-			$data['closingDate'] = new MongoDate(strtotime($data['closingDate']." 00:00:00"));
+			$data['startDate'] = new MongoDate(strtotime($data['startDate']." 00:00:00"));
+			$data['estCompleteDate'] = new MongoDate(strtotime($data['estCompleteDate']." 00:00:00"));
 
 			$data['createdDate'] = new MongoDate();
 			$data['lastUpdate'] = new MongoDate();
@@ -490,51 +236,7 @@ class Opportunity_Controller extends Base_Controller {
 			
 			$data['tags'] = explode(',',$data['opportunityTag']);
 
-			$data['saveToContact'] = (isset($data['saveToContact']))?$data['saveToContact']:'No';
-
 			$opportunity = new opportunity();
-
-				if($data['saveToContact'] == 'Yes' && (!isset($data['contact_id']) || $data['contact_id'] == '') ){
-					$client = new Client();
-
-					$contact = array();
-
-					$contact['clientCompany']	= $data['clientCompany'];
-					$contact['clientStreet']	= $data['clientStreet'];
-					$contact['clientCity']		= $data['clientCity'];
-					$contact['clientZIP']		= $data['clientZIP'];
-					$contact['clientPhone']		= $data['clientPhone'];
-					$contact['clientFax']		= $data['clientFax'];
-					$contact['clientEmail']		= $data['clientEmail'];
-					$contact['clientWebsite']	= $data['clientWebsite'];
-
-					if($ctx = $client->insert($contact,array('upsert'=>true))){
-						$data['contact_id'] = $ctx['_id']->__toString();
-					}else{
-						$data['contact_id'] = '';
-					}
-
-				}else if($data['saveToContact'] == 'Yes' && $data['contact_id'] != ''){
-
-					$client = new Client();
-
-					$contact = array();
-
-					$c_id = new MongoId($data['contact_id']);
-
-					$contact['clientCompany']	= $data['clientCompany'];
-					$contact['clientStreet']	= $data['clientStreet'];
-					$contact['clientCity']		= $data['clientCity'];
-					$contact['clientZIP']		= $data['clientZIP'];
-					$contact['clientPhone']		= $data['clientPhone'];
-					$contact['clientFax']		= $data['clientFax'];
-					$contact['clientEmail']		= $data['clientEmail'];
-					$contact['clientWebsite']	= $data['clientWebsite'];
-
-					$client->update(array('_id'=>$c_id),array('$set'=>$contact),array('upsert'=>true));
-
-				}
-
 
 			$newobj = $opportunity->insert($data);
 
@@ -572,12 +274,10 @@ class Opportunity_Controller extends Base_Controller {
 
 		$doc_data['oldTag'] = $doc_data['opportunityTag'];
 
-		unset($doc_data['saveToContact']);
+		$doc_data['startDate'] = date('Y-m-d', $doc_data['startDate']->sec);
+		$doc_data['estCompleteDate'] = date('Y-m-d', $doc_data['estCompleteDate']->sec);
 
-		$doc_data['opportunityDate'] = (isset($doc_data['opportunityDate']))?date('Y-m-d', $doc_data['opportunityDate']->sec):'';
-		$doc_data['closingDate'] = (isset($doc_data['closingDate']))?date('Y-m-d', $doc_data['closingDate']->sec):'';
-
-		$this->crumb->add('opportunity/edit/'.$id,$doc_data['opportunityNumber']);
+		$this->crumb->add('opportunity/edit/'.$id,$doc_data['title']);
 
 		$form = Formly::make($doc_data);
 
@@ -585,7 +285,7 @@ class Opportunity_Controller extends Base_Controller {
 					->with('doc',$doc_data)
 					->with('form',$form)
 					->with('crumb',$this->crumb)
-					->with('title','Edit Opportunity');
+					->with('title','Edit Document');
 
 	}
 
@@ -595,8 +295,8 @@ class Opportunity_Controller extends Base_Controller {
 		//print_r(Session::get('permission'));
 
 	    $rules = array(
-	        'opportunityNumber'  => 'required|max:50',
-	        'targetScopeDescription' => 'required'
+	        'title'  => 'required|max:50',
+	        'description' => 'required'
 	    );
 
 	    $validation = Validator::make($input = Input::all(), $rules);
@@ -611,11 +311,9 @@ class Opportunity_Controller extends Base_Controller {
 	    	
 			$id = new MongoId($data['id']);
 
-			$data['opportunityDate'] = new MongoDate(strtotime($data['opportunityDate']." 00:00:00"));
-			$data['closingDate'] = new MongoDate(strtotime($data['closingDate']." 00:00:00"));
+			$data['startDate'] = new MongoDate(strtotime($data['startDate']." 00:00:00"));
+			$data['estCompleteDate'] = new MongoDate(strtotime($data['estCompleteDate']." 00:00:00"));
 			$data['lastUpdate'] = new MongoDate();
-
-			$data['saveToContact'] = (isset($data['saveToContact']))?$data['saveToContact']:'No';
 
 			unset($data['csrf_token']);
 			unset($data['id']);
@@ -642,27 +340,6 @@ class Opportunity_Controller extends Base_Controller {
 			unset($data['oldTag']);
 			
 			if($doc->update(array('_id'=>$id),array('$set'=>$data))){
-
-				if($data['saveToContact'] == 'Yes' && $data['contact_id'] != ''){
-					$client = new Client();
-
-					$contact = array();
-
-					$c_id = new MongoId($data['contact_id']);
-
-					$contact['clientCompany']	= $data['clientCompany'];
-					$contact['clientStreet']	= $data['clientStreet'];
-					$contact['clientCity']		= $data['clientCity'];
-					$contact['clientZIP']		= $data['clientZIP'];
-					$contact['clientPhone']		= $data['clientPhone'];
-					$contact['clientFax']		= $data['clientFax'];
-					$contact['clientEmail']		= $data['clientEmail'];
-					$contact['clientWebsite']	= $data['clientWebsite'];
-
-					$client->update(array('_id'=>$c_id),array('$set'=>$contact),array('upsert'=>true));
-
-				}
-
 
 				Event::fire('opportunity.update',array('id'=>$id,'result'=>'OK'));
 
@@ -701,38 +378,6 @@ class Opportunity_Controller extends Base_Controller {
 
 		print json_encode($result);
 	}
-
-	public function get_scheduleitems($id)
-	{
-		$project = new Opportunity();
-
-		$_id = new MongoId($id);
-
-		$schedule = $project->get(array('_id'=>$_id),array('schedules'));
-
-		$schedules = array();
-
-		if(isset($schedule)){
-			$seq = 0;
-			foreach ($schedule['schedules'] as $val) {
-				$from = $val['values'][0]['from']->sec * 1000;
-				$val['values'][0]['from'] = '/Date('.$from.')/';
-				
-				$to = $val['values'][0]['to']->sec * 1000;
-				$val['values'][0]['to'] = '/Date('.$to.')/';
-
-				$val['values'][0]['dataObj'] = array('item_id'=>$id.'_'.$seq);
-
-				$schedules[] = $val;
-
-				$seq++;
-
-			}			
-		}
-
-		return Response::json($schedules);
-	}
-
 
 	public function get_view($id = null){
 
@@ -805,18 +450,19 @@ class Opportunity_Controller extends Base_Controller {
 
 		$permissions = Auth::user()->permissions;
 
+
 		return View::make('opportunity.detail')
-			->with('title','Opportunity Detail - '.$projectdata['opportunityNumber'])
+			->with('title','Opportunity Detail - '.$projectdata['title'])
 			->with('opportunity', $projectdata)
 			->with('newbutton','New Schedule Item')
 			->with('newprogressbutton','New Progress Report')
-			->with('addurl','opportunity/addschitem')
-			->with('ajaxsource',URL::to('opportunity/scheduleitems/'.$id))
+			->with('addurl','project/addschitem')
+			->with('ajaxsource',URL::to('project/scheduleitems/'.$id))
 			->with('disablesort','0')
 			->with('ajaxsourcedoc',URL::to('opportunity/doc/'.$id))
 			->with('searchinput',$searchinput)
 			->with('heads',$heads)
-			->with('ajaxdel',URL::to('opportunity/del'));
+			->with('ajaxdel',URL::to('project/del'));
 	}
 
 	public function post_doc($id = null)
@@ -994,6 +640,38 @@ class Opportunity_Controller extends Base_Controller {
 		return Response::json($result);
 	}
 
+
+	public function get_scheduleitems($id)
+	{
+		$project = new Opportunity();
+
+		$_id = new MongoId($id);
+
+		$schedule = $project->get(array('_id'=>$_id),array('schedules'));
+
+		$schedules = array();
+
+		if(isset($schedule)){
+			$seq = 0;
+			foreach ($schedule['schedules'] as $val) {
+				$from = $val['values'][0]['from']->sec * 1000;
+				$val['values'][0]['from'] = '/Date('.$from.')/';
+				
+				$to = $val['values'][0]['to']->sec * 1000;
+				$val['values'][0]['to'] = '/Date('.$to.')/';
+
+				$val['values'][0]['dataObj'] = array('item_id'=>$id.'_'.$seq);
+
+				$schedules[] = $val;
+
+				$seq++;
+
+			}			
+		}
+
+		return Response::json($schedules);
+	}
+
 	public function get_addscitem(){
 
 	}
@@ -1001,6 +679,5 @@ class Opportunity_Controller extends Base_Controller {
 	public function get_postscitem(){
 		
 	}
-
 
 }

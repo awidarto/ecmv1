@@ -21,6 +21,27 @@
 
 		})
 
+		$('.tag_initial_inline').tagsInput({
+			'autocomplete_url': base + 'ajax/initial',
+		   	'height':'40px',
+		   	'width':'100%',
+		   	'interactive':true,
+		   	'onChange' : function(c){
+
+		   		},
+		   	'onAddTag' : function(t){
+		   			console.log(t);
+		   		},
+		   	'onRemoveTag' : function(t){
+		   			console.log(t);
+		   		},
+		   	'defaultText':'add initial',
+		   	'removeWithBackspace' : true,
+		   	'minChars' : 0,
+		   	'maxChars' : 0, //if not provided there is no limit,
+		   	'placeholderColor' : '#666666'
+		});
+
 		$('.tag_email_inline').tagsInput({
 			'autocomplete_url': base + 'ajax/email',
 		   	'height':'40px',
@@ -96,7 +117,7 @@
 		   			console.log(sharelist);
 		   		},
 		   	'onAddTag' : function(t){
-					sharelist[t] = '';		   			
+					sharelist[t] = '';
 		   		},
 		   	'onRemoveTag' : function(t){
 					delete sharelist[t];
@@ -106,7 +127,7 @@
 		   	'minChars' : 0,
 		   	'maxChars' : 0, //if not provided there is no limit,
 		   	'placeholderColor' : '#666666'
-		});		
+		});
 
 		$('.tag_rev').tagsInput({
 			'autocomplete_url': base + 'ajax/rev',
@@ -162,7 +183,7 @@
 			source: base + 'ajax/email',
 			select: function(event, ui){
 				$('#user_id').val(ui.item.id);
-				$('#user_name').val(ui.item.label);				
+				$('#user_name').val(ui.item.label);
 			}
 		});
 
@@ -170,8 +191,8 @@
 			source: base + 'ajax/user',
 			select: function(event, ui){
 				$('#pm_id').val(ui.item.id);
-				$('#pm_name').val(ui.item.value);				
-				$('#pm_email').val(ui.item.email);				
+				$('#pm_name').val(ui.item.value);
+				$('#pm_email').val(ui.item.email);
 			}
 		});
 
@@ -179,7 +200,30 @@
 			source: base + 'ajax/email',
 			select: function(event, ui){
 				$('#client_id').val(ui.item.id);
-				$('#client_name').val(ui.item.label);				
+				$('#client_name').val(ui.item.label);
+			}
+		});
+
+		$('.auto_client_contact').autocomplete({
+			source: base + 'ajax/clientcontact',
+			select: function(event, ui){
+				$('#contact_id').val(ui.item.id);
+
+				$('#clientStreet').val(ui.item.data.clientStreet);
+				$('#clientCity').val(ui.item.data.clientCity);
+				$('#clientZIP').val(ui.item.data.clientZIP);
+				$('#clientPhone').val(ui.item.data.clientPhone);
+				$('#clientFax').val(ui.item.data.clientFax);
+				$('#clientEmail').val(ui.item.data.clientEmail);
+				$('#clientWebsite').val(ui.item.data.clientWebsite);
+			}
+		});
+
+		$('.auto_vendor_contact').autocomplete({
+			source: base + 'ajax/vendorcontact',
+			select: function(event, ui){
+				$('#client_id').val(ui.item.id);
+				$('#client_name').val(ui.item.label);
 			}
 		});
 
@@ -189,7 +233,7 @@
 			source: base + 'ajax/project',
 			select: function(event, ui){
 				$('#project_id').val(ui.item.id);
-				$('#project_title').val(ui.item.title);				
+				$('#project_title').val(ui.item.title);
 			}
 		});
 
@@ -198,7 +242,7 @@
 			source: base + 'ajax/projectname',
 			select: function(event, ui){
 				$('#project_id').val(ui.item.id);
-				$('#project_number').val(ui.item.number);			
+				$('#project_number').val(ui.item.number);
 			}
 		});
 
@@ -208,16 +252,16 @@
 			source: base + 'ajax/tender',
 			select: function(event, ui){
 				$('#tender_id').val(ui.item.id);
-				$('#tender_title').val(ui.item.title);				
+				$('#tender_title').val(ui.item.title);
 			}
 		});
 
 
-		$('.auto_tender_name').autocomplete({
-			source: base + 'ajax/tendername',
+		$('.auto_tender_client').autocomplete({
+			source: base + 'ajax/tenderclient',
 			select: function(event, ui){
 				$('#tender_id').val(ui.item.id);
-				$('#tender_number').val(ui.item.number);			
+				$('#tender_number').val(ui.item.number);
 			}
 		});
 
@@ -227,7 +271,7 @@
 			source: base + 'ajax/opportunity',
 			select: function(event, ui){
 				$('#opportunity_id').val(ui.item.id);
-				$('#opportunity_title').val(ui.item.title);				
+				$('#opportunity_title').val(ui.item.title);
 			}
 		});
 
@@ -235,7 +279,7 @@
 			source: base + 'ajax/opportunityname',
 			select: function(event, ui){
 				$('#opportunity_id').val(ui.item.id);
-				$('#opportunity_number').val(ui.item.number);			
+				$('#opportunity_number').val(ui.item.number);
 			}
 		});
 
@@ -244,17 +288,17 @@
 			source: base + 'ajax/userdata',
 			select: function(event, ui){
 				$('#emp_user_id').val(ui.item.id);
-				$('#emp_email').val(ui.item.userdata.email);	
+				$('#emp_email').val(ui.item.userdata.email);
 
-				$('#emp_jobtitle').val(ui.item.userdata.employee_jobtitle);			
-				
+				$('#emp_jobtitle').val(ui.item.userdata.employee_jobtitle);
+
 				$('#emp_department').select2('val',ui.item.userdata.department);
 
-				$('#emp_mobile').val(ui.item.userdata.mobile);			
-				$('#emp_phone').val(ui.item.userdata.home);			
-				$('#emp_street').val(ui.item.userdata.street);			
-				$('#emp_city').val(ui.item.userdata.city);			
-				$('#emp_zip').val(ui.item.userdata.zip);							
+				$('#emp_mobile').val(ui.item.userdata.mobile);
+				$('#emp_phone').val(ui.item.userdata.home);
+				$('#emp_street').val(ui.item.userdata.street);
+				$('#emp_city').val(ui.item.userdata.city);
+				$('#emp_zip').val(ui.item.userdata.zip);
 			}
 		});
 
@@ -262,17 +306,17 @@
 			source: base + 'ajax/userdatabyemail',
 			select: function(event, ui){
 				$('#emp_user_id').val(ui.item.id);
-				$('#emp_fullname').val(ui.item.userdata.fullname);			
+				$('#emp_fullname').val(ui.item.userdata.fullname);
 
-				$('#emp_jobtitle').val(ui.item.userdata.employee_jobtitle);			
-				
+				$('#emp_jobtitle').val(ui.item.userdata.employee_jobtitle);
+
 				$('#emp_department').select2('val',ui.item.userdata.department);
 
-				$('#emp_mobile').val(ui.item.userdata.mobile);			
-				$('#emp_phone').val(ui.item.userdata.home);			
-				$('#emp_street').val(ui.item.userdata.street);			
-				$('#emp_city').val(ui.item.userdata.city);			
-				$('#emp_zip').val(ui.item.userdata.zip);			
+				$('#emp_mobile').val(ui.item.userdata.mobile);
+				$('#emp_phone').val(ui.item.userdata.home);
+				$('#emp_street').val(ui.item.userdata.street);
+				$('#emp_city').val(ui.item.userdata.city);
+				$('#emp_zip').val(ui.item.userdata.zip);
 
 
 			}
@@ -282,17 +326,17 @@
 			source: base + 'ajax/useridbyemail',
 			select: function(event, ui){
 				$('#emp_user_id').val(ui.item.id);
-				$('#emp_fullname').val(ui.item.userdata.fullname);			
+				$('#emp_fullname').val(ui.item.userdata.fullname);
 
-				$('#emp_jobtitle').val(ui.item.userdata.employee_jobtitle);			
-				
+				$('#emp_jobtitle').val(ui.item.userdata.employee_jobtitle);
+
 				$('#emp_department').select2('val',ui.item.userdata.department);
 
-				$('#emp_mobile').val(ui.item.userdata.mobile);			
-				$('#emp_phone').val(ui.item.userdata.home);			
-				$('#emp_street').val(ui.item.userdata.street);			
-				$('#emp_city').val(ui.item.userdata.city);			
-				$('#emp_zip').val(ui.item.userdata.zip);			
+				$('#emp_mobile').val(ui.item.userdata.mobile);
+				$('#emp_phone').val(ui.item.userdata.home);
+				$('#emp_street').val(ui.item.userdata.street);
+				$('#emp_city').val(ui.item.userdata.city);
+				$('#emp_zip').val(ui.item.userdata.zip);
 
 
 			}

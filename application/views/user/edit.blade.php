@@ -15,15 +15,12 @@
           <td class="detail-title">Email</td>
           <td class="detail-info">{{ $user['email'] }}</td>
         </tr>
-        <tr>
-          <td class="detail-title">Username</td>
-          <td class="detail-info">{{ $user['username'] }}</td>
-        </tr>
       </table>
     {{ $form->hidden('id',$user['_id'])}}
     {{ $form->text('fullname','Full Name.req','',array('class'=>'text')) }}
 
     <h4>Employee Info</h4>
+    {{ $form->text('initial','Initial.req','',array('class'=>'text four')) }}
     {{ $form->text('employee_jobtitle','Job Title','',array('class'=>'text')) }}
     {{ Form::label('department','Department')}}
     {{$form->select('department','',Config::get('parama.department'),null,array('class'=>'four'))}}

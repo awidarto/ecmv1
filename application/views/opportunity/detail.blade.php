@@ -11,36 +11,40 @@
 		<div class="four columns">
 			<table class="profile-info">
 				<tr>
-					<td class="detail-title">Project Number</td>
+					<td class="detail-title">Opportunity Number</td>
 					<td class="detail-info">{{ $opportunity['opportunityNumber'] }}</td>
 				</tr>
 				<tr>
-					<td class="detail-title">Project Name</td>
-					<td class="detail-info">{{ $opportunity['title'] }}</td>
+					<td class="detail-title">Prospective Client</td>
+					<td class="detail-info">{{ $opportunity['clientCompany'] }}</td>
 				</tr>
 				<tr>
 					<td class="detail-title">Managed By</td>
-					<td class="detail-info">{{ $opportunity['opportunityManager'] }}</td>
+					<td class="detail-info">{{ $opportunity['opportunityPIC'] }}</td>
 				</tr>
 				<tr>
-					<td class="detail-title">Start Date</td>
+					<td class="detail-title">Closing Date</td>
 					<td class="detail-info">	
-						<span>{{date('d-m-Y',$opportunity['startDate']->sec)}}</span>
+						<span>{{date('d-m-Y',$opportunity['closingDate']->sec)}}</span>
 					</td>
 				</tr>
 				<tr>
-					<td class="detail-title">Est. Completion</td>
+					<td class="detail-title">Opportunity Date</td>
 					<td class="detail-info">	
-						<span>{{date('d-m-Y',$opportunity['estCompleteDate']->sec)}}</span>
+						<span>{{date('d-m-Y',$opportunity['opportunityDate']->sec)}}</span>
 					</td>
 				</tr>
 				<tr>
-					<td class="detail-title">Value</td>
-					<td class="detail-info">{{ $opportunity['opportunityCurrency'].' '.number_format($opportunity['opportunityNetValue'],2,',','.') }}</td>
+					<td class="detail-title">Estimated Value</td>
+					<td class="detail-info">{{ $opportunity['estimatedCurrency'].' '.number_format($opportunity['estimatedValue'],2,',','.') }}</td>
+				</tr>
+				<tr>
+					<td class="detail-title">Estimated Value in USD</td>
+					<td class="detail-info">{{ $opportunity['equivalentEstimatedCurrency'].' '.number_format($opportunity['equivalentEstimatedValue'],2,',','.') }}</td>
 				</tr>
 				<tr>
 					<td class="detail-title">Description</td>
-					<td class="detail-info">{{ $opportunity['body'] }}</td>
+					<td class="detail-info">{{ $opportunity['targetScopeDescription'] }}</td>
 				</tr>
 
 			</table>
@@ -85,27 +89,7 @@
 		</div>
 </div>
 
-<h6>Planned Schedule</h6>
-<div class="row">
-	<a class="foundicon-add-doc button right newdoc action clearfix" href="{{URL::to($addurl)}}">&nbsp;&nbsp;<span>{{$newbutton}}</span></a>
-</div>
-<div class="row">
-	<div class="gantt"></div>
-</div>
-
-<h6>Progress</h6>
-<div class="row">
-	<a class="foundicon-add-doc button right newdoc action clearfix" href="{{URL::to($addurl)}}">&nbsp;&nbsp;<span>{{$newprogressbutton}}</span></a>
-</div>
-<div class="row">
-	<div class="gantt"></div>
-</div>
-
 <script type="text/javascript">
-	var source_url = '{{ $ajaxsource }}';
-</script>
-
-  <script type="text/javascript">
     $(document).ready(function(){
 		var asInitVals = new Array();
         var oTable = $('.dataTable').DataTable(

@@ -11,13 +11,72 @@
   <div class="six columns left">
     <h4>Project Info</h4>
 
-    {{ $form->text('projectNumber','Project Number.req','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+<!--
+      JOB REGISTER
+      YEAR :  2013
+      Form No :
+NO
+JOB NO.
+CLIENT'S PO / CONTRACT NO.
+CLIENT'S NAME
+BRIEF CONTRACT SCOPE DESCRIPTION
+DELIVERY TERMS
+EFFECTIVE DATE
+DUE DATE
+CONTRACT PRICE  (US $)  (EURO)  (IDR X 1,000) (US $)
+EQUIVALENT CONTRACT PRICE   (US $)
+PERSON IN CHARGE
+STATUS
+REMARKS
 
-    {{ $form->text('title','Title.req','',array('class'=>'text')) }}
 
-    {{ $form->textarea('description','Description.req','',array('class'=>'text')) }}
+-->
 
-    {{ $form->textarea('body','Body','',array('class'=>'text')) }}
+    {{ $form->text('projectNumber','Project Number','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+
+    {{ $form->text('clientPONumber','Client\'s PO / Contract No.req','',array('class'=>'text')) }}
+
+    {{ $form->text('clientName','Client\'s Name.req','',array('class'=>'text')) }}
+
+    {{ $form->textarea('briefScopeDescription','Brief Scope Description.req','',array('class'=>'text')) }}
+
+    {{ $form->textarea('deliveryTerm','Delivery Terms','',array('class'=>'text')) }}
+
+    {{ $form->text('effectiveDate','Effective Date','',array('class'=>'five date')) }}
+
+    {{ $form->text('dueDate','Due Date','',array('class'=>'five date')) }}
+
+    {{ $form->text('projectVendor','Project Vendor','',array('class'=>'auto_user text')) }}
+
+  </div>
+  <div class="five columns right">
+    <h4>Project Details</h4>
+
+
+    {{ $form->text('projectPIC','Persons In Charge','',array('id'=>'project_manager','class'=>'tag_initial_inline four','rows'=>'1', 'style'=>'width:100%')) }}
+
+    <div class="row">
+      <div class="two columns">
+        {{ $form->select('contractCurrency','Currency',Config::get('parama.currencies'),array('style'=>'width:100%'))}}
+      </div>
+      <div class="nine columns">
+        {{ $form->text('contractPrice','Contract Price','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="two columns">
+        {{ $form->select('equivalentContractCurrency','Currency',Config::get('parama.currencies'),'USD',array('style'=>'width:100%'))}}
+      </div>
+      <div class="nine columns">
+        {{ $form->text('equivalentContractPrice','Equivalent Contract Price','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+      </div>
+    </div>
+
+    {{ $form->select('projectStatus','Status',Config::get('parama.projectstatus'))}}
+
+    {{ $form->textarea('projectRemark','Remarks','',array('class'=>'text')) }}
+
 
     {{ $form->text('projectApproval','Approved by','',array('class'=>'tag_email four', 'style'=>'width:100%')) }}
 
@@ -25,29 +84,7 @@
 
     {{ $form->select('projectDepartment','Department of Origin',Config::get('parama.department'),array('class'=>'four'))}}
 
-    {{ $form->text('projectTender','Related Tender','',array('class'=>'tag_tender four','rows'=>'1', 'style'=>'width:100%')) }}
-
     {{ $form->text('projectLead','Related Opportunity','',array('class'=>'tag_opportunity four','rows'=>'1', 'style'=>'width:100%')) }}
-
-  </div>
-  <div class="five columns right">
-    <h4>Project Details</h4>
-
-    {{ $form->text('startDate','Start Date','',array('class'=>'five date')) }}
-
-    {{ $form->text('estCompleteDate','Estimated Completion Date','',array('class'=>'five date')) }}
-
-    {{ $form->text('projectManager','Project Manager','',array('id'=>'project_manager','class'=>'auto_pm four','rows'=>'1', 'style'=>'width:100%')) }}
-
-    {{ $form->hidden('projectManagerId','',array('id'=>'pm_id')) }}
-
-    {{ $form->text('projectManagerEmail','Project Manager Email','',array('id'=>'pm_email','class'=>'auto_pm four','rows'=>'1', 'style'=>'width:100%')) }}
-
-    {{ $form->text('projectClient','Client','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
-
-    {{ $form->select('projectCurrency','Currency',Config::get('parama.currencies'),array('class'=>'one'))}}
-    
-    {{ $form->text('projectValue','Value','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
 
     {{ $form->text('projectTag','Tag','',array('class'=>'tag_keyword four','rows'=>'1', 'style'=>'width:100%')) }}
 
@@ -59,7 +96,7 @@
 
   </div>
 </div>
-
+<hr />
 <div class="row right">
 {{ Form::submit('Save',array('class'=>'button'))}}&nbsp;&nbsp;
 {{ Form::reset('Reset',array('class'=>'button'))}}
@@ -67,7 +104,9 @@
 {{$form->close()}}
 
 <script type="text/javascript">
-  $('select').select2();
+  $('select').select2({
+    width : 'resolve'
+  });
 
   $('#field_role').change(function(){
       //alert($('#field_role').val());

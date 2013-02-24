@@ -39,7 +39,7 @@ class User_Controller extends Base_Controller {
 
 		date_default_timezone_set('Asia/Jakarta');
 		$this->filter('before','auth');
-	}	
+	}
 
 	public function get_index()
 	{
@@ -91,7 +91,7 @@ class User_Controller extends Base_Controller {
 	}
 
 	public function post_profile(){
-		
+
 	}
 
 	public function post_del(){
@@ -108,7 +108,7 @@ class User_Controller extends Base_Controller {
 			if($user->delete(array('_id'=>$id))){
 				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
 			}else{
-				$result = array('status'=>'ERR','data'=>'DELETEFAILED');				
+				$result = array('status'=>'ERR','data'=>'DELETEFAILED');
 			}
 		}
 
@@ -118,8 +118,8 @@ class User_Controller extends Base_Controller {
 	public function get_users()
 	{
 
-		$heads = array('#','','Full Name','Email','Department','Role','Action');
-		$searchinput = array(false,false,'fullname','email','department','role',false);
+		$heads = array('#','','Full Name','Initial','Email','Department','Role','Action');
+		$searchinput = array(false,false,'fullname','initial','email','department','role',false);
 		$colclass = array('','two','','','','','');
 
 		$tag = new Tag();
@@ -164,9 +164,9 @@ class User_Controller extends Base_Controller {
 					if($cond[$idx] == 'both'){
 						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
 					}
 				}else if($rel[$idx] == 'equ'){
 					$q[$field] = Input::get('sSearch_'.$idx);
@@ -182,7 +182,7 @@ class User_Controller extends Base_Controller {
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
 		if($fidx == 0){
-			$fidx = $defsort;			
+			$fidx = $defsort;
 			$sort_col = $fields[$fidx];
 			$sort_dir = $defdir;
 		}else{
@@ -212,7 +212,7 @@ class User_Controller extends Base_Controller {
 			if(file_exists(Config::get('parama.avatarstorage').$doc['_id'].'/avatar.jpg')){
 				$photo = HTML::image('avatar/'.$doc['_id'].'/avatar.jpg', $doc['fullname'], array('class' => 'avatar-list'));
 			}else{
-				$photo = HTML::image('images/no-avatar.jpg', $doc['fullname'], array('class' => 'avatar-list'));				
+				$photo = HTML::image('images/no-avatar.jpg', $doc['fullname'], array('class' => 'avatar-list'));
 			}
 			*/
 
@@ -224,6 +224,7 @@ class User_Controller extends Base_Controller {
 				'<span class="pop" rel="user/popprofile" id="'.$doc['_id'].'" >'.$doc['fullname'].'</span>',
 				//HTML::link('user/profile/'.$doc['_id'],$doc['fullname']),
 				//$doc['username'],
+				(isset($doc['initial']))?$doc['initial']:'',
 				$doc['email'],
 				isset($doc['department'])?depttitle($doc['department']):'',
 				roletitle($doc['role']),
@@ -235,7 +236,7 @@ class User_Controller extends Base_Controller {
 			$counter++;
 		}
 
-		
+
 		$result = array(
 			'sEcho'=> Input::get('sEcho'),
 			'iTotalRecords'=>$count_all,
@@ -305,7 +306,7 @@ class User_Controller extends Base_Controller {
 
 			Input::upload('picupload',$newdir,$picupload['name']);
 
-			
+
 		}
 
 		$user = new User();
@@ -314,9 +315,9 @@ class User_Controller extends Base_Controller {
 		$data['lastUpdate'] = new MongoDate();
 
 		unset($data['csrf_token']);
-		unset($data['id']);		
+		unset($data['id']);
 
-		
+
 		if($user->update(array('_id'=>$_id),array('$set'=>$data))){
 	    	return Redirect::to($back)->with('notify_success','Picture saved successfully');
 		}else{
@@ -378,7 +379,7 @@ class User_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 
 			$data['pass'] = Hash::make($data['pass']);
 
@@ -395,9 +396,9 @@ class User_Controller extends Base_Controller {
 			}else{
 		    	return Redirect::to($back)->with('notify_success','Password change failed');
 			}
-			
 
-	    }		
+
+	    }
 
 	}
 
@@ -445,7 +446,7 @@ class User_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 			$id = new MongoId($data['id']);
 			$data['lastUpdate'] = new MongoDate();
 
@@ -453,16 +454,16 @@ class User_Controller extends Base_Controller {
 			unset($data['id']);
 
 			$user = new User();
-			
+
 			if($user->update(array('_id'=>$id),array('$set'=>$data))){
 		    	return Redirect::to('users/profile')->with('notify_success','User profile saved successfully');
 			}else{
 		    	return Redirect::to('users/profile')->with('notify_success','User profile saving failed');
 			}
-			
+
 	    }
 
-		
+
 	}
 
 
@@ -506,9 +507,15 @@ class User_Controller extends Base_Controller {
 
 		//print_r(Session::get('permission'));
 
+		$in = Input::get();
+
 	    $rules = array(
 	        'fullname'  => 'required|max:50'
 	    );
+
+	    if($in['initial'] != ''){
+	    	$rules['initial'] = 'unique:user';
+	    }
 
 	    $validation = Validator::make($input = Input::all(), $rules);
 
@@ -519,7 +526,7 @@ class User_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 			$obj = Config::get('parama.department');
 
 			$pitem = Config::get('acl.permissions');
@@ -564,16 +571,16 @@ class User_Controller extends Base_Controller {
 
 			//print_r($data);
 
-			
+
 			if($user->update(array('_id'=>$id),array('$set'=>$data))){
 		    	return Redirect::to('users')->with('notify_success','User saved successfully');
 			}else{
 		    	return Redirect::to('users')->with('notify_success','User saving failed');
 			}
-			
+
 	    }
 
-		
+
 	}
 
 
@@ -595,6 +602,8 @@ class User_Controller extends Base_Controller {
 
 		//print_r(Session::get('permission'));
 
+		$in = Input::get();
+
 	    $rules = array(
 	        'fullname'  => 'required|max:50',
 	        'email' => 'required|email|unique:user',
@@ -602,6 +611,10 @@ class User_Controller extends Base_Controller {
 	        'pass' => 'required|same:repass',
 	        'repass'=> 'required'
 	    );
+
+	    if($in['initial'] != ''){
+	    	$rules['initial'] = 'unique:user';
+	    }
 
 	    $validation = Validator::make($input = Input::all(), $rules);
 
@@ -612,7 +625,7 @@ class User_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 			$obj = Config::get('parama.department');
 
 			$pitem = Config::get('acl.permissions');
@@ -674,11 +687,11 @@ class User_Controller extends Base_Controller {
 			}else{
 		    	return Redirect::to('users')->with('notify_success','User saving failed');
 			}
-			
+
 
 	    }
 
-		
+
 	}
 
 	public function get_people()
@@ -715,9 +728,9 @@ class User_Controller extends Base_Controller {
 					if($cond[$idx] == 'both'){
 						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/');
 					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/');						
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/');
 					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/');						
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/');
 					}
 				}else if($rel[$idx] == 'equ'){
 					$q[$field] = Input::get('sSearch_'.$idx);
@@ -765,7 +778,7 @@ class User_Controller extends Base_Controller {
 			$counter++;
 		}
 
-		
+
 		$result = array(
 			'sEcho'=> Input::get('sEcho'),
 			'iTotalRecords'=>$count_all,
@@ -775,6 +788,6 @@ class User_Controller extends Base_Controller {
 		);
 
 		print json_encode($result);
-	}	
+	}
 
 }

@@ -11,38 +11,50 @@
   <div class="six columns left">
     <h4>Tender Info</h4>
 
-    {{ $form->text('title','Title.req','',array('class'=>'text')) }}
+<!--
+      TENDER REGISTER
+      YEAR :  2013
+      Form No :
+NO
+*DATE
+*TENDER NO.
+*CLIENT'S TENDER NO.
+*CLIENT'S NAME
+*BRIEF SCOPE DESCRIPTION
+*DELIVERY TERMS
+*CLOSING DATE
+*TENDER SYSTEM
+*BID PRICE     (US $)  (EURO)  (IDR X 1,000)
+*EQUIVALENT BID PRICE  (US $)
+PROPOSED VENDOR
+*PERSON IN CHARGE
+STATUS  
+*REMARKS
 
-    {{ $form->textarea('description','Description.req','',array('class'=>'text')) }}
+-->
+    {{ $form->text('tenderDate','Date','',array('class'=>'five date')) }}
 
-    {{ $form->textarea('body','Body','',array('class'=>'text')) }}
+    {{ $form->text('tenderNumber','Tender Number','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
 
-    {{ $form->text('tenderApproval','Approved by','',array('class'=>'tag_email four', 'style'=>'width:100%')) }}
+    {{ $form->text('clientTenderNumber','Client\'s Tender No.req','',array('class'=>'text')) }}
 
-    {{ $form->text('tenderShare','Shared to','',array('class'=>'tag_email four','style'=>'width:100%')) }}
+    {{ $form->text('clientName','Client\'s Name.req','',array('class'=>'text')) }}
 
-    {{ $form->select('tenderDepartment','Department of Origin',Config::get('parama.department'),array('class'=>'four'))}}
+    {{ $form->textarea('briefScopeDescription','Brief Scope Description.req','',array('class'=>'text')) }}
 
-    {{ $form->text('tenderTender','Related Tender','',array('class'=>'tag_tender four','rows'=>'1', 'style'=>'width:100%')) }}
+    {{ $form->textarea('deliveryTerm','Delivery Terms','',array('class'=>'text')) }}
 
-    {{ $form->text('tenderLead','Related Opportunity','',array('class'=>'tag_opportunity four','rows'=>'1', 'style'=>'width:100%')) }}
+    {{ $form->textarea('tenderSystem','Tender System','',array('class'=>'text')) }}
+
+    {{ $form->text('proposedVendor','Proposed Vendor','',array('class'=>'auto_user text')) }}
 
   </div>
   <div class="five columns right">
     <h4>Tender Details</h4>
 
-    {{ $form->text('submitDate','Document Submission Date','',array('class'=>'five date')) }}
+    {{ $form->text('closingDate','Closing Date','',array('class'=>'five date')) }}
 
-    {{ $form->text('prepStartDate','Preparation Start Date','',array('class'=>'five date')) }}
-
-    {{ $form->text('estCompleteDate','Estimated Completion Date','',array('class'=>'five date')) }}
-
-    {{ $form->text('tenderNumber','Project Number','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
-
-
-    {{ $form->text('tenderManager','Project Manager','',array('id'=>'tender_manager','class'=>'auto_user four','rows'=>'1', 'style'=>'width:100%')) }}
-
-    {{ $form->hidden('tenderManagerId','',array('id'=>'user_id')) }}
+    {{ $form->text('tenderPIC','Persons In Charge','',array('id'=>'tender_manager','class'=>'tag_initial_inline four','rows'=>'1', 'style'=>'width:100%')) }}
 
     <div class="row">
       <div class="two columns">
@@ -53,11 +65,27 @@
       </div>
     </div>
 
-    {{ $form->text('tenderClient','Client','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+    <div class="row">
+      <div class="two columns">
+        {{ $form->select('equivalentBidCurrency','Currency',Config::get('parama.currencies'),'USD',array('style'=>'width:100%'))}}
+      </div>
+      <div class="nine columns">
+        {{ $form->text('equivalentBidPrice','Equivalent Bid Price','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+      </div>
+    </div>
 
-    
+    {{ $form->select('tenderStatus','Status',Config::get('parama.tenderstatus'))}}
 
-    {{ $form->text('tenderEquivValue','Equivalent Bid Price ( USD )','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+    {{ $form->textarea('tenderRemark','Remarks','',array('class'=>'text')) }}
+
+
+    {{ $form->text('tenderApproval','Approved by','',array('class'=>'tag_email four', 'style'=>'width:100%')) }}
+
+    {{ $form->text('tenderShare','Shared to','',array('class'=>'tag_email four','style'=>'width:100%')) }}
+
+    {{ $form->select('tenderDepartment','Department of Origin',Config::get('parama.department'),array('class'=>'four'))}}
+
+    {{ $form->text('tenderLead','Related Opportunity','',array('class'=>'tag_opportunity four','rows'=>'1', 'style'=>'width:100%')) }}
 
     {{ $form->text('tenderTag','Tag','',array('class'=>'tag_keyword four','rows'=>'1', 'style'=>'width:100%')) }}
 
@@ -69,7 +97,7 @@
 
   </div>
 </div>
-
+<hr />
 <div class="row right">
 {{ Form::submit('Save',array('class'=>'button'))}}&nbsp;&nbsp;
 {{ Form::reset('Reset',array('class'=>'button'))}}

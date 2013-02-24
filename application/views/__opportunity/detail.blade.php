@@ -1,51 +1,109 @@
-@layout('master')
+@layout('noaside')
 
 @section('content')
+
 <div class="tableHeader">
-	@if($title != '')
-		<h3>{{$title}}</h3>
-	@endif
-	@if(isset($addurl) && $addurl != '')
-		<a class="foundicon-add-doc button right newdoc action clearfix" href="{{URL::to($addurl)}}">&nbsp;&nbsp;<span>{{$newbutton}}</span></a>
-	@endif
+<h3>{{$title}}</h3>
+
+
 </div>
 <div class="row">
-	<table class="dataTable">
-	    <thead>
-	        <tr>
-	        	<?php
-		        	if(!isset($colclass)){
-		        		$colclass = array();
-		        	}
-	        		$hid = 0;
-	        	?>
-	        	@foreach($heads as $head)
-	        		<th 
-	        			@if(isset($colclass[$hid]))
-	        				class="{{$colclass[$hid]}}"
-	        			@endif
-	        			<?php $hid++ ?>
-	        		>
-	        			{{ $head }}
-	        		</th>
-	        	@endforeach
-	        </tr>
-	    </thead>
-	    <tbody>
-	    </tbody>
-	    <tfoot>
-	    <tr>
-	    	@foreach($searchinput as $in)
-	    		@if($in)
-	        		<td><input type="text" name="search_{{$in}}" id="search_{{$in}}" value="Search {{$in}}" class="search_init" /></td>
-	    		@else
-	        		<td>&nbsp;</td>
-	    		@endif
-	    	@endforeach        	
-	    </tr>
-	    </tfoot>
-	</table>
+		<div class="four columns">
+			<table class="profile-info">
+				<tr>
+					<td class="detail-title">Project Number</td>
+					<td class="detail-info">{{ $opportunity['opportunityNumber'] }}</td>
+				</tr>
+				<tr>
+					<td class="detail-title">Project Name</td>
+					<td class="detail-info">{{ $opportunity['title'] }}</td>
+				</tr>
+				<tr>
+					<td class="detail-title">Managed By</td>
+					<td class="detail-info">{{ $opportunity['opportunityManager'] }}</td>
+				</tr>
+				<tr>
+					<td class="detail-title">Start Date</td>
+					<td class="detail-info">	
+						<span>{{date('d-m-Y',$opportunity['startDate']->sec)}}</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="detail-title">Est. Completion</td>
+					<td class="detail-info">	
+						<span>{{date('d-m-Y',$opportunity['estCompleteDate']->sec)}}</span>
+					</td>
+				</tr>
+				<tr>
+					<td class="detail-title">Value</td>
+					<td class="detail-info">{{ $opportunity['opportunityCurrency'].' '.number_format($opportunity['opportunityNetValue'],2,',','.') }}</td>
+				</tr>
+				<tr>
+					<td class="detail-title">Description</td>
+					<td class="detail-info">{{ $opportunity['body'] }}</td>
+				</tr>
+
+			</table>
+		</div>
+		<div class="eight columns">
+			<h5>Related Documents</h5>
+				<table class="dataTable">
+				    <thead>
+				        <tr>
+				        	<?php
+					        	if(!isset($colclass)){
+					        		$colclass = array();
+					        	}
+				        		$hid = 0;
+				        	?>
+				        	@foreach($heads as $head)
+				        		<th 
+				        			@if(isset($colclass[$hid]))
+				        				class="{{$colclass[$hid]}}"
+				        			@endif
+				        			<?php $hid++ ?>
+				        		>
+				        			{{ $head }}
+				        		</th>
+				        	@endforeach
+				        </tr>
+				    </thead>
+				    <tbody>
+				    </tbody>
+				    <tfoot>
+				    <tr>
+				    	@foreach($searchinput as $in)
+				    		@if($in)
+				        		<td><input type="text" name="search_{{$in}}" id="search_{{$in}}" value="Search {{$in}}" class="search_init" /></td>
+				    		@else
+				        		<td>&nbsp;</td>
+				    		@endif
+				    	@endforeach        	
+				    </tr>
+				    </tfoot>
+				</table>
+		</div>
 </div>
+
+<h6>Planned Schedule</h6>
+<div class="row">
+	<a class="foundicon-add-doc button right newdoc action clearfix" href="{{URL::to($addurl)}}">&nbsp;&nbsp;<span>{{$newbutton}}</span></a>
+</div>
+<div class="row">
+	<div class="gantt"></div>
+</div>
+
+<h6>Progress</h6>
+<div class="row">
+	<a class="foundicon-add-doc button right newdoc action clearfix" href="{{URL::to($addurl)}}">&nbsp;&nbsp;<span>{{$newprogressbutton}}</span></a>
+</div>
+<div class="row">
+	<div class="gantt"></div>
+</div>
+
+<script type="text/javascript">
+	var source_url = '{{ $ajaxsource }}';
+</script>
 
   <script type="text/javascript">
     $(document).ready(function(){
@@ -54,17 +112,12 @@
 			{
 				"bProcessing": true,
 		        "bServerSide": true,
-		        "sAjaxSource": "{{$ajaxsource}}",
+		        "sAjaxSource": "{{$ajaxsourcedoc}}",
 				"oLanguage": { "sSearch": "Search "},
 				"sPaginationType": "full_numbers",
-				"sDom": 'CT<"clear">lfrtip',
-				@if(isset($excludecol) && $excludecol != '')
-				"oColVis": {
-					"aiExclude": [ {{ $excludecol }} ]
-				},
-				@endif
+				"sDom": 'T<"clear">lfrtip',
 				"oTableTools": {
-					"sSwfPath": "{{ URL::base() }}/swf/copy_csv_xls_pdf.swf"
+					"sSwfPath": "assets/swf/copy_csv_xls_pdf.swf"
 				},
 				"aoColumnDefs": [ 
 				    { "bSortable": false, "aTargets": [ {{ $disablesort }} ] }
@@ -223,5 +276,4 @@
 
     });
   </script>
-
 @endsection

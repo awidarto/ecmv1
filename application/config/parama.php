@@ -129,4 +129,26 @@
       'help'=>'Help',
       'faq'=>'FAQ',
     ),
+
+  'tenderstatus'=>array(
+      'inprogress'=>'In Progress',
+      'won'=>'Won',
+      'loss'=>'Loss',
+      'decline'=>'Declined',
+      'pending'=>'Pending'
+    ),
+
+  'projectstatus'=>array(
+      'inprogress'=>'In Progress',
+      'completed'=>'Completed'
+    ),
+
+  'opportunitystatus'=>array(
+      'open'=>'Open',
+      'inprogress'=>'In Progress',
+      'cancelled'=>'Cancelled',
+      'declined'=>'Declined'
+    )
+
+
 );

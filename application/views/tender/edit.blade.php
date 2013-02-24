@@ -12,11 +12,54 @@
     <h4>Tender Info</h4>
     {{ $form->hidden('id',$doc['_id'])}}
 
-    {{ $form->text('title','Title.req','',array('class'=>'text')) }}
+    {{ $form->text('tenderDate','Date','',array('class'=>'five date')) }}
 
-    {{ $form->textarea('description','Description.req','',array('class'=>'text')) }}
+    {{ $form->text('tenderNumber','Tender Number','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
 
-    {{ $form->textarea('body','Body','',array('class'=>'text')) }}
+    {{ $form->text('clientTenderNumber','Client\'s Tender No.req','',array('class'=>'text')) }}
+
+    {{ $form->text('clientName','Client\'s Name.req','',array('class'=>'text')) }}
+
+    {{ $form->textarea('briefScopeDescription','Brief Scope Description.req','',array('class'=>'text')) }}
+
+    {{ $form->textarea('deliveryTerm','Delivery Terms','',array('class'=>'text')) }}
+
+    {{ $form->textarea('tenderSystem','Tender System','',array('class'=>'text')) }}
+
+    {{ $form->text('proposedVendor','Proposed Vendor','',array('class'=>'auto_user text')) }}
+
+  </div>
+  <div class="five columns right">
+    <h4>Tender Details</h4>
+
+    {{ $form->text('closingDate','Closing Date','',array('class'=>'five date')) }}
+
+    {{ $form->text('tenderPIC','Persons In Charge','',array('id'=>'tender_manager','class'=>'tag_initial_inline four','rows'=>'1', 'style'=>'width:100%')) }}
+
+    {{ $form->hidden('tenderManagerId','',array('id'=>'user_id')) }}
+
+    <div class="row">
+      <div class="two columns">
+        {{ $form->select('bidCurrency','Currency',Config::get('parama.currencies'),array('style'=>'width:100%'))}}
+      </div>
+      <div class="nine columns">
+        {{ $form->text('bidPrice','Bid Price','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="two columns">
+        {{ $form->select('equivalentBidCurrency','Currency',Config::get('parama.currencies'),'USD',array('style'=>'width:100%'))}}
+      </div>
+      <div class="nine columns">
+        {{ $form->text('equivalentBidPrice','Equivalent Bid Price','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+      </div>
+    </div>
+
+    {{ $form->select('tenderStatus','Status',Config::get('parama.tenderstatus'))}}
+
+    {{ $form->textarea('tenderRemark','Remarks','',array('class'=>'text')) }}
+
 
     {{ $form->text('tenderApproval','Approved by','',array('class'=>'tag_email four', 'style'=>'width:100%')) }}
 
@@ -24,34 +67,7 @@
 
     {{ $form->select('tenderDepartment','Department of Origin',Config::get('parama.department'),array('class'=>'four'))}}
 
-    {{ $form->text('tenderTender','Related Tender','',array('class'=>'tag_tender four','rows'=>'1', 'style'=>'width:100%')) }}
-
     {{ $form->text('tenderLead','Related Opportunity','',array('class'=>'tag_opportunity four','rows'=>'1', 'style'=>'width:100%')) }}
-
-  </div>
-  <div class="five columns right">
-    <h4>Tender Details</h4>
-
-    {{ $form->text('submitDate','Document Submission Date','',array('class'=>'five date')) }}
-
-    {{ $form->text('prepStartDate','Preparation Start Date','',array('class'=>'five date')) }}
-
-    {{ $form->text('estCompleteDate','Estimated Completion Date','',array('class'=>'five date')) }}
-
-    {{ $form->text('tenderNumber','Tender Number','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
-
-
-    {{ $form->text('tenderManager','Project Manager','',array('id'=>'tender_manager','class'=>'auto_user four','rows'=>'1', 'style'=>'width:100%')) }}
-
-    {{ $form->hidden('tenderManagerId','',array('id'=>'user_id')) }}
-
-    {{ $form->text('tenderClient','Client','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
-
-    {{ $form->select('tenderCurrency','Currency',Config::get('parama.currencies'),array('class'=>'one'))}}
-    
-    {{ $form->text('tenderGrossValue','Gross Value','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
-
-    {{ $form->text('tenderNetValue','Nett Value','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
 
     {{ $form->hidden('oldTag',$doc['oldTag'])}}
 
@@ -65,7 +81,7 @@
 
   </div>
 </div>
-
+<hr />
 <div class="row right">
 {{ Form::submit('Save',array('class'=>'button'))}}&nbsp;&nbsp;
 {{ Form::reset('Reset',array('class'=>'button'))}}
@@ -73,7 +89,10 @@
 {{$form->close()}}
 
 <script type="text/javascript">
-  $('select').select2();
+  $('select').select2({
+    width : 'resolve'
+  }
+  );
 
   $('#field_role').change(function(){
       //alert($('#field_role').val());

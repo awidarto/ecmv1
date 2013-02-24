@@ -11,42 +11,40 @@
 		<div class="four columns">
 			<table class="profile-info">
 				<tr>
-					<td class="detail-title">Project Number</td>
+					<td class="detail-title">Tender Number</td>
 					<td class="detail-info">{{ $tender['tenderNumber'] }}</td>
 				</tr>
 				<tr>
-					<td class="detail-title">Project Name</td>
-					<td class="detail-info">{{ $tender['title'] }}</td>
+					<td class="detail-title">Tender Name</td>
+					<td class="detail-info">{{ $tender['tenderNumber'] }}</td>
 				</tr>
 				<tr>
 					<td class="detail-title">Managed By</td>
-					<td class="detail-info">{{ $tender['tenderManager'] }}</td>
+					<td class="detail-info">{{ $tender['tenderPIC'] }}</td>
 				</tr>
 				<tr>
-					<td class="detail-title">Submission Deadline</td>
+					<td class="detail-title">Closing Date</td>
 					<td class="detail-info">	
-						<span>{{date('d-m-Y',$tender['submitDate']->sec)}}</span>
+						<span>{{date('d-m-Y',$tender['closingDate']->sec)}}</span>
 					</td>
 				</tr>
 				<tr>
-					<td class="detail-title">Start Date</td>
+					<td class="detail-title">Tender Date</td>
 					<td class="detail-info">	
-						<span>{{date('d-m-Y',$tender['prepStartDate']->sec)}}</span>
+						<span>{{date('d-m-Y',$tender['tenderDate']->sec)}}</span>
 					</td>
 				</tr>
 				<tr>
-					<td class="detail-title">Est. Completion</td>
-					<td class="detail-info">	
-						<span>{{date('d-m-Y',$tender['estCompleteDate']->sec)}}</span>
-					</td>
+					<td class="detail-title">Bid Price</td>
+					<td class="detail-info">{{ $tender['bidCurrency'].' '.number_format($tender['bidPrice'],2,',','.') }}</td>
 				</tr>
 				<tr>
-					<td class="detail-title">Value</td>
-					<td class="detail-info">{{ $tender['tenderCurrency'].' '.number_format($tender['tenderNetValue'],2,',','.') }}</td>
+					<td class="detail-title">Bid Price in USD</td>
+					<td class="detail-info">{{ $tender['equivalentBidCurrency'].' '.number_format($tender['equivalentBidPrice'],2,',','.') }}</td>
 				</tr>
 				<tr>
 					<td class="detail-title">Description</td>
-					<td class="detail-info">{{ $tender['body'] }}</td>
+					<td class="detail-info">{{ $tender['briefScopeDescription'] }}</td>
 				</tr>
 
 			</table>
@@ -91,27 +89,7 @@
 		</div>
 </div>
 
-<h6>Planned Schedule</h6>
-<div class="row">
-	<a class="foundicon-add-doc button right newdoc action clearfix" href="{{URL::to($addurl)}}">&nbsp;&nbsp;<span>{{$newbutton}}</span></a>
-</div>
-<div class="row">
-	<div class="gantt"></div>
-</div>
-
-<h6>Progress</h6>
-<div class="row">
-	<a class="foundicon-add-doc button right newdoc action clearfix" href="{{URL::to($addurl)}}">&nbsp;&nbsp;<span>{{$newprogressbutton}}</span></a>
-</div>
-<div class="row">
-	<div class="gantt"></div>
-</div>
-
 <script type="text/javascript">
-	var source_url = '{{ $ajaxsource }}';
-</script>
-
-  <script type="text/javascript">
     $(document).ready(function(){
 		var asInitVals = new Array();
         var oTable = $('.dataTable').DataTable(
