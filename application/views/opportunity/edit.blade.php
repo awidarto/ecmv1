@@ -1,4 +1,4 @@
-@layout('master')
+@layout('noaside')
 
 
 @section('content')
@@ -8,7 +8,7 @@
 
 {{$form->open_for_files('opportunity/edit/'.$doc['_id'],'POST',array('class'=>'custom','id'=>'newdoc'))}}
 <div class="row">
-  <div class="six columns left">
+  <div class="seven columns left">
     <h4>Prospective Client</h4>
       {{ $form->hidden('id',$doc['_id'])}}
 
@@ -52,8 +52,13 @@ Target Scope  :  Supply of All Misc. Manual Valves
 
     </fieldset>
 
+    <fieldset>
+      <legend>Contact Persons</legend>
+      {{ View::make('partials.contacttable')->render() }}
+    </fieldset>
+
   </div>
-  <div class="five columns right">
+  <div class="four columns right">
     <h4>Opportunity Details</h4>
 
     <div class="row">
@@ -107,12 +112,6 @@ Target Scope  :  Supply of All Misc. Manual Valves
     {{ $form->hidden('oldTag',$doc['oldTag'])}}
 
     {{ $form->text('opportunityTag','Tag','',array('class'=>'tag_keyword four','rows'=>'1', 'style'=>'width:100%')) }}
-
-  </div>
-</div>
-
-<div class="row">
-  <div class="twelve columns">
 
   </div>
 </div>

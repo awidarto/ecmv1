@@ -1,4 +1,4 @@
-@layout('master')
+@layout('noaside')
 
 
 @section('content')
@@ -8,27 +8,11 @@
 
 {{$form->open_for_files('opportunity/add','POST',array('class'=>'custom','id'=>'newdoc'))}}
 <div class="row">
-  <div class="six columns left">
+  <div class="seven columns left">
     <h4>Prospective Client</h4>
 
       {{ $form->hidden('contact_id','',array('id'=>'contact_id'))}}
 
-<!--
-Name  : PT. Gunanusa Utama Fabricators
-Address :  Jl. Bendungan Hilir Raya No.60, Jakarta Pusat
-Phone :  +62215703329
-Fax :  +62215703334
-E-Mail  : business_dev@gunanusa.co.id
-Website : www.gunanusautama.com
-
-Contact Persons
-Name  Position  Direct Line Hand Phone  E-Mail
-
-OPPORTUNITY
-Project :  TOTAL - South Mahakam Development Phase - 3
-Target Scope  :  Supply of All Misc. Manual Valves
-
--->
     <fieldset>
         <legend>Company</legend>
           {{ $form->text('clientCompany','Company Name.req','',array('class'=>'auto_client_contact text')) }}
@@ -50,9 +34,12 @@ Target Scope  :  Supply of All Misc. Manual Valves
           {{ $form->checkbox('saveToContact','Save to Client Database','Yes',false)}}
 
     </fieldset>
-
+    <fieldset>
+      <legend>Contact Persons</legend>
+      {{ View::make('partials.contacttable')->render() }}
+    </fieldset>
   </div>
-  <div class="five columns right">
+  <div class="four columns right">
     <h4>Opportunity Details</h4>
 
     <div class="row">
@@ -75,19 +62,19 @@ Target Scope  :  Supply of All Misc. Manual Valves
     {{ $form->text('opportunityPIC','Persons In Charge','',array('id'=>'opportunity_manager','class'=>'tag_initial_inline four','rows'=>'1', 'style'=>'width:100%')) }}
 
     <div class="row">
-      <div class="two columns">
+      <div class="three columns">
         {{ $form->select('estimatedCurrency','Currency',Config::get('parama.currencies'),array('style'=>'width:100%'))}}
       </div>
-      <div class="nine columns">
+      <div class="eight columns">
         {{ $form->text('estimatedValue','Estimated Value','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
       </div>
     </div>
 
     <div class="row">
-      <div class="two columns">
+      <div class="three columns">
         {{ $form->select('equivalentEstimatedCurrency','Currency',Config::get('parama.currencies'),'USD',array('style'=>'width:100%'))}}
       </div>
-      <div class="nine columns">
+      <div class="eight columns">
         {{ $form->text('equivalentEstimatedValue','Equivalent Estimated Value','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
       </div>
     </div>
@@ -104,13 +91,6 @@ Target Scope  :  Supply of All Misc. Manual Valves
     {{ $form->select('opportunityDepartment','Department of Origin',Config::get('parama.department'),array('class'=>'four'))}}
 
     {{ $form->text('opportunityTag','Tag','',array('class'=>'tag_keyword four','rows'=>'1', 'style'=>'width:100%')) }}
-
-  </div>
-</div>
-
-<div class="row">
-  <div class="twelve columns">
-
   </div>
 </div>
 <hr />

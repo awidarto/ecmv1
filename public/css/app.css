@@ -553,3 +553,7 @@ iframe.fileviewer{
 a.inlink {
 	display: block;
 }
+
+#contactTable, #progressTable{
+	width:100%;
+}

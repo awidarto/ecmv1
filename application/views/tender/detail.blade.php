@@ -88,6 +88,14 @@
 				</table>
 		</div>
 </div>
+<hr />
+<div class="row">
+	<div class="twelve columns">
+		<h5>Progress</h5>
+		{{ View::make('partials.progresstable')->render() }}
+
+	</div>
+</div>
 
 <script type="text/javascript">
     $(document).ready(function(){
