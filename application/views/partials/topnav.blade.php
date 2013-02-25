@@ -1,6 +1,6 @@
 @section('topnav')
 
-<ul class="">
+<ul class="mainnavparama">
   <!--<li class="divider"></li>-->
 @if(Auth::user()->role == 'client' || Auth::user()->role == 'principal_vendor' || Auth::user()->role == 'subcon')
     
@@ -59,7 +59,7 @@
   <li class="divider"></li>
   <li class="has-dropdown">
     <a href="#">Sys Admin</a>
-    <ul class="dropdown">
+    <ul class="dropdown rightDirection">
       <li>{{ HTML::link('document', 'Document Super Manager' ) }}</li>
       <li>{{ HTML::link('download', 'Download Log' ) }}</li>
       <li>{{ HTML::link('content', 'Article Manager' ) }}</li>

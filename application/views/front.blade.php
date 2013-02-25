@@ -27,7 +27,7 @@
 <body class="front">
 
   <!-- Header and Nav -->
-  <header class="row mainheader">
+  <header class="row mainheader loginheader">
     
       <h1 id="paramanusaLogo">ParamaNusa</h1>
     
@@ -47,8 +47,7 @@
   </div>
 
   <footer class="row">
-    
-      <hr />
+  
         <p>&copy; Copyright 2012. ParamaNusa.</p>
     
   </footer>
