@@ -64,6 +64,8 @@
       <li>{{ HTML::link('download', 'Download Log' ) }}</li>
       <li>{{ HTML::link('content', 'Article Manager' ) }}</li>
       <li>{{ HTML::link('users', 'User Manager' ) }}</li>
+      <li>{{ HTML::link('contact/client', 'Clients' ) }}</li>
+      <li>{{ HTML::link('contact/vendor', 'Vendors' ) }}</li>
     </ul>
   </li>
 @endif
