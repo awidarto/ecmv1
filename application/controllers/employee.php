@@ -149,8 +149,8 @@ class Employee_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				$photo,
-				'<span class="pop" rel="employee/popprofile" id="'.$doc['_id'].'" >'.$doc['fullname'].'</span>',
-				//HTML::link('employee/profile/'.$doc['_id'],$doc['fullname']),
+				//'<span class="pop" rel="employee/popprofile" id="'.$doc['_id'].'" >'.$doc['fullname'].'</span>',
+				HTML::link('employee/profile/'.$doc['_id'],$doc['fullname']),
 				//$doc['username'],
 				$doc['email'],
 				isset($doc['department'])?depttitle($doc['department']):'',
@@ -194,21 +194,183 @@ class Employee_Controller extends Base_Controller {
 			$this->crumb = new Breadcrumb();
 		}
 
+		$heads = array('#','Title','Attachment','Last Update','Creator','Action');
+		$searchinput = array(false,'title','last update','creator','filename',false);
+	    $colclass = array('one','','','one','one',false);
+
 		$user = new Employee();
 
 		$id = (is_null($id))?Auth::user()->id:$id;
 
 		$id = new MongoId($id);
 
+
 		$user_profile = $user->get(array('_id'=>$id));
+
+
 
 		$this->crumb->add('project/profile','Profile',false);
 		$this->crumb->add('project/profile',$user_profile['fullname']);
 
 		return View::make('employee.profile')
+			->with('searchinput',$searchinput)
+			->with('ajaxsourcedoc',URL::to('employee/doc/'.$user_profile['userId']))
+			->with('disablesort','0')
+			->with('heads',$heads)
+			->with('colclass',$colclass)
 			->with('crumb',$this->crumb)
-			->with('profile',$user_profile);
+			->with('profile',$user_profile)
+			->with('ajaxdel','');
 	}
+
+	public function post_doc($id = null)
+	{
+
+		$fields = array('title','createdDate','creatorName','docFilename');
+
+		$rel = array('like','like','like','like');
+
+		$cond = array('both','both','both','both');
+
+		$pagestart = Input::get('iDisplayStart');
+		$pagelength = Input::get('iDisplayLength');
+
+		$limit = array($pagelength, $pagestart);
+
+		$defsort = 1;
+		$defdir = -1;
+
+		$idx = 0;
+		$q = array();
+
+		$hilite = array();
+		$hilite_replace = array();
+
+		foreach($fields as $field){
+			if(Input::get('sSearch_'.$idx))
+			{
+
+				$hilite_item = Input::get('sSearch_'.$idx);
+				$hilite[] = $hilite_item;
+				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
+
+				if($rel[$idx] == 'like'){
+					if($cond[$idx] == 'both'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
+					}else if($cond[$idx] == 'before'){
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
+					}else if($cond[$idx] == 'after'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
+					}
+				}else if($rel[$idx] == 'equ'){
+					$q[$field] = Input::get('sSearch_'.$idx);
+				}
+			}
+			$idx++;
+		}
+
+		//print_r($q)
+		if(!is_null($id)){
+			$q['creatorId'] = $id;
+			$q['$or'] = array(
+				array('docRequestToDepartment'=>'hr_admin'),
+				array('docRequestToDepartment'=>'finance_hr_director')
+			);
+		}
+
+		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
+
+		if( Auth::user()->role == 'root' ||
+			Auth::user()->role == 'super' ||
+			Auth::user()->role == 'president_director' ||
+			Auth::user()->role == 'bod'
+			){
+
+
+		}else if( Auth::user()->role == 'client' ||
+			Auth::user()->role == 'principal_vendor' ||
+			Auth::user()->role == 'subcon'){
+
+			$q['$or'] = array(
+				array('creatorId'=>Auth::user()->id),
+				array('docShare'=>$sharecriteria)
+			);
+
+		}else{
+
+			if(Auth::user()->department == $type){
+				$q['$or'] = array(
+					array('access'=>'general'),
+					array('docShare'=>$sharecriteria)
+				);
+			}else{
+				$q['docShare'] = $sharecriteria;
+			}
+		}
+
+
+		$permissions = Auth::user()->permissions;
+
+		$document = new Document();
+
+		/* first column is always sequence number, so must be omitted */
+		$fidx = Input::get('iSortCol_0');
+		if($fidx == 0){
+			$fidx = $defsort;
+			$sort_col = $fields[$fidx];
+			$sort_dir = $defdir;
+		}else{
+			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+			$sort_col = $fields[$fidx];
+			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		}
+
+		$count_all = $document->count();
+
+		if(count($q) > 0){
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count($q);
+		}else{
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count();
+		}
+
+
+
+
+		$aadata = array();
+
+		$counter = 1 + $pagestart;
+		foreach ($documents as $doc) {
+
+
+			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
+			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
+
+			$aadata[] = array(
+				$counter,
+				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
+				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
+				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				$doc['creatorName'],
+				''//$edit.$download.$del
+			);
+			$counter++;
+		}
+
+
+		$result = array(
+			'sEcho'=> Input::get('sEcho'),
+			'iTotalRecords'=>$count_all,
+			'iTotalDisplayRecords'=> $count_display_all,
+			'aaData'=>$aadata,
+			'qrs'=>$q
+		);
+
+		return Response::json($result);
+	}
+
 
 	public function get_popprofile($id = null){
 

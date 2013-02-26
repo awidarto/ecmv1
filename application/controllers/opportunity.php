@@ -456,6 +456,8 @@ class Opportunity_Controller extends Base_Controller {
 
 	}
 
+
+
 	public function post_add(){
 
 		//print_r(Session::get('permission'));
@@ -489,6 +491,8 @@ class Opportunity_Controller extends Base_Controller {
 			$data['creatorId'] = Auth::user()->id;
 			
 			$data['tags'] = explode(',',$data['opportunityTag']);
+
+			$data['opportunityContactPersons'] = array();
 
 			$data['saveToContact'] = (isset($data['saveToContact']))?$data['saveToContact']:'No';
 
@@ -805,6 +809,10 @@ class Opportunity_Controller extends Base_Controller {
 
 		$permissions = Auth::user()->permissions;
 
+		$contactheads = array('#','Name','Position','Email','Direct Line','Mobile');
+
+		$contactsearchinput = false;
+
 		return View::make('opportunity.detail')
 			->with('title','Opportunity Detail - '.$projectdata['opportunityNumber'])
 			->with('opportunity', $projectdata)
@@ -814,10 +822,121 @@ class Opportunity_Controller extends Base_Controller {
 			->with('ajaxsource',URL::to('opportunity/scheduleitems/'.$id))
 			->with('disablesort','0')
 			->with('ajaxsourcedoc',URL::to('opportunity/doc/'.$id))
+			->with('ajaxsourcecontact',URL::to('opportunity/contact/'.$id))
+			->with('ajaxsourceprogress',URL::to('opportunity/progress/'.$id))
 			->with('searchinput',$searchinput)
 			->with('heads',$heads)
+			->with('contactheads',$contactheads)
+			->with('contactsearchinput',$contactsearchinput)
 			->with('ajaxdel',URL::to('opportunity/del'));
 	}
+
+	public function post_progress($id = null)
+	{
+
+		$fields = array('timestamp','initial','progress','cinitial','comments');
+
+		$rel = array('like','like','like','like');
+
+		$cond = array('both','both','both','both');
+
+		$pagestart = Input::get('iDisplayStart');
+		$pagelength = Input::get('iDisplayLength');
+
+		$limit = array($pagelength, $pagestart);
+
+		$defsort = 1;
+		$defdir = -1;
+
+		$idx = 0;
+		$q = array();
+
+		$hilite = array();
+		$hilite_replace = array();
+
+		foreach($fields as $field){
+			if(Input::get('sSearch_'.$idx))
+			{
+
+				$hilite_item = Input::get('sSearch_'.$idx);
+				$hilite[] = $hilite_item;
+				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
+
+				if($rel[$idx] == 'like'){
+					if($cond[$idx] == 'both'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
+					}else if($cond[$idx] == 'before'){
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
+					}else if($cond[$idx] == 'after'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
+					}
+				}else if($rel[$idx] == 'equ'){
+					$q[$field] = Input::get('sSearch_'.$idx);
+				}
+			}
+			$idx++;
+		}
+
+		//print_r($q)
+		if(!is_null($id)){
+			$q['opportunityId'] = $id;
+		}
+
+		$document = new Progress();
+
+		/* first column is always sequence number, so must be omitted */
+		$fidx = Input::get('iSortCol_0');
+		if($fidx == 0){
+			$fidx = $defsort;
+			$sort_col = $fields[$fidx];
+			$sort_dir = $defdir;
+		}else{
+			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+			$sort_col = $fields[$fidx];
+			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		}
+
+		$count_all = $document->count();
+
+		if(count($q) > 0){
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count($q);
+		}else{
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count();
+		}
+
+
+
+
+		$aadata = array();
+
+		$counter = 1 + $pagestart;
+		foreach ($documents as $doc) {
+
+			$aadata[] = array(
+				$counter,
+				date('Y-m-d H:i:s', $doc['timestamp']->sec),
+				$doc['userInitial'],
+				$doc['progressInput'],
+				$doc['userInitial'],
+				$doc['progressInput'],
+			);
+			$counter++;
+		}
+
+
+		$result = array(
+			'sEcho'=> Input::get('sEcho'),
+			'iTotalRecords'=>$count_all,
+			'iTotalDisplayRecords'=> $count_display_all,
+			'aaData'=>$aadata,
+			'qrs'=>$q
+		);
+
+		return Response::json($result);
+	}
+
 
 	public function post_doc($id = null)
 	{
@@ -939,37 +1058,6 @@ class Opportunity_Controller extends Base_Controller {
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
-			/*
-			if($doc['creatorId'] == Auth::user()->id || $doc['docDepartment'] == Auth::user()->department){
-				$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
-						'<i class="foundicon-edit action"></i></a>&nbsp;';
-				$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
-				$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
-							'<i class="foundicon-inbox action"></i></a>&nbsp;';
-			}else{
-				if($permissions->{$type}->edit == 1){
-					$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
-							'<i class="foundicon-edit action"></i></a>&nbsp;';
-				}else{
-					$edit = '';
-				}
-
-				if($permissions->{$type}->delete == 1){
-					$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
-				}else{
-					$del = '';
-				}
-
-				if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1){
-					$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
-							'<i class="foundicon-inbox action"></i></a>&nbsp;';
-				}else{
-					$download = '';
-				}
-
-			}
-			*/
-
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
@@ -994,13 +1082,144 @@ class Opportunity_Controller extends Base_Controller {
 		return Response::json($result);
 	}
 
-	public function get_addscitem(){
+
+
+	public function post_addcontact($id){
+
+		$newcontact = Input::get();
+
+		$contact = new Person();
+
+		if($newcontact['personId'] == ''){
+			$contact->update(array('personEmail'=>$newcontact['personEmail']),array('$set'=>$newcontact),array('upsert'=>true));
+			//$contact->insert($newcontact,array('upsert'=>true));
+		}
+
+		$opportunity = new Opportunity();
+
+		$_id = new MongoId($id);
+
+		$pushData['opportunityContactPersons'] = $newcontact;
+
+		if($opportunity->get(array('opportunityContactPersons.personEmail'=>$newcontact['personEmail']))){
+			return Response::json(array('status'=>'CONTACTEXISTS'));
+		}else{
+			if($opportunity->update(array('_id'=>$_id),array('$addToSet'=>$pushData),array('upsert'=>true))){
+				return Response::json(array('status'=>'OK'));
+			}else{
+				return Response::json(array('status'=>'ERR'));
+			}
+		}
 
 	}
 
-	public function get_postscitem(){
-		
+	public function post_addprogress($id){
+
+		$newprogress = Input::get();
+
+		$newprogress['timestamp'] = new MongoDate();
+		$newprogress['opportunityId'] = $id;
+		$newprogress['comments'] = array();
+
+		$progress = new Progress();
+
+		if($pobj = $progress->insert($newprogress)){
+			/*
+			$opportunity = new Opportunity();
+
+			$_id = new MongoId($id);
+
+			$pushData['opportunityProgress'] = $newprogress;
+
+			if($opportunity->get(array('opportunityContactPersons.personEmail'=>$newcontact['personEmail']))){
+				return Response::json(array('status'=>'CONTACTEXISTS'));
+			}else{
+				if($opportunity->update(array('_id'=>$_id),array('$addToSet'=>$pushData),array('upsert'=>true))){
+					return Response::json(array('status'=>'OK'));
+				}else{
+					return Response::json(array('status'=>'ERR'));
+				}
+			}
+			*/
+			return Response::json(array('status'=>'OK'));
+		}else{
+			return Response::json(array('status'=>'ERR'));
+		}
+
+
 	}
 
+
+	public function post_contact($id = null)
+	{
+
+		$fields = array('Name','Position','Email','Direct Line','Mobile');
+
+		$rel = array('like','like','like','like','like');
+
+		$cond = array('both','both','both','both','like');
+
+		$pagestart = Input::get('iDisplayStart');
+		$pagelength = Input::get('iDisplayLength');
+
+		$limit = array($pagelength, $pagestart);
+
+		$defsort = 1;
+		$defdir = -1;
+
+		$idx = 0;
+		$q = array();
+
+		$document = new Opportunity();
+
+		$_id = new MongoId($id);
+
+		$opp = $document->get(array('_id'=>$_id));
+
+		$documents = $opp['opportunityContactPersons'];
+
+		/* first column is always sequence number, so must be omitted */
+		$fidx = Input::get('iSortCol_0');
+		if($fidx == 0){
+			$fidx = $defsort;
+			$sort_col = $fields[$fidx];
+			$sort_dir = $defdir;
+		}else{
+			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+			$sort_col = $fields[$fidx];
+			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		}
+
+		$count_all = count($documents);
+
+		$count_display_all = $count_all;
+
+		$aadata = array();
+
+		$counter = 1 + $pagestart;
+		foreach ($documents as $doc) {
+
+			$aadata[] = array(
+				$counter,
+				'<span class="metaview" id="'.$doc['personId'].'">'.$doc['personName'].'</span>',
+				$doc['personPosition'],
+				$doc['personEmail'],
+				$doc['personPhone'],
+				$doc['personMobile']
+			);
+			$counter++;
+		}
+
+
+		$result = array(
+			'sEcho'=> Input::get('sEcho'),
+			'iTotalRecords'=>$count_all,
+			'iTotalDisplayRecords'=> $count_display_all,
+			'aaData'=>$aadata,
+			'qrs'=>$q
+		);
+
+		return Response::json($result);
+	}
 
 }
