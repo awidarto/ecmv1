@@ -634,6 +634,7 @@ body.front .container-content #maincontent{
 	float: none;
 	-webkit-box-shadow: 0px 3px 3px 1px rgba(0, 0, 0, 0.2);
 box-shadow: 0px 3px 3px 1px rgba(0, 0, 0, 0.2);
+border-top: 1px solid #d1d1d1;
 }
 span.error{
 	background-color: #ffcdcd;
