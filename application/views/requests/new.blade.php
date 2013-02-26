@@ -55,8 +55,13 @@
 
     {{$form->select('docDepartment','Department of Origin',Config::get('parama.department'),array('class'=>'four'))}}
 
+    {{$form->select('docRequestToDepartment','Request to Department',Config::get('parama.department'),array('class'=>'four'))}}
 
     {{ $form->select('docCategory','Category',Config::get('parama.doc_type'),array('class'=>'four'))}}
+
+    {{ $form->select('docOriginalTemplate','Original Template',$templates,array('class'=>'four'))}}
+
+    {{ $form->textarea('docRemarks','Remarks','',array('class'=>'text','placeholder'=>'Put note / remarks here'))}}
 
     <hr />
     

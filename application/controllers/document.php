@@ -228,10 +228,21 @@ class Document_Controller extends Base_Controller {
 			$this->crumb->add('document/add','New Document');
 		}
 
+		$doc = new Document();
+
+		$template = $doc->find(array('useAsTemplate'=>'Yes'));
+
+		$templates = array();
+		$templates['none'] = 'None';
+		foreach($template as $t){
+			$templates[$t['_id']->__toString()] = $t['title'];
+		}
+
 
 		$form = new Formly();
 		return View::make('document.new')
 					->with('form',$form)
+					->with('templates',$templates)
 					->with('type',$type)
 					->with('crumb',$this->crumb)
 					->with('title','New Document');
@@ -423,10 +434,20 @@ class Document_Controller extends Base_Controller {
 
 		$doc_data['oldTemplateName'] = (isset($doc_data['templateName']))?$doc_data['templateName']:'';
 
+		$template = $doc->find(array('useAsTemplate'=>'Yes'));
+
+		$templates = array();
+		$templates['none'] = 'None';
+		foreach($template as $t){
+			$templates[$t['_id']->__toString()] = $t['title'];
+		}
+
+
 		$form = Formly::make($doc_data);
 
 		return View::make('document.edit')
 					->with('doc',$doc_data)
+					->with('templates',$templates)
 					->with('form',$form)
 					->with('type',$type)
 					->with('crumb',$this->crumb)
@@ -663,6 +684,7 @@ class Document_Controller extends Base_Controller {
 					array('access'=>'general'),
 					array('docShare'=>$sharecriteria)
 				);
+				$can_open = true;
 			}else{
 				$q['docShare'] = $sharecriteria;
 			}
@@ -677,6 +699,10 @@ class Document_Controller extends Base_Controller {
 
 		$permissions = Auth::user()->permissions;
 
+		//print_r($permissions);
+
+		//print_r($permissions->{$type}->create);
+
 		if( $can_open == true ){
 
 			if($permissions->{$type}->create == 1 || Auth::user()->department == $type ){
@@ -684,6 +710,8 @@ class Document_Controller extends Base_Controller {
 			}else{
 				$addurl = '';
 			}
+
+			//print $addurl;
 
 			return View::make('tables.simple')
 				->with('title',$title)

@@ -37,4 +37,45 @@
 		</div>
 	</div>
 </div>
+<div class="row">
+	<div class="twelve columns">
+			<h5>Related Documents</h5>
+				<table class="dataTable">
+				    <thead>
+				        <tr>
+				        	<?php
+					        	if(!isset($colclass)){
+					        		$colclass = array();
+					        	}
+				        		$hid = 0;
+				        	?>
+				        	@foreach($heads as $head)
+				        		<th 
+				        			@if(isset($colclass[$hid]))
+				        				class="{{$colclass[$hid]}}"
+				        			@endif
+				        			<?php $hid++ ?>
+				        		>
+				        			{{ $head }}
+				        		</th>
+				        	@endforeach
+				        </tr>
+				    </thead>
+				    <tbody>
+				    </tbody>
+				    <tfoot>
+				    <tr>
+				    	@foreach($searchinput as $in)
+				    		@if($in)
+				        		<td><input type="text" name="search_{{$in}}" id="search_{{$in}}" value="Search {{$in}}" class="search_init" /></td>
+				    		@else
+				        		<td>&nbsp;</td>
+				    		@endif
+				    	@endforeach        	
+				    </tr>
+				    </tfoot>
+				</table>
+
+	</div>
+</div>
 @endsection

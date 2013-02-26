@@ -3,6 +3,12 @@
 		$role = Auth::user()->role;
 		$permissions = Auth::user()->permissions;
 
+        if($role != 'root' || $role != 'super'){
+            $doctype = Auth::user()->department;
+        }else{
+            $doctype = '';
+        }
+
         //print $role;
 
         /*
@@ -27,9 +33,10 @@
     <div class="one columns mobile">
       <dl class="vertical tabs">
         <dd><a href="{{ URL::base() }}"><i class="foundicon-home sidemenu"></i> <br/>Home</a></dd>
+            <dd><a href="{{ URL::to('document/add/'.$doctype) }}"><i class="foundicon-add-doc sidemenu"></i> <br/>New<br />Document</a></dd>
             @if($role != 'subcon')
                 <dd><a href="{{ URL::to('requests/incoming') }}"><i class="foundicon-down-arrow sidemenu"></i> <br/>Incoming Requests</a></dd>
-                <dd><a href="{{ URL::to('requests/outgoing') }}"><i class="foundicon-up-arrow sidemenu"></i> <br/>Outgoing Requests</a></dd>
+                <dd><a href="{{ URL::to('requests/outgoing') }}"><i class="foundicon-up-arrow sidemenu"></i> <br/>Submissions & Requests</a></dd>
                 <dd><a href="{{ URL::to('message') }}"><i class="foundicon-mail sidemenu"></i> <br/>Messages</a></dd>
                 <dd><a href="{{ URL::to('template') }}"><i class="foundicon-mail sidemenu"></i> <br/>Templates</a></dd>
                 
