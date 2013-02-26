@@ -24,14 +24,14 @@
         */
 
 	?>
-    <div class="one columns mobile">
+    <div class="one columns mobile sidenav">
       <dl class="vertical tabs">
-        <dd><a href="{{ URL::base() }}"><i class="foundicon-home sidemenu"></i> <br/>Home</a></dd>
+        <dd><a href="{{ URL::base() }}"><i class="foundicon homeicon iconnew sidemenu"></i>Home</a></dd>
             @if($role != 'subcon')
-                <dd><a href="{{ URL::to('requests/incoming') }}"><i class="foundicon-down-arrow sidemenu"></i> <br/>Incoming Requests</a></dd>
-                <dd><a href="{{ URL::to('requests/outgoing') }}"><i class="foundicon-up-arrow sidemenu"></i> <br/>Outgoing Requests</a></dd>
-                <dd><a href="{{ URL::to('message') }}"><i class="foundicon-mail sidemenu"></i> <br/>Messages</a></dd>
-                <dd><a href="{{ URL::to('template') }}"><i class="foundicon-mail sidemenu"></i> <br/>Templates</a></dd>
+                <dd><a href="{{ URL::to('requests/incoming') }}"><i class="foundicon iconnew download sidemenu"></i>Incoming Requests</a></dd>
+                <dd><a href="{{ URL::to('requests/outgoing') }}"><i class="foundicon iconnew upload sidemenu"></i>Outgoing Requests</a></dd>
+                <dd><a href="{{ URL::to('message') }}"><i class="foundicon mail iconnew sidemenu"></i>Messages</a></dd>
+                <dd><a href="{{ URL::to('template') }}"><i class="foundicon page iconnew sidemenu"></i>Templates</a></dd>
                 
                 @if($role != 'hr_admin')
                     <dd><a href="{{ URL::to('opportunity') }}"><i class="foundicon-idea sidemenu"></i> <br/>Opportunity</a></dd>
