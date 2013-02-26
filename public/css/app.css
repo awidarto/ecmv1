@@ -991,7 +991,7 @@ body.front .loginheader h1#paramanusaLogo{
 }
 .identitiymenu{
 	background:transparent;
-	color: #fff;
+	color: #484236;
 	display: inline-block;
 	position: absolute;
 	right: 40px;
@@ -1009,6 +1009,9 @@ body.front .loginheader h1#paramanusaLogo{
 	border: none;
 	border-right: none;
 	border-left: none;
+	color: #878580;
+}
+.identitiymenu>li>a:hover{
 	color: #fff;
 }
 .identitiymenu .flyout{
