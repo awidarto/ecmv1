@@ -6,7 +6,7 @@
 <div class="row">
 	<div class="one columns">{{ $main_photo }}</div>
 	<div class="eleven columns">
-	  <p>
+	  <!--<p>
 	  	<span class="timestamp">{{date('Y-m-d H:i:s',$doc['createdDate']->sec)}}</span><br />
 	  	<span class="from">From : <strong>{{$doc['from']}}</strong></span><br />
 	  	<span class="to">To : <strong>{{$doc['to']}}</strong></span><br />
@@ -21,7 +21,7 @@
 		    </div>
 		  </div>
 		-->
-	  </p>
+	  <!--</p>-->
 	  <ul class="inline-list">
 	    <li>{{ HTML::link('message/reply/'.$doc['_id'],'Reply')}}</li>
 	    <li>{{ HTML::link('message/replyall/'.$doc['_id'],'Reply All')}}</li>

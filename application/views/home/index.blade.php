@@ -1,4 +1,4 @@
-@layout('master')
+@layout('home')
 
 @section('content')
       <!-- Feed Entry -->
