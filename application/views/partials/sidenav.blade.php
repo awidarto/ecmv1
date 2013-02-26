@@ -34,8 +34,8 @@
                 <dd><a href="{{ URL::to('template') }}"><i class="foundicon page iconnew sidemenu"></i>Templates</a></dd>
                 
                 @if($role != 'hr_admin')
-                    <dd><a href="{{ URL::to('opportunity') }}"><i class="foundicon-idea sidemenu"></i> <br/>Opportunity</a></dd>
-                    <dd><a href="{{ URL::to('tender') }}"><i class="foundicon-idea sidemenu"></i> <br/>Tender</a></dd>
+                    <dd><a href="{{ URL::to('opportunity') }}"><i class="foundicon flag iconnew sidemenu"></i>Opportunity</a></dd>
+                    <dd><a href="{{ URL::to('tender') }}"><i class="foundicon forward iconnew sidemenu"></i> <br/>Tender</a></dd>
                     <dd><a href="{{ URL::to('project') }}"><i class="foundicon-idea sidemenu"></i> <br/>Projects</a></dd>
                 @endif
 

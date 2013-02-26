@@ -1053,6 +1053,14 @@ tr.odd td.sorting_1{
 	background: transparent url(../images/icon/page.png) no-repeat;
 	
 }
+.flag{
+	background: transparent url(../images/icon/flag.png) no-repeat;
+	
+}
+.forward{
+	background: transparent url(../images/icon/forward.png) no-repeat;
+	
+}
 .iconnew{
 	display: block;
 	width: 32px;
