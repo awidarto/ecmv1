@@ -2,6 +2,9 @@
 
 @section('content')
 
+<?php
+	//print_r(Auth::user());
+?>
 <div class="tableHeader">
 <h3>{{$title}}</h3>
 
@@ -89,7 +92,8 @@
 				<div class="clear"></div>
 			<hr />	
 			<h5>Contact Persons</h5>
-				<table class="dataTable">
+				<span class="foundicon-add-doc button right newdoc action clearfix" id="addcontact">&nbsp;&nbsp;<span>Add Contact</span></span>
+				<table class="contactTable">
 				    <thead>
 				        <tr>
 				        	<?php
@@ -98,7 +102,7 @@
 					        	}
 				        		$hid = 0;
 				        	?>
-				        	@foreach($heads as $head)
+				        	@foreach($contactheads as $head)
 				        		<th 
 				        			@if(isset($colclass[$hid]))
 				        				class="{{$colclass[$hid]}}"
@@ -112,17 +116,6 @@
 				    </thead>
 				    <tbody>
 				    </tbody>
-				    <tfoot>
-				    <tr>
-				    	@foreach($searchinput as $in)
-				    		@if($in)
-				        		<td><input type="text" name="search_{{$in}}" id="search_{{$in}}" value="Search {{$in}}" class="search_init" /></td>
-				    		@else
-				        		<td>&nbsp;</td>
-				    		@endif
-				    	@endforeach        	
-				    </tr>
-				    </tfoot>
 				</table>
 
 		</div>
@@ -131,7 +124,7 @@
 <div class="row">
 	<div class="twelve columns">
 		<h5>Progress</h5>
-		{{ View::make('partials.progresstable')->render() }}
+		{{ View::make('partials.progresstable')->with('controller','opportunity')->render() }}
 
 	</div>
 </div>
@@ -139,6 +132,7 @@
 <script type="text/javascript">
     $(document).ready(function(){
 		var asInitVals = new Array();
+
         var oTable = $('.dataTable').DataTable(
 			{
 				"bProcessing": true,
@@ -152,6 +146,60 @@
 				},
 				"aoColumnDefs": [ 
 				    { "bSortable": false, "aTargets": [ {{ $disablesort }} ] }
+				 ],
+			    "fnServerData": function ( sSource, aoData, fnCallback ) {
+		            $.ajax( {
+		                "dataType": 'json', 
+		                "type": "POST", 
+		                "url": sSource, 
+		                "data": aoData, 
+		                "success": fnCallback
+		            } );
+		        }
+			}
+        );
+
+        var cTable = $('.contactTable').DataTable(
+			{
+				"bRetrieve": true,
+				"bProcessing": true,
+		        "bServerSide": true,
+		        "sAjaxSource": "{{$ajaxsourcecontact}}",
+				"oLanguage": { "sSearch": "Search "},
+				"sPaginationType": "full_numbers",
+				"sDom": 'T<"clear">lfrtip',
+				"oTableTools": {
+					"sSwfPath": "assets/swf/copy_csv_xls_pdf.swf"
+				},
+				"aoColumnDefs": [ 
+				    { "bSortable": false, "aTargets": [ {{ $disablesort }} ] }
+				 ],
+			    "fnServerData": function ( sSource, aoData, fnCallback ) {
+		            $.ajax( {
+		                "dataType": 'json', 
+		                "type": "POST", 
+		                "url": sSource, 
+		                "data": aoData, 
+		                "success": fnCallback
+		            } );
+		        }
+			}
+        );
+
+        var pTable = $('#progressTable').DataTable(
+			{
+				"bRetrieve": true,
+				"bProcessing": true,
+		        "bServerSide": true,
+		        "sAjaxSource": "{{$ajaxsourceprogress}}",
+				"oLanguage": { "sSearch": "Search "},
+				"sPaginationType": "full_numbers",
+				"sDom": 'T<"clear">lfrtip',
+				"oTableTools": {
+					"sSwfPath": "assets/swf/copy_csv_xls_pdf.swf"
+				},
+				"aoColumnDefs": [ 
+				    { "bSortable": false, "aTargets": [ 0,2 ] }
 				 ],
 			    "fnServerData": function ( sSource, aoData, fnCallback ) {
 		            $.ajax( {
@@ -302,6 +350,34 @@
 
 				
 			}
+
+		});
+
+		$('#addcontact').click(function(){
+			$.fancybox({
+				type:'iframe',
+				width:'800',
+				href: '{{ URL::to("contact/contactperson/".$opportunity["_id"]) }}',
+				autosize: false,
+				afterClose:function(){
+					cTable.fnDraw();
+				}
+			});
+		});
+
+		$('#progressAdd').click(function(){
+
+			var progress = {};
+			progress.progressInput = $('#progressInput').val();
+			progress.userId = '{{ Auth::user()->id }}';
+			progress.userInitial = '{{ Auth::user()->initial }}';
+
+			$.post("{{ URL::to('opportunity/addprogress/'.$opportunity['_id']) }}",progress, function(data) {
+				if(data.status == 'OK'){
+					//redraw table
+					pTable.fnDraw();
+				}
+			},'json');
 
 		});
 

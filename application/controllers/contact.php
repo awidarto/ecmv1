@@ -391,6 +391,15 @@ class Contact_Controller extends Base_Controller {
 		return Response::json($result);
 	}
 
+	public function get_contactperson($oppid){
+
+		$form = new Formly();
+		return View::make('contact.cp')
+					->with('id',$oppid)
+					->with('form',$form)
+					->with('title','New Contact Person');
+
+	}
 
 	public function get_add(){
 

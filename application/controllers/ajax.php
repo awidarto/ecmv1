@@ -188,6 +188,60 @@ class Ajax_Controller extends Base_Controller {
 		return Response::json($result);		
 	}
 
+	public function get_clientcompany()
+	{
+		$q = Input::get('term');
+
+		$user = new Client();
+		$qemail = new MongoRegex('/'.$q.'/i');
+
+		$res = $user->find(array('clientCompany'=>$qemail));
+
+		$result = array();
+
+		foreach($res as $r){
+			$result[] = array('id'=>$r['_id']->__toString(),'value'=>$r['clientCompany'],'data'=>$r,'label'=>$r['clientCompany']);
+		}
+
+		return Response::json($result);		
+	}
+
+	public function get_clientemail()
+	{
+		$q = Input::get('term');
+
+		$user = new Person();
+		$qemail = new MongoRegex('/'.$q.'/i');
+
+		$res = $user->find(array('personEmail'=>$qemail));
+
+		$result = array();
+
+		foreach($res as $r){
+			$result[] = array('id'=>$r['_id']->__toString(),'value'=>$r['personEmail'],'data'=>$r,'label'=>$r['personEmail']);
+		}
+
+		return Response::json($result);		
+	}
+
+	public function get_clientname()
+	{
+		$q = Input::get('term');
+
+		$user = new Person();
+		$qemail = new MongoRegex('/'.$q.'/i');
+
+		$res = $user->find(array('personName'=>$qemail));
+
+		$result = array();
+
+		foreach($res as $r){
+			$result[] = array('id'=>$r['_id']->__toString(),'value'=>$r['personName'],'data'=>$r,'label'=>$r['personName']);
+		}
+
+		return Response::json($result);		
+	}
+
 	public function get_vendorcontact()
 	{
 		$q = Input::get('term');
@@ -288,12 +342,12 @@ class Ajax_Controller extends Base_Controller {
 		$proj = new Opportunity();
 		$qproj = new MongoRegex('/'.$q.'/i');
 
-		$res = $proj->find(array('$or'=>array(array('title'=>$qproj),array('opportunityNumber'=>$qproj)) ),array('title','opportunityNumber'));
+		$res = $proj->find(array('$or'=>array(array('clientCompany'=>$qproj),array('opportunityNumber'=>$qproj)) ),array('clientCompany','opportunityNumber'));
 
 		$result = array();
 
 		foreach($res as $r){
-			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['opportunityNumber'].' - '.$r['title'],'title'=>$r['title'],'value'=>$r['opportunityNumber']);
+			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['opportunityNumber'].' - '.$r['clientCompany'],'title'=>$r['clientCompany'],'value'=>$r['opportunityNumber']);
 		}
 
 		return Response::json($result);		
@@ -306,12 +360,12 @@ class Ajax_Controller extends Base_Controller {
 		$proj = new Opportunity();
 		$qproj = new MongoRegex('/'.$q.'/i');
 
-		$res = $proj->find(array('$or'=>array(array('title'=>$qproj),array('opportunityNumber'=>$qproj)) ),array('title','opportunityNumber'));
+		$res = $proj->find(array('$or'=>array(array('clientCompany'=>$qproj),array('opportunityNumber'=>$qproj)) ),array('clientCompany','opportunityNumber'));
 
 		$result = array();
 
 		foreach($res as $r){
-			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['opportunityNumber'].' - '.$r['title'],'number'=>$r['opportunityNumber'],'value'=>$r['title']);
+			$result[] = array('id'=>$r['_id']->__toString(),'label'=>$r['opportunityNumber'].' - '.$r['clientCompany'],'number'=>$r['opportunityNumber'],'value'=>$r['clientCompany']);
 		}
 
 		return Response::json($result);		

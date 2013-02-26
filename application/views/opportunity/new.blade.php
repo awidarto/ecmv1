@@ -34,10 +34,6 @@
           {{ $form->checkbox('saveToContact','Save to Client Database','Yes',false)}}
 
     </fieldset>
-    <fieldset>
-      <legend>Contact Persons</legend>
-      {{ View::make('partials.contacttable')->render() }}
-    </fieldset>
   </div>
   <div class="four columns right">
     <h4>Opportunity Details</h4>

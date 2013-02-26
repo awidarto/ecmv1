@@ -219,6 +219,33 @@
 			}
 		});
 
+		$('.auto_company_cp').autocomplete({
+			source: base + 'ajax/clientcompany',
+			select: function(event, ui){
+				$('#companyId').val(ui.item.id);
+				$('#companyName').val(ui.item.data.clientCompany);
+			}
+		});
+
+		$('.auto_email_cp').autocomplete({
+			source: base + 'ajax/clientemail',
+			select: function(event, ui){
+				console.log(ui);
+				$('#personId').val(ui.item.data.personId);
+				$('#personName').val(ui.item.data.personName);
+				$('#personCompany').val(ui.item.data.personCompany);
+				$('#personPhone').val(ui.item.data.personPhone);
+				$('#personMobile').val(ui.item.data.personMobile);
+			}
+		});
+
+		$('.auto_name_cp').autocomplete({
+			source: base + 'ajax/clientname',
+			select: function(event, ui){
+				$('#companyId').val(ui.item.id);
+			}
+		});
+
 		$('.auto_vendor_contact').autocomplete({
 			source: base + 'ajax/vendorcontact',
 			select: function(event, ui){
