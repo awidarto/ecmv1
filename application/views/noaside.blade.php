@@ -38,30 +38,29 @@
 <body>
 
   <!-- Header and Nav -->
-  <header class="row mainheader">
-    
-      <h1 id="paramanusaLogo">ParamaNusa</h1>
-    
-  </header>
+ 
 
   <!-- End Header and Nav -->
   <!-- Main Grid Section -->
 
-
+    <div class="row mainheader">
+      <h1 id="paramanusaLogo">Paramanusa</h1>
     <!-- Nav Sidebar -->
     <!-- This is source ordered to be pulled to the left on larger screens -->
 @if(Auth::check())
-    <nav class="top-bar main-bar">
+    
+      <nav class="top-bar main-bar">
 
-      @yield('topnav');
+        @yield('topnav')
 
-    </nav>
+      </nav>
+    </div>
           
     <div class="row container-content clearfix">
 
         @yield('sidenav')
 
-        <div id="maincontent" class="ten columns left noaside">
+        <div id="maincontent" class="eleven columns left noaside">
           @if(isset($crumb))
             {{ $this->crumb->generate() }}
           @endif
@@ -98,8 +97,6 @@
 @endif
   <!-- Footer -->
   <footer class="row">
-    
-      <hr />
         <p>&copy; Copyright 2012. ParamaNusa.</p>
     
   </footer>

@@ -25,10 +25,12 @@
   {{ HTML::script('js/jquery-1.8.3.min.js') }}
   {{ HTML::script('js/jquery-ui-1.9.2.custom.min.js') }}
   {{ HTML::script('js/jquery.dataTables.min.js') }}
+
   {{ HTML::script('js/underscore-1.1.5.js') }}
   {{ HTML::script('js/jquery.tagsinput.min.js') }}
   {{ HTML::script('js/select2.min.js') }}
   {{ HTML::script('js/jquery.fancybox.js') }}
+
 
 
   <!--[if lt IE 8]>
@@ -38,13 +40,16 @@
 <body>
 
   <!-- Header and Nav -->
-  <header class="row mainheader">
+  <!--<header class="row mainheader">
     
       <h1 id="paramanusaLogo" class="six columns">ParamaNusa</h1>
-      <div class="four columns">
-            @yield('identity')
+      <div class="nav-top">
+        
       </div>
-  </header>
+      <!--<div class="four columns">
+            @yield('identity')
+      </div>-->
+  <!--</header>-->
 
   <!-- End Header and Nav -->
   <!-- Main Grid Section -->
@@ -53,11 +58,15 @@
     <!-- Nav Sidebar -->
     <!-- This is source ordered to be pulled to the left on larger screens -->
 @if(Auth::check())
-    <nav class="top-bar main-bar">
+    <div class="row mainheader">
+      @yield('identity')
+      <h1 id="paramanusaLogo">Paramanusa</h1>
+      <nav class="top-bar main-bar">
 
-      @yield('topnav');
+        @yield('topnav')
 
-    </nav>
+      </nav>
+    </div>
           
     <div class="row container-content clearfix">
 
@@ -108,16 +117,19 @@
 
 
   <footer class="row">
-    
-      <hr />
-        <p>&copy; Copyright 2012. ParamaNusa.</p>
-    
+    <p>&copy; Copyright 2012. ParamaNusa.</p>
   </footer>
+    {{ HTML::script('js/modernizr.foundation.js') }}
+    {{ HTML::script('js/jquery.foundation.navigation.js') }}
     {{ HTML::script('js/jquery.foundation.forms.js') }}
     <script type="text/javascript">
       base = '{{ URL::base() }}/';
+      var $doc = $(document);
+      $(document).foundationNavigation();
+      
     </script>
-    {{ HTML::script('js/pnu.js') }}
+
+      {{ HTML::script('js/pnu.js') }}
 
 </body>
 </html>
