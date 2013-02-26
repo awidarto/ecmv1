@@ -42,20 +42,20 @@
 
                 @if($role != 'hr_admin')
                     <dd><a href="{{ URL::to('opportunity') }}"><i class="foundicon flag iconnew sidemenu"></i>Opportunity</a></dd>
-                    <dd><a href="{{ URL::to('tender') }}"><i class="foundicon forward iconnew sidemenu"></i> <br/>Tender</a></dd>
-                    <dd><a href="{{ URL::to('project') }}"><i class="foundicon-idea sidemenu"></i> <br/>Projects</a></dd>
+                    <dd><a href="{{ URL::to('tender') }}"><i class="foundicon forward iconnew sidemenu"></i>Tender</a></dd>
+                    <dd><a href="{{ URL::to('project') }}"><i class="foundicon tools iconnew sidemenu"></i>Projects</a></dd>
                 @endif
 
                 @if($role == 'hr_admin' || $role == 'root' || $role == 'super' || $role = 'president' || $role == 'bod')
-                    <dd><a href="{{ URL::to('employee') }}"><i class="foundicon-people sidemenu"></i> <br/>Human Resources</a></dd>
+                    <dd><a href="{{ URL::to('employee') }}"><i class="foundicon iconnew group sidemenu"></i>Human Resources</a></dd>
                 @endif
 
-                <dd><a href="{{ URL::to('user/profile') }}"><i class="foundicon-settings sidemenu"></i> <br/>Profile</a></dd>
-                <dd><a href="{{ URL::to('search') }}"><i class="foundicon-search sidemenu"></i> <br/>Search</a></dd>
+                <dd><a href="{{ URL::to('user/profile') }}"><i class="foundicon iconnew user sidemenu"></i>Profile</a></dd>
+                <dd><a href="{{ URL::to('search') }}"><i class="foundicon search iconnew sidemenu"></i>Search</a></dd>
             @else
-                <dd><a href="{{ URL::to('message') }}"><i class="foundicon-mail sidemenu"></i> <br/>Messages</a></dd>
+                <dd><a href="{{ URL::to('message') }}"><i class="foundicon mail iconnew sidemenu"></i>Messages</a></dd>
             @endif
-            <dd><a href="{{ URL::to('content/view/help') }}"><i class="foundicon-smiley sidemenu"></i> <br/>Help</a></dd>
+            <dd><a href="{{ URL::to('content/view/help') }}"><i class="foundicon help iconnew sidemenu"></i>Help</a></dd>
       </dl>
     </div>
 

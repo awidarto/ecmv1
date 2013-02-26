@@ -991,7 +991,7 @@ body.front .loginheader h1#paramanusaLogo{
 }
 .identitiymenu{
 	background:transparent;
-	color: #fff;
+	color: #484236;
 	display: inline-block;
 	position: absolute;
 	right: 40px;
@@ -1009,6 +1009,9 @@ body.front .loginheader h1#paramanusaLogo{
 	border: none;
 	border-right: none;
 	border-left: none;
+	color: #878580;
+}
+.identitiymenu>li>a:hover{
 	color: #fff;
 }
 .identitiymenu .flyout{
@@ -1030,6 +1033,9 @@ tr.even td.sorting_1{
 	background-color: #f8f8f8;
 }
 tr.odd td.sorting_1{
+	background-color: #fff;
+}
+tr.odd{
 	background-color: #fff;
 }
 
@@ -1059,8 +1065,23 @@ tr.odd td.sorting_1{
 }
 .forward{
 	background: transparent url(../images/icon/forward.png) no-repeat;
-	
 }
+.tools{
+	background: transparent url(../images/icon/tools.png) no-repeat;
+}
+.search{
+	background: transparent url(../images/icon/search.png) no-repeat;
+}
+.user{
+	background: transparent url(../images/icon/user.png) no-repeat;
+}
+.group{
+	background: transparent url(../images/icon/groups.png) no-repeat;
+}
+.help{
+	background: transparent url(../images/icon/help.png) no-repeat;
+}
+
 .iconnew{
 	display: block;
 	width: 32px;
@@ -1068,3 +1089,27 @@ tr.odd td.sorting_1{
 	margin-bottom: 5px;
 	margin-left: 20px;
 }
+.action{
+	font-size: 13px;
+}
+.tableHeader{
+	position: relative;
+	width: 100%;
+}
+.tableHeader h3{
+	width: 80%;
+	float: left;
+	margin-bottom: 50px;
+}
+.tableHeader:after
+{
+content:".";
+display:none;
+height:0;
+clear:both;
+visibility:hidden;
+}
+.tableHeader
+{display:inline-block;}
+
+
