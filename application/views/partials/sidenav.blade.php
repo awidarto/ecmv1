@@ -39,7 +39,7 @@
                 <dd><a href="{{ URL::to('requests/outgoing') }}"><i class="foundicon iconnew upload sidemenu"></i>Submissions <br />&<br /> Requests</a></dd>
                 <dd><a href="{{ URL::to('message') }}"><i class="foundicon mail iconnew sidemenu"></i>Messages</a></dd>
                 <dd><a href="{{ URL::to('template') }}"><i class="foundicon page iconnew sidemenu"></i>Templates</a></dd>
-                
+
                 @if($role != 'hr_admin')
                     <dd><a href="{{ URL::to('opportunity') }}"><i class="foundicon flag iconnew sidemenu"></i>Opportunity</a></dd>
                     <dd><a href="{{ URL::to('tender') }}"><i class="foundicon forward iconnew sidemenu"></i> <br/>Tender</a></dd>
@@ -49,7 +49,7 @@
                 @if($role == 'hr_admin' || $role == 'root' || $role == 'super' || $role = 'president' || $role == 'bod')
                     <dd><a href="{{ URL::to('employee') }}"><i class="foundicon-people sidemenu"></i> <br/>Human Resources</a></dd>
                 @endif
-                
+
                 <dd><a href="{{ URL::to('user/profile') }}"><i class="foundicon-settings sidemenu"></i> <br/>Profile</a></dd>
                 <dd><a href="{{ URL::to('search') }}"><i class="foundicon-search sidemenu"></i> <br/>Search</a></dd>
             @else
