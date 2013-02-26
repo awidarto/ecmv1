@@ -44,7 +44,9 @@
   <!-- Main Grid Section -->
 
     <div class="row mainheader">
+      @yield('identity')
       <h1 id="paramanusaLogo">Paramanusa</h1>
+
     <!-- Nav Sidebar -->
     <!-- This is source ordered to be pulled to the left on larger screens -->
 @if(Auth::check())
@@ -100,9 +102,14 @@
         <p>&copy; Copyright 2012. ParamaNusa.</p>
     
   </footer>
+    {{ HTML::script('js/modernizr.foundation.js') }}
+    {{ HTML::script('js/jquery.foundation.navigation.js') }}
     {{ HTML::script('js/jquery.foundation.forms.js') }}
     <script type="text/javascript">
       base = '{{ URL::base() }}/';
+      var $doc = $(document);
+      $(document).foundationNavigation();
+      
     </script>
     {{ HTML::script('js/pnu.js') }}
 

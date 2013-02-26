@@ -57,12 +57,6 @@ class Tender_Controller extends Base_Controller {
 			'Equivalent Bid Price',
 			'Tender Status',
 			'Tender Remark',
-			//'Tender Approval',
-			//'Tender Share',
-			//'Tender Department',
-			//'Tender Lead',
-			//'Created Date',
-			//'Last Update',
 			'Tags',
 			'Action'
 		);

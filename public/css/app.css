@@ -605,13 +605,14 @@ table tbody tr.even,tr.even td.sorting_1{
 footer{
 	background-color: #0d0d0d;
 }
+
+/*FRONT*/
 footer p{
 	margin-left: 20px;
-	color: #fff;
+	
 	margin-top:20px;
 	margin-bottom:20px;
 }
-/*FRONT*/
 .front .mainheader{
 	text-align: center;
 
@@ -649,9 +650,14 @@ li small.bullet{
 }
 .profileContent{
 	margin-top: 15px;
+    position: relative;
+}
+.profileContent a{
+    margin: 7px 0;
 }
 table.profile-info{
 	border: none;
+
 }
 table.profile-info td{
 	padding:9px 10px 9px 0;	
@@ -664,6 +670,9 @@ table.profile-info td.detail-title{
 	width: 130px;
 	color: #999;
 
+}
+table.profile-info td.detail-info{
+    width: 200px;    
 }
 table.profile-info td.detail-info span{
 	display: block;
@@ -1064,7 +1073,7 @@ tr.odd{
 	
 }
 .forward{
-	background: transparent url(../images/icon/forward.png) no-repeat;
+	background: transparent url(../images/icon/applications-office.png) no-repeat;
 }
 .tools{
 	background: transparent url(../images/icon/tools.png) no-repeat;
@@ -1080,6 +1089,9 @@ tr.odd{
 }
 .help{
 	background: transparent url(../images/icon/help.png) no-repeat;
+}
+.add{
+    background: transparent url(../images/icon/list-add.png) no-repeat;
 }
 
 .iconnew{
@@ -1112,4 +1124,47 @@ visibility:hidden;
 .tableHeader
 {display:inline-block;}
 
+#maincontent .row{
+	margin: 0;
+	width: 100%;
+}
 
+
+.dataTables_paginate a.paginate_button,.dataTables_paginate span a{
+	
+	padding: 4px 12px;
+	line-height: 20px;
+	text-decoration: none;
+	background-color: #ffffff;
+	border: 1px solid #dddddd;
+	border-left-width: 0;
+	cursor: pointer;
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+}
+.dataTables_paginate a.first.paginate_button{
+	border-left-width: 1px;
+}
+
+.dataTables_paginate a.paginate_button:hover,.dataTables_paginate span a:hover,.dataTables_paginate a.paginate_active{
+	background-color: #f5f5f5;
+}
+.paging_full_numbers a.paginate_button, .paging_full_numbers a.paginate_active{
+	margin:0;
+}
+.paging_full_numbers a.paginate_button, .paging_full_numbers a.paginate_active{
+	-webkit-border-radius: 0;
+	-moz-border-radius: 0;
+}
+.dataTables_paginate a.paginate_button, .dataTables_paginate span a {
+padding: 4px 12px;
+line-height: 20px;
+text-decoration: none;
+background-color: #ffffff;
+border: 1px solid #dddddd;
+border-left-width: 0;
+cursor: pointer;
+}
+.paging_full_numbers a.paginate_button, .paging_full_numbers a.paginate_active{
+	padding: 4px 12px;
+}
