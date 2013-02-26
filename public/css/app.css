@@ -1059,12 +1059,39 @@ tr.odd td.sorting_1{
 }
 .forward{
 	background: transparent url(../images/icon/forward.png) no-repeat;
-	
 }
+.tools{
+	background: transparent url(../images/icon/tools.png) no-repeat;
+}
+.search{
+	background: transparent url(../images/icon/search.png) no-repeat;
+}
+.user{
+	background: transparent url(../images/icon/user.png) no-repeat;
+}
+.group{
+	background: transparent url(../images/icon/groups.png) no-repeat;
+}
+.help{
+	background: transparent url(../images/icon/help.png) no-repeat;
+}
+
 .iconnew{
 	display: block;
 	width: 32px;
 	height: 32px;
 	margin-bottom: 5px;
 	margin-left: 20px;
+}
+.action{
+	font-size: 13px;
+}
+.tableHeader h3{
+	width: 50%;
+	float: left;
+	margin-bottom: 50px;
+}
+.tableHeader h3:after{
+	clear: both;
+	float: none;
 }
