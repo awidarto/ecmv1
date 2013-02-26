@@ -1035,6 +1035,9 @@ tr.even td.sorting_1{
 tr.odd td.sorting_1{
 	background-color: #fff;
 }
+tr.odd{
+	background-color: #fff;
+}
 
 .homeicon{
 	background: transparent url(../images/icon/home.png) no-repeat;	
@@ -1089,12 +1092,24 @@ tr.odd td.sorting_1{
 .action{
 	font-size: 13px;
 }
+.tableHeader{
+	position: relative;
+	width: 100%;
+}
 .tableHeader h3{
-	width: 50%;
+	width: 80%;
 	float: left;
 	margin-bottom: 50px;
 }
-.tableHeader h3:after{
-	clear: both;
-	float: none;
+.tableHeader:after
+{
+content:".";
+display:none;
+height:0;
+clear:both;
+visibility:hidden;
 }
+.tableHeader
+{display:inline-block;}
+
+
