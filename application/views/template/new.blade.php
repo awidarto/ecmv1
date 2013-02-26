@@ -60,6 +60,10 @@
       {{ $form->hidden('docDepartment',$type)}}
     @endif
 
+    <hr />
+
+    {{$form->select('docRequestToDepartment','Request to Department',Config::get('parama.department'),array('class'=>'four'))}}
+
 
     {{ $form->select('docCategory','Category',Config::get('parama.doc_type'),array('class'=>'four'))}}
 

@@ -42,17 +42,26 @@ class Message_Controller extends Base_Controller {
 	public function get_index()
 	{
 
-	    $heads = array('Message','Action');
-	    //$searchinput = array(false,'title','created','last update','creator','project manager','tags',false);
-	    $searchinput = array(false,'project','tags',false);
+	    $heads = array('From','Subject','Timestamp');
+	    $colclass = array('one','','three');
+	    $searchinput = array('from','subject','timestamp');
+
+	    $outheads = array('To','Subject','Timestamp');
+	    $outcolclass = array('one','','three');
+	    $outsearchinput = array('to','subject','timestamp');
 
 	    return View::make('tables.message')
 	        ->with('title','Messages')
+	        ->with('heads',$heads)
+	        ->with('colclass',$colclass)
+	        ->with('searchinput',$searchinput)
+	        ->with('outheads',$outheads)
+	        ->with('outcolclass',$outcolclass)
+	        ->with('outsearchinput',$outsearchinput)
 	        ->with('newbutton','New Message')
 			->with('addurl','message/new')
 	        ->with('disablesort','0')
 	        ->with('crumb',$this->crumb)
-	        ->with('searchinput',$searchinput)
 	        ->with('ajaxsource',URL::to('message'))
 	        ->with('ajaxsourceoutbox',URL::to('message/outbox'));
 
@@ -148,15 +157,21 @@ class Message_Controller extends Base_Controller {
 
 		foreach ($documents as $doc) {
 
-			$item = View::make('message.item')->with('doc',$doc)->with('popsrc','message/view')->render();
+			//$item = View::make('message.item')->with('doc',$doc)->with('popsrc','message/view')->render();
 
-			$item = str_replace($hilite, $hilite_replace, $item);
+			//$item = str_replace($hilite, $hilite_replace, $item);
+
+			$action = '<ul class="inline-list">';
+			$action .= '<li>'.HTML::link('message/reply/'.$doc['_id'],'Reply').'</li>';
+			$action .= '<li>'.HTML::link('message/replyall/'.$doc['_id'],'Reply All').'</li>';
+			$action .= '<li>'.HTML::link('message/forward/'.$doc['_id'],'Forward').'</li>';
+			$action .= '</ul>';
+
 
 			$aadata[] = array(
-				$item,
-				'<a href="'.URL::to('message/view/'.$doc['_id']).'"><i class="foundicon-clock action"></i></a>&nbsp;'.
-				'<a href="'.URL::to('message/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
-				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
+				$doc['from'],
+				HTML::link('message/read/'.$doc['_id'],$doc['subject']),
+				date('Y-m-d h:i:s',$doc['createdDate']->sec)
 			);
 		}
 
@@ -239,10 +254,9 @@ class Message_Controller extends Base_Controller {
 			$item = str_replace($hilite, $hilite_replace, $item);
 
 			$aadata[] = array(
-				$item,
-				'<a href="'.URL::to('message/view/'.$doc['_id']).'"><i class="foundicon-clock action"></i></a>&nbsp;'.
-				'<a href="'.URL::to('message/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
-				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
+				$doc['to'],
+				HTML::link('message/read/'.$doc['_id'],$doc['subject']),
+				date('Y-m-d h:i:s',$doc['createdDate']->sec)
 			);
 		}
 
@@ -281,6 +295,7 @@ class Message_Controller extends Base_Controller {
 		}
 
 		$message['body'] = implode("\n", $body);
+		$message['body'] .= "\r\n";
 
 		$form = new Formly($message);
 
@@ -504,6 +519,15 @@ class Message_Controller extends Base_Controller {
 
 		$message['bcc'] = '';
 
+		$body = explode("\n",$message['body']);
+
+		for($i = 0;$i < count($body);$i++){
+			$body[$i] = '>'.$body[$i];
+		}
+
+		$message['body'] = implode("\n", $body);
+		$message['body'] .= "\r\n";
+
 		$form = new Formly($message);
 
 		return View::make('message.replyall')
@@ -684,6 +708,22 @@ class Message_Controller extends Base_Controller {
 
 		
 	}	
+
+	public function get_read($id){
+
+		$this->crumb->add('message/read/'.$id,'Read',false);
+		$id = new MongoId($id);
+
+		$document = new Message();
+
+		$doc = $document->get(array('_id'=>$id));
+
+		$this->crumb->add('message/read/'.$id,$doc['subject']);
+
+		return View::make('message.read')
+			->with('crumb',$this->crumb)
+			->with('doc',$doc);
+	}
 
 
 	public function get_view($id){

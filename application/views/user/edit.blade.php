@@ -20,6 +20,7 @@
     {{ $form->text('fullname','Full Name.req','',array('class'=>'text')) }}
 
     <h4>Employee Info</h4>
+    {{ $form->hidden('old_initial','') }}
     {{ $form->text('initial','Initial.req','',array('class'=>'text four')) }}
     {{ $form->text('employee_jobtitle','Job Title','',array('class'=>'text')) }}
     {{ Form::label('department','Department')}}

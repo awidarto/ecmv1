@@ -13,6 +13,27 @@
 <h4><i class="foundicon-down-arrow"></i>&nbsp;Inbox</h4>
 <div class="row">
 	<table class="dataTable" id="inbox">
+	    <thead>
+	        <tr>
+	        	<?php
+		        	if(!isset($colclass)){
+		        		$colclass = array();
+		        	}
+	        		$hid = 0;
+	        	?>
+	        	@foreach($heads as $head)
+	        		<th 
+	        			@if(isset($colclass[$hid]))
+	        				class="{{$colclass[$hid]}}"
+	        			@endif
+	        			<?php $hid++ ?>
+	        		>
+	        			{{ $head }}
+	        		</th>
+	        	@endforeach
+	        </tr>
+	    </thead>
+
 	    <tbody>
 	    </tbody>
 	</table>
@@ -21,6 +42,27 @@
 <h4><i class="foundicon-up-arrow"></i>&nbsp;Outbox</h4>
 <div class="row">
 	<table class="dataTable" id="outbox">
+	    <thead>
+	        <tr>
+	        	<?php
+		        	if(!isset($outcolclass)){
+		        		$outcolclass = array();
+		        	}
+	        		$hid = 0;
+	        	?>
+	        	@foreach($outheads as $head)
+	        		<th 
+	        			@if(isset($colclass[$hid]))
+	        				class="{{$colclass[$hid]}}"
+	        			@endif
+	        			<?php $hid++ ?>
+	        		>
+	        			{{ $head }}
+	        		</th>
+	        	@endforeach
+	        </tr>
+	    </thead>
+
 	    <tbody>
 	    </tbody>
 	</table>

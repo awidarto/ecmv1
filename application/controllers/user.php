@@ -479,6 +479,8 @@ class User_Controller extends Base_Controller {
 
 		$user_profile = $user->get(array('_id'=>$id));
 
+		$user_profile['old_initial'] = $user_profile['initial'];
+
 		$this->crumb->add('user/edit',$user_profile['fullname']);
 
 		foreach($user_profile['permissions'] as $key=>$val){
@@ -513,9 +515,11 @@ class User_Controller extends Base_Controller {
 	        'fullname'  => 'required|max:50'
 	    );
 
-	    if($in['initial'] != ''){
+	    
+	    if($in['initial'] != '' && $in['initial'] != $in['old_initial']){
 	    	$rules['initial'] = 'unique:user';
 	    }
+	    
 
 	    $validation = Validator::make($input = Input::all(), $rules);
 
@@ -607,7 +611,6 @@ class User_Controller extends Base_Controller {
 	    $rules = array(
 	        'fullname'  => 'required|max:50',
 	        'email' => 'required|email|unique:user',
-	        'username' => 'required|unique:user',
 	        'pass' => 'required|same:repass',
 	        'repass'=> 'required'
 	    );

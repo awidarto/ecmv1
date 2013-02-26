@@ -63,6 +63,10 @@
 
     {{ $form->select('docCategory','Category',Config::get('parama.doc_type'),array('class'=>'four'))}}
 
+    {{ $form->select('docOriginalTemplate','Original Template',$templates,array('class'=>'four'))}}
+
+    {{ $form->textarea('docRemarks','Remarks','',array('class'=>'text','placeholder'=>'Put note / remarks here'))}}
+
     <hr />
     
     <!-- related project -->

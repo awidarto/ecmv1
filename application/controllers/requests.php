@@ -582,9 +582,20 @@ class Requests_Controller extends Base_Controller {
 	public function get_submit(){
 		$this->crumb->add('requests/submit','Submit Request Document');
 
+		$doc = new Document();
+
+		$template = $doc->find(array('useAsTemplate'=>'Yes'));
+
+		$templates = array();
+		$templates['none'] = 'None';
+		foreach($template as $t){
+			$templates[$t['_id']->__toString()] = $t['title'];
+		}
+
 		$form = new Formly();
 		return View::make('requests.new')
 					->with('form',$form)
+					->with('templates',$templates)
 					->with('crumb',$this->crumb)
 					->with('title','Submit Request Document');
 
@@ -890,10 +901,20 @@ class Requests_Controller extends Base_Controller {
 			$this->crumb->add('document/edit/'.$id.'/'.$type,$doc_data['title']);
 		}
 
+		$template = $doc->find(array('useAsTemplate'=>'Yes'));
+
+		$templates = array();
+		$templates['none'] = 'None';
+		foreach($template as $t){
+			$templates[$t['_id']->__toString()] = $t['title'];
+		}
+
+
 		$form = Formly::make($doc_data);
 
 		return View::make('document.edit')
 					->with('doc',$doc_data)
+					->with('templates',$templates)
 					->with('form',$form)
 					->with('type',$type)
 					->with('crumb',$this->crumb)

@@ -19,6 +19,7 @@
   		'finance_balikpapan'=>'F&A Balikpapan',
   		'sales_kemang'=>'S&M Kemang',
   		'sales_balikpapan'=>'S&M Balikpapan',
+      'bt_balikpapan'=>'Bid & Tender Balikpapan',
   		'hr_admin'=>'HR Admin',
   		'warehouse'=>'Warehouse',
   		'qc'=>'Quality Control',
@@ -79,7 +80,7 @@
 		)
   	),
 
-  'doc_format'=>array( 'letter'=>'Letter','fax'=>'Fax','email'=>'Email','scan'=>'Scan','other'=>'Other'),
+  'doc_format'=>array( 'letter'=>'Letter','fax'=>'Fax','email'=>'Email','picture'=>'Picture','scan'=>'Scan','other'=>'Other'),
 
   'department'=>array(
   		'general'=>'General',
