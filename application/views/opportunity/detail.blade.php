@@ -37,6 +37,8 @@
 						<span>{{date('d-m-Y',$opportunity['opportunityDate']->sec)}}</span>
 					</td>
 				</tr>
+		<?php
+/*
 				<tr>
 					<td class="detail-title">Estimated Value</td>
 					<td class="detail-info">{{ $opportunity['estimatedCurrency'].' '.number_format($opportunity['estimatedValue'],2,',','.') }}</td>
@@ -45,6 +47,9 @@
 					<td class="detail-title">Estimated Value in USD</td>
 					<td class="detail-info">{{ $opportunity['equivalentEstimatedCurrency'].' '.number_format($opportunity['equivalentEstimatedValue'],2,',','.') }}</td>
 				</tr>
+*/
+
+		?>
 				<tr>
 					<td class="detail-title">Description</td>
 					<td class="detail-info">{{ $opportunity['targetScopeDescription'] }}</td>

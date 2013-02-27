@@ -79,7 +79,8 @@ Target Scope  :  Supply of All Misc. Manual Valves
     {{ $form->text('closingDate','Closing Date','',array('class'=>'five date')) }}
 
     {{ $form->text('opportunityPIC','Persons In Charge','',array('id'=>'opportunity_manager','class'=>'tag_initial_inline four','rows'=>'1', 'style'=>'width:100%')) }}
-
+<?php
+  /*
     <div class="row">
       <div class="two columns">
         {{ $form->select('estimatedCurrency','Currency',Config::get('parama.currencies'),array('style'=>'width:100%'))}}
@@ -97,6 +98,8 @@ Target Scope  :  Supply of All Misc. Manual Valves
         {{ $form->text('equivalentEstimatedValue','Equivalent Estimated Value','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
       </div>
     </div>
+  */
+?>
 
     {{ $form->select('opportunityStatus','Status',Config::get('parama.opportunitystatus'))}}
 
