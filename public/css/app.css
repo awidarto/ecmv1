@@ -1169,3 +1169,7 @@ cursor: pointer;
 .paging_full_numbers a.paginate_button, .paging_full_numbers a.paginate_active{
 	padding: 4px 12px;
 }
+
+.row .profileContent .nine{
+    float: left;
+}

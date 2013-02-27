@@ -28,11 +28,11 @@ function getavatarbyemail($email,$alt = 'avatar-image',$class = 'avatar'){
 
 // get employee formal photo
 
-function getphoto($id,$alt = 'avatar-image',$class = 'avatar'){
+function getphoto($id,$alt = 'avatar-image',$class = 'avatar',$width = 50){
 	if(file_exists(Config::get('parama.photostorage').$id.'/formal.jpg')){
-		$photo = HTML::image('employees/'.$id.'/formal.jpg', $alt, array('class' => $class));
+		$photo = HTML::image('employees/'.$id.'/formal.jpg', $alt, array('class' => $class),array('width'=>$width));
 	}else{
-		$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class));				
+		$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class),array('width'=>$width));				
 	}
 
 	return $photo;

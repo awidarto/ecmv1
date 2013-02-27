@@ -6,7 +6,7 @@
 <h4>User Profile</h4>
 <div class="row">
 	<div class="profileContent">
-		<div class="three columns">
+		<div class="two columns">
 			{{ getavatar($profile['_id'])}}
 			<a href="{{ URL::to('user/picture')}}" class="inlink" ><i class="foundicon-smiley action"></i> Change Picture</a>
 			<a href="{{ URL::to('user/pass')}}" class="inlink" ><i class="foundicon-lock action"></i> Change Password</a>
