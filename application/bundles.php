@@ -47,6 +47,7 @@ return array(
 	        ),
 	    ),
 	),
+	'ckeditor' => array('auto' => true),
 	'bread' => array(
 	    'autoloads' => array(
 	        'map' => array(

@@ -282,6 +282,10 @@ class Message_Controller extends Base_Controller {
 
 		$message = $msg->get(array('_id'=>$_id));
 
+		$message['cc'] = '';
+
+		$message['bcc'] = '';
+
 		$message['to'] = $message['from'];
 
 		$message['from'] = Auth::user()->email;
@@ -299,8 +303,12 @@ class Message_Controller extends Base_Controller {
 
 		$form = new Formly($message);
 
+		$ckeditor = new CKEditor();
+
 		return View::make('message.reply')
 			->with('id',$id)
+			->with('message',$message)
+			->with('editor',$ckeditor)
 			->with('form',$form)
 	        ->with('crumb',$this->crumb)
 			->with('title','Reply to Message');
@@ -403,6 +411,10 @@ class Message_Controller extends Base_Controller {
 
 		$message['to'] = '';
 
+		$message['cc'] = '';
+
+		$message['bcc'] = '';
+
 		$message['body'] = 'Forwarded From : '.$message['forwardfrom']."\r\n===============================\r\n".$message['body'];
 
 		$message['from'] = Auth::user()->email;
@@ -411,9 +423,13 @@ class Message_Controller extends Base_Controller {
 
 		$form = new Formly($message);
 
+		$ckeditor = new CKEditor();
+
 		return View::make('message.forward')
 			->with('id',$id)
+			->with('message',$message)
 			->with('form',$form)
+			->with('editor',$ckeditor)
 	        ->with('crumb',$this->crumb)
 			->with('title','Forward Message');
 	}
@@ -528,11 +544,15 @@ class Message_Controller extends Base_Controller {
 		$message['body'] = implode("\n", $body);
 		$message['body'] .= "\r\n";
 
+		$ckeditor = new CKEditor();
+
 		$form = new Formly($message);
 
 		return View::make('message.replyall')
 			->with('id',$id)
 			->with('form',$form)
+			->with('message',$message)
+			->with('editor',$ckeditor)
 	        ->with('crumb',$this->crumb)
 			->with('title','Reply All');
 	}
@@ -623,9 +643,11 @@ class Message_Controller extends Base_Controller {
 	public function get_new()
 	{
 		$form = new Formly();
+		$ckeditor = new CKEditor();
 
 		return View::make('message.new')
 			->with('form',$form)
+			->with('editor',$ckeditor)
 			->with('title','Compose Message');
 	}
 
