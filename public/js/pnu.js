@@ -5,7 +5,7 @@
     	var sharelist = {};
 
 		$('.date').datepicker({
-			dateFormat: "dd-mm-yy"
+			dateFormat: "yy-mm-dd"
 		});
 
 		$('.pop').click(function(){

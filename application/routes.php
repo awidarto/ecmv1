@@ -74,6 +74,7 @@ Route::post('login', function()
     {
     	//print_r($userdata);
         // we are now logged in, go to home
+        Event::fire('document.expire');
         return Redirect::to('/');
 
     }

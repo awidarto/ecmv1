@@ -149,7 +149,8 @@
       'inprogress'=>'In Progress',
       'cancelled'=>'Cancelled',
       'declined'=>'Declined'
-    )
+    ),
+  'expiration_alert_days'=>14,
 
 
 );

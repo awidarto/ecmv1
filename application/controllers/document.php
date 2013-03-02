@@ -49,8 +49,8 @@ class Document_Controller extends Base_Controller {
 
 		//print_r(Auth::user());
 
-		$heads = array('#','Title','Created','Last Update','Creator','Access','Attachment','Is Template','Tags','Action');
-		$searchinput = array(false,'title','created','last update','creator','access','filename','useAsTemplate','tags',false);
+		$heads = array('#','Title','Created','Last Update','Expiring In','Creator','Access','Attachment','Is Template','Tags','Action');
+		$searchinput = array(false,'title','created','last update','expiring','creator','access','filename','useAsTemplate','tags',false);
 
 		$title = 'Document Library';
 
@@ -74,11 +74,11 @@ class Document_Controller extends Base_Controller {
 	public function post_index()
 	{
 
-		$fields = array('title','createdDate','lastUpdate','creatorName','access','docFilename','useAsTemplate','docTag');
+		$fields = array('title','createdDate','lastUpdate','expiring','creatorName','access','docFilename','useAsTemplate','docTag');
 
-		$rel = array('like','like','like','like','like','like','like','like');
+		$rel = array('like','like','like','like','like','like','like','like','like');
 
-		$cond = array('both','both','both','both','both','both','both','both');
+		$cond = array('both','both','both','both','both','both','both','both','both');
 
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
@@ -163,11 +163,14 @@ class Document_Controller extends Base_Controller {
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
+			$doc['expiring'] = ($doc['expiring'] < Config::get('parama.expiration_alert_days') && $doc['expiring'] > 0)?'<span class="expiring">'.$doc['expiring'].'</span>':$doc['expiring'];
+
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
 				date('Y-m-d H:i:s', $doc['createdDate']->sec),
 				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				$doc['expiring'],
 				$doc['creatorName'],
 				isset($doc['access'])?ucfirst($doc['access']):'',
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
@@ -485,6 +488,7 @@ class Document_Controller extends Base_Controller {
 			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
 			$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
 			$data['lastUpdate'] = new MongoDate();
+			$data['expiring'] = ($data['expiring'] == '')?0:$data['expiring'];
 
 			unset($data['csrf_token']);
 
@@ -631,8 +635,8 @@ class Document_Controller extends Base_Controller {
 		$this->crumb->add('document/type/'.$type,'Document');
 		$this->crumb->add('document/type/'.$type,depttitle($type));
 
-		$heads = array('#','Title','Created','Last Update','Creator','Access','Attachment','Tags','Action');
-		$searchinput = array(false,'title','created','last update','creator','access','filename','tags',false);
+		$heads = array('#','Title','Created','Last Update','Expiring In','Creator','Access','Attachment','Tags','Action');
+		$searchinput = array(false,'title','created','last update','expiring','creator','access','filename','tags',false);
 
 		$dept = Config::get('parama.department');
 
@@ -864,6 +868,7 @@ class Document_Controller extends Base_Controller {
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
+			$doc['expiring'] = ($doc['expiring'] < Config::get('parama.expiration_alert_days') && $doc['expiring'] > 0)?'<span class="expiring">'.$doc['expiring'].'</span>':$doc['expiring'];
 
 			if($doc['creatorId'] == Auth::user()->id || $doc['docDepartment'] == Auth::user()->department){
 				$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
@@ -899,6 +904,7 @@ class Document_Controller extends Base_Controller {
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
 				date('Y-m-d H:i:s', $doc['createdDate']->sec),
 				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				$doc['expiring'],
 				$doc['creatorName'],
 				isset($doc['access'])?ucfirst($doc['access']):'',
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
