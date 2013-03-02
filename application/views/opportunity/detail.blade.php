@@ -279,6 +279,32 @@
 			}
 		} );
 
+		$('table#progressTable').click(function(e){
+
+			if ($(e.target).is('.addcomment')) {
+				var _id = e.target.id;
+				var comment = $('#comment_' + _id).val();
+				
+				$.post('{{ URL::to("opportunity/addcomment/".$opportunity["_id"]) }}',{'progressid':_id,'comment':comment}, function(data) {
+					if(data.status == 'OK'){
+						//redraw table
+						pTable.fnDraw();
+						//alert('Comment added');
+					}
+				},'json');
+
+				/*
+				var answer = confirm("Are you sure you want to delete this item ?");
+				if (answer){
+				}else{
+					alert("Deletion cancelled");
+				}
+				*/
+		   	}
+
+
+		});
+
 		$('table.dataTable').click(function(e){
 
 			if ($(e.target).is('.del')) {

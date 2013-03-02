@@ -457,7 +457,6 @@ class Opportunity_Controller extends Base_Controller {
 	}
 
 
-
 	public function post_add(){
 
 		//print_r(Session::get('permission'));
@@ -482,8 +481,8 @@ class Opportunity_Controller extends Base_Controller {
 			//pre save transform
 			unset($data['csrf_token']);
 
-			$data['opportunityDate'] = new MongoDate(strtotime($data['opportunityDate']." 00:00:00"));
-			$data['closingDate'] = new MongoDate(strtotime($data['closingDate']." 00:00:00"));
+			$data['opportunityDate'] = new MongoDate(strtotime($data['opportunityDate'].' 00:00:00'));
+			$data['closingDate'] = new MongoDate(strtotime($data['closingDate'].' 00:00:00'));
 
 			$data['createdDate'] = new MongoDate();
 			$data['lastUpdate'] = new MongoDate();
@@ -496,7 +495,18 @@ class Opportunity_Controller extends Base_Controller {
 
 			$data['saveToContact'] = (isset($data['saveToContact']))?$data['saveToContact']:'No';
 
-			$opportunity = new opportunity();
+			$opportunity = new Opportunity();
+
+			$newobj = $opportunity->insert($data);
+
+			if($newobj){
+
+				if(count($data['tags']) > 0){
+					$tag = new Tag();
+					foreach($data['tags'] as $t){
+						$tag->update(array('tag'=>$t),array('$inc'=>array('count'=>1)),array('upsert'=>true));
+					}
+				}
 
 				if($data['saveToContact'] == 'Yes' && (!isset($data['contact_id']) || $data['contact_id'] == '') ){
 					$client = new Client();
@@ -539,17 +549,6 @@ class Opportunity_Controller extends Base_Controller {
 
 				}
 
-
-			$newobj = $opportunity->insert($data);
-
-			if($newobj){
-
-				if(count($data['tags']) > 0){
-					$tag = new Tag();
-					foreach($data['tags'] as $t){
-						$tag->update(array('tag'=>$t),array('$inc'=>array('count'=>1)),array('upsert'=>true));
-					}
-				}
 
 				Event::fire('opportunity.create',array('id'=>$newobj['_id'],'result'=>'OK'));
 
@@ -906,21 +905,32 @@ class Opportunity_Controller extends Base_Controller {
 			$count_display_all = $document->count();
 		}
 
-
-
+		$form = new Formly();
 
 		$aadata = array();
 
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
 
+			$commentform = $form->textarea('addcomment','','',array('placeholder'=>'Add Comment','rows'=>2,'class'=>'comment_form','id'=>'comment_'.$doc['_id']));
+			$commentform .= Form::button('Add',array('class'=>'button right addcomment','id'=>$doc['_id']));
+
+			$comments = '<table>';
+			foreach($doc['comments'] as $c){
+				$timestamp = date('d-m-Y h:i:s',$c['timestamp']->sec);
+				$comments .= '<tr>';
+				$comments .= '<td class="one commentBy">'.$c['commenterInitial'].'</td>';
+				$comments .= '<td><span class="commentTime">'.$timestamp.'</span><p>'.$c['comment'].'</p></td>';
+				$comments .= '</tr>';
+			}
+			$comments .= '</table>';
+
 			$aadata[] = array(
 				$counter,
 				date('Y-m-d H:i:s', $doc['timestamp']->sec),
 				$doc['userInitial'],
 				$doc['progressInput'],
-				$doc['userInitial'],
-				$doc['progressInput'],
+				$comments.$commentform,
 			);
 			$counter++;
 		}
@@ -1149,6 +1159,53 @@ class Opportunity_Controller extends Base_Controller {
 
 	}
 
+	public function post_addcomment($id){
+
+		$newcomment = Input::get();
+
+		//$newcomment['opportunityId'] = $id;
+		//$newcomment['progressId'] = $progressId;
+
+		$progressid = $newcomment['progressid'];
+
+		$newcomment['commenterName'] = Auth::user()->fullname;
+		$newcomment['commenterId'] = Auth::user()->id;
+		$newcomment['commenterInitial'] = Auth::user()->initial;
+
+		$newcomment['timestamp'] = new MongoDate();
+		$newcomment['comment'];
+
+		$progress = new Progress();
+
+		$_id = new MongoId($progressid);
+
+		$pobj = $progress->update(array('_id'=>$_id),array('$push'=>array('comments'=>$newcomment)));
+
+		if($pobj){
+			/*
+			$opportunity = new Opportunity();
+
+			$_id = new MongoId($id);
+
+			$pushData['opportunityProgress'] = $newprogress;
+
+			if($opportunity->get(array('opportunityContactPersons.personEmail'=>$newcontact['personEmail']))){
+				return Response::json(array('status'=>'CONTACTEXISTS'));
+			}else{
+				if($opportunity->update(array('_id'=>$_id),array('$addToSet'=>$pushData),array('upsert'=>true))){
+					return Response::json(array('status'=>'OK'));
+				}else{
+					return Response::json(array('status'=>'ERR'));
+				}
+			}
+			*/
+			return Response::json(array('status'=>'OK'));
+		}else{
+			return Response::json(array('status'=>'ERR'));
+		}
+
+
+	}
 
 	public function post_contact($id = null)
 	{

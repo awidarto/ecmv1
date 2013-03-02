@@ -913,6 +913,7 @@ body.front .loginheader h1#paramanusaLogo{
 .main-bar{
 	width: 85%;
 	margin-top: 60px;
+    margin-bottom: 15px;
 	float: right;
 	/*border-top-left-radius: 9px;
 	border-bottom-left-radius: 9px;*/
