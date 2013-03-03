@@ -204,7 +204,7 @@
 					"sSwfPath": "assets/swf/copy_csv_xls_pdf.swf"
 				},
 				"aoColumnDefs": [ 
-				    { "bSortable": false, "aTargets": [ 0,2 ] }
+				    { "bSortable": false, "aTargets": [ 0,2,3 ] }
 				 ],
 			    "fnServerData": function ( sSource, aoData, fnCallback ) {
 		            $.ajax( {

@@ -66,7 +66,7 @@ class Project_Controller extends Base_Controller {
 		);
 
 		$secondheads = array(
-			'#',
+			'',
 			'',
 			'',
 			'',
@@ -119,8 +119,10 @@ class Project_Controller extends Base_Controller {
 		return View::make('tables.noaside')
 			->with('title','Project')
 			->with('newbutton','New Project')
-			->with('disablesort','0,3')
+			->with('importbutton','Import Project Data')
 			->with('addurl','project/add')
+			->with('importurl','project/import')
+			->with('disablesort','0,3')
 			->with('excludecol','14,15,16,17,18,19,20,21,22')
 			->with('colclass',$colclass)
 			->with('searchinput',$searchinput)
