@@ -990,8 +990,12 @@ body.front .loginheader h1#paramanusaLogo{
 }
 .top-bar ul>li.has-dropdown:hover{
     border-right: 1px solid #e3e3e3;
-    
+
 }
+.top-bar ul>li.has-dropdown:hover a{
+    padding:0 6px 0 7px;
+}
+
 .top-bar ul>li.has-dropdown .dropdown li:last-child{
 	-webkit-box-shadow: 0px 2px 0px rgba(50, 50, 50, 0.22);
 	-moz-box-shadow:    0px 2px 0px rgba(50, 50, 50, 0.22);
@@ -1141,7 +1145,7 @@ tr.odd{
 	width: 100%;
 }
 .tableHeader h3{
-	width: 70%;
+	width: 80%;
 	float: left;
 	margin-bottom: 50px;
 }
