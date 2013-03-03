@@ -59,6 +59,7 @@
     <!-- This is source ordered to be pulled to the left on larger screens -->
 @if(Auth::check())
     <div class="row mainheader">
+      <!--@yield('profilenav')-->
       @yield('identity')
       <h1 id="paramanusaLogo">Paramanusa</h1>
       <nav class="top-bar main-bar">

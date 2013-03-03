@@ -1,7 +1,7 @@
 @section('identity')
 <ul class="nav-bar identitiymenu">
 	<li class="has-flyout">
-		<a href="#">{{ Auth::user()->fullname }}</a>
+		<a class="identitiynamedropdown"  href="#">{{ Auth::user()->fullname }}</a>
     	<a href="#" class="flyout-toggle"><span> </span></a>
 		<div class="flyout large right">
 			<div class=" row">
