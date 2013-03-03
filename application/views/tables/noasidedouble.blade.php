@@ -20,6 +20,15 @@
 	        		</th>
 	        	@endforeach
 	        </tr>
+	        @if(isset($secondheads))
+		        <tr>
+		        	@foreach($secondheads as $head)
+		        		<th>
+		        			{{ $head }}
+		        		</th>
+		        	@endforeach
+		        </tr>
+	        @endif
 	    </thead>
 	    <tbody>
 	    </tbody>

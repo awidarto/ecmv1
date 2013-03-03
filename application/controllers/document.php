@@ -1023,6 +1023,7 @@ class Document_Controller extends Base_Controller {
 				'approval'=>'transfer',
 				'transferedTo'=>$user['_id'],
 				'approverId'=>Auth::user()->id,
+				'approverEmail'=>Auth::user()->email,
 				'approvalDate'=>$now,
 				'approvalNote'=>$response['note']
 			);
@@ -1069,16 +1070,52 @@ class Document_Controller extends Base_Controller {
 
 		$doc = new Document();
 
+		$users = new User();
+
+		$user = $users->get(array('email'=>trim($response['fwdto'])));
+
 		$now = new MongoDate();
 
 		$res['approvalResponds'] = array(
 				'approval'=>$response['approval'],
 				'approverId'=>Auth::user()->id,
+				'approverEmail'=>Auth::user()->email,
+				'approverName'=>Auth::user()->fullname,
+				'approverInitial'=>Auth::user()->initial,
 				'approvalDate'=>$now,
-				'approvalNote'=>$response['note']
+				'approvalNote'=>$response['note'],
+				'approvalTransfer'=>$response['fwdto']
 			);
 
-		if($document = $doc->update(array('_id'=>$_id),array('$push'=>$res),array('upsert'=>true))){
+		if($response['approval'] == 'transfer'){
+			$users = new User();
+
+			$user = $users->get(array('email'=>trim($response['fwdto'])));
+
+			$res2['approvalRequestIds'] = array(
+					'_id'=>$user['_id'],
+					'fullname'=>$user['fullname']
+				);
+
+			$res3['approvalRequestEmails'] = trim($response['fwdto']);
+
+			$doc->update(array('_id'=>$_id),array('$push'=>$res2),array('upsert'=>true));
+
+			$doc->update(array('_id'=>$_id),array('$push'=>$res3),array('upsert'=>true));
+
+			$docobj = $doc->get(array('_id'=>$_id));
+
+			//print_r($document);
+
+			$docApprovalRequest = $docobj['docApprovalRequest'].','.trim($response['fwdto']);
+
+			$set = array('docApprovalRequest'=>$docApprovalRequest);
+
+			$doc->update(array('_id'=>$_id),array('$set'=>$set),array('upsert'=>true));
+
+		}
+
+		if($document = $doc->update(array('_id'=>$_id),array('$addToSet'=>$res),array('upsert'=>true))){
 			return Response::json(array('status'=>'OK'));
 		}else{
 			return Response::json(array('status'=>'FAILED'));

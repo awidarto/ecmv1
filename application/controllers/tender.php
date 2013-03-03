@@ -40,7 +40,7 @@ class Tender_Controller extends Base_Controller {
 
 	public function get_index()
 	{
-		$heads = array(
+		$firstheads = array(
 			'#',
 			'Tender Date',
 			'Tender Number',
@@ -51,14 +51,33 @@ class Tender_Controller extends Base_Controller {
 			'Closing Date',
 			'Tender System',
 			'Tender PIC',
-			'Bid Currency',
-			'Bid Price',
-			'Equivalent Bid Currency',
+			array('Bid Price',array('colspan'=>3,'style'=>'text-align:center')),
 			'Equivalent Bid Price',
 			'Tender Status',
 			'Tender Remark',
 			'Tags',
 			'Action'
+		);
+
+		$secondheads = array(
+			'#',
+			'',
+			'',
+			'',
+			'',
+			'',
+			'',
+			'',
+			'',
+			'',
+			'USD',
+			'EURO',
+			'IDR',
+			'USD',
+			'',
+			'',
+			'',
+			''
 		);
 
 		$colclass = array('one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one');
@@ -102,7 +121,8 @@ class Tender_Controller extends Base_Controller {
 			->with('ajaxsource',URL::to('tender'))
 			->with('ajaxdel',URL::to('tender/del'))
 	        ->with('crumb',$this->crumb)
-			->with('heads',$heads);
+			->with('heads',$firstheads)
+			->with('secondheads',$secondheads);
 	}
 
 
@@ -231,9 +251,10 @@ class Tender_Controller extends Base_Controller {
 				date('Y-m-d', $doc['closingDate']->sec),
 				$doc['tenderSystem'],
 				$doc['tenderPIC'],
-				$doc['bidCurrency'],
-				number_format((double)$doc['bidPrice'],2,',','.'),
-				$doc['equivalentBidCurrency'],
+				($doc['bidCurrency'] == 'USD')?number_format((double)$doc['bidPrice'],2,',','.'):'',
+				($doc['bidCurrency'] == 'EURO')?number_format((double)$doc['bidPrice'],2,',','.'):'',
+				($doc['bidCurrency'] == 'IDR')?number_format((double)$doc['bidPrice'],2,',','.'):'',
+				//$doc['equivalentBidCurrency'],
 				number_format((double)$doc['equivalentBidPrice'],2,',','.'),
 				$doc['tenderStatus'],
 				$doc['tenderRemark'],

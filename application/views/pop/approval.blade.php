@@ -14,6 +14,8 @@
 	  	<div class="three columns">
 		    {{ $form->radio('approve','Approve','yes',true)}} 
 		    {{ $form->radio('approve','Not Approve','no')}} 
+		    {{ $form->radio('approve','Transfer To','transfer')}} 
+			{{ $form->text('transfer','','',array('class'=>'text auto_user','id'=>'fwdto')) }}
 			<div id="notifier"></div>
 		</div>   
 		<div class="six columns">
@@ -34,11 +36,12 @@
 		var _id = $('#docId').val();
 		var pass = $('#pass').val();
 		var note = $('#note').val();
+		var fwdto = $('#fwdto').val();
 		var approve = $('input:radio[name=approve]:checked').val();
 
 		$('#notifier').html('Processing...');
 
-		$.post('{{ URL::to($ajaxpost) }}',{'docid':_id, 'pass': pass, 'approval':approve,'note':note}, function(data) {
+		$.post('{{ URL::to($ajaxpost) }}',{'docid':_id, 'pass': pass,'fwdto':fwdto, 'approval':approve,'note':note}, function(data) {
 			if(data.status == 'OK'){
 				$('#notifier').html('Approval Success');
 

@@ -13,23 +13,43 @@
 	<table class="dataTable">
 	    <thead>
 	        <tr>
-	        	<?php
-		        	if(!isset($colclass)){
-		        		$colclass = array();
-		        	}
-	        		$hid = 0;
-	        	?>
 	        	@foreach($heads as $head)
-	        		<th 
-	        			@if(isset($colclass[$hid]))
-	        				class="{{$colclass[$hid]}}"
-	        			@endif
-	        			<?php $hid++ ?>
-	        		>
+	        		@if(is_array($head))
+	        			<th 
+	        				@foreach($head[1] as $key=>$val)
+	        					{{ $key }}="{{ $val }}"
+
+	        				@endforeach
+	        			>
+	        			{{ $head[0] }}
+	        			</th>
+	        		@else
+	        		<th>
 	        			{{ $head }}
 	        		</th>
+	        		@endif
 	        	@endforeach
 	        </tr>
+	        @if(isset($secondheads) && !is_null($secondheads))
+	        	<tr>
+	        	@foreach($secondheads as $head)
+	        		@if(is_array($head))
+	        			<th 
+	        				@foreach($head[1] as $key=>$val)
+	        					{{ $key }}="{{ $val }}"
+
+	        				@endforeach
+	        			>
+	        			{{ $head[0] }}
+	        			</th>
+	        		@else
+	        		<th>
+	        			{{ $head }}
+	        		</th>
+	        		@endif
+	        	@endforeach
+	        	</tr>
+	        @endif
 	    </thead>
 	    <tbody>
 	    </tbody>

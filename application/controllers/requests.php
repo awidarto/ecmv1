@@ -188,6 +188,17 @@ class Requests_Controller extends Base_Controller {
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
+			$status = '<table>';
+			foreach($doc['approvalResponds'] as $c){
+				$timestamp = date('d-m-Y h:i:s',$c['approvalDate']->sec);
+				$status .= '<tr>';
+				$status .= '<td><span class="commentTime">'.$timestamp.'</span>'.$c['approverName'].'</td>';
+				$status .= '<td><p>'.$c['approvalNote'].'</p></td>';
+				$status .= '</tr>';
+			}
+			$status .= '</table>';
+
+
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
@@ -195,6 +206,7 @@ class Requests_Controller extends Base_Controller {
 				$doc['creatorName'],
 				//$requestTo,
 				$request_type,
+				$status,
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
 				'<i class="foundicon-checkmark action approvalview" id="'.$doc['_id'].'"></i>&nbsp;'.
@@ -398,7 +410,17 @@ class Requests_Controller extends Base_Controller {
 
 		$this->crumb->add('requests/outgoing','Outgoing',false);
 
-		$heads = array('#','Title','Created','Requester','Requesting','Attachment','Tags','Action');
+		$heads = array('#',
+			array('Title',array('class'=>'one')),
+			array('Created',array('class'=>'one')),
+			array('Requester',array('class'=>'one')),
+			array('Requesting',array('class'=>'one')),
+			'Status',
+			array('Attachment',array('class'=>'one')),
+			array('Tags',array('class'=>'one')),
+			array('Action',array('class'=>'one'))
+		);
+		
 		$searchinput = array(false,'title','created','creator','approval from','filename','tags',false);
 
 		//if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
@@ -547,6 +569,22 @@ class Requests_Controller extends Base_Controller {
 
 			$requestTo .= '</ol>';
 
+			if(isset($doc['approvalResponds'])){
+				$status = '<table>';
+				foreach($doc['approvalResponds'] as $c){
+					$timestamp = date('d-m-Y h:i:s',$c['approvalDate']->sec);
+					$status .= '<tr>';
+					$status .= '<td><span class="commentTime">'.$timestamp.'</span><br />'.$c['approverName'].'</td>';
+					$status .= '</tr>';
+					$status .= '<tr>';
+					$status .= '<td><p>'.$c['approvalNote'].'</p></td>';
+					$status .= '</tr>';
+				}
+				$status .= '</table>';
+			}else{
+				$status = 'Pending';
+			}
+
 
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
@@ -558,6 +596,7 @@ class Requests_Controller extends Base_Controller {
 				$doc['creatorName'],
 				//$requestTo,
 				$request_type,
+				$status,
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
 				''

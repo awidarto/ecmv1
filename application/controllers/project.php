@@ -40,7 +40,7 @@ class Project_Controller extends Base_Controller {
 
 	public function get_index()
 	{
-		$heads = array(
+		$firstheads = array(
 			'#',
 			'Project Date',
 			'Project Number',
@@ -51,9 +51,7 @@ class Project_Controller extends Base_Controller {
 			'Closing Date',
 			'Project System',
 			'Project PIC',
-			'Contract Currency',
-			'Contract Price',
-			'Equivalent Contract Currency',
+			array('Contract Price',array('colspan'=>3,'class'=>'twelve','style'=>'text-align:center')),
 			'Equivalent Contract Price',
 			'Project Status',
 			'Project Remark',
@@ -66,6 +64,27 @@ class Project_Controller extends Base_Controller {
 			'Tags',
 			'Action'
 		);
+
+		$secondheads = array(
+			'#',
+			'',
+			'',
+			'',
+			'',
+			'',
+			'',
+			'',
+			'',
+			'',
+			array('USD',array('class'=>'two')),
+			array('EURO',array('class'=>'two')),
+			array('IDR',array('class'=>'two')),
+			array('USD',array('class'=>'one')),
+			'',
+			'',
+			'',
+			''
+		);		
 
 		$colclass = array('one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one');
 		//$colclass = false;
@@ -108,7 +127,8 @@ class Project_Controller extends Base_Controller {
 			->with('ajaxsource',URL::to('project'))
 			->with('ajaxdel',URL::to('project/del'))
 	        ->with('crumb',$this->crumb)
-			->with('heads',$heads);
+			->with('heads',$firstheads)
+			->with('secondheads',$secondheads);
 	}
 
 
@@ -238,9 +258,9 @@ class Project_Controller extends Base_Controller {
 				date('Y-m-d', $doc['dueDate']->sec),
 				$doc['projectVendor'],
 				$doc['projectPIC'],
-				$doc['contractCurrency'],
-				($doc['contractPrice'] != '')?number_format((double)$doc['contractPrice'],2,',','.'):'',
-				$doc['equivalentContractCurrency'],
+				($doc['contractCurrency'] == 'USD' && $doc['contractPrice'] != '')?number_format((double)$doc['contractPrice'],2,',','.'):'',
+				($doc['contractCurrency'] == 'EURO' && $doc['contractPrice'] != '')?number_format((double)$doc['contractPrice'],2,',','.'):'',
+				($doc['contractCurrency'] == 'IDR' && $doc['contractPrice'] != '')?number_format((double)$doc['contractPrice'],2,',','.'):'',
 				($doc['equivalentContractPrice'] != '')?number_format((double)$doc['equivalentContractPrice'],2,',','.'):'',
 				$doc['projectStatus'],
 				$doc['projectRemark'],
