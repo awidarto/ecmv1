@@ -415,6 +415,7 @@ class Requests_Controller extends Base_Controller {
 			array('Created',array('class'=>'one')),
 			array('Requester',array('class'=>'one')),
 			array('Requesting',array('class'=>'one')),
+			array('Requesting To',array('class'=>'one')),
 			'Status',
 			array('Attachment',array('class'=>'one')),
 			array('Tags',array('class'=>'one')),
@@ -570,19 +571,30 @@ class Requests_Controller extends Base_Controller {
 			$requestTo .= '</ol>';
 
 			if(isset($doc['approvalResponds'])){
-				$status = '<table>';
+				$status = '<table style="width:100%">';
+				$status .= '<thead><tr>';
+				$status .= '<th>Status</th><th>By</th><th>Detail</th>';
+
+				$status .= '</tr></thead>';
 				foreach($doc['approvalResponds'] as $c){
+					if($c['approval'] == 'transfer'){
+						$appstatus = 'Transferred';
+					}else if($c['approval'] == 'yes'){
+						$appstatus = 'Approved';
+					}else if($c['approval'] == 'no'){
+						$appstatus = 'Not Approved';
+					}
 					$timestamp = date('d-m-Y h:i:s',$c['approvalDate']->sec);
 					$status .= '<tr>';
-					$status .= '<td><span class="commentTime">'.$timestamp.'</span><br />'.$c['approverName'].'</td>';
-					$status .= '</tr>';
-					$status .= '<tr>';
-					$status .= '<td><p>'.$c['approvalNote'].'</p></td>';
+					$status .= '<td><span class"approval '.$c['approval'].'">'.$appstatus.'</span></td>';
+					$status .= '<td>'.$c['approverName'].'</td>';
+					$status .= '<td><span class="commentTime">'.$timestamp.'</span><br />';
+					$status .= '<p>'.$c['approvalNote'].'</p></td>';
 					$status .= '</tr>';
 				}
 				$status .= '</table>';
 			}else{
-				$status = 'Pending';
+				$status = 'Pending Approval';
 			}
 
 
@@ -594,8 +606,8 @@ class Requests_Controller extends Base_Controller {
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
 				date('Y-m-d H:i:s', $doc['createdDate']->sec),
 				$doc['creatorName'],
-				//$requestTo,
 				$request_type,
+				$requestTo,
 				$status,
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,

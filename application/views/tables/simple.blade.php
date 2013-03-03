@@ -222,7 +222,10 @@
 					type:'iframe',
 					width:'1000',
 					href: '{{ URL::to("document/approve/") }}' + doc_id,
-					autosize: false
+					autosize: false,
+					afterClose:function(){
+						oTable.fnDraw();
+					}					
 				});
 			}
 

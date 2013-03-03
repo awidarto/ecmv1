@@ -1183,3 +1183,30 @@ cursor: pointer;
 .button.action{
     font-size: 13px;
 }
+
+td.approval.yes{
+    background-color: green;
+    color: white;
+    padding: 3px;
+    display: block;
+    font-weight: bold;
+    text-align: center    
+}
+
+td.approval.no{
+    background-color: red;
+    color: white;
+    padding: 3px;
+    display: block;
+    font-weight: bold;
+    text-align: center    
+}
+
+td.approval.transfer{
+    background-color: orange;
+    color: white;
+    padding: 3px;
+    display: block;
+    font-weight: bold;
+    text-align: center    
+}

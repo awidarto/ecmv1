@@ -44,9 +44,10 @@
 		$.post('{{ URL::to($ajaxpost) }}',{'docid':_id, 'pass': pass,'fwdto':fwdto, 'approval':approve,'note':note}, function(data) {
 			if(data.status == 'OK'){
 				$('#notifier').html('Approval Success');
+				//parent.oTable.fnDraw();
+				parent.jQuery.fancybox.close();
 
 				//redraw table
-				//oTable.fnDraw();
 				//alert("Item id : " + _id + " deleted");
 			}
 		},'json');
@@ -55,7 +56,8 @@
 	});
 
 	$('#docancel').click(function(){
-
+		parent.jQuery.fancybox.close();
+		return false;
 	});
 
 </script>
