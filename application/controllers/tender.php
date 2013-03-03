@@ -40,7 +40,7 @@ class Tender_Controller extends Base_Controller {
 
 	public function get_index()
 	{
-		$heads = array(
+		$firstheads = array(
 			'#',
 			'Tender Date',
 			'Tender Number',
@@ -51,14 +51,33 @@ class Tender_Controller extends Base_Controller {
 			'Closing Date',
 			'Tender System',
 			'Tender PIC',
-			'Bid Currency',
-			'Bid Price',
-			'Equivalent Bid Currency',
+			array('Bid Price',array('colspan'=>3,'style'=>'text-align:center')),
 			'Equivalent Bid Price',
 			'Tender Status',
 			'Tender Remark',
 			'Tags',
 			'Action'
+		);
+
+		$secondheads = array(
+			'#',
+			'',
+			'',
+			'',
+			'',
+			'',
+			'',
+			'',
+			'',
+			'',
+			'USD',
+			'EURO',
+			'IDR',
+			'USD',
+			'',
+			'',
+			'',
+			''
 		);
 
 		$colclass = array('one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one');
@@ -102,7 +121,8 @@ class Tender_Controller extends Base_Controller {
 			->with('ajaxsource',URL::to('tender'))
 			->with('ajaxdel',URL::to('tender/del'))
 	        ->with('crumb',$this->crumb)
-			->with('heads',$heads);
+			->with('heads',$firstheads)
+			->with('secondheads',$secondheads);
 	}
 
 
@@ -231,9 +251,10 @@ class Tender_Controller extends Base_Controller {
 				date('Y-m-d', $doc['closingDate']->sec),
 				$doc['tenderSystem'],
 				$doc['tenderPIC'],
-				$doc['bidCurrency'],
-				number_format((double)$doc['bidPrice'],2,',','.'),
-				$doc['equivalentBidCurrency'],
+				($doc['bidCurrency'] == 'USD')?number_format((double)$doc['bidPrice'],2,',','.'):'',
+				($doc['bidCurrency'] == 'EURO')?number_format((double)$doc['bidPrice'],2,',','.'):'',
+				($doc['bidCurrency'] == 'IDR')?number_format((double)$doc['bidPrice'],2,',','.'):'',
+				//$doc['equivalentBidCurrency'],
 				number_format((double)$doc['equivalentBidPrice'],2,',','.'),
 				$doc['tenderStatus'],
 				$doc['tenderRemark'],
@@ -698,6 +719,7 @@ class Tender_Controller extends Base_Controller {
 			->with('ajaxsource',URL::to('tender/scheduleitems/'.$id))
 			->with('disablesort','0')
 			->with('ajaxsourcedoc',URL::to('tender/doc/'.$id))
+			->with('ajaxsourceprogress',URL::to('tender/progress/'.$id))
 			->with('searchinput',$searchinput)
 			->with('heads',$heads)
 			->with('crumb',$this->crumb)
@@ -879,12 +901,206 @@ class Tender_Controller extends Base_Controller {
 		return Response::json($result);
 	}
 
-	public function get_addscitem(){
+	public function post_progress($id = null)
+	{
+
+		$fields = array('timestamp','initial','progress','cinitial','comments');
+
+		$rel = array('like','like','like','like');
+
+		$cond = array('both','both','both','both');
+
+		$pagestart = Input::get('iDisplayStart');
+		$pagelength = Input::get('iDisplayLength');
+
+		$limit = array($pagelength, $pagestart);
+
+		$defsort = 1;
+		$defdir = -1;
+
+		$idx = 0;
+		$q = array();
+
+		$hilite = array();
+		$hilite_replace = array();
+
+		foreach($fields as $field){
+			if(Input::get('sSearch_'.$idx))
+			{
+
+				$hilite_item = Input::get('sSearch_'.$idx);
+				$hilite[] = $hilite_item;
+				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
+
+				if($rel[$idx] == 'like'){
+					if($cond[$idx] == 'both'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
+					}else if($cond[$idx] == 'before'){
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
+					}else if($cond[$idx] == 'after'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
+					}
+				}else if($rel[$idx] == 'equ'){
+					$q[$field] = Input::get('sSearch_'.$idx);
+				}
+			}
+			$idx++;
+		}
+
+		//print_r($q)
+		if(!is_null($id)){
+			$q['tenderId'] = $id;
+		}
+
+		$document = new Progress();
+
+		/* first column is always sequence number, so must be omitted */
+		$fidx = Input::get('iSortCol_0');
+		if($fidx == 0){
+			$fidx = $defsort;
+			$sort_col = $fields[$fidx];
+			$sort_dir = $defdir;
+		}else{
+			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+			$sort_col = $fields[$fidx];
+			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		}
+
+		$count_all = $document->count();
+
+		if(count($q) > 0){
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count($q);
+		}else{
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count();
+		}
+
+		$form = new Formly();
+
+		$aadata = array();
+
+		$counter = 1 + $pagestart;
+		foreach ($documents as $doc) {
+
+			$commentform = $form->textarea('addcomment','','',array('placeholder'=>'Add Comment','rows'=>2,'class'=>'comment_form','id'=>'comment_'.$doc['_id']));
+			$commentform .= Form::button('Add',array('class'=>'button right addcomment','id'=>$doc['_id']));
+
+			$comments = '<table>';
+			foreach($doc['comments'] as $c){
+				$timestamp = date('d-m-Y h:i:s',$c['timestamp']->sec);
+				$comments .= '<tr>';
+				$comments .= '<td class="one commentBy">'.$c['commenterInitial'].'</td>';
+				$comments .= '<td><span class="commentTime">'.$timestamp.'</span><p>'.$c['comment'].'</p></td>';
+				$comments .= '</tr>';
+			}
+			$comments .= '</table>';
+
+			$aadata[] = array(
+				$counter,
+				date('Y-m-d H:i:s', $doc['timestamp']->sec),
+				$doc['userInitial'],
+				$doc['progressInput'],
+				$comments.$commentform,
+			);
+			$counter++;
+		}
+
+
+		$result = array(
+			'sEcho'=> Input::get('sEcho'),
+			'iTotalRecords'=>$count_all,
+			'iTotalDisplayRecords'=> $count_display_all,
+			'aaData'=>$aadata,
+			'qrs'=>$q
+		);
+
+		return Response::json($result);
+	}
+
+
+	public function post_addprogress($id){
+
+		$newprogress = Input::get();
+
+		$newprogress['timestamp'] = new MongoDate();
+		$newprogress['tenderId'] = $id;
+		$newprogress['comments'] = array();
+
+		$progress = new Progress();
+
+		if($pobj = $progress->insert($newprogress)){
+			/*
+			$opportunity = new Opportunity();
+
+			$_id = new MongoId($id);
+
+			$pushData['opportunityProgress'] = $newprogress;
+
+			if($opportunity->get(array('opportunityContactPersons.personEmail'=>$newcontact['personEmail']))){
+				return Response::json(array('status'=>'CONTACTEXISTS'));
+			}else{
+				if($opportunity->update(array('_id'=>$_id),array('$addToSet'=>$pushData),array('upsert'=>true))){
+					return Response::json(array('status'=>'OK'));
+				}else{
+					return Response::json(array('status'=>'ERR'));
+				}
+			}
+			*/
+			return Response::json(array('status'=>'OK'));
+		}else{
+			return Response::json(array('status'=>'ERR'));
+		}
+
 
 	}
 
-	public function get_postscitem(){
-		
+	public function post_addcomment($id){
+
+		$newcomment = Input::get();
+
+		//$newcomment['opportunityId'] = $id;
+		//$newcomment['progressId'] = $progressId;
+
+		$progressid = $newcomment['progressid'];
+
+		$newcomment['commenterName'] = Auth::user()->fullname;
+		$newcomment['commenterId'] = Auth::user()->id;
+		$newcomment['commenterInitial'] = Auth::user()->initial;
+
+		$newcomment['timestamp'] = new MongoDate();
+		$newcomment['comment'];
+
+		$progress = new Progress();
+
+		$_id = new MongoId($progressid);
+
+		$pobj = $progress->update(array('_id'=>$_id),array('$push'=>array('comments'=>$newcomment)));
+
+		if($pobj){
+			/*
+			$opportunity = new Opportunity();
+
+			$_id = new MongoId($id);
+
+			$pushData['opportunityProgress'] = $newprogress;
+
+			if($opportunity->get(array('opportunityContactPersons.personEmail'=>$newcontact['personEmail']))){
+				return Response::json(array('status'=>'CONTACTEXISTS'));
+			}else{
+				if($opportunity->update(array('_id'=>$_id),array('$addToSet'=>$pushData),array('upsert'=>true))){
+					return Response::json(array('status'=>'OK'));
+				}else{
+					return Response::json(array('status'=>'ERR'));
+				}
+			}
+			*/
+			return Response::json(array('status'=>'OK'));
+		}else{
+			return Response::json(array('status'=>'ERR'));
+		}
+
+
 	}
 
 

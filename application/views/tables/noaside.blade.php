@@ -15,19 +15,41 @@
 	    <thead>
 	        <tr>
 	        	@foreach($heads as $head)
+	        		@if(is_array($head))
+	        			<th 
+	        				@foreach($head[1] as $key=>$val)
+	        					{{ $key }}="{{ $val }}"
+
+	        				@endforeach
+	        			>
+	        			{{ $head[0] }}
+	        			</th>
+	        		@else
 	        		<th>
 	        			{{ $head }}
 	        		</th>
+	        		@endif
 	        	@endforeach
 	        </tr>
-	        @if(isset($secondheads))
-		        <tr>
-		        	@foreach($secondheads as $head)
-		        		<th>
-		        			{{ $head }}
-		        		</th>
-		        	@endforeach
-		        </tr>
+	        @if(isset($secondheads) && !is_null($secondheads))
+	        	<tr>
+	        	@foreach($secondheads as $head)
+	        		@if(is_array($head))
+	        			<th 
+	        				@foreach($head[1] as $key=>$val)
+	        					{{ $key }}="{{ $val }}"
+
+	        				@endforeach
+	        			>
+	        			{{ $head[0] }}
+	        			</th>
+	        		@else
+	        		<th>
+	        			{{ $head }}
+	        		</th>
+	        		@endif
+	        	@endforeach
+	        	</tr>
 	        @endif
 	    </thead>
 	    <tbody>

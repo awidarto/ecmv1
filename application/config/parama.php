@@ -3,7 +3,7 @@
   'storage'=>'public/storage/',
   'avatarstorage'=>'public/avatar/',
   'photostorage'=>'public/employees/',
-  'currencies'=>array( 'IDR'=>'IDR','USD'=>'USD','SGD'=>'SGD','EU'=>'EU','AUD'=>'AUD'),
+  'currencies'=>array( 'IDR'=>'IDR','USD'=>'USD','EURO'=>'EURO'),
   'roles'=>array( 
   		'root'=>'Root User',
   		'super'=>'Super User',
@@ -149,7 +149,8 @@
       'inprogress'=>'In Progress',
       'cancelled'=>'Cancelled',
       'declined'=>'Declined'
-    )
+    ),
+  'expiration_alert_days'=>14,
 
 
 );

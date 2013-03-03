@@ -430,7 +430,7 @@ table.dataTable{
 }
 
 .action{
-	font-size: 1.8em;
+	font-size: 2.1em;
 	cursor:pointer;
 }
 
@@ -1104,7 +1104,7 @@ tr.odd{
 	margin-left: 20px;
 }
 .action{
-	font-size: 13px;
+	font-size: 25px;
 }
 .tableHeader{
 	position: relative;
@@ -1171,6 +1171,48 @@ cursor: pointer;
 	padding: 4px 12px;
 }
 
+<<<<<<< HEAD
 .row .profileContent .nine{
     float: left;
 }
+=======
+.expiring{
+    background-color: red;
+    color: white;
+    padding: 3px;
+    display: block;
+    font-weight: bold;
+    text-align: center
+}
+
+.button.action{
+    font-size: 13px;
+}
+
+td.approval.yes{
+    background-color: green;
+    color: white;
+    padding: 3px;
+    display: block;
+    font-weight: bold;
+    text-align: center    
+}
+
+td.approval.no{
+    background-color: red;
+    color: white;
+    padding: 3px;
+    display: block;
+    font-weight: bold;
+    text-align: center    
+}
+
+td.approval.transfer{
+    background-color: orange;
+    color: white;
+    padding: 3px;
+    display: block;
+    font-weight: bold;
+    text-align: center    
+}
+>>>>>>> 71faeab328416cb3c56a83eb07a58cb02e198295

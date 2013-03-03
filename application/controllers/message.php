@@ -292,14 +292,7 @@ class Message_Controller extends Base_Controller {
 
 		$message['subject'] = 'Re: '.$message['subject'];
 
-		$body = explode("\n",$message['body']);
-
-		for($i = 0;$i < count($body);$i++){
-			$body[$i] = '>'.$body[$i];
-		}
-
-		$message['body'] = implode("\n", $body);
-		$message['body'] .= "\r\n";
+		$message['body'] = "<br /><q>".$message['body']."</q>";
 
 		$form = new Formly($message);
 
@@ -535,14 +528,8 @@ class Message_Controller extends Base_Controller {
 
 		$message['bcc'] = '';
 
-		$body = explode("\n",$message['body']);
+		$message['body'] = "<br /><q>".$message['body']."</q>";
 
-		for($i = 0;$i < count($body);$i++){
-			$body[$i] = '>'.$body[$i];
-		}
-
-		$message['body'] = implode("\n", $body);
-		$message['body'] .= "\r\n";
 
 		$ckeditor = new CKEditor();
 

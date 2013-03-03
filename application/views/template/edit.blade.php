@@ -56,8 +56,8 @@
       </div>   
     </div>
     <p>
-      <strong>Private</strong> document ( default ) can only be seen by its creator and people it was shared with.<br />
-      <strong>Public</strong> document will be able to be seen by creator's peers at the same department, and superiors with higher access level. 
+      <strong>Confidential</strong> document ( default ) can only be seen by its creator and people it was shared with.<br />
+      <strong>General</strong> document will be able to be seen by creator's peers at the same department, and superiors with higher access level. 
     </p>
 
     {{ $form->text('docShare','Shared to ( default to all department member )','',array('class'=>'tag_email four','style'=>'width:100%')) }}

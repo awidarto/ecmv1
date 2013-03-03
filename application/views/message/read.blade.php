@@ -3,7 +3,8 @@
 @section('content')
 
 <?php
-	$main_photo = getavatar($doc['fromId'],$doc['from'],'twelve');
+	$fromid = (isset($doc['fromId']))?$doc['fromId']:0;
+	$main_photo = getavatar($fromid,$doc['from'],'twelve');
 ?>
 <div class="row">
 	<div class="one columns">{{ $main_photo }}</div>
