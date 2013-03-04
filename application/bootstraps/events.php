@@ -54,6 +54,7 @@ Event::listen('document.expire',function(){
             $message->insert($m);
 
             $ev = array('event'=>'document.expire',
+
                 'approvalby'=>'',
                 'creator_id'=>new MongoId(Auth::user()->id),
                 'creator_name'=>Auth::user()->fullname,
@@ -74,6 +75,8 @@ Event::listen('document.expire',function(){
                 'updater_id'=>new MongoId(Auth::user()->id),
                 'updater_name'=>Auth::user()->fullname,
                 'timestamp'=>new MongoDate()
+
+                
             );
 
 
@@ -99,14 +102,15 @@ Event::listen('document.create',function($id, $result){
 
     $ev = array('event'=>'document.create',
 
+
         'approvalby'=>'',
         'creator_id'=>new MongoId(Auth::user()->id),
         'creator_name'=>Auth::user()->fullname,
-        'department'=>$ex['docDepartment'],
-        'doc_id'=>$ex['_id'],
-        'doc_filename'=>$ex['docFilename'],
+        'department'=>$doc['docDepartment'],
+        'doc_id'=>$id,
+        'doc_filename'=>$doc['docFilename'],
         'doc_number'=>'',
-        'doc_title'=>$ex['title'],
+        'doc_title'=>$doc['title'],
         'downloader_id'=>'',
         'downloader_name'=>'',
         'remover_id'=>'',
@@ -119,6 +123,7 @@ Event::listen('document.create',function($id, $result){
         'updater_id'=>new MongoId(Auth::user()->id),
         'updater_name'=>Auth::user()->fullname,
         'timestamp'=>new MongoDate()
+
     );
 
     if($activity->insert($ev)){
@@ -135,13 +140,13 @@ Event::listen('document.update',function($id,$result){
     $doc = getdocument($id);
 
     $ev = array('event'=>'document.update',
-
+  
         'approvalby'=>'',
         'creator_id'=>new MongoId($doc['creatorId']),
         'creator_name'=>$doc['creatorName'],
-        'department'=>$ex['docDepartment'],
+        'department'=>$doc['docDepartment'],
         'doc_id'=>$id,
-        'doc_filename'=>$ex['docFilename'],
+        'doc_filename'=>$doc['docFilename'],
         'doc_number'=>'',
         'doc_title'=>$doc['title'],
         'downloader_id'=>'',
@@ -156,6 +161,8 @@ Event::listen('document.update',function($id,$result){
         'updater_id'=>new MongoId(Auth::user()->id),
         'updater_name'=>Auth::user()->fullname,
         'timestamp'=>new MongoDate()
+
+        
     );
 
     if($activity->insert($ev)){
@@ -173,12 +180,13 @@ Event::listen('document.download',function($id,$result){
 
     $ev = array('event'=>'document.update',
 
+       
         'approvalby'=>'',
-        'creator_id'=> new MongoId($doc['creatorId']),
+        'creator_id'=>new MongoId($doc['creatorId']),
         'creator_name'=>$doc['creatorName'],
         'department'=>$doc['docDepartment'],
         'doc_id'=>$id,
-        'doc_filename'=>$ex['docFilename'],
+        'doc_filename'=>$doc['docFilename'],
         'doc_number'=>'',
         'doc_title'=>$doc['title'],
         'downloader_id'=>new MongoId(Auth::user()->id),
@@ -209,9 +217,10 @@ Event::listen('document.delete',function($id,$creator_id,$result){
     $activity = new Activity();
 
     $ev = array('event'=>'document.delete',
+        
 
         'approvalby'=>'',
-        'creator_id'=> new MongoId($creator_id),
+        'creator_id'=>new MongoId($creator_id),
         'creator_name'=>'',
         'department'=>'',
         'doc_id'=>$id,
@@ -231,6 +240,9 @@ Event::listen('document.delete',function($id,$creator_id,$result){
         'updater_name'=>'',
         'timestamp'=>new MongoDate()
 
+        
+
+
     );
 
     if($activity->insert($ev)){
@@ -247,8 +259,10 @@ Event::listen('document.share',function($id,$sharer_id,$shareto){
     $doc = getdocument($id);
 
     $ev = array('event'=>'document.share',
+
+        
         'approvalby'=>'',
-        'creator_id'=> new MongoId($doc['creatorId']),
+        'creator_id'=>new MongoId($doc['creatorId']),
         'creator_name'=>$doc['creatorName'],
         'department'=>'',
         'doc_id'=>$id,
@@ -267,7 +281,7 @@ Event::listen('document.share',function($id,$sharer_id,$shareto){
         'updater_id'=>'',
         'updater_name'=>'',
         'timestamp'=>new MongoDate()
-        
+
     );
 
     if($activity->insert($ev)){
@@ -288,8 +302,9 @@ Event::listen('project.create',function($id, $result){
 
     $ev = array('event'=>'project.create',
 
+        
         'approvalby'=>'',
-        'creator_id'=> new MongoId(Auth::user()->id),
+        'creator_id'=>new MongoId(Auth::user()->id),
         'creator_name'=>Auth::user()->fullname,
         'department'=>$doc['projectDepartment'],
         'doc_id'=>$id,
@@ -308,6 +323,7 @@ Event::listen('project.create',function($id, $result){
         'updater_id'=>new MongoId(Auth::user()->id),
         'updater_name'=>Auth::user()->fullname,
         'timestamp'=>new MongoDate()
+        
     );
 
     if($activity->insert($ev)){
@@ -326,9 +342,9 @@ Event::listen('project.update',function($id,$result){
     $ev = array('event'=>'project.update',
 
         'approvalby'=>'',
-        'creator_id'=> new MongoId($doc['creatorId']),
+        'creator_id'=>new MongoId($doc['creatorId']),
         'creator_name'=>$doc['creatorName'],
-        'department'=> $doc['projectDepartment'],
+        'department'=>$doc['projectDepartment'],
         'doc_id'=>$id,
         'doc_filename'=>'',
         'doc_number'=>$doc['projectNumber'],
@@ -342,10 +358,10 @@ Event::listen('project.update',function($id,$result){
         'sharer_id'=>'',
         'sharer_name'=>'',
         'shareto'=>'',
-        'updater_id'=> new MongoId(Auth::user()->id),
-        'updater_name'=> Auth::user()->fullname,
-        'timestamp'=>new MongoDate()
-
+        'updater_id'=>new MongoId(Auth::user()->id),
+        'updater_name'=>Auth::user()->fullname,
+        'timestamp'=>new MongoDate(),
+      
     );
 
     if($activity->insert($ev)){
@@ -360,11 +376,12 @@ Event::listen('project.delete',function($id,$creator_id,$result){
     $activity = new Activity();
 
     $ev = array('event'=>'peoject.delete',
- 
+
+
         'approvalby'=>'',
-        'creator_id'=> new MongoId($creator_id),
+        'creator_id'=>new MongoId($creator_id),
         'creator_name'=>'',
-        'department'=> '',
+        'department'=>'',
         'doc_id'=>$id,
         'doc_filename'=>'',
         'doc_number'=>'',
@@ -378,9 +395,9 @@ Event::listen('project.delete',function($id,$creator_id,$result){
         'sharer_id'=>'',
         'sharer_name'=>'',
         'shareto'=>'',
-        'updater_id'=> '',
-        'updater_name'=> '',
-        'timestamp'=>new MongoDate()
+        'updater_id'=>'',
+        'updater_name'=>'',
+        'timestamp'=>new MongoDate(),
 
     );
 
@@ -402,26 +419,26 @@ Event::listen('request.approval',function($id,$approvalby){
     $doc = getdocument($id);
 
     $ev = array('event'=>'request.approval',
-
+  
         'approvalby'=>$approvalby,
         'creator_id'=> new MongoId($doc['creatorId']),
         'creator_name'=>$doc['creatorName'],
-        'department'=> '',
+        'department'=>'',
         'doc_id'=>$id,
         'doc_filename'=>$doc['docFilename'],
         'doc_number'=>'',
         'doc_title'=>$doc['title'],
         'downloader_id'=>'',
         'downloader_name'=>'',
-        'remover_id'=>'',
-        'requester_id'=>new MongoId(Auth::user()->id),
+        'remover_id'=>new MongoId(Auth::user()->id),
+        'requester_id'=>'',
         'requester_name'=>Auth::user()->fullname,
-        'result'=>$result,
+        'result'=>'',
         'sharer_id'=>'',
         'sharer_name'=>'',
         'shareto'=>'',
-        'updater_id'=> '',
-        'updater_name'=> '',
+        'updater_id'=>'',
+        'updater_name'=>'',
         'timestamp'=>new MongoDate()
 
 
@@ -438,7 +455,8 @@ Event::listen('request.approval',function($id,$approvalby){
 
 
 Event::listen('send.message',function($from,$to,$subject){
-	
+
 });
+
 
 ?>

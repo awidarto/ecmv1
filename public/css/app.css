@@ -1385,3 +1385,7 @@ a{
 .searchbtn{
  margin-left: 15px;   
 }
+
+img.avatar{
+    max-width:50px !important; 
+}
