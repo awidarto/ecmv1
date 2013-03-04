@@ -46,7 +46,7 @@ Event::listen('document.expire',function(){
             $m['to'] = $owner['email'];
             $m['cc'] = $ex['docShare'];
             $m['body'] = HTML::link('document/type/'.$ex['docDepartment'].'/'.$ex['_id'],$ex['title']).' is expiring in '.$indays->days.' day(s)';
-            $m['subject'] = $m['body'];
+            $m['subject'] = $ex['title'].' is expiring in '.$indays->days.' day(s)';
             $m['createdDate'] = new MongoDate();
 
             $message->insert($m);
@@ -57,7 +57,26 @@ Event::listen('document.expire',function(){
 
     }
 
-    return false;
+    $ev = array('event'=>'document.expire',
+        'timestamp'=>new MongoDate(),
+        'creator_id'=>new MongoId(Auth::user()->id),
+        'creator_name'=>Auth::user()->fullname,
+        'updater_id'=>new MongoId(Auth::user()->id),
+        'updater_name'=>Auth::user()->fullname,
+        'sharer_id'=>'',
+        'sharer_name'=>'',
+        'department'=>$willexpire['docDepartment'],
+        'doc_id'=>$id,
+        'doc_title'=>$willexpire['title'],
+        'doc_filename'=>$willexpire['docFilename']
+    );
+
+    if($activity->insert($ev)){
+        return true;
+    }else{
+        return false;
+    }
+
 });
 
 Event::listen('document.create',function($id, $result){

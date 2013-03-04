@@ -1,5 +1,9 @@
 <?
-$doc_photo = getavatar($doc['creator_id'],$doc['creator_name'],'ten');
+if(isset($doc['creator_id'])){
+	$doc_photo = getavatar($doc['creator_id'],$doc['creator_name'],'ten');
+}else{
+	$doc_photo = '';
+}
 //$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'ten');
 
 $class = str_replace('.', '-', $doc['event']);
@@ -53,6 +57,10 @@ elseif($doc['event'] == 'request.approval'){
 	}else{
 		$body = 'You have requested document approval to '.$doc['approvalby'].' for document : <span class="fileview" id="'.$doc['doc_id'].'">'.$doc['doc_filename'].'</span>';
 	}
+}elseif($doc['event'] == 'document.expire'){
+	
+	$main_photo = '';
+	$body = $doc['title'].'  is expiring';
 }else{
 	$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'twelve');
 	$body = $doc['creator_name'].' have done '.eventtitle($doc['event']);
