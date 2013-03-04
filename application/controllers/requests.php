@@ -385,8 +385,7 @@ class Requests_Controller extends Base_Controller {
 				$request_type,
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
-				'<i class="foundicon-checkmark action approvalview" id="'.$doc['_id'].'"></i>&nbsp;'.
-				'<i class="foundicon-right-arrow action forwardview" id="'.$doc['_id'].'"></i>'
+				'<i class="foundicon-checkmark action approvalview" id="'.$doc['_id'].'"></i>'
 			);
 			$counter++;
 		}
