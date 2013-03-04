@@ -1385,3 +1385,17 @@ a{
 .searchbtn{
  margin-left: 15px;   
 }
+
+.invalidhead{
+    display: block;
+    padding: 5px;
+    background-color: red;
+    text-decoration: underline;
+}
+
+.duplicateemail{
+    display: block;
+    padding: 5px;
+    background-color: red;
+    text-decoration: underline;
+}
