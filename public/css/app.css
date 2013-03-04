@@ -1379,3 +1379,9 @@ a{
 .printcover{
     cursor: pointer;
 }
+.tableHeader a.foundicon-add-doc {
+    margin-left: 20px;
+}
+.searchbtn{
+ margin-left: 15px;   
+}
