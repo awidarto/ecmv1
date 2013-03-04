@@ -1,12 +1,14 @@
-<?
+<?php
+
+$doc_photo = '';
+
 if(isset($doc['creator_id'])){
 	$doc_photo = getavatar($doc['creator_id'],$doc['creator_name'],'ten');
 }else{
 	$doc_photo = '';
 }
-$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'ten');
 
-$class = str_replace('.', '-', $doc['event']);
+$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'ten');
 
 if($doc['event'] == 'document.create'){
 	$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'twelve');
@@ -69,13 +71,16 @@ elseif($doc['event'] == 'request.approval'){
 ?>
 
 
-<div class="event-item {{ $class }} twelve">
+<div class="event-item twelve">
 
 	<div class="row">
-		
-			<div class="one columns">{{ $doc_photo }}</div>
+			@if(isset($doc_photo) || $doc_photo == '')
+				<div class="one columns">{{ $doc_photo }}</div>
+				<div class="eleven columns">
+			@else
+				<div class="twelve columns">
+			@endif
 			
-			<div class="eleven columns">
 		    	<p>
 					<strong style="margin-bottom:4px;display:block;">Document <span class="metaview" id="{{ $doc['doc_id'] }}">{{ $doc['doc_title'] }}</span> {{ $doc['title'] }}</strong>
 					Attachment : <span class="fileview" id="{{ $doc['doc_id'] }}">{{ $doc['doc_filename'] }}</span><br/>
