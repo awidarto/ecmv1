@@ -105,10 +105,12 @@
     {{ HTML::script('js/modernizr.foundation.js') }}
     {{ HTML::script('js/jquery.foundation.navigation.js') }}
     {{ HTML::script('js/jquery.foundation.forms.js') }}
+    {{ HTML::script('js/jquery.foundation.tooltips.js') }}
     <script type="text/javascript">
       base = '{{ URL::base() }}/';
       var $doc = $(document);
       $(document).foundationNavigation();
+      $(document).foundationTooltips();
       
     </script>
     {{ HTML::script('js/pnu.js') }}

@@ -59,7 +59,7 @@
     <!-- This is source ordered to be pulled to the left on larger screens -->
 @if(Auth::check())
     <div class="row mainheader">
-      <!--@yield('profilenav')-->
+      
       @yield('identity')
       <h1 id="paramanusaLogo">Paramanusa</h1>
       <nav class="top-bar main-bar">
@@ -123,11 +123,12 @@
     {{ HTML::script('js/modernizr.foundation.js') }}
     {{ HTML::script('js/jquery.foundation.navigation.js') }}
     {{ HTML::script('js/jquery.foundation.forms.js') }}
+    {{ HTML::script('js/jquery.foundation.tooltips.js') }}
     <script type="text/javascript">
       base = '{{ URL::base() }}/';
       var $doc = $(document);
       $(document).foundationNavigation();
-      
+      $(document).foundationTooltips();
     </script>
 
       {{ HTML::script('js/pnu.js') }}
