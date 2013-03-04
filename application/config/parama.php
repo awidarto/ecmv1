@@ -109,9 +109,10 @@
   'eventtitle'=>array(
       'document.upload'=>'New Document Created',
       'document.create'=>'New Document Created',
-      'document.update'=>'A Document Updated',
-      'document.delete'=>'A Document Deleted',
-      'document.share'=>'A Document Shared',
+      'document.update'=>'Updated',
+      'document.delete'=>'Deleted',
+      'document.share'=>'Shared',
+      'document.expire'=>'Will be Expired',
 
       'project.upload'=>'New Project Created',
       'project.create'=>'New Project Created',

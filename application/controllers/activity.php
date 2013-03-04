@@ -479,4 +479,78 @@ class Activity_Controller extends Base_Controller {
 		return $user['fullname'];
 	}
 
+	public function get_normalize(){
+		$activityCollection = new Activity();
+		$activities = $activityCollection->find();	
+
+		foreach ($activities as $activity ) {
+			$_id = $activity['_id'];
+
+			if(!isset($activity['approvalby']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('approvalby'=>'')));
+			}
+			if(!isset($activity['creator_id']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('creator_id'=>'')));
+			}
+			if(!isset($activity['creator_name']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('creator_name'=>'')));
+			}
+			if(!isset($activity['department']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('department'=>'')));
+			}
+			if(!isset($activity['doc_id']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('doc_id'=>'')));
+			}
+			if(!isset($activity['doc_filename']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('doc_filename'=>'')));
+			}
+			if(!isset($activity['doc_number']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('doc_number'=>'')));
+			}
+			if(!isset($activity['doc_title']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('doc_title'=>'')));
+			}
+			if(!isset($activity['downloader_id']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('downloader_id'=>'')));
+			}
+			if(!isset($activity['downloader_name']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('downloader_name'=>'')));
+			}
+			if(!isset($activity['remover_id']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('remover_id'=>'')));
+			}
+			if(!isset($activity['requester_id']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('requester_id'=>'')));
+			}
+			if(!isset($activity['requester_name']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('requester_name'=>'')));
+			}
+			if(!isset($activity['result']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('result'=>'')));
+			}
+			if(!isset($activity['sharer_id']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('sharer_id'=>'')));
+			}
+			if(!isset($activity['sharer_name']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('sharer_name'=>'')));
+			}
+			if(!isset($activity['shareto']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('shareto'=>'')));
+			}
+			if(!isset($activity['updater_id']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('updater_id'=>'')));
+			}
+			if(!isset($activity['updater_name']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('updater_name'=>'')));
+			}
+			if(!isset($activity['event']))	{
+				$activityCollection->update(array('_id'=>$_id),array('$set'=>array('event'=>'')));
+			}
+		}
+
+
+		
+
+	}
+
 }

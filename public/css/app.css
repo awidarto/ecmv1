@@ -331,6 +331,8 @@ body{
 
 }
 
+
+
 .clearfix:after
 {
 content:".";
@@ -1349,5 +1351,16 @@ ul.profilenav li:last-child{
 .has-tip:hover, .has-tip:focus{
 border-bottom: none;
 color: #2ba6cb;
+}
+
+.colorGray{
+    color: #949494;
+}
+
+a{
+    color:#2991b8;
+}
+.fileview, .metaview, .messageview{
+    color:#2991b8;
 }
 

@@ -4,7 +4,7 @@ if(isset($doc['creator_id'])){
 }else{
 	$doc_photo = '';
 }
-//$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'ten');
+$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'ten');
 
 $class = str_replace('.', '-', $doc['event']);
 
@@ -69,40 +69,23 @@ elseif($doc['event'] == 'request.approval'){
 ?>
 
 
-<div class="event-item {{ $class }}">
-	<div class="one columns">{{ $main_photo }}</div>
-	<div class="eleven columns">
-	  <p>
-	  	<span class="timestamp">{{date('Y-m-d H:i:s',$doc['timestamp']->sec)}}</span> <strong>{{$doc['title']}}</strong><br />
-	  	{{ $body }}<hr />
-	  <div class="row">
-	    <div class="one columns">{{ $doc_photo }}</div>
-	    <div class="eleven columns">
-	    	<p>
-				Document Title : <span class="metaview" id="{{$doc['doc_id']}}">{{$doc['doc_title']}}</span><br />
-				Attachment : <span class="fileview" id="{{$doc['doc_id']}}">{{$doc['doc_filename']}}</span>
-	    	</p>
-	    </div>
-	  </div>
-	  </p>
+<div class="event-item {{ $class }} twelve">
 
-	<!--
-	  <ul class="inline-list">
-	    <li><a href="">Reply</a></li>
-	    <li><a href="">Share</a></li>
-	  </ul>
-	
-	  <h6>2 Comments</h6>
-	  <div class="row">
-	    <div class="two columns"><img src="http://placehold.it/50x50&text=[img]" /></div>
-	    <div class="ten columns"><p>Bacon ipsum dolor sit amet nulla ham qui sint exercitation eiusmod commodo, chuck duis velit. Aute in reprehenderit</p></div>
-	  </div>
-	  <div class="row">
-	    <div class="two columns"><img src="http://placehold.it/50x50&text=[img]" /></div>
-	    <div class="ten columns"><p>Bacon ipsum dolor sit amet nulla ham qui sint exercitation eiusmod commodo, chuck duis velit. Aute in reprehenderit</p></div>
-	  </div>
-
-	-->
+	<div class="row">
+		
+			<div class="one columns">{{ $doc_photo }}</div>
+			
+			<div class="eleven columns">
+		    	<p>
+					<strong style="margin-bottom:4px;display:block;">Document <span class="metaview" id="{{ $doc['doc_id'] }}">{{ $doc['doc_title'] }}</span> {{ $doc['title'] }}</strong>
+					Attachment : <span class="fileview" id="{{ $doc['doc_id'] }}">{{ $doc['doc_filename'] }}</span><br/>
+					<span class="timestamp colorGray">{{ date('Y-m-d H:i:s',$doc['timestamp']->sec) }}</span><br />
+		  			{{-- $body --}}
+		    	</p>
+		    </div>
+		  	
+		  	
+		
 	</div>
 </div>
 
