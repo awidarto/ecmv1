@@ -42,8 +42,8 @@
 </div>
 <div class="row">
 	<div class="twelve colums">
-		{{ Form::reset('Clear',array('id'=>'doClear','class'=>'button right')) }}&nbsp;&nbsp;
-		{{ Form::button('Search',array('id'=>'doSearch','class'=>'button right')) }}
+		{{ Form::reset('Clear',array('id'=>'doClear','class'=>'button right searchbtn')) }}&nbsp;&nbsp;&nbsp;
+		{{ Form::button('Search',array('id'=>'doSearch','class'=>'button right searchbtn')) }}
 		
 	</div>
 </div>
