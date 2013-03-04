@@ -979,6 +979,10 @@ body.front .loginheader h1#paramanusaLogo{
 .top-bar ul>li.has-dropdown:hover a:after{
     border-color: #33b5e5 transparent transparent transparent;
 }
+.top-bar ul>li.has-dropdown .dropdown{
+    padding:0;
+    margin-left: -1px;
+}
 .top-bar ul>li.has-dropdown .dropdown li a{
 	color: #484236;
 
@@ -992,12 +996,20 @@ body.front .loginheader h1#paramanusaLogo{
 }
 .top-bar ul>li.has-dropdown:hover{
     border-right: 1px solid #e3e3e3;
+    border-left: 1px solid #e3e3e3;
+    
 
 }
 .top-bar ul>li.has-dropdown:hover a{
-    padding:0 6px 0 7px;
+    padding:0 6px 0 6px;
+    
+
+
 }
 
+.top-bar ul>li.has-dropdown:hover .dropdown li:first-child{
+    padding-top: 15px;
+}
 .top-bar ul>li.has-dropdown .dropdown li:last-child{
 	-webkit-box-shadow: 0px 2px 0px rgba(50, 50, 50, 0.22);
 	-moz-box-shadow:    0px 2px 0px rgba(50, 50, 50, 0.22);

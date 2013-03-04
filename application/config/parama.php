@@ -112,7 +112,7 @@
       'document.update'=>'Updated',
       'document.delete'=>'Deleted',
       'document.share'=>'Shared',
-      'document.expire'=>'Will be Expired',
+      'document.expire'=>'will be expired',
 
       'project.upload'=>'New Project Created',
       'project.create'=>'New Project Created',
