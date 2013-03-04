@@ -115,6 +115,8 @@ class Tender_Controller extends Base_Controller {
 			->with('newbutton','New Tender')
 			->with('disablesort','0,3')
 			->with('addurl','tender/add')
+			->with('importbutton','Import Tender Data')
+			->with('importurl','import/doimport/tender')
 			->with('excludecol','14,15,16,17,18,19,20,21,22')
 			->with('colclass',$colclass)
 			->with('searchinput',$searchinput)

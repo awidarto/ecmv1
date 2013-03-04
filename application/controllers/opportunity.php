@@ -112,6 +112,8 @@ class Opportunity_Controller extends Base_Controller {
 			->with('newbutton','New Opportunity')
 			->with('disablesort','0,3')
 			->with('addurl','opportunity/add')
+			->with('importbutton','Import Opportunity Data')
+			->with('importurl','import/doimport/opportunity')
 			->with('excludecol','14,15,16,17,18,19,20,21,22')
 			->with('colclass',$colclass)
 			->with('searchinput',$searchinput)
