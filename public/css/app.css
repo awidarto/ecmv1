@@ -1027,13 +1027,16 @@ body.front .loginheader h1#paramanusaLogo{
 	width: 90%;
 	margin-right: 10px;
 }
+.rightmenutop{
+    position: absolute;
+    right: 40px;
+    top:15px;
+}
 .identitiymenu{
 	background:transparent;
 	color: #484236;
 	display: inline-block;
-	position: absolute;
-	right: 40px;
-	top:15px;
+	float: left;
 	border: none;
 	margin: 0;
 	padding: 0;
@@ -1269,9 +1272,12 @@ background: #fff url("spinner.gif") no-repeat 10px 15px;
 z-index: 10000;
 }
 ul.profilenav{
-    position: absolute;
+    /*position: absolute;
     right: 222px;
-    top: 22px;
+    top: 22px;*/
+    float: left;
+    margin-top: 10px;
+    margin-right: 7px;
 }
 ul.profilenav li{
     float: left;
