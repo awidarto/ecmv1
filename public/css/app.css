@@ -1386,6 +1386,22 @@ a{
  margin-left: 15px;   
 }
 
+
 img.avatar{
     max-width:50px !important; 
 }
+
+.invalidhead{
+    display: block;
+    padding: 5px;
+    background-color: red;
+    text-decoration: underline;
+}
+
+.duplicateemail{
+    display: block;
+    padding: 5px;
+    background-color: red;
+    text-decoration: underline;
+}
+

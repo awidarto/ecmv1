@@ -64,16 +64,10 @@
        </div>
     </div>
 
-    <div class="row-fluid">
-       <div class="span12">
-    @if (Session::has('notify_success'))
-        <div class="alert alert-error">
-             {{Session::get('notify_success')}}
-        </div>
-    @endif
+    <div class="row">
+       <div class="twelve columns">
 
-
-{{$form->open('import/commit/'.$importid,'POST',array('class'=>'custom','id'=>'commit_form'))}}
+{{$form->open('import/commit/'.$controller.'/'.$importid,'POST',array('class'=>'custom','id'=>'commit_form'))}}
 
 			{{ $form->hidden('importid',$importid)}}
 			{{ $form->hidden('head_count',$head_count)}}
@@ -81,7 +75,9 @@
 				<div class="one columns"><strong>Legend :</strong></div>
 				<div class="two columns"><span class="invalidhead">invalid heads</span></div>
 				<div class="two columns"><span class="duplicateemail">email already exists</span></div>
-				<div class="seven columns"></div>
+				<div class="seven columns">
+					{{ Form::submit('Commit',array('class'=>'button right'))}}
+				</div>
 			</div>
 			<hr />
 
@@ -151,49 +147,6 @@
     </div>
 
  </div>
-<footer class="win-ui-dark win-commandlayout navbar-fixed-bottom">
-  <div class="container">
-     <div class="row">
-        <div class="span6 align-left">
-           <a class="win-command" href="{{ URL::base()}}">
-              <span class="win-commandimage win-commandring">!</span>
-              <span class="win-label">Home</span>
-           </a>
-
-           <hr class="win-command" />
-
-		   	@if(isset($addurl) && $addurl != '')
-				<a class="win-command" href="{{URL::to($addurl)}}">
-					<span class="win-commandimage win-commandring">&#xe03e;</span>
-					<span class="win-label">Add</span>
-				</a>
-			@endif
-
-		   	@if(isset($reimporturl) && $reimporturl != '')
-				<a class="win-command" href="{{URL::to($reimporturl)}}">
-					<span class="win-commandimage win-commandring">&#x0055;</span>
-					<span class="win-label">Re-Import</span>
-				</a>
-			@endif
-
-		   	@if(isset($commiturl) && $commiturl != '')
-				<a class="win-command" id="commit-trigger">
-					<span class="win-commandimage win-commandring">&#x0056;&#x0054;</span>
-					<span class="win-label">Commit</span>
-				</a>
-
-				<script type="text/javascript">
-					$('#commit-trigger').click(function(){
-						$('#commit_form').submit();
-					});
-				</script>
-			@endif
-
-        </div>
-
-     </div>
-  </div>
-</footer>
 
 <script type="text/javascript">
 
@@ -236,7 +189,7 @@
 		        "sAjaxSource": "{{$ajaxsource}}",
 				"oLanguage": { "sSearch": "Search "},
 				"sPaginationType": "full_numbers",
-				"sDom": 'lrpi<"tabscroll" t>T',
+				"sDom": 'CT<"clear">lrtip',
 				"oTableTools": {
 					"sSwfPath": "assets/swf/copy_csv_xls_pdf.swf"
 				},
