@@ -3,11 +3,17 @@
 class Excel  
 {
     public $workbook;
+
+    public $controller = 'project';
     
     function __construct()
     {
         require_once('PHPExcel.php');
         require_once('PHPExcel/IOFactory.php');
+    }
+
+    public function setController($controller){
+        $this->controller = $controller;
     }
     
     public function load($filename, $ext = 'xls'){
@@ -34,7 +40,15 @@ class Excel
         foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
             //echo '- ' . $worksheet->getTitle() . "\r\n";
 
-            if(preg_match('/Template/', $worksheet->getTitle()) OR preg_match('/Data/', $worksheet->getTitle())){
+            if($this->controller == 'project'){
+                $sheetname = 'JOB REGISTER';
+            }elseif($this->controller == 'opportunity'){
+                $sheetname = 'OPPORTUNITY REGISTER';
+            }elseif($this->controller == 'tender'){
+                $sheetname = 'TENDER REGISTER';                
+            }
+
+            if(preg_match('/^'.$sheetname.'/', $worksheet->getTitle()) OR preg_match('/Data/', $worksheet->getTitle())){
 
                 foreach ($worksheet->getRowIterator() as $row) {
                     //echo '    - Row number: ' . $row->getRowIndex() . "\r\n";

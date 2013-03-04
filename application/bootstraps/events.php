@@ -28,6 +28,8 @@ Event::listen('document.expire',function(){
         $user = new User();
         $message = new Message();
 
+        $activity = new Activity();
+
         foreach($willexpire as $ex){
             $datetime1 = new DateTime(date('Y-m-d',time()));
             $datetime2 = new DateTime(date('Y-m-d',$ex['expiryDate']->sec));
@@ -51,31 +53,33 @@ Event::listen('document.expire',function(){
 
             $message->insert($m);
 
+            $ev = array('event'=>'document.expire',
+                'timestamp'=>new MongoDate(),
+                'creator_id'=>new MongoId(Auth::user()->id),
+                'creator_name'=>Auth::user()->fullname,
+                'updater_id'=>new MongoId(Auth::user()->id),
+                'updater_name'=>Auth::user()->fullname,
+                'sharer_id'=>'',
+                'sharer_name'=>'',
+                'department'=>$ex['docDepartment'],
+                'doc_id'=>$ex['_id'],
+                'doc_title'=>$ex['title'],
+                'doc_filename'=>$ex['docFilename']
+            );
+
+
+        }
+
+        if($activity->insert($ev)){
+            return true;
+        }else{
+            return false;
         }
 
 
-
     }
 
-    $ev = array('event'=>'document.expire',
-        'timestamp'=>new MongoDate(),
-        'creator_id'=>new MongoId(Auth::user()->id),
-        'creator_name'=>Auth::user()->fullname,
-        'updater_id'=>new MongoId(Auth::user()->id),
-        'updater_name'=>Auth::user()->fullname,
-        'sharer_id'=>'',
-        'sharer_name'=>'',
-        'department'=>$willexpire['docDepartment'],
-        'doc_id'=>$id,
-        'doc_title'=>$willexpire['title'],
-        'doc_filename'=>$willexpire['docFilename']
-    );
 
-    if($activity->insert($ev)){
-        return true;
-    }else{
-        return false;
-    }
 
 });
 
