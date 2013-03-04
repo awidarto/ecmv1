@@ -1205,11 +1205,11 @@ cursor: pointer;
 	padding: 4px 12px;
 }
 
-<<<<<<< HEAD
+
 .row .profileContent .nine{
     float: left;
 }
-=======
+
 .expiring{
     background-color: red;
     color: white;
@@ -1267,5 +1267,81 @@ font-size: 14px;
 background-color: white;
 background: #fff url("spinner.gif") no-repeat 10px 15px;
 z-index: 10000;
+}
+ul.profilenav{
+    position: absolute;
+    right: 222px;
+    top: 22px;
+}
+ul.profilenav li{
+    float: left;
+    list-style-type: none;
+    padding: 0 10px;
+}
+ul.profilenav li a{
+    background-color: transparent;
+    background-position: top left;
+    width: 20px;
+    height: 18px;
+    display: block;
+    text-indent: -999999px;
+}
+ul.profilenav li a:hover{
+    height: 17px;
+    margin-top: 1px;
+    background-position: bottom left;
+    cursor: pointer;
+}
+ul.profilenav li a.home{
+    background-color: transparent;
+    background-image:  url(../images/icon/topnav/home.png);
+    background-position: top left;
+    width: 20px;
+    height: 18px;
+    display: block;
+    text-indent: -1000px;
+}
+ul.profilenav li a.home:hover{
+    height: 17px;
+    margin-top: 1px;
+    background-position: bottom left;
+}
+ul.profilenav li a.profile{
+    background-image:  url(../images/icon/topnav/profile.png);
+}
+ul.profilenav li a.profile:hover{
+}
+ul.profilenav li a.search{
+    background-image:  url(../images/icon/topnav/search.png);
+    width:16px;
+    height: 15px;
+    margin-top: 2px;
+}
+ul.profilenav li a.search:hover{
+    width:16px;
+    height: 15px;
+}
+ul.profilenav li a.help{
+    background-image:  url(../images/icon/topnav/help.png);
+    width:12px;
+    height: 17px;
+    
+    
+}
+ul.profilenav li:last-child{
+    padding-right: 20px;
+    border-right: 1px solid #cccccc;
+}
+.tooltip{
+    font-size: 12px;
+    background-color: #515151;
+    font-weight: normal;
+}
+.has-tip{
+    border: none;
+}
+.has-tip:hover, .has-tip:focus{
+border-bottom: none;
+color: #2ba6cb;
 }
 

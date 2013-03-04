@@ -32,7 +32,7 @@
 	?>
     <div class="one columns mobile sidenav">
       <dl class="vertical tabs">
-        <dd><a href="{{ URL::base() }}"><i class="foundicon homeicon iconnew sidemenu"></i>Home</a></dd>
+        <!--<dd><a href="{{ URL::base() }}"><i class="foundicon homeicon iconnew sidemenu"></i>Home</a></dd>-->
             @if($role != 'subcon')
                 <dd><a href="{{ URL::to('message') }}"><i class="foundicon mail iconnew sidemenu"></i>Messages</a></dd>
                 <dd><a href="{{ URL::to('requests/incoming') }}"><i class="foundicon iconnew download sidemenu"></i>Incoming Requests</a></dd>
@@ -49,13 +49,13 @@
                     <dd><a href="{{ URL::to('employee') }}"><i class="foundicon iconnew group sidemenu"></i>Human Resources</a></dd>
                 @endif
 
-                <dd><a href="{{ URL::to('user/profile') }}"><i class="foundicon iconnew user sidemenu"></i>Profile</a></dd>
-                <dd><a href="{{ URL::to('search') }}"><i class="foundicon search iconnew sidemenu"></i>Search</a></dd>
+                <!--<dd><a href="{{ URL::to('user/profile') }}"><i class="foundicon iconnew user sidemenu"></i>Profile</a></dd>
+                <dd><a href="{{ URL::to('search') }}"><i class="foundicon search iconnew sidemenu"></i>Search</a></dd>-->
             @else
                 <dd><a href="{{ URL::to('message') }}"><i class="foundicon mail iconnew sidemenu"></i>Messages</a></dd>
             @endif
         <dd><a href="{{ URL::to('document/add/'.$doctype) }}"><i class="foundicon iconnew add sidemenu"></i>New<br />Document</a></dd>
-        <dd><a href="{{ URL::to('content/view/help') }}"><i class="foundicon help iconnew sidemenu"></i>Help</a></dd>
+        <!--<dd><a href="{{ URL::to('content/view/help') }}"><i class="foundicon help iconnew sidemenu"></i>Help</a></dd>-->
       </dl>
     </div>
 
