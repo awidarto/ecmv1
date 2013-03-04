@@ -1376,3 +1376,6 @@ a{
     color:#2991b8;
 }
 
+.printcover{
+    cursor: pointer;
+}

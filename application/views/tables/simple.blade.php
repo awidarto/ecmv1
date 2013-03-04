@@ -218,6 +218,16 @@
 				});
 			}
 
+			if ($(e.target).is('.printcover')) {
+				var doc_id = e.target.id;
+
+				$.fancybox({
+					type:'iframe',
+					href: '{{ URL::to("document/cover/") }}' + doc_id,
+					autosize: true
+				});
+			}
+
 			if ($(e.target).is('.noapproval')) {
 				alert('You have taken an action on this request, no further action needed. Thank you.')
 			}

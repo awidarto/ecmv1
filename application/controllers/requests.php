@@ -620,10 +620,14 @@ class Requests_Controller extends Base_Controller {
 
 			if(isset($doc['approvalResponds'])){
 				$status = '<table style="width:100%">';
-				$status .= '<thead><tr>';
+				$status .= '<thead>';
+				$status .= '<tr>';
 				$status .= '<th>Status</th><th>By</th><th>Detail</th>';
-
-				$status .= '</tr></thead>';
+				$status .= '</tr>';
+				$status .= '<tr>';
+				$status .= '<th colspan="3"><span id="'.$doc['_id'].'" class="printcover right">Print cover</span></th>';
+				$status .= '</tr>';
+				$status .= '</thead>';
 				foreach($doc['approvalResponds'] as $c){
 					if($c['approval'] == 'transfer'){
 						$appstatus = 'Transferred';
