@@ -107,7 +107,9 @@ Event::listen('document.create',function($id, $result){
         'creator_id'=>new MongoId(Auth::user()->id),
         'creator_name'=>Auth::user()->fullname,
         'department'=>$doc['docDepartment'],
-        'doc_id'=>$id,
+
+        'doc_id'=>$doc['_id'],
+
         'doc_filename'=>$doc['docFilename'],
         'doc_number'=>'',
         'doc_title'=>$doc['title'],

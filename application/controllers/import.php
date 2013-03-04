@@ -96,6 +96,7 @@ class Import_Controller extends Base_Controller {
 
 		$override_all = $form->checkbox('override_all','','',false,array('id'=>'override_all'));
 
+		$valid_heads = array_keys(Config::get('import.'.$controller.'_valid_head_selects'));
 
 		foreach ($ihead['head_labels'] as $h) {
 
@@ -103,8 +104,10 @@ class Import_Controller extends Base_Controller {
 
 			$heads[$cnt] = $h.$hidden_head;
 
-			$searchinput[$cnt] = $form->select('map_'.$cnt,'',Config::get('eventreg.valid_head_selects'),$h);
-			if(!in_array($h, Config::get('eventreg.valid_heads'))){
+			$searchinput[$cnt] = $form->select('map_'.$cnt,'',Config::get('import.'.$controller.'_valid_head_selects'),$h);
+
+
+			if(!in_array($h, $valid_heads)){
 				$heads[$cnt] = '<span class="invalidhead">'.$heads[$cnt].'</span>';
 
 			}else{
@@ -138,14 +141,13 @@ class Import_Controller extends Base_Controller {
 			->with('head_count',$head_count)
 			->with('colclass',$colclass)
 			->with('searchinput',$searchinput)
-			->with('ajaxsource',URL::to('import/loader/'.$id))
+			->with('ajaxsource',URL::to('import/loader/'.$controller.'/'.$id))
 			->with('ajaxdel',URL::to('attendee/del'))
 			->with('crumb',$this->crumb)
-			->with('heads',$heads)
-			->nest('row','attendee.rowdetail');
+			->with('heads',$heads);
 	}
 
-	public function post_loader($id)
+	public function post_loader($controller,$id)
 	{
 
 		$imp = new Importcache();
@@ -224,22 +226,31 @@ class Import_Controller extends Base_Controller {
 			$count_display_all = $attendee->count();
 		}
 
-		$attending = new Attendee();
+		if($controller == 'project'){
 
-		$email_arrays = array();
+			$attending = new Project();
 
-		foreach($attendees as $e){
-			$email_arrays[] = array('email'=>$e['email']);
-		}
+			$email_arrays = array();
 
-		//print_r($email_arrays);
+			foreach($attendees as $e){
+				$email_arrays[] = array('projectNumber'=>$e['job_no']);
+			}
 
-		$email_check = $attending->find(array('$or'=>$email_arrays),array('email'=>1,'_id'=>-1));
+			//print_r($email_arrays);
 
-		$email_arrays = array();
+			$email_check = $attending->find(array('$or'=>$email_arrays),array('projectNumber'=>1,'_id'=>-1));
 
-		foreach($email_check as $ec){
-			$email_arrays[] = $ec['email'];
+			$email_arrays = array();
+
+			foreach($email_check as $ec){
+				$email_arrays[] = $ec['projectNumber'];
+			}
+
+
+		}else if($controller == 'tender'){
+
+		}else if($controller == 'opportunity'){
+
 		}
 
 		//print_r($email_arrays);
@@ -273,13 +284,20 @@ class Import_Controller extends Base_Controller {
 
 			$select = $form->checkbox('sel[]','',$doc['_id'],false,array('id'=>$doc['_id'],'class'=>'selector'));
 
+			if($controller == 'project'){
 
-			if(in_array($doc['email'], $email_arrays)){
-				$override = $form->checkbox('over[]','',$doc['_id'],'',array('id'=>'over_'.$doc['_id'],'class'=>'overselector'));
-				$exist = $form->hidden('existing[]',$doc['_id']);
-			}else{
-				$override = '';
-				$exist = '';
+				if(in_array($doc['job_no'], $email_arrays)){
+					$override = $form->checkbox('over[]','',$doc['_id'],'',array('id'=>'over_'.$doc['_id'],'class'=>'overselector'));
+					$exist = $form->hidden('existing[]',$doc['_id']);
+				}else{
+					$override = '';
+					$exist = '';
+				}
+
+			}else if($controller == 'tender'){
+
+			}else if($controller == 'opportunity'){
+
 			}
 
 			$adata = array_merge(array($select,$override.''.$exist),$adata);
@@ -619,7 +637,7 @@ class Import_Controller extends Base_Controller {
 
 		//print_r(Session::get('permission'));
 
-		$back = 'import/preview';
+		$back = 'import/preview/'.$controller;
 
 	    $rules = array(
 	        'docupload'  => 'required'
@@ -691,11 +709,15 @@ class Import_Controller extends Base_Controller {
 
 					$rows = $xls['cells'];
 
-					print_r($rows);
+					//print_r($rows);
 
-					/*
-					$heads = $rows[1];
-
+					if($controller == 'tender'){
+						$heads = $rows[2];
+					}else if($controller == 'project'){
+						$heads = $rows[2];
+					}else if($controller == 'opportunity'){
+						$heads = $rows[2];
+					}
 					//print_r($heads);
 
 					$theads = array();
@@ -738,11 +760,11 @@ class Import_Controller extends Base_Controller {
 					$chead = array();
 
 					foreach ($heads as $head) {
-						$label = str_replace(array('.','\''), '', $head);
+						$label = str_replace(array('.','\'','(',')','/'), '', trim($head));
 
 						$label = preg_replace('/[ ][ ]+/', ' ', $label);
 
-						$label = str_replace(array('/',' '), '_', $label);
+						$label = str_replace(array(' '), '_', $label);
 						$label = strtolower(trim($label));
 
 						$chead[] = $label;
@@ -752,6 +774,7 @@ class Import_Controller extends Base_Controller {
 					$inhead['cache_head'] = true;
 					$inhead['cache_id'] = $c_id;
 					$inhead['cache_commit'] = false;
+					$inhead['controller'] = $controller;
 
 					//print_r($inhead);
 
@@ -763,10 +786,11 @@ class Import_Controller extends Base_Controller {
 							$ins = array();
 							for($i = 0; $i < count($heads); $i++){
 
-								$label = str_replace(array('.','\''), '', $heads[$i]);
+								$label = str_replace(array('.','\'','(',')','/'), '', trim($heads[$i]));
+
 								$label = preg_replace('/[ ][ ]+/', ' ', $label);
 
-								$label = str_replace(array('/',' '), '_', $label);
+								$label = str_replace(array(' '), '_', $label);
 
 								$label = strtolower(trim($label));
 
@@ -777,10 +801,6 @@ class Import_Controller extends Base_Controller {
 							$ins['cache_id'] = $c_id;
 							$ins['cache_commit'] = false;
 
-							$ins['groupId'] =   $newobj['groupId'];
-							$ins['groupName'] = $newobj['groupName'];
-
-
 							//print_r($ins);
 
 							$icache->insert($ins);
@@ -788,13 +808,13 @@ class Import_Controller extends Base_Controller {
 
 					}
 
-					*/
+					
 
 				}
 
 				Event::fire('import.create',array('id'=>$newobj['_id'],'result'=>'OK','department'=>Auth::user()->department,'creator'=>Auth::user()->id));
 
-		    	//return Redirect::to($back.'/'.$newobj['_id'])->with('notify_success','Document uploaded successfully');
+		    	return Redirect::to($back.'/'.$newobj['_id'])->with('notify_success','Document uploaded successfully');
 			}else{
 				Event::fire('import.create',array('id'=>$id,'result'=>'FAILED'));
 		    	return Redirect::to($back)->with('notify_success','Document upload failed');

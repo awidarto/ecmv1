@@ -216,7 +216,7 @@ class User_Controller extends Base_Controller {
 			}
 			*/
 
-			$photo = getavatar($doc['_id'],$doc['fullname'],'',5000);
+			$photo = getavatar($doc['_id'],$doc['fullname'],'avatar',5000);
 
 			$aadata[] = array(
 				$counter,

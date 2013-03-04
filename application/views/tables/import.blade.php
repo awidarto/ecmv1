@@ -77,85 +77,11 @@
 
 			{{ $form->hidden('importid',$importid)}}
 			{{ $form->hidden('head_count',$head_count)}}
-
-			<div class="row-fluid">
-				<div class="span1"><strong>Choose option :</strong></div>
-				<!--<div class="span3">
-			        <fieldset>
-			            <legend>Send Notification to PIC</legend>
-
-			                <div class="row-fluid">
-			                    <div class="span4">
-			                      {{ $form->radio('sendpic','Yes','Yes',true) }}
-			                    </div>
-			                    <div class="span4">
-			                      {{ $form->radio('sendpic','No','No') }}
-			                    </div>
-			                    <div class="span4"></div>
-			                </div>
-
-			        </fieldset>
-				</div>-->
-
-				<div class="span3">
-			        <fieldset>
-			            <legend>Include attendee summary in PIC notification</legend>
-
-			                <div class="row-fluid">
-			                    <div class="span4">
-			                      {{ $form->radio('attendeesummary','Yes','Yes',true) }}
-			                    </div>
-			                    <div class="span4">
-			                      {{ $form->radio('attendeesummary','No','No') }}
-			                    </div>
-			                    <div class="span4"></div>
-			                </div>
-
-			        </fieldset>
-				</div>
-
-				<!--<div class="span3">
-			        <fieldset>
-			            <legend>Send Notification to each attendee</legend>
-
-			                <div class="row-fluid">
-			                    <div class="span4">
-			                      {{ $form->radio('sendattendee','Yes','Yes') }}
-			                    </div>
-			                    <div class="span4">
-			                      {{ $form->radio('sendattendee','No','No',true) }}
-			                    </div>
-			                    <div class="span4"></div>
-			                </div>
-
-			        </fieldset>
-
-				</div>-->
-				<div class="span3">
-			        <fieldset>
-			            <legend>Update password for existing attendee</legend>
-
-			                <div class="row-fluid">
-			                    <div class="span4">
-			                      {{ $form->radio('updatepass','Yes','Yes') }}
-			                    </div>
-			                    <div class="span4">
-			                      {{ $form->radio('updatepass','No','No',true) }}
-			                    </div>
-			                    <div class="span4"></div>
-			                </div>
-
-			        </fieldset>
-
-				</div>
-
-			</div>
-			<hr />
-			<div class="row-fluid">
-				<div class="span1"><strong>Legend :</strong></div>
-				<div class="span2"><span class="invalidhead">invalid heads</span></div>
-				<div class="span2"><span class="duplicateemail">email already exists</span></div>
-				<div class="span7"></div>
+			<div class="row">
+				<div class="one columns"><strong>Legend :</strong></div>
+				<div class="two columns"><span class="invalidhead">invalid heads</span></div>
+				<div class="two columns"><span class="duplicateemail">email already exists</span></div>
+				<div class="seven columns"></div>
 			</div>
 			<hr />
 
@@ -268,54 +194,6 @@
      </div>
   </div>
 </footer>
-
-<div id="updatePayment" class="modal message hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-		<h3 id="myModalLabel">Payment Status</h3>
-	</div>
-	<div class="modal-body">
-
-		{{ Form::select('paystatus', Config::get('eventreg.paystatus'),null,array('id'=>'paystatusselect'))}}
-		<span id="paystatusindicator"></span>
-
-	</div>
-	<div class="modal-footer">
-		<button class="btn btn-primary" id="savepaystatus">Save</button>
-		<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-	</div>
-</div>
-
-<div id="addToGroup" class="modal message hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-		<h3 id="myModalLabel">Add Selected to Group</h3>
-	</div>
-	<div class="modal-body">
-
-		{{ Form::select('paystatus', Config::get('eventreg.paystatus'),null,array('id'=>'paystatusselect'))}}
-		<span id="paystatusindicator"></span>
-
-	</div>
-	<div class="modal-footer">
-		<button class="btn btn-primary" id="savepaystatus">Save</button>
-		<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
-	</div>
-</div>
-
-<div id="deleteWarning" class="modal warning hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-	<div class="modal-header">
-		<button type="button" class="close" data-dismiss="modal" aria-hidden="true"></button>
-		<h3 id="myModalLabel">Confirm Delete</h3>
-	</div>
-	<div class="modal-body">
-		<p id="delstatusindicator" >Are you sure you want to delete this item ?</p>
-	</div>
-	<div class="modal-footer">
-		<button class="btn btn-primary" id="confirmdelete">Yes</button>
-		<button class="btn" data-dismiss="modal" aria-hidden="true">No</button>
-	</div>
-</div>
 
 <script type="text/javascript">
 
