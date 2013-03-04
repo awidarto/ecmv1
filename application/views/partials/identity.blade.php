@@ -1,10 +1,10 @@
 @section('identity')
 <ul class="profilenav">
 
-  <li>{{ HTML::link(URL::base(),'Home',array('class'=>'home has-tip tip-bottom noradius','title'=>'Home'))}}</li>
-  <li>{{ HTML::link('user/profile','Home',array('class'=>'profile has-tip tip-bottom noradius','title'=>'Profile'))}}</li>
-  <li>{{ HTML::link('search','Home',array('class'=>'search has-tip tip-bottom noradius','title'=>'Search'))}}</li>
-  <li>{{ HTML::link('content/view/help','Last',array('class'=>'help has-tip tip-bottom noradius','title'=>'Help'))}}</li>
+  <li>{{ HTML::link(URL::base(),'',array('class'=>'home has-tip tip-bottom noradius','title'=>'Home'))}}</li>
+  <li>{{ HTML::link('user/profile','',array('class'=>'profile has-tip tip-bottom noradius','title'=>'Profile'))}}</li>
+  <li>{{ HTML::link('search','',array('class'=>'search has-tip tip-bottom noradius','title'=>'Search'))}}</li>
+  <li>{{ HTML::link('content/view/help','',array('class'=>'help has-tip tip-bottom noradius','title'=>'Help'))}}</li>
 
   
 </ul>
