@@ -218,6 +218,10 @@
 				});
 			}
 
+			if ($(e.target).is('.noapproval')) {
+				alert('You have taken an action on this request, no further action needed. Thank you.')
+			}
+
 			if ($(e.target).is('.approvalview')) {
 				var doc_id = e.target.id;
 

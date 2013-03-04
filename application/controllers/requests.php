@@ -234,8 +234,20 @@ class Requests_Controller extends Base_Controller {
 
 		$this->crumb->add('requests/incoming','Incoming',false);
 
-		$heads = array('#','Title','Created','Requester','Requesting','Attachment','Tags','Action');
-		$searchinput = array(false,'title','created','creator','approval from','filename','tags',false);
+		//$heads = array('#','Title','Created','Requester','Requesting','Status','Attachment','Tags','Action');
+
+		$heads = array('#',
+			array('Title',array('class'=>'one')),
+			array('Created',array('class'=>'one')),
+			array('Requester',array('class'=>'one')),
+			array('Requesting',array('class'=>'one')),
+			'Status',
+			array('Attachment',array('class'=>'one')),
+			array('Tags',array('class'=>'one')),
+			array('Action',array('class'=>'one'))
+		);
+
+		$searchinput = array(false,'title','created','creator','approval from','status','filename','tags',false);
 
 		//if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
 			return View::make('tables.simple')
@@ -258,11 +270,11 @@ class Requests_Controller extends Base_Controller {
 	public function post_incoming()
 	{
 
-		$fields = array('title','createdDate','creatorName','docApproval','docFilename','docTag');
+		$fields = array('title','createdDate','creatorName','docApproval','status','docFilename','docTag');
 
-		$rel = array('like','like','like','like','like','like');
+		$rel = array('like','like','like','like','like','like','like');
 
-		$cond = array('both','both','both','both','both','both');
+		$cond = array('both','both','both','both','both','both','both');
 
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
@@ -373,6 +385,40 @@ class Requests_Controller extends Base_Controller {
 				$request_type = 'General';
 			}
 
+			$shallapprove = true;
+
+			if(isset($doc['approvalResponds'])){
+				$status = '<table style="width:100%">';
+				$status .= '<thead><tr>';
+				$status .= '<th>Status</th><th>By</th><th>Detail</th>';
+
+				$status .= '</tr></thead>';
+				foreach($doc['approvalResponds'] as $c){
+					if($c['approval'] == 'transfer'){
+						$appstatus = 'Transferred';
+					}else if($c['approval'] == 'yes'){
+						$appstatus = 'Approved';
+					}else if($c['approval'] == 'no'){
+						$appstatus = 'Not Approved';
+					}
+					$timestamp = date('d-m-Y h:i:s',$c['approvalDate']->sec);
+					$status .= '<tr>';
+					$status .= '<td><span class"approval '.$c['approval'].'">'.$appstatus.'</span></td>';
+					$status .= '<td>'.$c['approverName'].'</td>';
+					$status .= '<td><span class="commentTime">'.$timestamp.'</span><br />';
+					$status .= '<p>'.$c['approvalNote'].'</p></td>';
+					$status .= '</tr>';
+				}
+				$status .= '</table>';
+
+				if($c['approverEmail'] == Auth::user()->email){
+					$shallapprove = false;
+				}
+
+			}else{
+				$status = 'Pending Approval';
+			}			
+
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
@@ -383,9 +429,10 @@ class Requests_Controller extends Base_Controller {
 				$doc['creatorName'],
 				//$requestTo,
 				$request_type,
+				$status,
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
-				'<i class="foundicon-checkmark action approvalview" id="'.$doc['_id'].'"></i>'
+				($shallapprove)?'<i class="foundicon-checkmark action approvalview" id="'.$doc['_id'].'"></i>':'<i class="foundicon-checkmark action noapproval" ></i>'
 			);
 			$counter++;
 		}
@@ -569,6 +616,8 @@ class Requests_Controller extends Base_Controller {
 
 			$requestTo .= '</ol>';
 
+			$shallapprove = true;
+
 			if(isset($doc['approvalResponds'])){
 				$status = '<table style="width:100%">';
 				$status .= '<thead><tr>';
@@ -590,6 +639,9 @@ class Requests_Controller extends Base_Controller {
 					$status .= '<td><span class="commentTime">'.$timestamp.'</span><br />';
 					$status .= '<p>'.$c['approvalNote'].'</p></td>';
 					$status .= '</tr>';
+					if($c['approverEmail'] == Auth::user()->email){
+						$shallapprove = false;
+					}
 				}
 				$status .= '</table>';
 			}else{
