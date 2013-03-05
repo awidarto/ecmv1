@@ -1,4 +1,4 @@
-@layout('dialog')
+@layout('blank')
 
 @section('content')
 
@@ -34,7 +34,8 @@
 	</tr>
 @endforeach
 </table>
-<a class="button" id="printBtn" href="#" >Print</a>
-
+<script type="text/javascript">
+window.print();
+</script>
 @endsection
 
