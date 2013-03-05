@@ -974,6 +974,16 @@ class Document_Controller extends Base_Controller {
 		return View::make('pop.doccover')->with('profile',$doc);
 	}
 
+	public function get_printcover($id){
+		$id = new MongoId($id);
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$id));
+
+		return View::make('document.printcover')->with('profile',$doc);
+	}
+
 	public function get_fileview($id){
 		$_id = new MongoId($id);
 
