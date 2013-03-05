@@ -80,7 +80,7 @@
 		        "sAjaxSource": "{{$ajaxsource}}",
 				"oLanguage": { "sSearch": "Search "},
 				"sPaginationType": "full_numbers",
-				"sDom": 'CT<"clear">lfrtip',
+				"sDom": 'CT<"clear">lrtip',
 				@if(isset($excludecol) && $excludecol != '')
 				"oColVis": {
 					"aiExclude": [ {{ $excludecol }} ]
