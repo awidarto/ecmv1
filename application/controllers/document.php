@@ -868,8 +868,11 @@ class Document_Controller extends Base_Controller {
 
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
-			isset($doc['expiring']){
+			
+			if(isset($doc['expiring'])){
 				$doc['expiring'] = ($doc['expiring'] < Config::get('parama.expiration_alert_days') && $doc['expiring'] > 0)?'<span class="expiring">'.$doc['expiring'].' day(s)</span>':'';
+			}else{
+				$doc['expiring'] = '';
 			}
 
 			if($doc['creatorId'] == Auth::user()->id || $doc['docDepartment'] == Auth::user()->department){
