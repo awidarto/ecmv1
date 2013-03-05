@@ -144,7 +144,7 @@ class Employee_Controller extends Base_Controller {
 			}
 			*/
 
-			$photo = getphoto($doc['_id'],$doc['fullname'],'',2000);
+			$photo = getphoto($doc['_id'],$doc['fullname'],'avatar',2000);
 
 			$aadata[] = array(
 				$counter,

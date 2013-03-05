@@ -1386,6 +1386,11 @@ a{
  margin-left: 15px;   
 }
 
+
+img.avatar{
+    max-width:50px !important; 
+}
+
 .invalidhead{
     display: block;
     padding: 5px;
@@ -1399,3 +1404,4 @@ a{
     background-color: red;
     text-decoration: underline;
 }
+
