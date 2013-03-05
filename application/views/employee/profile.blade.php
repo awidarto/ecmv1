@@ -3,13 +3,14 @@
 
 @section('content')
 
-<h4>User Profile</h4>
+<h4>Employee Profile</h4>
 <div class="row">
 	<div class="profileContent">
 		<div class="two columns">
-			{{ getavatar($profile['_id'])}}<br />
-			{{ HTML::link('user/picture','Change Photo')}}<br />
-			{{ HTML::link('user/pass','Change Password')}}<br />
+			{{ getavatar($profile['_id'])}}<br /><br />
+			<a href="{{ URL::to('user/picture') }}" class="inlink"><i class="foundicon-smiley action" style="font-size:16px;"></i> Change Picture</a>
+			<a href="{{ URL::to('user/pass') }}" class="inlink"><i class="foundicon-lock action" style="font-size:16px;"></i> Change Password</a>
+			
 		</div>
 		<div class="ten columns">
 			<h5>{{ $profile['fullname'] }}</h5>
