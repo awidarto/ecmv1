@@ -47,10 +47,5 @@
     </script>
     {{ HTML::script('js/pnu.js') }}
 </body>
-<script>
-  
-  $('#printBtn').click(function(){
-     window.top.location='{{URL::to('document/printcover/'.$profile['_id'])}}';
-  })
-</script>
+
 </html>
