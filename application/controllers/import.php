@@ -444,6 +444,21 @@ class Import_Controller extends Base_Controller {
 				//print_r($tocommit);
 				//print 'override -> '.$override."\r\n";
 
+				//print_r($commitobj);
+				//preprocess here
+
+				if($controller == 'project'){
+
+					$tocommit['effectiveDate'] = new MongoDate(strtotime($tocommit['effectiveDate']));
+					$tocommit['dueDate'] = new MongoDate(strtotime($tocommit['dueDate']));
+
+				}else if($controller == 'tender'){
+					$tocommit['closingDate'] = new MongoDate(strtotime($tocommit['closingDate']));
+					$tocommit['tenderDate']  = new MongoDate(strtotime($tocommit['tenderDate']));
+				}else if($controller == 'opportunity'){
+
+				}
+
 
 				if($override == true){
 
@@ -453,7 +468,7 @@ class Import_Controller extends Base_Controller {
 
 					if($target->update(array($target_identifier=>$tocommit[$target_identifier]),array('$set'=>$tocommit))){
 
-						Event::fire($controller.'.update',array($attobj['_id'],$plainpass,$pic['email'],$pic['firstname'].$pic['lastname']));
+						Event::fire($controller.'.update',array($attobj['_id']));
 
 						$commitedobj[] = $tocommit;
 
@@ -467,6 +482,8 @@ class Import_Controller extends Base_Controller {
 
 					$tocommit['createdDate'] = new MongoDate();
 					$tocommit['lastUpdate'] = new MongoDate();
+					$tocommit['creatorName'] = Auth::user()->fullname;
+					$tocommit['creatorId'] = Auth::user()->id;
 
 
 					if($obj = $target->insert($tocommit)){

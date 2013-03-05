@@ -229,7 +229,8 @@ class Tender_Controller extends Base_Controller {
 
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
-			if(isset($doc['tags'])){
+
+			if(isset($doc['tags']) && is_array($doc['tags'])){
 				$tags = array();
 
 				foreach($doc['tags'] as $t){
@@ -253,11 +254,11 @@ class Tender_Controller extends Base_Controller {
 				date('Y-m-d', $doc['closingDate']->sec),
 				$doc['tenderSystem'],
 				$doc['tenderPIC'],
-				($doc['bidCurrency'] == 'USD')?number_format((double)$doc['bidPrice'],2,',','.'):'',
-				($doc['bidCurrency'] == 'EURO')?number_format((double)$doc['bidPrice'],2,',','.'):'',
-				($doc['bidCurrency'] == 'IDR')?number_format((double)$doc['bidPrice'],2,',','.'):'',
+				(isset($doc['bidPriceUSD']))?number_format((double)$doc['bidPriceUSD'],2,',','.'):'',
+				(isset($doc['bidPriceEURO']))?number_format((double)$doc['bidPriceEURO'],2,',','.'):'',
+				(isset($doc['bidPriceIDR']))?number_format((double)$doc['bidPriceIDR'],2,',','.'):'',
 				//$doc['equivalentBidCurrency'],
-				number_format((double)$doc['equivalentBidPrice'],2,',','.'),
+				(isset($doc['equivalentBidPriceUSD']))?number_format((double)$doc['equivalentBidPriceUSD'],2,',','.'):'',
 				$doc['tenderStatus'],
 				$doc['tenderRemark'],
 				//$doc['tenderApproval'],
