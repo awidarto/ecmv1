@@ -40,19 +40,21 @@
 
     <div class="row">
       <div class="two columns">
-        {{ $form->select('bidCurrency','Currency',Config::get('parama.currencies'),array('style'=>'width:100%'))}}
+        {{Form::label('bidPriceUSD','Bid Price')}}
       </div>
       <div class="nine columns">
-        {{ $form->text('bidPrice','Bid Price','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+        {{ $form->text('bidPriceUSD','USD','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+        {{ $form->text('bidPriceEURO','EURO','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+        {{ $form->text('bidPriceIDR','IDR','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
       </div>
     </div>
 
     <div class="row">
       <div class="two columns">
-        {{ $form->select('equivalentBidCurrency','Currency',Config::get('parama.currencies'),'USD',array('style'=>'width:100%'))}}
+        {{Form::label('equivalentBidPriceUSD','Equivalent Bid Price')}}
       </div>
       <div class="nine columns">
-        {{ $form->text('equivalentBidPrice','Equivalent Bid Price','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+        {{ $form->text('equivalentBidPriceUSD','USD','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
       </div>
     </div>
 

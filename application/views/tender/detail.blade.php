@@ -34,13 +34,26 @@
 						<span>{{date('d-m-Y',$tender['tenderDate']->sec)}}</span>
 					</td>
 				</tr>
+
 				<tr>
 					<td class="detail-title">Bid Price</td>
-					<td class="detail-info">{{ $tender['bidCurrency'].' '.number_format($tender['bidPrice'],2,',','.') }}</td>
+					<td class="detail-info">
+						<ul>
+							<li>
+								USD {{ (is_double($tender['bidPriceUSD']))?number_format($tender['bidPriceUSD'],2,',','.'):'-' }}
+							</li>
+							<li>
+								EURO {{ (is_double($tender['bidPriceEURO']))?number_format($tender['bidPriceEURO'],2,',','.'):'-' }}
+							</li>
+							<li>
+								IDR {{ (is_double($tender['bidPriceIDR']))?number_format($tender['bidPriceIDR'],2,',','.'):'-' }}
+							</li>
+						</ul>
+					</td>
 				</tr>
 				<tr>
 					<td class="detail-title">Bid Price in USD</td>
-					<td class="detail-info">{{ $tender['equivalentBidCurrency'].' '.number_format($tender['equivalentBidPrice'],2,',','.') }}</td>
+					<td class="detail-info">USD {{ (is_double($tender['equivalentBidPriceUSD']))?number_format($tender['equivalentBidPriceUSD'],2,',','.'):'-' }}</td>
 				</tr>
 				<tr>
 					<td class="detail-title">Description</td>

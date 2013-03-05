@@ -513,8 +513,10 @@ class Project_Controller extends Base_Controller {
 		$doc_data['effectiveDate'] = (isset($doc_data['effectiveDate']))?date('Y-m-d', $doc_data['effectiveDate']->sec):'';
 		$doc_data['dueDate'] = (isset($doc_data['dueDate']))?date('Y-m-d', $doc_data['dueDate']->sec):'';
 
-		$doc_data['contractPrice'] = ($doc_data['contractPrice'] != '')?$doc_data['contractPrice']:0;
-		$doc_data['equivalentContractPrice'] = ($doc_data['equivalentContractPrice'] != '')?$doc_data['equivalentContractPrice']:0;
+		$doc_data['contractPriceUSD'] = ($doc_data['contractPriceUSD'] != '')?$doc_data['contractPriceUSD']:0;
+		$doc_data['contractPriceEURO'] = ($doc_data['contractPriceEURO'] != '')?$doc_data['contractPriceEURO']:0;
+		$doc_data['contractPriceIDR'] = ($doc_data['contractPriceIDR'] != '')?$doc_data['contractPriceIDR']:0;
+		$doc_data['equivalentContractPriceUSD'] = ($doc_data['equivalentContractPriceUSD'] != '')?$doc_data['equivalentContractPriceUSD']:0;
 
 
 		$this->crumb->add('project/edit/'.$id,$doc_data['projectNumber']);

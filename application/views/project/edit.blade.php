@@ -37,19 +37,21 @@
 
     <div class="row">
       <div class="two columns">
-        {{ $form->select('contractCurrency','Currency',Config::get('parama.currencies'),array('style'=>'width:100%'))}}
+        {{Form::label('contractPriceUSD','Contract Price')}}
       </div>
       <div class="nine columns">
-        {{ $form->text('contractPrice','Contract Price','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+        {{ $form->text('contractPriceUSD','USD','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+        {{ $form->text('contractPriceEURO','EURO','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+        {{ $form->text('contractPriceIDR','IDR','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
       </div>
     </div>
 
     <div class="row">
       <div class="two columns">
-        {{ $form->select('equivalentContractCurrency','Currency',Config::get('parama.currencies'),'USD',array('style'=>'width:100%'))}}
+        {{Form::label('equivalentContractPriceUSD','Equivalent Contract Price')}}
       </div>
       <div class="nine columns">
-        {{ $form->text('equivalentContractPrice','Equivalent Contract Price','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+        {{ $form->text('equivalentContractPriceUSD','USD','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
       </div>
     </div>
 

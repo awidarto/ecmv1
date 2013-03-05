@@ -32,11 +32,23 @@
 				</tr>
 				<tr>
 					<td class="detail-title">Contract Price</td>
-					<td class="detail-info">{{ $project['contractCurrency'].' '.number_format($project['contractPrice'],2,',','.') }}</td>
+					<td class="detail-info">
+						<ul>
+							<li>
+								USD {{ (is_double($project['contractPriceUSD']))?number_format($project['contractPriceUSD'],2,',','.'):'-' }}
+							</li>
+							<li>
+								EURO {{ (is_double($project['contractPriceEURO']))?number_format($project['contractPriceEURO'],2,',','.'):'-' }}
+							</li>
+							<li>
+								IDR {{ (is_double($project['contractPriceIDR']))?number_format($project['contractPriceIDR'],2,',','.'):'-' }}
+							</li>
+						</ul>
+					</td>
 				</tr>
 				<tr>
 					<td class="detail-title">Contract Price in USD</td>
-					<td class="detail-info">{{ $project['equivalentContractCurrency'].' '.number_format($project['equivalentContractPrice'],2,',','.') }}</td>
+					<td class="detail-info">USD {{ (is_double($project['equivalentContractPriceUSD']))?number_format($project['equivalentContractPriceUSD'],2,',','.'):'-' }}</td>
 				</tr>
 				<tr>
 					<td class="detail-title">Description</td>
