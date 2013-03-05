@@ -100,10 +100,10 @@ class Project_Controller extends Base_Controller {
 			'closingDate',
 			'projectSystem',
 			'projectPIC',
-			'contractCurrency',
-			'contractPrice',
-			'equivalentContractCurrency',
-			'equivalentContractPrice',
+			'contractPriceUSD',
+			'contractPriceEURO',
+			'contractPriceIDR',
+			'equivalentContractPriceUSD',
 			'projectStatus',
 			'projectRemark',
 			//'projectApproval',
@@ -150,10 +150,10 @@ class Project_Controller extends Base_Controller {
 			'dueDate',
 			'projectVendor',
 			'projectPIC',
-			'contractCurrency',
-			'contractPrice',
-			'equivalentContractCurrency',
-			'equivalentContractPrice',
+			'contractPriceUSD',
+			'contractPriceEURO',
+			'contractPriceIDR',
+			'equivalentContractPriceUSD',
 			'projectStatus',
 			'projectRemark',
 			//'projectApproval',
@@ -260,10 +260,14 @@ class Project_Controller extends Base_Controller {
 				date('Y-m-d', $doc['dueDate']->sec),
 				$doc['projectVendor'],
 				$doc['projectPIC'],
-				($doc['contractCurrency'] == 'USD' && $doc['contractPrice'] != '')?number_format((double)$doc['contractPrice'],2,',','.'):'',
-				($doc['contractCurrency'] == 'EURO' && $doc['contractPrice'] != '')?number_format((double)$doc['contractPrice'],2,',','.'):'',
-				($doc['contractCurrency'] == 'IDR' && $doc['contractPrice'] != '')?number_format((double)$doc['contractPrice'],2,',','.'):'',
-				($doc['equivalentContractPrice'] != '')?number_format((double)$doc['equivalentContractPrice'],2,',','.'):'',
+
+				(isset($doc['contractPriceUSD']))?number_format((double)$doc['contractPriceUSD'],2,',','.'):'',
+				(isset($doc['contractPriceEURO']))?number_format((double)$doc['contractPriceEURO'],2,',','.'):'',
+				(isset($doc['contractPriceIDR']))?number_format((double)$doc['contractPriceIDR'],2,',','.'):'',
+				//$doc['equivalentBidCurrency'],
+				(isset($doc['equivalentContractPriceUSD']))?number_format((double)$doc['equivalentContractPriceUSD'],2,',','.'):'',
+
+
 				$doc['projectStatus'],
 				$doc['projectRemark'],
 				//$doc['projectApproval'],
@@ -604,10 +608,10 @@ class Project_Controller extends Base_Controller {
 
 
 			if($user->delete(array('_id'=>$id))){
-				Event::fire('project.delete',array('id'=>$id,'result'=>'OK'));
+				Event::fire('project.delete',array('id'=>$id,'creatorId'=>Auth::user()->id,'result'=>'OK'));
 				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
 			}else{
-				Event::fire('project.delete',array('id'=>$id,'result'=>'FAILED'));
+				Event::fire('project.delete',array('id'=>$id,'creatorId'=>Auth::user()->id,'result'=>'FAILED'));
 				$result = array('status'=>'ERR','data'=>'DELETEFAILED');				
 			}
 		}

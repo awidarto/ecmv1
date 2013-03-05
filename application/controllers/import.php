@@ -468,7 +468,7 @@ class Import_Controller extends Base_Controller {
 
 					if($target->update(array($target_identifier=>$tocommit[$target_identifier]),array('$set'=>$tocommit))){
 
-						Event::fire($controller.'.update',array($attobj['_id']));
+						Event::fire($controller.'.update',array('id'=>$attobj['_id'],'result'=>'OK'));
 
 						$commitedobj[] = $tocommit;
 
@@ -488,7 +488,7 @@ class Import_Controller extends Base_Controller {
 
 					if($obj = $target->insert($tocommit)){
 
-						Event::fire($controller.'.create',array($obj['_id']));
+						Event::fire($controller.'.create',array('id'=>$obj['_id'],'result'=>'OK'));
 
 						$commitedobj[] = $tocommit;
 

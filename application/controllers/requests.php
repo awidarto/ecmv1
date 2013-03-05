@@ -408,12 +408,14 @@ class Requests_Controller extends Base_Controller {
 					$status .= '<td><span class="commentTime">'.$timestamp.'</span><br />';
 					$status .= '<p>'.$c['approvalNote'].'</p></td>';
 					$status .= '</tr>';
+
+					if($c['approverEmail'] == Auth::user()->email){
+						$shallapprove = false;
+					}
+
 				}
 				$status .= '</table>';
 
-				if($c['approverEmail'] == Auth::user()->email){
-					$shallapprove = false;
-				}
 
 			}else{
 				$status = 'Pending Approval';

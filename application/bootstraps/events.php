@@ -302,9 +302,8 @@ Event::listen('project.create',function($id, $result){
 
     $doc = getproject($id);
 
-    $ev = array('event'=>'project.create',
-
-        
+    $ev = array(
+        'event'=>'project.create',
         'approvalby'=>'',
         'creator_id'=>new MongoId(Auth::user()->id),
         'creator_name'=>Auth::user()->fullname,
@@ -356,7 +355,7 @@ Event::listen('project.update',function($id,$result){
         'remover_id'=>'',
         'requester_id'=>'',
         'requester_name'=>'',
-        'result'=>$result,
+        'result'=>'',
         'sharer_id'=>'',
         'sharer_name'=>'',
         'shareto'=>'',
@@ -377,7 +376,7 @@ Event::listen('project.update',function($id,$result){
 Event::listen('project.delete',function($id,$creator_id,$result){
     $activity = new Activity();
 
-    $ev = array('event'=>'peoject.delete',
+    $ev = array('event'=>'project.delete',
 
 
         'approvalby'=>'',

@@ -49,6 +49,9 @@
 
 				//redraw table
 				//alert("Item id : " + _id + " deleted");
+			}else if(data.status == 'AUTHFAILED'){
+				$('#notifier').html('Wrong Password');
+				alert('Authentication failed, please check your Password');
 			}
 		},'json');
 
