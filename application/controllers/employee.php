@@ -194,9 +194,9 @@ class Employee_Controller extends Base_Controller {
 			$this->crumb = new Breadcrumb();
 		}
 
-		$heads = array('#','Title','Attachment','Last Update','Creator','Action');
-		$searchinput = array(false,'title','last update','creator','filename',false);
-	    $colclass = array('one','','','one','one',false);
+		$heads = array('#','Title','Attachment','Category','Effective Since','Until','Last Update','Creator','Action');
+		$searchinput = array(false,'title',false,'docCategory','effectiveDate','expiryDate','last update','creator',false);
+	    $colclass = array('one','','','','one','one','one','one',false);
 
 		$user = new Employee();
 
@@ -226,11 +226,11 @@ class Employee_Controller extends Base_Controller {
 	public function post_doc($id = null)
 	{
 
-		$fields = array('title','createdDate','creatorName','docFilename');
+		$fields = array('title','docCategory','createdDate','creatorName','docFilename');
 
-		$rel = array('like','like','like','like');
+		$rel = array('like','like','like','like','like');
 
-		$cond = array('both','both','both','both');
+		$cond = array('both','both','both','both','both');
 
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
@@ -278,37 +278,6 @@ class Employee_Controller extends Base_Controller {
 			);
 		}
 
-		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
-
-		if( Auth::user()->role == 'root' ||
-			Auth::user()->role == 'super' ||
-			Auth::user()->role == 'president_director' ||
-			Auth::user()->role == 'bod'
-			){
-
-
-		}else if( Auth::user()->role == 'client' ||
-			Auth::user()->role == 'principal_vendor' ||
-			Auth::user()->role == 'subcon'){
-
-			$q['$or'] = array(
-				array('creatorId'=>Auth::user()->id),
-				array('docShare'=>$sharecriteria)
-			);
-
-		}else{
-
-			if(Auth::user()->department == $type){
-				$q['$or'] = array(
-					array('access'=>'general'),
-					array('docShare'=>$sharecriteria)
-				);
-			}else{
-				$q['docShare'] = $sharecriteria;
-			}
-		}
-
-
 		$permissions = Auth::user()->permissions;
 
 		$document = new Document();
@@ -340,6 +309,8 @@ class Employee_Controller extends Base_Controller {
 
 		$aadata = array();
 
+		$cats = Config::get('parama.doc_category_list');
+
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
 
@@ -352,6 +323,9 @@ class Employee_Controller extends Base_Controller {
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
+				$cats[$doc['docCategory']],
+				isset($doc['effectiveDate'])?date('Y-m-d H:i:s', $doc['effectiveDate']->sec):'',
+				isset($doc['expiryDate'])?date('Y-m-d H:i:s', $doc['expiryDate']->sec):'',
 				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
 				$doc['creatorName'],
 				''//$edit.$download.$del

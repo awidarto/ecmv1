@@ -84,7 +84,7 @@
 		        "sAjaxSource": "{{$ajaxsourcedoc}}",
 				"oLanguage": { "sSearch": "Search "},
 				"sPaginationType": "full_numbers",
-				"sDom": 'T<"clear">lfrtip',
+				"sDom": 'T<"clear">lrtip',
 				"oTableTools": {
 					"sSwfPath": "assets/swf/copy_csv_xls_pdf.swf"
 				},
