@@ -15,7 +15,11 @@
   <div class="six columns left">
     <h4>Document Info</h4>
     {{ $form->hidden('id',$doc['_id'])}}
-    {{ $form->hidden('expiring',$doc['expiring'])}}
+    
+    @if(isset($doc['expiring']))
+    {{ $form->hidden('expiring',$doc['expiring']) }}
+    @endif
+    
     {{ $form->text('title','Title.req','',array('class'=>'text')) }}
 
     {{$form->select('docFormat','Original Document Format',Config::get('parama.doc_format'),array('class'=>'four'))}}
