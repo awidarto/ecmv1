@@ -49,7 +49,7 @@ class Project_Controller extends Base_Controller {
 			'Brief Scope Description',
 			'Delivery Term',
 			'Due Date',
-			'Project Vendor',
+			//'Project Vendor',
 			'Project PIC',
 			array('Contract Price',array('colspan'=>3,'class'=>'twelve','style'=>'text-align:center')),
 			'Equivalent Contract Price',
@@ -66,7 +66,6 @@ class Project_Controller extends Base_Controller {
 		);
 
 		$secondheads = array(
-			'',
 			'',
 			'',
 			'',
@@ -98,7 +97,7 @@ class Project_Controller extends Base_Controller {
 			'briefScopeDescription',
 			'deliveryTerm',
 			'dueDate',
-			'projectVendor',
+			//'projectVendor',
 			'projectPIC',
 			'contractPriceUSD',
 			'contractPriceEURO',
@@ -148,7 +147,7 @@ class Project_Controller extends Base_Controller {
 			'deliveryTerm',
 			'effectiveDate',
 			'dueDate',
-			'projectVendor',
+			//'projectVendor',
 			'projectPIC',
 			'contractPriceUSD',
 			'contractPriceEURO',
@@ -258,7 +257,7 @@ class Project_Controller extends Base_Controller {
 				$doc['deliveryTerm'],
 				date('Y-m-d', $doc['effectiveDate']->sec),
 				date('Y-m-d', $doc['dueDate']->sec),
-				$doc['projectVendor'],
+				//$doc['projectVendor'],
 				$doc['projectPIC'],
 
 				(isset($doc['contractPriceUSD']))?number_format((double)$doc['contractPriceUSD'],2,',','.'):'',
