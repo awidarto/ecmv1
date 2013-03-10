@@ -261,7 +261,6 @@ class Document_Controller extends Base_Controller {
 
 		//print_r(Session::get('permission'));
 
-		$postdata = Input::get();
 
 		if(is_null($type)){
 			$back = 'document';
@@ -269,10 +268,13 @@ class Document_Controller extends Base_Controller {
 			$back = 'document/type/'.$type;
 		}
 
+		$postdata = Input::get();
+
 		if(isset($postdata['useAsTemplate']) && $postdata['useAsTemplate'] == 'Yes'){
 		    $rules = array(
 		        'title'  => 'required|max:50',
-		        'templateName' => 'required'
+		        'templateName' => 'required',
+		        'templateNumberStart'=>'required'
 		    );
 		}else{
 		    $rules = array(
@@ -476,9 +478,20 @@ class Document_Controller extends Base_Controller {
 			$back = 'document/type/'.$type;
 		}
 
-	    $rules = array(
-	        'title'  => 'required|max:50'
-	    );
+		$postdata = Input::get();
+
+		if(isset($postdata['useAsTemplate']) && $postdata['useAsTemplate'] == 'Yes'){
+		    $rules = array(
+		        'title'  => 'required|max:50',
+		        'templateName' => 'required',
+		        'templateNumberStart'=>'required'
+		    );
+		}else{
+		    $rules = array(
+		        'title'  => 'required|max:50'
+		    );
+		}
+
 
 	    $validation = Validator::make($input = Input::all(), $rules);
 

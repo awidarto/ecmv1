@@ -364,9 +364,9 @@ class Template_Controller extends Base_Controller {
 		//	$back = 'template/type/'.$type;
 		//}
 
-		$in = Input::get();
+		$postdata = Input::get();
 
-		if($in['useAsTemplate'] == 'Yes'){
+		if(isset($postdata['useAsTemplate']) && $postdata['useAsTemplate'] == 'Yes'){
 		    $rules = array(
 		        'title'  => 'required|max:50',
 		        'templateName' => 'required',
@@ -375,7 +375,7 @@ class Template_Controller extends Base_Controller {
 		}else{
 		    $rules = array(
 		        'title'  => 'required|max:50'
-		    );			
+		    );
 		}
 
 	    $validation = Validator::make($input = Input::all(), $rules);
@@ -569,9 +569,9 @@ class Template_Controller extends Base_Controller {
 		//	$back = 'template/type/'.$type;
 		//}
 
-		$in = Input::get();
+		$postdata = Input::get();
 
-		if($in['useAsTemplate'] == 'Yes'){
+		if(isset($postdata['useAsTemplate']) && $postdata['useAsTemplate'] == 'Yes'){
 		    $rules = array(
 		        'title'  => 'required|max:50',
 		        'templateName' => 'required',
@@ -580,7 +580,7 @@ class Template_Controller extends Base_Controller {
 		}else{
 		    $rules = array(
 		        'title'  => 'required|max:50'
-		    );			
+		    );
 		}
 
 	    $validation = Validator::make($input = Input::all(), $rules);
