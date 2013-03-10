@@ -90,8 +90,9 @@ return array(
   		'finance_hr_director'=>'Finance & HR Director',
   		'clients'=>'Clients',
   		'principal_vendor'=>'Principal / Vendors',
-  		'subcon'=>'3rd Party / Sub-Con'
-  		),
+  		'subcon'=>'3rd Party / Sub-Con',
+      'template'=>'Downloadable Template'
+	),
 
   'accountpayment'=>array(
     'BCA - Mangga Dua Branch'=>'BCA - Mangga Dua Branch',
