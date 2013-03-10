@@ -500,9 +500,9 @@ class Document_Controller extends Base_Controller {
 			$docId = $data['id'];
 			unset($data['id']);
 
-			if(isset($data['useAsTemplate']) && $data['useAsTemplate'] == 'Yes' && ($data['oldTemplateName'] != $data['templateName'])){
+			if(isset($data['useAsTemplate']) && $data['useAsTemplate'] == 'Yes' && ($data['oldTemplateName'] != $data['templateName'] || $data['oldTemplateName'] == '')){
 				$templatename = trim(strtolower($data['templateName']));
-				$startFrom = ($newobj['templateNumberStart'] == '')?1:$data['templateNumberStart'];
+				$startFrom = ($data['templateNumberStart'] == '')?1:$data['templateNumberStart'];
 				$startFrom = new MongoInt64($startFrom);
 				// set new sequencer
 				$sequencer = new Sequence();
