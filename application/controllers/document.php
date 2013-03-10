@@ -298,6 +298,8 @@ class Document_Controller extends Base_Controller {
 			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
 			$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
 
+			$data['expiring'] = 0;
+
 			$data['createdDate'] = new MongoDate();
 			$data['lastUpdate'] = new MongoDate();
 			$data['creatorName'] = Auth::user()->fullname;
@@ -493,7 +495,12 @@ class Document_Controller extends Base_Controller {
 			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
 			$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
 			$data['lastUpdate'] = new MongoDate();
-			$data['expiring'] = ($data['expiring'] == '')?0:$data['expiring'];
+
+			if(isset($data['expiring'])){
+				$data['expiring'] = ($data['expiring'] == '')?0:$data['expiring'];
+			}else{
+				$data['expiring'] = 0;
+			}
 
 			unset($data['csrf_token']);
 
