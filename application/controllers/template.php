@@ -358,15 +358,25 @@ class Template_Controller extends Base_Controller {
 
 		//print_r(Session::get('permission'));
 
-		if(is_null($type)){
+		//if(is_null($type)){
 			$back = 'template';
-		}else{
-			$back = 'template/type/'.$type;
-		}
+		//}else{
+		//	$back = 'template/type/'.$type;
+		//}
 
-	    $rules = array(
-	        'title'  => 'required|max:50'
-	    );
+		$in = Input::get();
+
+		if($in['useAsTemplate'] == 'Yes'){
+		    $rules = array(
+		        'title'  => 'required|max:50',
+		        'templateName' => 'required',
+		        'templateNumberStart'=>'required'
+		    );
+		}else{
+		    $rules = array(
+		        'title'  => 'required|max:50'
+		    );			
+		}
 
 	    $validation = Validator::make($input = Input::all(), $rules);
 
@@ -557,9 +567,19 @@ class Template_Controller extends Base_Controller {
 		//	$back = 'template/type/'.$type;
 		//}
 
-	    $rules = array(
-	        'title'  => 'required|max:50'
-	    );
+		$in = Input::get();
+
+		if($in['useAsTemplate'] == 'Yes'){
+		    $rules = array(
+		        'title'  => 'required|max:50',
+		        'templateName' => 'required',
+		        'templateNumberStart'=>'required'
+		    );
+		}else{
+		    $rules = array(
+		        'title'  => 'required|max:50'
+		    );			
+		}
 
 	    $validation = Validator::make($input = Input::all(), $rules);
 
