@@ -1035,10 +1035,74 @@ class Document_Controller extends Base_Controller {
 
 		$form = new Formly();
 
-		$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+		$realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFilename']);
+
+		if(file_exists($realfile)){
+			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+		}else{
+			$file = URL::base().'/document/notfound';
+		}
+
 
 		return View::make('pop.approval')->with('doc',$doc)->with('form',$form)->with('href',$file)->with('ajaxpost','document/approve');
 	}
+
+	public function get_notfound()
+	{
+
+		return View::make('pop.notfound');
+	}
+
+	public function get_stream($id)
+	{
+
+		$id = new MongoId($id);
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$id));
+
+		$form = new Formly();
+
+		$realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFilename']);
+
+		if(file_exists($realfile)){
+			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+
+			$tmp = file_get_contents($realfile);
+
+		    if ( headers_sent()) {
+		      die("Unable to stream file: headers already sent");
+		    }
+
+		    $contenttype = File::getType($realfile);
+		    $contentsize = File::getSize($realfile);
+
+		    header('Cache-Control: private');
+		    header('Content-type: '.$contenttype);
+
+		    //FIXME: I don't know that this is sufficient for determining content length (i.e. what about transport compression?)
+		    header('Content-Length: '.$contentsize );
+		    //$fileName = (isset($options['Content-Disposition']) ?  $options['Content-Disposition'] :  'file.pdf');
+
+		    header('Content-Disposition: inline; filename="'.$doc['docFilename'].'"');
+
+		    /*
+		    if (isset($options['Accept-Ranges']) && $options['Accept-Ranges'] == 1) {
+		      //FIXME: Is this the correct value ... spec says 1#range-unit
+		      header("Accept-Ranges: " . mb_strlen($tmp, '8bit'));
+		    }
+		    */
+
+		    echo $tmp;
+		    flush();
+
+		}else{
+			return View::make('pop.notfound');
+		}
+
+	}
+
 
 	public function get_forward($id){
 		$id = new MongoId($id);
