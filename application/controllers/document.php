@@ -1021,7 +1021,16 @@ class Document_Controller extends Base_Controller {
 
 		//$file = URL::to(Config::get('parama.storage').$id.'/'.$doc['docFilename']);
 
-		$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+		//$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+
+		$realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFilename']);
+
+		if(file_exists($realfile)){
+			//$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+			$file = URL::base().'/document/stream/'.$id;			
+		}else{
+			$file = URL::base().'/document/notfound';
+		}
 
 		return View::make('pop.fileview')->with('doc',$doc)->with('href',$file);
 	}
@@ -1038,7 +1047,8 @@ class Document_Controller extends Base_Controller {
 		$realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFilename']);
 
 		if(file_exists($realfile)){
-			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+			//$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+			$file = URL::base().'/document/stream/'.$id;			
 		}else{
 			$file = URL::base().'/document/notfound';
 		}
