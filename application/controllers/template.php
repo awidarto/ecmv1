@@ -538,6 +538,7 @@ class Template_Controller extends Base_Controller {
 		$doc_data['effectiveDate'] = date('Y-m-d', $doc_data['effectiveDate']->sec);
 		$doc_data['expiryDate'] = date('Y-m-d', $doc_data['expiryDate']->sec);
 
+		$doc_data['useAsTemplate'] = ($doc_data['useAsTemplate'] == 'No')?false:true;
 
 		if(is_null($type)){
 			$this->crumb->add('template/edit/'.$id,$doc_data['title']);
