@@ -81,8 +81,8 @@ class Project_Controller extends Base_Controller {
 			array('USD',array('class'=>'one')),
 			'',
 			'',
-			'',
 			''
+			
 		);		
 
 		$colclass = array('one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one');
