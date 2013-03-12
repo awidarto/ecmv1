@@ -90,7 +90,6 @@ class Project_Controller extends Base_Controller {
 		//$searchinput = array(false,'title','created','last update','creator','project manager','tags',false);
 		$searchinput = array(false,
 
-			'projectDate',
 			'projectNumber',
 			'clientProjectNumber',
 			'clientName',
@@ -113,7 +112,6 @@ class Project_Controller extends Base_Controller {
 			//'createdDate',
 			//'lastUpdate',
 			'projectTag'
-
 			,false);
 
 		return View::make('tables.noaside')
