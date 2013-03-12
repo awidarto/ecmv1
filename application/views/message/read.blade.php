@@ -13,6 +13,9 @@
 	  	<span class="timestamp">{{date('Y-m-d H:i:s',$doc['createdDate']->sec)}}</span><br />
 	  	<span class="from">From : <strong>{{$doc['from']}}</strong></span><br />
 	  	<span class="to">To : <strong>{{$doc['to']}}</strong></span><br />
+	  	@if(isset($doc['cc']))
+	  	<span class="to">Cc : <strong>{{$doc['cc']}}</strong></span><br />
+	  	@endif
 
 	  	<span class="subject">Subject : <strong>{{$doc['subject']}}</strong></span>
 		  <ul class="inline-list">

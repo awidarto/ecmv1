@@ -215,14 +215,14 @@ Event::listen('document.download',function($id,$result){
 });
 
 
-Event::listen('document.delete',function($id,$creator_id,$result){
+Event::listen('document.delete',function($id,$result){
     $activity = new Activity();
 
     $ev = array('event'=>'document.delete',
         
 
         'approvalby'=>'',
-        'creator_id'=>new MongoId($creator_id),
+        'creator_id'=>'',
         'creator_name'=>'',
         'department'=>'',
         'doc_id'=>$id,

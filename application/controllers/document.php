@@ -912,27 +912,27 @@ class Document_Controller extends Base_Controller {
 
 			if($doc['creatorId'] == Auth::user()->id || $doc['docDepartment'] == Auth::user()->department){
 				$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
-						'<i class="foundicon-edit action"></i></a>&nbsp;';
-				$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
+						'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
+				$del = '<i class="foundicon-trash action del has-tip tip-bottom noradius" title="Delete" id="'.$doc['_id'].'"></i>';
 				$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
-							'<i class="foundicon-inbox action"></i></a>&nbsp;';
+							'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
 			}else{
 				if($permissions->{$type}->edit == 1){
 					$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
-							'<i class="foundicon-edit action"></i></a>&nbsp;';
+							'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
 				}else{
 					$edit = '';
 				}
 
 				if($permissions->{$type}->delete == 1){
-					$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
+					$del = '<i class="foundicon-trash action  has-tip tip-bottom noradius del" title="Delete" id="'.$doc['_id'].'"></i>';
 				}else{
 					$del = '';
 				}
 
 				if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1){
 					$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
-							'<i class="foundicon-inbox action"></i></a>&nbsp;';
+							'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
 				}else{
 					$download = '';
 				}

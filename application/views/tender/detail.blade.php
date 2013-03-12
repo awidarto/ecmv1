@@ -40,6 +40,16 @@
 					<td class="detail-info">
 						<ul>
 							<li>
+								USD {{ number_format((double)$tender['bidPriceUSD'],2,',','.').'-' }}
+							</li>
+							<li>
+								EURO {{ number_format((double)$tender['bidPriceEURO'],2,',','.').'-' }}
+							</li>
+							<li>
+								IDR {{ number_format((double)$tender['bidPriceIDR'],2,',','.').'-' }}
+							</li>
+
+							<!--<li>
 								USD {{ (is_double($tender['bidPriceUSD']))?number_format($tender['bidPriceUSD'],2,',','.'):'-' }}
 							</li>
 							<li>
@@ -47,13 +57,14 @@
 							</li>
 							<li>
 								IDR {{ (is_double($tender['bidPriceIDR']))?number_format($tender['bidPriceIDR'],2,',','.'):'-' }}
-							</li>
+							</li>-->
 						</ul>
 					</td>
 				</tr>
 				<tr>
 					<td class="detail-title">Bid Price in USD</td>
-					<td class="detail-info">USD {{ (is_double($tender['equivalentBidPriceUSD']))?number_format($tender['equivalentBidPriceUSD'],2,',','.'):'-' }}</td>
+					<td class="detail-info">USD {{ number_format((double)$tender['equivalentBidPriceUSD'],2,',','.').'-' }}</td>
+					<!--(is_double($tender['equivalentBidPriceUSD']))?number_format($tender['equivalentBidPriceUSD'],2,',','.'):'-'-->
 				</tr>
 				<tr>
 					<td class="detail-title">Description</td>
