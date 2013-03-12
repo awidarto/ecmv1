@@ -42,12 +42,12 @@ class Project_Controller extends Base_Controller {
 	{
 		$firstheads = array(
 			'#',
-			'Project Date',
 			'Project Number',
 			'Client Project Number',
 			'Client Name',
 			'Brief Scope Description',
 			'Delivery Term',
+			'Effective Date',
 			'Due Date',
 			//'Project Vendor',
 			'Project PIC',
@@ -96,6 +96,7 @@ class Project_Controller extends Base_Controller {
 			'clientName',
 			'briefScopeDescription',
 			'deliveryTerm',
+			'effectiveDate',
 			'dueDate',
 			//'projectVendor',
 			'projectPIC',
@@ -250,6 +251,7 @@ class Project_Controller extends Base_Controller {
 
 			$aadata[] = array(
 				$counter,
+
 				HTML::link('project/view/'.$doc['_id'],$doc['projectNumber']),
 				$doc['clientPONumber'],
 				$doc['clientName'],

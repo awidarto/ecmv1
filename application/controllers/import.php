@@ -447,12 +447,19 @@ class Import_Controller extends Base_Controller {
 				//print_r($commitobj);
 				//preprocess here
 
+				$excel = new Excel();
+
 				if($controller == 'project'){
+					$tocommit['effectiveDate'] = date('Y-m-d',$excel->toPHPdate($tocommit['effectiveDate']));
+					$tocommit['dueDate'] = date('Y-m-d',$excel->toPHPdate($tocommit['dueDate']));
 
 					$tocommit['effectiveDate'] = new MongoDate(strtotime($tocommit['effectiveDate']));
 					$tocommit['dueDate'] = new MongoDate(strtotime($tocommit['dueDate']));
 
 				}else if($controller == 'tender'){
+					$tocommit['closingDate'] = date('Y-m-d',$excel->toPHPdate($tocommit['closingDate']));
+					$tocommit['tenderDate']  = date('Y-m-d',$excel->toPHPdate($tocommit['tenderDate']));
+
 					$tocommit['closingDate'] = new MongoDate(strtotime($tocommit['closingDate']));
 					$tocommit['tenderDate']  = new MongoDate(strtotime($tocommit['tenderDate']));
 				}else if($controller == 'opportunity'){

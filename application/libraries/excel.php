@@ -15,6 +15,10 @@ class Excel
     public function setController($controller){
         $this->controller = $controller;
     }
+
+    public function toPHPdate($date){
+        return PHPExcel_Shared_Date::ExcelToPHP($date);
+    }
     
     public function load($filename, $ext = 'xls'){
 

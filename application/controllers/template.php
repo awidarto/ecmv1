@@ -436,6 +436,8 @@ class Template_Controller extends Base_Controller {
 
 			$docupload['uploadTime'] = new MongoDate();
 
+			$docupload['name'] = fixfilename($docupload['name']);
+
 			$data['docFilename'] = $docupload['name'];
 
 			$data['docFiledata'] = $docupload;
@@ -683,6 +685,9 @@ class Template_Controller extends Base_Controller {
 			if($docupload['name'] != ''){
 
 				$docupload['uploadTime'] = new MongoDate();
+				$docupload['name'] = fixfilename($docupload['name']);
+
+				$docupload['name'] = fixfilename($docupload['name']);
 
 				$dirname = $docId;
 

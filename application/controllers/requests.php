@@ -770,6 +770,8 @@ class Requests_Controller extends Base_Controller {
 			}
 
 			$docupload = Input::file('docupload');
+			
+			$docupload['name'] = fixfilename($docupload['name']);
 
 			$docupload['uploadTime'] = new MongoDate();
 
@@ -919,6 +921,8 @@ class Requests_Controller extends Base_Controller {
 			$data['creatorId'] = Auth::user()->id;
 			
 			$docupload = Input::file('docupload');
+
+			$docupload['name'] = fixfilename($docupload['name']);
 
 			$data['docFilename'] = $docupload['name'];
 
