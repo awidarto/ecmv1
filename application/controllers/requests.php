@@ -462,8 +462,8 @@ class Requests_Controller extends Base_Controller {
 			array('Title',array('class'=>'one')),
 			array('Created',array('class'=>'one')),
 			array('Requester',array('class'=>'one')),
-			array('Requesting',array('class'=>'one')),
-			array('Requesting To',array('class'=>'one')),
+			array('Submitting / Requesting',array('class'=>'one')),
+			array('Submitting / Requesting To',array('class'=>'one')),
 			'Status',
 			array('Attachment',array('class'=>'one')),
 			array('Tags',array('class'=>'one')),
@@ -474,7 +474,7 @@ class Requests_Controller extends Base_Controller {
 
 		//if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
 			return View::make('tables.simple')
-				->with('title','Outgoing Requests')
+				->with('title','Submissions & Requests')
 				->with('newbutton','Submit Request')
 				->with('addurl','requests/submit')
 				->with('disablesort','0,5,6')
