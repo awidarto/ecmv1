@@ -203,6 +203,7 @@
 				$.fancybox({
 					type:'iframe',
 					href: '{{ URL::base().'/storage/' }}' + _id + '/' + e.target.innerHTML,
+					//href: '{{ URL::base().'/document/stream/' }}' + _id,
 					autosize: true
 				});
 
