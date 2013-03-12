@@ -171,27 +171,27 @@ class Template_Controller extends Base_Controller {
 
 			if($doc['creatorId'] == Auth::user()->id || $doc['docDepartment'] == Auth::user()->department){
 				$edit = '<a href="'.URL::to('template/edit/'.$doc['_id'].'/'.$type).'">'.
-						'<i class="foundicon-edit action"></i></a>&nbsp;';
+						'<i class="foundicon-edit action has-tip tip-bottom noradius " title="Edit"></i></a>&nbsp;';
 				$download = '<a href="'.URL::to('template/download/'.$doc['_id'].'/'.$type).'">'.
-						'<i class="foundicon-download action"></i></a>&nbsp;';
-				$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
+						'<i class="foundicon-download  has-tip tip-bottom noradius action" title="Download"></i></a>&nbsp;';
+				$del = '<i class="foundicon-trash  has-tip tip-bottom noradius action del" id="'.$doc['_id'].'" title="Delete"></i>';
 			}else{
 				if($permissions->{$type}->edit == 1){
 					$edit = '<a href="'.URL::to('template/edit/'.$doc['_id'].'/'.$type).'">'.
-							'<i class="foundicon-edit action"></i></a>&nbsp;';
+							'<i class="foundicon-edit has-tip tip-bottom noradius action" title="Edit"></i></a>&nbsp;';
 				}else{
 					$edit = '';
 				}
 
 				if($permissions->{$type}->delete == 1){
 					$download = '<a href="'.URL::to('template/download/'.$doc['_id'].'/'.$type).'">'.
-							'<i class="foundicon-download action"></i></a>&nbsp;';
+							'<i class="foundicon-download has-tip tip-bottom noradius action" title="Download"></i></a>&nbsp;';
 
 				}else{
 					$download = '';
 				}
 				if($permissions->{$type}->delete == 1){
-					$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
+					$del = '<i class="foundicon-trash has-tip tip-bottom noradius action del" id="'.$doc['_id'].'" title="Delete"></i>';
 				}else{
 					$del = '';
 				}
@@ -200,7 +200,7 @@ class Template_Controller extends Base_Controller {
 			// by default everybody can download template
 
 			$download = '<a href="'.URL::to('template/download/'.$doc['_id']).'">'.
-					'<i class="foundicon-down-arrow action"></i></a>&nbsp;';
+					'<i class="foundicon-down-arrow has-tip tip-bottom noradius action" title="Download"></i></a>&nbsp;';
 
 			$aadata[] = array(
 				$counter,

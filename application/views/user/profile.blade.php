@@ -8,9 +8,9 @@
 	<div class="profileContent">
 		<div class="two columns">
 			{{ getavatar($profile['_id'])}}
-			<a href="{{ URL::to('user/picture')}}" class="inlink" ><i class="foundicon-smiley action"></i> Change Picture</a>
-			<a href="{{ URL::to('user/pass')}}" class="inlink" ><i class="foundicon-lock action"></i> Change Password</a>
-			<a href="{{ URL::to('user/editprofile')}}" class="inlink" ><i class="foundicon-edit action"></i> Edit Profile</a><br />
+			<a href="{{ URL::to('user/picture')}}" class="inlink" ><i class="foundicon-smiley action" style="font-size: 16px;line-height:5px;display:inline-block;margin-right:4px;"></i> Change Picture</a>
+			<a href="{{ URL::to('user/pass')}}" class="inlink" ><i class="foundicon-lock action" style="font-size: 16px;line-height:5px;display:inline-block;margin-right:4px;"></i> Change Password</a>
+			<a href="{{ URL::to('user/editprofile')}}" class="inlink" ><i class="foundicon-edit action" style="font-size: 16px;line-height:5px;display:inline-block;margin-right:4px;"></i> Edit Profile</a><br />
 		</div>
 		<div class="nine columns">
 			<h5>{{ $profile['fullname'] }}</h5>

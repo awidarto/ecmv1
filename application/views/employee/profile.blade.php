@@ -8,8 +8,8 @@
 	<div class="profileContent">
 		<div class="two columns">
 			{{ getavatar($profile['_id'])}}<br /><br />
-			<a href="{{ URL::to('user/picture') }}" class="inlink"><i class="foundicon-smiley action" style="font-size:16px;"></i> Change Picture</a>
-			<a href="{{ URL::to('user/pass') }}" class="inlink"><i class="foundicon-lock action" style="font-size:16px;"></i> Change Password</a>
+			<a href="{{ URL::to('user/picture') }}" class="inlink"><i class="foundicon-smiley action" style="font-size: 16px;line-height:5px;display:inline-block;margin-right:4px;"></i> Change Picture</a>
+			<a href="{{ URL::to('user/pass') }}" class="inlink"><i class="foundicon-lock action" style="font-size: 16px;line-height:5px;display:inline-block;margin-right:4px;"></i> Change Password</a>
 			
 		</div>
 		<div class="ten columns">

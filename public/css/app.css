@@ -893,6 +893,11 @@ iframe.fileviewer{
 
 a.inlink {
 	display: block;
+    padding-bottom: 7px;
+    
+}
+.profileContent img{
+    margin-bottom: 20px;
 }
 
 #contactTable, #progressTable{
@@ -1365,7 +1370,7 @@ ul.profilenav li:last-child{
 }
 .has-tip:hover, .has-tip:focus{
 border-bottom: none;
-color: #2ba6cb;
+
 }
 
 .colorGray{
@@ -1413,4 +1418,7 @@ img.avatar{
 .showdate{
     font-size: 11px;
     color: #878580;
+}
+.has-tip{
+
 }
