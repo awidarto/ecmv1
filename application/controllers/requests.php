@@ -434,7 +434,7 @@ class Requests_Controller extends Base_Controller {
 				$status,
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
-				($shallapprove)?'<i class="foundicon-checkmark action approvalview" id="'.$doc['_id'].'"></i>':'<i class="foundicon-checkmark action noapproval" ></i>'
+				($shallapprove)?'<i class="foundicon-checkmark has-tip tip-bottom noradius action approvalview" id="'.$doc['_id'].'" title="Approve"></i>':'<i class="foundicon-checkmark has-tip tip-bottom noradius action noapproval" title="Approve"></i>'
 			);
 			$counter++;
 		}

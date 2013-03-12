@@ -155,9 +155,9 @@ class Employee_Controller extends Base_Controller {
 				$doc['email'],
 				isset($doc['department'])?depttitle($doc['department']):'',
 				(isset($doc['role']))?roletitle($doc['role']):'no role',
-				'<a href="'.URL::to('employee/picture/'.$doc['_id']).'"><i class="foundicon-smiley action"></i></a>&nbsp;'.
-				'<a href="'.URL::to('employee/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
-				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
+				'<a href="'.URL::to('employee/picture/'.$doc['_id']).'"><i class="foundicon-smiley action has-tip tip-bottom noradius" title="Profile Picture"></i></a>&nbsp;'.
+				'<a href="'.URL::to('employee/edit/'.$doc['_id']).'"><i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;'.
+				'<i class="foundicon-trash action del has-tip tip-bottom noradius" title="Delete" id="'.$doc['_id'].'"></i>'
 			);
 			$counter++;
 		}
