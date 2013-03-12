@@ -60,7 +60,7 @@ class Template_Controller extends Base_Controller {
 
 		return View::make('tables.simple')
 			->with('title','Document Template')
-			->with('newbutton','New Document')
+			->with('newbutton','New Template')
 			->with('disablesort','0,5,6')
 			->with('addurl',$addurl)
 			->with('searchinput',$searchinput)

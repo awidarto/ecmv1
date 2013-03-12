@@ -437,7 +437,11 @@ class Document_Controller extends Base_Controller {
 		$doc_data['effectiveDate'] = date('Y-m-d', $doc_data['effectiveDate']->sec);
 		$doc_data['expiryDate'] = date('Y-m-d', $doc_data['expiryDate']->sec);
 
-		$doc_data['useAsTemplate'] = ($doc_data['useAsTemplate'] == 'No')?false:true;
+		if(isset($doc_data['useAsTemplate'])){
+			$doc_data['useAsTemplate'] = ($doc_data['useAsTemplate'] == 'No')?false:true;
+		}else{
+			$doc_data['useAsTemplate'] = false;
+		}
 
 		if(is_null($type)){
 			$this->crumb->add('document/edit/'.$id,$doc_data['title']);
@@ -1027,8 +1031,8 @@ class Document_Controller extends Base_Controller {
 		//$realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFilename']);
 
 		if(file_exists($realfile)){
-			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
-			//$file = URL::base().'/document/stream/'.$id;			
+			//$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+			$file = URL::base().'/document/stream/'.$id;			
 		}else{
 			$file = URL::base().'/document/notfound';
 		}
@@ -1048,8 +1052,8 @@ class Document_Controller extends Base_Controller {
 		$realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFilename']);
 
 		if(file_exists($realfile)){
-			//$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
-			$file = URL::base().'/document/stream/'.$id;			
+			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+			//$file = URL::base().'/document/stream/'.$id;			
 		}else{
 			$file = URL::base().'/document/notfound';
 		}
@@ -1086,8 +1090,8 @@ class Document_Controller extends Base_Controller {
 		      die("Unable to stream file: headers already sent");
 		    }
 
-		    $contenttype = File::getType($realfile);
-		    $contentsize = File::getSize($realfile);
+		    $contenttype = system("file -I -b ".escapeshellarg($realfile));;
+		    $contentsize = File::size($realfile);
 
 		    header('Cache-Control: private');
 		    header('Content-type: '.$contenttype);
@@ -1097,6 +1101,7 @@ class Document_Controller extends Base_Controller {
 		    //$fileName = (isset($options['Content-Disposition']) ?  $options['Content-Disposition'] :  'file.pdf');
 
 		    header('Content-Disposition: inline; filename="'.$doc['docFilename'].'"');
+			//header("Accept-Ranges: " . $contentsize);
 
 		    /*
 		    if (isset($options['Accept-Ranges']) && $options['Accept-Ranges'] == 1) {
