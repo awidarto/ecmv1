@@ -933,7 +933,7 @@ body.front .loginheader h1#paramanusaLogo{
 }
 .top-bar, .top-bar ul > li.has-dropdown .dropdown, .top-bar ul > li.has-dropdown .dropdown li, .top-bar ul > li.has-dropdown .dropdown li:last-child{
 	/*background-color: #e2ceaa;*/
-	background-color: #fff;
+	background-color: transparent;
 	
 }
 .top-bar ul > li.has-dropdown ul.dropdown,.top-bar ul > li.has-dropdown ul.dropdown li,.top-bar ul > li.has-dropdown ul.dropdown li a,.top-bar ul > li.has-dropdown ul.dropdown li:last-child{
@@ -957,8 +957,11 @@ body.front .loginheader h1#paramanusaLogo{
 }
 
 .top-bar ul>li:not(.name):hover, .top-bar ul>li:not(.name).active, .top-bar ul>li:not(.name):focus{
-	background-color: #fff;
-
+	background-color: transparent;
+}
+.top-bar ul>li.has-dropdown:hover{
+    background-color: #fff;
+}
 
 }
 .top-bar ul > li.has-dropdown:hover{
@@ -968,7 +971,7 @@ body.front .loginheader h1#paramanusaLogo{
     border-bottom: none;
 }
 .top-bar ul>li:not(.name):hover a, .top-bar ul>li:not(.name).active a, .top-bar ul>li:not(.name):focus a{
-	background-color: #fff;
+	
 	color: #484236;	
     border-bottom: 1px solid #cccccc;
     
@@ -1151,8 +1154,8 @@ tr.odd{
 	display: block;
 	width: 32px;
 	height: 32px;
-	margin-bottom: 5px;
-	margin-left: 20px;
+	margin: 0 auto;
+    margin-bottom: 5px;
 }
 .action{
 	font-size: 25px;
@@ -1404,4 +1407,10 @@ img.avatar{
     background-color: red;
     text-decoration: underline;
 }
-
+.mainheader{
+    background:transparent url('images/bg-header.png') repeat-x;
+}
+.showdate{
+    font-size: 11px;
+    color: #878580;
+}

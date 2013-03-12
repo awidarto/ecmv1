@@ -1,7 +1,7 @@
 @section('identity')
 <div class="rightmenutop">
 	<ul class="profilenav">
-
+	  <li class="showdate"><?php echo date('l, jS F Y');?></li>
 	  <li>{{ HTML::link(URL::base(),'',array('class'=>'home has-tip tip-bottom noradius','title'=>'Home'))}}</li>
 	  <li>{{ HTML::link('user/profile','',array('class'=>'profile has-tip tip-bottom noradius','title'=>'Profile'))}}</li>
 	  <li>{{ HTML::link('search','',array('class'=>'search has-tip tip-bottom noradius','title'=>'Search'))}}</li>
