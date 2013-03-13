@@ -12,14 +12,14 @@
     <h4>Employee Info</h4>
     {{ $form->hidden('id',$user['_id'])}}
 
-    {{ $form->text('fullname','Full Name.req','',array('class'=>'text','id'=>'emp_fullname')) }}
-    {{ $form->text('email','Email.req','',array('class'=>'text','id'=>'emp_email')) }}
+    {{ $form->text('fullname','Full Name.req','',array('class'=>'auto_userdata text','id'=>'emp_fullname')) }}
+    {{ $form->text('email','Email.req','',array('class'=>'auto_userdatabyemail text','id'=>'emp_email')) }}
 
     {{ $form->text('userId','System User ID','',array('class'=>'auto_idbyemail text','id'=>'emp_user_id')) }}
 
     <h4>Employment Info</h4>
     {{ $form->text('employee_jobtitle','Job Title','',array('class'=>'text','id'=>'emp_jobtitle')) }}
-    {{ Form::label('Department','department')}}
+    {{ Form::label('Department','Department')}}
     {{$form->select('department','',Config::get('parama.department'),null,array('class'=>'four','id'=>'emp_department'))}}
 
   </div>

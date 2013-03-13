@@ -269,6 +269,7 @@ class Employee_Controller extends Base_Controller {
 			$idx++;
 		}
 
+
 		//print_r($q)
 		if(!is_null($id)){
 			$q['creatorId'] = $id;
@@ -537,7 +538,7 @@ class Employee_Controller extends Base_Controller {
 					->with('user',$user_profile)
 					->with('form',$form)
 					->with('crumb',$this->crumb)
-					->with('title','Edit User');
+					->with('title','Edit Employee');
 
 	}
 
@@ -590,7 +591,7 @@ class Employee_Controller extends Base_Controller {
 		return View::make('employee.new')
 					->with('form',$form)
 					->with('crumb',$this->crumb)
-					->with('title','New User');
+					->with('title','New Employee');
 
 	}
 

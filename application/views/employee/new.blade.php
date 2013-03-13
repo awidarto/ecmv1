@@ -17,7 +17,7 @@
 
     <h4>Employment Info</h4>
     {{ $form->text('employee_jobtitle','Job Title','',array('class'=>'text','id'=>'emp_jobtitle')) }}
-    {{ Form::label('Department','department')}}
+    {{ Form::label('Department','Department')}}
     {{$form->select('department','',Config::get('parama.department'),null,array('class'=>'four','id'=>'emp_department'))}}
 
   </div>

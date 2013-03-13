@@ -651,7 +651,7 @@ class Requests_Controller extends Base_Controller {
 				}
 				$status .= '</table>';
 			}else{
-				$status = 'Pending Approval';
+				$status = 'Pending Approval / Credential Submission';
 			}
 
 
@@ -772,6 +772,8 @@ class Requests_Controller extends Base_Controller {
 			$docupload = Input::file('docupload');
 			
 			$docupload['name'] = fixfilename($docupload['name']);
+
+			//print $docupload['name'];
 
 			$docupload['uploadTime'] = new MongoDate();
 
