@@ -34,7 +34,7 @@
 	</tr>
 @endforeach
 </table>
-<a class="button" id="printBtn" href="#" >Print</a>
+<a class="button" id="printBtn" href="{{ URL::to('document/printcover/'.$profile['_id']->__toString().'') }}" target="_blank">Print</a>
 
 @endsection
 

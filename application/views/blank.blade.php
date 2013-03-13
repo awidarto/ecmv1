@@ -11,24 +11,10 @@
   <title>ParamaNusa</title>
 
   <!-- Included CSS Files -->
-  {{ HTML::style('css/foundation.min.css') }}
-  {{ HTML::style('css/jquery-datatables/demo_table.css') }}
-  {{ HTML::style('css/flick/jquery-ui-1.9.2.custom.min.css') }}
+  {{ HTML::style('css/foundation.tables.css') }}
+  
   {{ HTML::style('css/app.css') }}
-  {{ HTML::style('css/general_enclosed_foundicons.css') }}
-  {{ HTML::style('css/general_foundicons.css') }}
-
-  {{ HTML::style('css/jquery.tagsinput.css') }}
-  {{ HTML::style('css/select2.css') }}
-
-
-  {{ HTML::script('js/jquery-1.8.3.min.js') }}
-  {{ HTML::script('js/jquery-ui-1.9.2.custom.min.js') }}
-
-  {{ HTML::script('js/jquery.dataTables.min.js') }}
-
-  {{ HTML::script('js/jquery.tagsinput.min.js') }}
-  {{ HTML::script('js/select2.min.js') }}
+  
 
   <!--[if lt IE 8]>
     {{ HTML::style('css/general_enclosed_foundicons_ie7.css') }}
@@ -36,15 +22,11 @@
 </head>
 <body>
     <div class="row container-content dialog clearfix" id="dialog-container">
+        {{ HTML::image('images/logo.png','ipalogo',array('class'=>'logo-header')) }}
         <div id="maincontent" class="twelve columns dialog">
             @yield('content')
         </div>
     </div>
 
-    {{ HTML::script('js/jquery.foundation.forms.js') }}
-    <script type="text/javascript">
-      base = '{{ URL::base() }}/';
-    </script>
-    {{ HTML::script('js/pnu.js') }}
 </body>
 </html>

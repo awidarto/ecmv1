@@ -61,7 +61,7 @@
     <div class="row mainheader">
       
       @yield('identity')
-      <h1 id="paramanusaLogo">Paramanusa</h1>
+      <h1 id="paramanusaLogo"><a href="{{ URL::to() }}">Paramanusa</a></h1>
       <nav class="top-bar main-bar">
 
         @yield('topnav')

@@ -482,7 +482,7 @@ body.front .container-content{
 
 }
 
-#paramanusaLogo{
+#paramanusaLogo a{
 	background: transparent url(../images/logo.png);
 	width: 150px;
 	height: 84px;
