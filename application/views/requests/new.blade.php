@@ -53,7 +53,8 @@
   <div class="five columns right">
     <h4>Metadata</h4>
 
-    {{$form->select('docDepartment','Department of Origin',Config::get('parama.department'),array('class'=>'four'))}}
+      {{ Form::label('docDepartment','Department of Origin : '.depttitle(Auth::user()->department))}}
+      {{ $form->hidden('docDepartment',Auth::user()->department)}}
 
     {{$form->select('docRequestToDepartment','Request to Department',Config::get('parama.department'),array('class'=>'four'))}}
 

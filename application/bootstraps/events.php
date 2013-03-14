@@ -41,17 +41,40 @@ Event::listen('document.expire',function(){
 
             $doc->update(array('_id'=>$ex['_id']),array('$set'=>array('expiring'=>$indays->days)),array('upsert'=>true));
 
-            $exp->update(array('doc_id'=>$ex['_id']),array('doc_id'=>$ex['_id'],'expiring'=>$indays),array('upsert'=>true));
+            $exdata = $exp->get(array('doc_id'=>$ex['_id']));
 
-            $m = array();
-            $m['from'] = 'no-reply@paramanusa.co.id';
-            $m['to'] = $owner['email'];
-            $m['cc'] = $ex['docShare'];
-            $m['body'] = HTML::link('document/type/'.$ex['docDepartment'].'/'.$ex['_id'],$ex['title']).' is expiring in '.$indays->days.' day(s)';
-            $m['subject'] = $ex['title'].' is expiring in '.$indays->days.' day(s)';
-            $m['createdDate'] = new MongoDate();
+            $sendmessage = false;
 
-            $message->insert($m);
+            if(isset($exdata['doc_id'])){
+
+                $exday = $exdata['expiring'];
+
+
+                if($indays->days != $exday){
+                    $sendmessage = true;
+                }
+
+                $exp->update(array('doc_id'=>$ex['_id']),array('doc_id'=>$ex['_id'],'expiring'=>$indays->days,'expiryDate'=>$ex['expiryDate'],'updated'=>false),array('upsert'=>true));
+
+            }else{
+
+                $exp->insert(array('doc_id'=>$ex['_id'],'expiring'=>$indays->days,'expiryDate'=>$ex['expiryDate'],'updated'=>false));
+
+                $sendmessage = true;
+
+            }
+
+            if($sendmessage == true){
+                $m = array();
+                $m['from'] = 'system@paramanusa.co.id';
+                $m['to'] = $owner['email'];
+                $m['cc'] = $ex['docShare'];
+                $m['body'] = HTML::link('document/type/'.$ex['docDepartment'].'/'.$ex['_id'],$ex['title']).' is expiring in '.$indays->days.' day(s)';
+                $m['subject'] = $ex['title'].' is expiring in '.$indays->days.' day(s)';
+                $m['createdDate'] = new MongoDate();
+
+                $message->insert($m);
+            }
 
             $ev = array('event'=>'document.expire',
 

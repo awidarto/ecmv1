@@ -197,7 +197,8 @@
 				$.fancybox({
 					type:'iframe',
 					href: '{{ URL::to("document/fileview/") }}' + _id,
-					autosize: true
+					autosize: true,
+					preload: false
 				});
 
 		   	}		   			   	
