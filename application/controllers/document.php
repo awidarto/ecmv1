@@ -1037,8 +1037,8 @@ class Document_Controller extends Base_Controller {
 		$realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFilename']);
 
 		if(file_exists($realfile)){
-			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
-			//$file = URL::base().'/document/stream/'.$id;			
+			//$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+			$file = URL::base().'/document/stream/'.$id;			
 		}else{
 			$file = URL::base().'/document/notfound';
 		}

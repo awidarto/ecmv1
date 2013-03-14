@@ -10,6 +10,23 @@
 <div class="row">
   <div class="six columns left">
     <h4>User Info</h4>
+
+    {{ Form::label('salutation','Salutation')}}
+
+    <div class="row radioInput">
+        <div class="two columns">
+          {{ $form->radio('salutation','Mr','Mr',true)}} 
+        </div>   
+        <div class="two columns">
+          {{ $form->radio('salutation','Mrs','Mrs')}} 
+        </div>   
+        <div class="two columns">
+          {{ $form->radio('salutation','Ms','Ms')}} 
+        </div>
+        <div class="six columns">
+        </div>
+    </div>
+
     {{ $form->text('email','Email.req','',array('class'=>'text')) }}
     {{ $form->text('fullname','Full Name.req','',array('class'=>'text')) }}
     {{ $form->password('pass','Password','',array('class'=>'text')) }}
