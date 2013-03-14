@@ -29,7 +29,7 @@
   <!-- Header and Nav -->
   <header class="row mainheader loginheader">
     
-      <h1 id="paramanusaLogo">ParamaNusa</h1>
+      <h1 id="paramanusaLogofront">ParamaNusa</h1>
     
   </header>
   <div class="row container-content">

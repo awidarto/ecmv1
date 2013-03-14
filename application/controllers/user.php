@@ -228,10 +228,10 @@ class User_Controller extends Base_Controller {
 				$doc['email'],
 				isset($doc['department'])?depttitle($doc['department']):'',
 				roletitle($doc['role']),
-				'<a href="'.URL::to('user/pass/'.$doc['_id']).'"><i class="foundicon-lock action"></i></a>&nbsp;'.
-				'<a href="'.URL::to('user/picture/'.$doc['_id']).'"><i class="foundicon-smiley action"></i></a>&nbsp;'.
-				'<a href="'.URL::to('user/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
-				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
+				'<a href="'.URL::to('user/pass/'.$doc['_id']).'"><i class="foundicon-lock action has-tip tip-bottom noradius" title="Change Password"></i></a>&nbsp;'.
+				'<a href="'.URL::to('user/picture/'.$doc['_id']).'"><i class="foundicon-smiley action has-tip tip-bottom noradius" title="Change Avatar"></i></a>&nbsp;'.
+				'<a href="'.URL::to('user/edit/'.$doc['_id']).'"><i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;'.
+				'<i class="foundicon-trash action del has-tip tip-bottom noradius" id="'.$doc['_id'].'" title="Delete"></i>'
 			);
 			$counter++;
 		}
