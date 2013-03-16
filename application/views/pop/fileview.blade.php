@@ -2,7 +2,7 @@
 
 @section('content')
 	<div class="displaybox">
-		<iframe src="{{$href}}"></iframe>
+		<iframe class="fileviewer" src="{{$href}}"></iframe>
 	</div>
 @endsection
 
