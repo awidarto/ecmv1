@@ -1065,14 +1065,15 @@ class Document_Controller extends Base_Controller {
 		$realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFilename']);
 
 		if(file_exists($realfile)){
-
 			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
-
-			if(Config::get('kickstart.usegoogleviewer') == 'true'){
-				$file = 'http://docs.google.com/viewer?url='.$file;
+			//$file = URL::base().'/document/stream/'.$id;			
+			$ext = File::extension($realfile);
+			if(in_array($ext, Config::get('kickstart.googledocext'))){
+				if(Config::get('kickstart.usegoogleviewer') == 'true'){
+					$file = 'https://docs.google.com/viewer?embedded=true&url='.$file;
+				}
 			}
 
-			//$file = URL::base().'/document/stream/'.$id;			
 		}else{
 			$file = URL::base().'/document/notfound';
 		}
