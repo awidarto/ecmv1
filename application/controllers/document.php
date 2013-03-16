@@ -438,8 +438,8 @@ class Document_Controller extends Base_Controller {
 
 		$doc_data['oldTag'] = $doc_data['docTag'];
 
-		$doc_data['effectiveDate'] = date('Y-m-d', $doc_data['effectiveDate']->sec);
-		$doc_data['expiryDate'] = date('Y-m-d', $doc_data['expiryDate']->sec);
+		$doc_data['effectiveDate'] = date('d-m-Y', $doc_data['effectiveDate']->sec);
+		$doc_data['expiryDate'] = date('d-m-Y', $doc_data['expiryDate']->sec);
 
 		if(isset($doc_data['useAsTemplate'])){
 			$doc_data['useAsTemplate'] = ($doc_data['useAsTemplate'] == 'No')?false:true;
