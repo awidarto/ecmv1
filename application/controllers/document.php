@@ -1042,7 +1042,7 @@ class Document_Controller extends Base_Controller {
 			$ext = File::extension($realfile);
 			if(in_array($ext, Config::get('kickstart.googledocext'))){
 				if(Config::get('kickstart.usegoogleviewer') == 'true'){
-					$file = 'https://docs.google.com/viewer?url='.$file;
+					$file = 'https://docs.google.com/viewer?embedded=true&url='.$file;
 				}
 			}
 
