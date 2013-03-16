@@ -1046,6 +1046,10 @@ class Document_Controller extends Base_Controller {
 				}
 			}
 
+			if(in_array($ext, Config::get('kickstart.noviewer'))){
+				$file = URL::base().'/document/noviewer';
+			}			
+
 		}else{
 			$file = URL::base().'/document/notfound';
 		}
@@ -1074,6 +1078,10 @@ class Document_Controller extends Base_Controller {
 				}
 			}
 
+			if(in_array($ext, Config::get('kickstart.noviewer'))){
+				$file = URL::base().'/document/noviewer';
+			}
+
 		}else{
 			$file = URL::base().'/document/notfound';
 		}
@@ -1086,6 +1094,12 @@ class Document_Controller extends Base_Controller {
 	{
 
 		return View::make('pop.notfound');
+	}
+
+	public function get_noviewer()
+	{
+
+		return View::make('pop.noviewer');
 	}
 
 	public function get_stream($id)
