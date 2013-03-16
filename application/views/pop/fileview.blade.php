@@ -1,6 +1,8 @@
 @layout('dialog')
 
 @section('content')
-	<iframe src="{{$href}}"></iframe>
+	<div class="displaybox">
+		<iframe src="{{$href}}"></iframe>
+	</div>
 @endsection
 

@@ -1436,3 +1436,18 @@ img.avatar{
 .noapproval{
     color:#ddd;
 }
+
+tfoot input.search_init{
+    font-size: 11px;
+}
+
+.displaybox{
+    padding: 2px;
+    height:500px;
+    display: block;
+}
+
+.displaybox iframe{
+    width: 100%;
+    height:100%;
+}

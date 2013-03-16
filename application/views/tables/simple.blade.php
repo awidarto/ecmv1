@@ -200,12 +200,11 @@
 
 				var fileurl = '{{ URL::base().'/storage/' }}' + _id + '/' + e.target.innerHTML;
 
-				console.log(e);
-
 				$.fancybox({
 					type:'iframe',
-					href: fileurl,
+					href: '{{ URL::to("document/fileview/") }}' + _id,
 					width:'1000',
+					height: '800',
 					autosize: false
 				});
 

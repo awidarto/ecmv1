@@ -118,7 +118,7 @@
       'license'=>'License',
   ),
 
-  'doc_format'=>array( 'letter'=>'Letter','fax'=>'Fax','email'=>'Email','picture'=>'Picture','scan'=>'Scan','other'=>'Other'),
+  'doc_format'=>array( 'letter'=>'Letter','fax'=>'Fax','email'=>'Email','drawing'=>'Drawing','picture'=>'Picture','scan'=>'Scan','other'=>'Other'),
 
   'department'=>array(
   		'general'=>'General',

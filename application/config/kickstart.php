@@ -136,5 +136,7 @@ return array(
 
     ),
     'invalidchars'=>array('%','&','|','\'','(',')','/'),
+    'usegoogleviewer'=>true,
+    'googledocext'=>array('docx','xlsx','pptx','doc','xls','ppt'),
     
 );
