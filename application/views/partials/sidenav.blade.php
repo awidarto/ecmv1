@@ -1,6 +1,7 @@
 @section('sidenav')
 	<?php
 		$role = Auth::user()->role;
+
 		$permissions = Auth::user()->permissions;
 
         if($role != 'root' || $role != 'super'){
@@ -27,7 +28,10 @@
         <dd><a href="{{ URL::to('activity/upload') }}"><i class="foundicon-up-arrow sidemenu"></i> <br/>Upload</a></dd>
         <dd><a href="{{ URL::to('user/people') }}"><i class="foundicon-address-book sidemenu"></i> <br/>People</a></dd>
 
+        print $role;
+
         */
+
 
 	?>
     <div class="one columns mobile sidenav">
@@ -46,10 +50,9 @@
                     <dd><a href="{{ URL::to('project') }}"><i class="foundicon tools iconnew sidemenu"></i>Projects</a></dd>
                 @endif
 
-                @if($role == 'hr_admin' || $role == 'root' || $role == 'super' || $role = 'president' || $role == 'bod')
+                @if($role == 'hr_admin' || $role == 'root' || $role == 'super' || $role == 'president' || $role == 'bod')
                     <dd><a href="{{ URL::to('employee') }}"><i class="foundicon iconnew group sidemenu"></i>Human Resources</a></dd>
                 @endif
-
                 <!--<dd><a href="{{ URL::to('user/profile') }}"><i class="foundicon iconnew user sidemenu"></i>Profile</a></dd>
                 <dd><a href="{{ URL::to('search') }}"><i class="foundicon search iconnew sidemenu"></i>Search</a></dd>-->
             @else
