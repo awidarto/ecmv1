@@ -1021,15 +1021,16 @@ class Opportunity_Controller extends Base_Controller {
 			);
 
 		}else{
-
+			/*
 			if(Auth::user()->department == $type){
 				$q['$or'] = array(
 					array('access'=>'general'),
 					array('docShare'=>$sharecriteria)
 				);
 			}else{
+			*/
 				$q['docShare'] = $sharecriteria;
-			}
+			//}
 		}
 
 
