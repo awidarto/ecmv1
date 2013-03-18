@@ -149,7 +149,7 @@
       'document.create'=>'New Document Created',
       'document.update'=>'Updated',
       'document.delete'=>'Deleted',
-      'document.share'=>'Shared',
+      'document.share'=>'shared to you',
       'document.expire'=>'will expire',
 
       'project.upload'=>'New Project Created',
