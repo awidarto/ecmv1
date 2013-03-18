@@ -531,7 +531,7 @@ class Document_Controller extends Base_Controller {
 
 			if(isset($data['useAsTemplate']) && $data['useAsTemplate'] == 'Yes' && ($data['oldTemplateName'] != $data['templateName'] || $data['oldTemplateName'] == '')){
 				$templatename = trim(strtolower($data['templateName']));
-				$startFrom = ($data['templateNumberStart'] == '')?1:$data['templateNumberStart'];
+				$startFrom = ($data['templateNumberStart'] == '' || $data['templateNumberStart'] <= 0)?1:$data['templateNumberStart'];
 				$startFrom = new MongoInt64($startFrom);
 				// set new sequencer
 				$sequencer = new Sequence();
