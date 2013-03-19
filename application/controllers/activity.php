@@ -335,9 +335,6 @@ class Activity_Controller extends Base_Controller {
 			$count_display_all = $document->count();
 		}
 
-
-
-
 		$aadata = array();
 
 		$counter = 1;
