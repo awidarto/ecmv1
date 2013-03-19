@@ -1262,7 +1262,8 @@ class Opportunity_Controller extends Base_Controller {
 
 			$aadata[] = array(
 				$counter,
-				'<span class="metaview" id="'.$doc['personId'].'">'.$doc['personName'].'</span>',
+				//'<span class="metaview" id="'.$doc['personId'].'">'.$doc['personName'].'</span>',
+				$doc['personName'],
 				$doc['personPosition'],
 				$doc['personEmail'],
 				$doc['personPhone'],
