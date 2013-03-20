@@ -69,6 +69,7 @@ Event::listen('document.expire',function(){
                 $m['from'] = 'system@paramanusa.co.id';
                 $m['to'] = $owner['email'];
                 $m['cc'] = $ex['docShare'];
+                $m['bcc'] = '';
                 $m['body'] = HTML::link('document/type/'.$ex['docDepartment'].'/'.$ex['_id'],$ex['title']).' is expiring in '.$indays->days.' day(s)';
                 $m['subject'] = $ex['title'].' is expiring in '.$indays->days.' day(s)';
                 $m['createdDate'] = new MongoDate();
