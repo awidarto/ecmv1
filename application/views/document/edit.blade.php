@@ -27,19 +27,39 @@
 
         <hr />
 
-        {{ Form::label('access','This document is')}}
-        <div class="row">
-          <div class="five columns left">
-            {{ $form->radio('access','Confidential','confidential')}} 
-          </div>   
-          <div class="five columns right">
-            {{ $form->radio('access','General','general')}} 
-          </div>   
-        </div>
-        <p>
-          <strong>Confidential</strong> document ( default ) can only be seen by its creator and people it was shared with.<br />
-          <strong>General</strong> document will be able to be seen by creator's peers at the same department, and superiors with higher access level. 
-        </p>
+      {{ Form::label('access','Who can see this document')}}
+      <div class="row">
+        <div class="four columns left">
+          {{ $form->radio('access','Confidential','confidential')}} 
+        </div>   
+        <div class="eight columns right">
+          <p>
+            <strong>Confidential</strong> document ( default ) can only be seen by its creator and people it was shared with.<br />
+          </p>
+        </div>   
+      </div>
+
+      <div class="row">
+        <div class="four columns left">
+          {{ $form->radio('access','Departmental','departmental')}} 
+        </div>   
+        <div class="eight columns right">
+          <p>
+            <strong>Departmental</strong> document will be able to be seen by creator's peers at the same department. 
+          </p>
+        </div>   
+      </div>
+
+      <div class="row">
+        <div class="four columns left">
+          {{ $form->radio('access','General','general')}} 
+        </div>   
+        <div class="eight columns right">
+          <p>
+            <strong>General</strong> document will be able to be seen by all employees in the company, and listed in General document section. 
+          </p>
+        </div>   
+      </div>
 
         <hr />
         {{ $form->file('docupload','Document File')}}

@@ -147,7 +147,7 @@ class Document_Controller extends Base_Controller {
 
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
-			if(isset($doc['tags'])){
+			if(isset($doc['tags']) && is_array($doc['tags']) && implode('',$doc['tags']) != ''){
 				$tags = array();
 
 				foreach($doc['tags'] as $t){
@@ -717,6 +717,8 @@ class Document_Controller extends Base_Controller {
 				$can_open = true;
 			}
 
+		}else if($type == 'general'){
+			$can_open = true;
 		}else{
 
 			if(Auth::user()->department == $type){
@@ -789,7 +791,6 @@ class Document_Controller extends Base_Controller {
 		$defdir = -1;
 
 		$idx = 0;
-		$q = array();
 
 		$hilite = array();
 		$hilite_replace = array();
@@ -817,9 +818,16 @@ class Document_Controller extends Base_Controller {
 			$idx++;
 		}
 
+		//start creating query array
+		$q = array();
+
 		//print_r($q)
 		if(!is_null($type)){
-			$q['docDepartment'] = $type;
+			if($type == 'general'){
+				$q['access'] = $type;
+			}else{
+				$q['docDepartment'] = $type;
+			}
 		}
 
 		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
@@ -842,13 +850,16 @@ class Document_Controller extends Base_Controller {
 
 		}else{
 
-			if(Auth::user()->department == $type){
-				$q['$or'] = array(
-					array('access'=>'general'),
-					array('docShare'=>$sharecriteria)
-				);
-			}else{
-				$q['docShare'] = $sharecriteria;
+			if($type != 'general'){
+				if(Auth::user()->department == $type){
+					$q['$or'] = array(
+						array('creatorId'=>Auth::user()->id),
+						array('access'=>'departmental'),
+						array('docShare'=>$sharecriteria)
+					);
+				}else{
+					$q['docShare'] = $sharecriteria;
+				}
 			}
 		}
 
@@ -888,7 +899,7 @@ class Document_Controller extends Base_Controller {
 		foreach ($documents as $doc) {
 
 
-			if(isset($doc['tags'])){
+			if(isset($doc['tags']) && is_array($doc['tags']) && implode('',$doc['tags']) != ''){
 				$tags = array();
 
 				foreach($doc['tags'] as $t){
