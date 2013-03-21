@@ -68,17 +68,18 @@ Event::listen('document.expire',function(){
 
             $sendmessage = false;
 
+            $exday = $exdata['expiring'];
+
+            // only send message if days remaining is less than set alert start time
+            if($ex['alertStart'] >= $indays->days){
+                if($indays->days != $exday){
+                    $sendmessage = true;
+                    $exp->update(array('doc_id'=>$ex['_id']),array('doc_id'=>$ex['_id'],'expiring'=>$indays->days,'expiryDate'=>$ex['expiryDate'],'updated'=>false),array('upsert'=>true));
+                }
+            }
+            /*
             if(isset($exdata['doc_id'])){
 
-                $exday = $exdata['expiring'];
-
-                // only send message if days remaining is less than set alert start time
-                if($ex['alertStart'] >= $indays->days){
-                    if($indays->days != $exday){
-                        $sendmessage = true;
-                        $exp->update(array('doc_id'=>$ex['_id']),array('doc_id'=>$ex['_id'],'expiring'=>$indays->days,'expiryDate'=>$ex['expiryDate'],'updated'=>false),array('upsert'=>true));
-                    }
-                }
 
             }else{
 
@@ -87,6 +88,7 @@ Event::listen('document.expire',function(){
                 $sendmessage = true;
 
             }
+            */
 
             if($sendmessage == true){
                 $m = array();
@@ -99,43 +101,40 @@ Event::listen('document.expire',function(){
                 $m['createdDate'] = new MongoDate();
 
                 $message->insert($m);
+
+                $ev = array('event'=>'document.expire',
+
+                    'approvalby'=>'',
+                    'creator_id'=>new MongoId(Auth::user()->id),
+                    'creator_name'=>Auth::user()->fullname,
+                    'department'=>$ex['docDepartment'],
+                    'doc_id'=>$ex['_id'],
+                    'doc_filename'=>$ex['docFilename'],
+                    'doc_number'=>'',
+                    'doc_title'=>$ex['title'],
+                    'downloader_id'=>'',
+                    'downloader_name'=>'',
+                    'remover_id'=>'',
+                    'requester_id'=>'',
+                    'requester_name'=>'',
+                    'result'=>'',
+                    'sharer_id'=>'',
+                    'sharer_name'=>'',
+                    'shareto'=>$ex['docShare'],
+                    'updater_id'=>new MongoId(Auth::user()->id),
+                    'updater_name'=>Auth::user()->fullname,
+                    'timestamp'=>new MongoDate()
+
+                    
+                );
+                
+                $activity->insert($ev);
+
             }
 
-            $ev = array('event'=>'document.expire',
-
-                'approvalby'=>'',
-                'creator_id'=>new MongoId(Auth::user()->id),
-                'creator_name'=>Auth::user()->fullname,
-                'department'=>$ex['docDepartment'],
-                'doc_id'=>$ex['_id'],
-                'doc_filename'=>$ex['docFilename'],
-                'doc_number'=>'',
-                'doc_title'=>$ex['title'],
-                'downloader_id'=>'',
-                'downloader_name'=>'',
-                'remover_id'=>'',
-                'requester_id'=>'',
-                'requester_name'=>'',
-                'result'=>'',
-                'sharer_id'=>'',
-                'sharer_name'=>'',
-                'shareto'=>'',
-                'updater_id'=>new MongoId(Auth::user()->id),
-                'updater_name'=>Auth::user()->fullname,
-                'timestamp'=>new MongoDate()
-
-                
-            );
-
-
         }
 
-        if($activity->insert($ev)){
-            return true;
-        }else{
-            return false;
-        }
-
+        return true;
 
     }
 

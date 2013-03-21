@@ -234,7 +234,8 @@ class Project_Controller extends Base_Controller {
 
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
-			if(isset($doc['tags'])){
+			
+			if(isset($doc['tags']) && is_array($doc['tags']) && implode('',$doc['tags']) != ''){
 				$tags = array();
 
 				foreach($doc['tags'] as $t){
@@ -737,7 +738,7 @@ class Project_Controller extends Base_Controller {
 			->with('addurl','project/addschitem')
 			->with('ajaxsource',URL::to('project/scheduleitems/'.$id))
 			->with('disablesort','0')
-			->with('ajaxsourcedoc',URL::to('project/doc/'.$id))
+			->with('ajaxsourcedoc',URL::to('project/doc/'.$id.'/'.$projectdata['projectNumber']))
 			->with('ajaxsourceprogress',URL::to('project/progress/'.$id))
 			->with('searchinput',$searchinput)
 			->with('heads',$heads)
@@ -745,7 +746,7 @@ class Project_Controller extends Base_Controller {
 			->with('ajaxdel',URL::to('project/del'));
 	}
 
-	public function post_doc($id = null)
+	public function post_doc($id,$num)
 	{
 
 		$fields = array('title','createdDate','creatorName','docFilename');
@@ -764,6 +765,7 @@ class Project_Controller extends Base_Controller {
 
 		$idx = 0;
 		$q = array();
+		$sq = array();
 
 		$hilite = array();
 		$hilite_replace = array();
@@ -778,23 +780,19 @@ class Project_Controller extends Base_Controller {
 
 				if($rel[$idx] == 'like'){
 					if($cond[$idx] == 'both'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
+						$sq[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
+						$sq[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
+						$sq[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
 					}
 				}else if($rel[$idx] == 'equ'){
-					$q[$field] = Input::get('sSearch_'.$idx);
+					$sq[$field] = Input::get('sSearch_'.$idx);
 				}
 			}
 			$idx++;
 		}
 
-		//print_r($q)
-		if(!is_null($id)){
-			$q['docProjectId'] = $id;
-		}
 
 		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
 
@@ -804,27 +802,36 @@ class Project_Controller extends Base_Controller {
 			Auth::user()->role == 'bod'
 			){
 
+			$q = array(
+				'$or'=>array(
+						array('docProject' => trim($num)),
+						array('docProjectId' => $id),
+					)
+				);
 
 		}else if( Auth::user()->role == 'client' ||
 			Auth::user()->role == 'principal_vendor' ||
 			Auth::user()->role == 'subcon'){
 
-			$q['$or'] = array(
-				array('creatorId'=>Auth::user()->id),
-				array('docShare'=>$sharecriteria)
+			$q = array(
+				'docProject' => trim($num),
+				'$or'=>array(
+						array('docShare'=>$sharecriteria),
+						array('creatorId'=>Auth::user()->id)
+				)
 			);
 
 		}else{
-			/*
-			if(Auth::user()->department == $type){
-				$q['$or'] = array(
-					array('access'=>'general'),
-					array('docShare'=>$sharecriteria)
-				);
-			}else{
-			*/
-				$q['docShare'] = $sharecriteria;
-			//}
+			$q = array(
+				'docProject' => trim($num),
+				'$or'=>array(
+						//array('docProjectId' => $id),
+						array('access' => 'departmental'),
+						//array('access' => 'general'),
+						array('docShare'=>$sharecriteria),
+						array('creatorId'=>Auth::user()->id)
+				)
+			);
 		}
 
 
@@ -846,6 +853,10 @@ class Project_Controller extends Base_Controller {
 
 		$count_all = $document->count();
 
+		if(count($sq) > 0){
+			$q = array_merge($sq,$q);
+		}
+
 		if(count($q) > 0){
 			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
 			$count_display_all = $document->count($q);
@@ -866,36 +877,44 @@ class Project_Controller extends Base_Controller {
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
-			/*
-			if($doc['creatorId'] == Auth::user()->id || $doc['docDepartment'] == Auth::user()->department){
+			$type = $doc['docDepartment'];
+
+			if($doc['creatorId'] == Auth::user()->id){
 				$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
-						'<i class="foundicon-edit action"></i></a>&nbsp;';
-				$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
+						'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
+				$del = '<i class="foundicon-trash action del has-tip tip-bottom noradius" title="Delete" id="'.$doc['_id'].'"></i>';
 				$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
-							'<i class="foundicon-inbox action"></i></a>&nbsp;';
+							'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
 			}else{
-				if($permissions->{$type}->edit == 1){
-					$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
-							'<i class="foundicon-edit action"></i></a>&nbsp;';
+
+
+				if(isset($doc['interaction']) && $doc['interaction'] == 'rw'){
+					if($permissions->{$type}->edit == 1){
+						$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
+								'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
+					}else{
+						$edit = '';
+					}
+
+					if($permissions->{$type}->delete == 1){
+						$del = '<i class="foundicon-trash action  has-tip tip-bottom noradius del" title="Delete" id="'.$doc['_id'].'"></i>';
+					}else{
+						$del = '';
+					}
+
+					if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1){
+						$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
+								'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
+					}else{
+						$download = '';
+					}
 				}else{
 					$edit = '';
-				}
-
-				if($permissions->{$type}->delete == 1){
-					$del = '<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>';
-				}else{
 					$del = '';
-				}
-
-				if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1){
-					$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
-							'<i class="foundicon-inbox action"></i></a>&nbsp;';
-				}else{
 					$download = '';
 				}
 
 			}
-			*/
 
 			$aadata[] = array(
 				$counter,
@@ -904,7 +923,7 @@ class Project_Controller extends Base_Controller {
 				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
 				$doc['creatorName'],
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
-				''//$edit.$download.$del
+				$edit.$download.$del
 			);
 			$counter++;
 		}

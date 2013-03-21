@@ -149,6 +149,7 @@
 
     <fieldset>
       <legend>Document Sharing</legend>
+      {{ $form->hidden('oldShare','')}}
       {{ $form->text('docShare','Shared This Document to','',array('class'=>'tag_email four','style'=>'width:100%')) }}
     </fieldset>
 

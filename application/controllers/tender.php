@@ -230,7 +230,7 @@ class Tender_Controller extends Base_Controller {
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
 
-			if(isset($doc['tags']) && is_array($doc['tags'])){
+			if(isset($doc['tags']) && is_array($doc['tags']) && implode('',$doc['tags']) != ''){
 				$tags = array();
 
 				foreach($doc['tags'] as $t){
@@ -723,7 +723,7 @@ class Tender_Controller extends Base_Controller {
 			->with('addurl','tender/addschitem')
 			->with('ajaxsource',URL::to('tender/scheduleitems/'.$id))
 			->with('disablesort','0')
-			->with('ajaxsourcedoc',URL::to('tender/doc/'.$id))
+			->with('ajaxsourcedoc',URL::to('tender/doc/'.$id.'/'.$projectdata['tenderNumber']))
 			->with('ajaxsourceprogress',URL::to('tender/progress/'.$id))
 			->with('searchinput',$searchinput)
 			->with('heads',$heads)
@@ -731,7 +731,241 @@ class Tender_Controller extends Base_Controller {
 			->with('ajaxdel',URL::to('tender/del'));
 	}
 
-	public function post_doc($id = null)
+	public function post_doc($id,$num)
+	{
+
+		$fields = array('title','createdDate','creatorName','docFilename');
+
+		$rel = array('like','like','like','like');
+
+		$cond = array('both','both','both','both');
+
+		$pagestart = Input::get('iDisplayStart');
+		$pagelength = Input::get('iDisplayLength');
+
+		$limit = array($pagelength, $pagestart);
+
+		$defsort = 1;
+		$defdir = -1;
+
+		$idx = 0;
+		$q = array();
+		$sq = array();
+
+		$hilite = array();
+		$hilite_replace = array();
+
+		foreach($fields as $field){
+			if(Input::get('sSearch_'.$idx))
+			{
+
+				$hilite_item = Input::get('sSearch_'.$idx);
+				$hilite[] = $hilite_item;
+				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
+
+				if($rel[$idx] == 'like'){
+					if($cond[$idx] == 'both'){
+						$sq[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
+					}else if($cond[$idx] == 'before'){
+						$sq[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
+					}else if($cond[$idx] == 'after'){
+						$sq[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
+					}
+				}else if($rel[$idx] == 'equ'){
+					$sq[$field] = Input::get('sSearch_'.$idx);
+				}
+			}
+			$idx++;
+		}
+
+
+		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
+
+		if( Auth::user()->role == 'root' ||
+			Auth::user()->role == 'super' ||
+			Auth::user()->role == 'president_director' ||
+			Auth::user()->role == 'bod'
+			){
+
+			$q = array(
+				'$or'=>array(
+						array('docTender' => trim($num)),
+						array('docTenderId' => $id),
+					)
+				);
+
+		}else if( Auth::user()->role == 'client' ||
+			Auth::user()->role == 'principal_vendor' ||
+			Auth::user()->role == 'subcon'){
+
+			$q = array(
+				'docProject' => trim($num),
+				'$or'=>array(
+						array('docShare'=>$sharecriteria),
+						array('creatorId'=>Auth::user()->id)
+				)
+			);
+
+		}else{
+			$q = array(
+				'docTender' => trim($num),
+				'$or'=>array(
+						//array('docProjectId' => $id),
+						array('access' => 'departmental'),
+						//array('access' => 'general'),
+						array('docShare'=>$sharecriteria),
+						array('creatorId'=>Auth::user()->id)
+				)
+			);
+		}
+
+
+		$permissions = Auth::user()->permissions;
+
+		$document = new Document();
+
+		/* first column is always sequence number, so must be omitted */
+		$fidx = Input::get('iSortCol_0');
+		if($fidx == 0){
+			$fidx = $defsort;
+			$sort_col = $fields[$fidx];
+			$sort_dir = $defdir;
+		}else{
+			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+			$sort_col = $fields[$fidx];
+			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		}
+
+		$count_all = $document->count();
+
+		if(count($sq) > 0){
+			$q = array_merge($sq,$q);
+		}
+
+		if(count($q) > 0){
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count($q);
+		}else{
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count();
+		}
+
+
+
+
+		$aadata = array();
+
+		$counter = 1 + $pagestart;
+		foreach ($documents as $doc) {
+
+
+			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
+			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
+
+			$type = $doc['docDepartment'];
+
+			if($doc['creatorId'] == Auth::user()->id){
+				$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
+						'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
+				$del = '<i class="foundicon-trash action del has-tip tip-bottom noradius" title="Delete" id="'.$doc['_id'].'"></i>';
+				$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
+							'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
+			}else{
+
+
+				if(isset($doc['interaction']) && $doc['interaction'] == 'rw'){
+					if($permissions->{$type}->edit == 1){
+						$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
+								'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
+					}else{
+						$edit = '';
+					}
+
+					if($permissions->{$type}->delete == 1){
+						$del = '<i class="foundicon-trash action  has-tip tip-bottom noradius del" title="Delete" id="'.$doc['_id'].'"></i>';
+					}else{
+						$del = '';
+					}
+
+					if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1){
+						$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
+								'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
+					}else{
+						$download = '';
+					}
+				}else{
+					$edit = '';
+					$del = '';
+					$download = '';
+				}
+
+			}
+
+			$aadata[] = array(
+				$counter,
+				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
+				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				$doc['creatorName'],
+				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
+				$edit.$download.$del
+			);
+			$counter++;
+		}
+
+
+		$result = array(
+			'sEcho'=> Input::get('sEcho'),
+			'iTotalRecords'=>$count_all,
+			'iTotalDisplayRecords'=> $count_display_all,
+			'aaData'=>$aadata,
+			'qrs'=>$q
+		);
+
+		return Response::json($result);
+	}
+
+	public function get_transfer($id,$num){
+
+		$form = new Formly();
+
+		return View::make('tender.transfer')
+			->with('form',$form)
+			->with('num',$num)
+			->with('ajaxpost','tender/transfer/'.$id.'/'.$num)
+			->with('id',$id);
+	}
+
+	public function post_transfer($id,$num){
+
+		$tinput = Input::get();
+
+		$_id = new MongoId($id);
+
+		$pnumber = $tinput['docProject'];
+		$pid = $tinput['docProjectId'];
+
+		$project = new Project();
+
+		$pobj = $project->get(array('projectNumber'=>$pnumber));
+
+		$projectData = array(
+			'docProject'=>$pobj['projectNumber'],
+			'docProjectId'=>$pobj['_id']->__toString()
+		);
+
+		$document = new Document();
+
+		if($document->update(array('docTender'=>trim($num)),array('$set'=>$projectData),array('upsert'=>true))){
+			return Response::json(array('status'=>'OK'));
+		}else{
+			return Response::json(array('status'=>'ERR'));
+		}
+
+	}
+
+
+	public function __post_doc($id = null)
 	{
 
 		$fields = array('title','createdDate','creatorName','docFilename');

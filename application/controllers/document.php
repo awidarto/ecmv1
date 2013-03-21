@@ -472,7 +472,8 @@ class Document_Controller extends Base_Controller {
 		$doc_data = $doc->get(array('_id'=>$id));
 
 		$doc_data['oldTag'] = $doc_data['docTag'];
-
+		$doc_data['oldShare'] = $doc_data['docShare'];
+		
 		$doc_data['effectiveDate'] = date('d-m-Y', $doc_data['effectiveDate']->sec);
 		$doc_data['expiryDate'] = date('d-m-Y', $doc_data['expiryDate']->sec);
 
@@ -612,7 +613,6 @@ class Document_Controller extends Base_Controller {
 				}
 			}
 
-
 			$sharelist = explode(',', $data['docShare']);
 			if(is_array($sharelist)){
 				$usr = new User();
@@ -706,8 +706,14 @@ class Document_Controller extends Base_Controller {
 				$sharedto = explode(',',$data['docShare']);
 
 				if(count($sharedto) > 0  && $data['docShare'] != ''){
+					$oldShared = explode(',', $data['oldShare']);
+
 					foreach($sharedto as $to){
-						Event::fire('document.share',array('id'=>$id,'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+						if(is_array($oldShared) && !in_array($to, $oldShared)){
+							Event::fire('document.share',array('id'=>$id,'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+						}else{
+							Event::fire('document.share',array('id'=>$id,'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+						}
 					}
 				}
 
@@ -844,11 +850,11 @@ class Document_Controller extends Base_Controller {
 	public function post_type($type = null)
 	{
 
-		$fields = array('title','createdDate','lastUpdate','expiryDate','creatorName','docFilename','docTag');
+		$fields = array('title','createdDate','lastUpdate','expiryDate','expiring','creatorName','access','docFilename','docTag');
 
-		$rel = array('like','like','like','like','like','like','like');
+		$rel = array('like','like','like','like','like','like','like','like','like');
 
-		$cond = array('both','both','both','both','both','both','both');
+		$cond = array('both','both','both','both','both','both','both','both');
 
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
@@ -863,6 +869,8 @@ class Document_Controller extends Base_Controller {
 		$hilite = array();
 		$hilite_replace = array();
 
+		$sq = array();
+
 		foreach($fields as $field){
 			if(Input::get('sSearch_'.$idx))
 			{
@@ -873,30 +881,23 @@ class Document_Controller extends Base_Controller {
 
 				if($rel[$idx] == 'like'){
 					if($cond[$idx] == 'both'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
+						$sq[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
+						$sq[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
+						$sq[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
 					}
 				}else if($rel[$idx] == 'equ'){
-					$q[$field] = Input::get('sSearch_'.$idx);
+					$sq[$field] = Input::get('sSearch_'.$idx);
 				}
 			}
 			$idx++;
 		}
 
 		//start creating query array
-		$q = array();
+		//$q = array();
 
 		//print_r($q)
-		if(!is_null($type)){
-			if($type == 'general'){
-				$q['access'] = $type;
-			}else{
-				$q['docDepartment'] = $type;
-			}
-		}
 
 		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
 
@@ -905,30 +906,58 @@ class Document_Controller extends Base_Controller {
 			Auth::user()->role == 'president_director' ||
 			Auth::user()->role == 'bod'
 			){
-
+				if(!is_null($type)){
+					if($type == 'general'){
+						$q = array('access'=>$type);
+					}else{
+						$q = array('docDepartment' => $type);
+					}
+				}
 
 		}else if( Auth::user()->role == 'client' ||
 			Auth::user()->role == 'principal_vendor' ||
 			Auth::user()->role == 'subcon'){
 
-			$q['$or'] = array(
-				array('creatorId'=>Auth::user()->id),
-				array('docShare'=>$sharecriteria)
-			);
+			if(!is_null($type)){
+				if($type == 'general'){
+					$q = array('access'=>$type);
+				}else{
+					$q = array(
+						'docDepartment' => trim($type),
+						'$or'=>array(
+								array('docShare'=>$sharecriteria),
+								array('creatorId'=>Auth::user()->id)
+						)
+					);
+				}
+			}
 
 		}else{
 
-			if($type != 'general'){
-				if(Auth::user()->department == $type){
-					$q['$or'] = array(
-						array('creatorId'=>Auth::user()->id),
-						array('access'=>'departmental'),
-						array('docShare'=>$sharecriteria)
-					);
+			if(!is_null($type)){
+				if($type == 'general'){
+					$q = array('access'=>$type);
 				}else{
-					$q['docShare'] = $sharecriteria;
+
+					if(Auth::user()->department == $type){
+
+						$q = array(
+							'docDepartment' => trim($type),
+							'$or'=>array(
+									array('access'=>'departmental'),
+									array('docShare'=>$sharecriteria),
+									array('creatorId'=>Auth::user()->id)
+							)
+						);
+
+					}else{
+						$q = array('docShare'=>$sharecriteria);
+					}
+
+
 				}
 			}
+
 		}
 
 
@@ -949,6 +978,10 @@ class Document_Controller extends Base_Controller {
 		}
 
 		$count_all = $document->count();
+
+		if(count($sq) > 0){
+			$q = array_merge($sq,$q);
+		}
 
 		if(count($q) > 0){
 			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
@@ -983,7 +1016,7 @@ class Document_Controller extends Base_Controller {
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 			
-			if(isset($doc['expiring'])){
+			if(isset($doc['expiring']) && isset($doc['alert']) && $doc['alert'] == 'Yes'){
 				
 				if($doc['expiring'] == 'Today'){
 					$doc['expiring'] = '<span class="expiring now">'.$doc['expiring'].'</span>';
@@ -1000,7 +1033,7 @@ class Document_Controller extends Base_Controller {
 				$doc['expiring'] = '';
 			}
 
-			if($doc['creatorId'] == Auth::user()->id || $doc['docDepartment'] == Auth::user()->department){
+			if($doc['creatorId'] == Auth::user()->id){
 				$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
 						'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
 				$del = '<i class="foundicon-trash action del has-tip tip-bottom noradius" title="Delete" id="'.$doc['_id'].'"></i>';
@@ -1184,7 +1217,8 @@ class Document_Controller extends Base_Controller {
 		}
 
 
-		return View::make('pop.approval')->with('doc',$doc)->with('form',$form)->with('href',$file)->with('ajaxpost','document/approve');
+		return View::make('pop.approval')->with('doc',$doc)->with('form',$form)->with('href',$file)
+			->with('ajaxpost','document/approve');
 	}
 
 	public function get_notfound()

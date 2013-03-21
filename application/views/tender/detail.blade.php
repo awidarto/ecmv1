@@ -75,6 +75,7 @@
 		</div>
 		<div class="eight columns">
 			<h5>Related Documents</h5>
+				<div class="foundicon-add-doc button right transfer action" id="{{ $tender['tenderNumber'] }}" >&nbsp;&nbsp;<span>Transfer To Project</span></div>
 				<table class="dataTable">
 				    <thead>
 				        <tr>
@@ -112,7 +113,6 @@
 				</table>
 		</div>
 </div>
-<hr />
 <hr />
 <div class="row">
 	<div class="twelve columns">
@@ -342,6 +342,19 @@
 			}
 
 		});
+
+		$('.transfer').click(function(){
+			$.fancybox({
+				type:'iframe',
+				width:'800',
+				href: '{{ URL::to("tender/transfer/".$tender["_id"].'/'.$tender["tenderNumber"]) }}',
+				autosize: false,
+				afterClose:function(){
+					cTable.fnDraw();
+				}
+			});
+		});
+
 
 		$('#progressAdd').click(function(){
 
