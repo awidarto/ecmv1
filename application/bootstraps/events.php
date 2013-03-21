@@ -3,22 +3,29 @@
 Event::listen('document.expire',function(){
     $doc = new Document();
 
-    $expiredays = Config::get('parama.expiration_alert_days');
-    $expireseconds = (int)$expiredays * 24 * 60 * 60;
+    date_default_timezone_set('Asia/Jakarta');
 
-    //print $expireseconds;
+    // get document expiring within 14 days
+    $expiredays = Config::get('parama.expiration_alert_days');
+
+    $expireseconds = $expiredays * 24 * 60 * 60;
 
     $thenstring = date('Y-m-d 23:59:59', (time() + $expireseconds));
 
-    //print $thenstring;
-    
     $now = new MongoDate();
     $then = new MongoDate(strtotime($thenstring));
 
-    //print_r($now);
-    //print_r($then);
+    $query = array('alert'=>'Yes','expiryDate'=>array('$gte' => $now, '$lte' => $then));
 
-    $willexpire = $doc->find(array('expiryDate'=>array('$gte' => $now, '$lt' => $then)));
+    $expiring = $doc->find($query);
+
+    $query = array('alert'=>'Yes','expiryDate'=>array('$lt' => $now));
+
+    $expired = $doc->find($query);
+
+    $countdown = $expiredays;
+
+    $willexpire = array_merge($expiring,$expired);
 
     //print_r($willexpire);
 
@@ -31,15 +38,31 @@ Event::listen('document.expire',function(){
         $activity = new Activity();
 
         foreach($willexpire as $ex){
-            $datetime1 = new DateTime(date('Y-m-d',time()));
-            $datetime2 = new DateTime(date('Y-m-d',$ex['expiryDate']->sec));
-            $indays = $datetime1->diff($datetime2);
+            $datetimeNow = new DateTime(date('Y-m-d',time()));
+            $datetimeThen = new DateTime(date('Y-m-d',$ex['expiryDate']->sec));
+
+            $indays = $datetimeNow->diff($datetimeThen);
+
+            print_r($indays);
 
             $creator_id = new MongoId($ex['creatorId']);
 
             $owner = $user->get(array('_id'=>$creator_id));
 
-            $doc->update(array('_id'=>$ex['_id']),array('$set'=>array('expiring'=>$indays->days)),array('upsert'=>true));
+            if($indays->days == 0){
+                $expiringcount = 'Today';
+            }else{
+                if($indays->invert == 1){
+                    $expiringcount = $indays->days * -1;
+                }else{
+                    $expiringcount = $indays->days;
+                }
+            }
+
+            print $ex['title'].' : absolute '.$indays->days.' : '.$expiringcount.' : '.date('Y-m-d',time()).' : '.date('Y-m-d',$ex['expiryDate']->sec)."\r\n";
+
+
+            $doc->update(array('_id'=>$ex['_id']),array('$set'=>array('expiring'=>$expiringcount)),array('upsert'=>true));
 
             $exdata = $exp->get(array('doc_id'=>$ex['_id']));
 
@@ -49,12 +72,13 @@ Event::listen('document.expire',function(){
 
                 $exday = $exdata['expiring'];
 
-
-                if($indays->days != $exday){
-                    $sendmessage = true;
+                // only send message if days remaining is less than set alert start time
+                if($ex['alertStart'] >= $indays->days){
+                    if($indays->days != $exday){
+                        $sendmessage = true;
+                        $exp->update(array('doc_id'=>$ex['_id']),array('doc_id'=>$ex['_id'],'expiring'=>$indays->days,'expiryDate'=>$ex['expiryDate'],'updated'=>false),array('upsert'=>true));
+                    }
                 }
-
-                $exp->update(array('doc_id'=>$ex['_id']),array('doc_id'=>$ex['_id'],'expiring'=>$indays->days,'expiryDate'=>$ex['expiryDate'],'updated'=>false),array('upsert'=>true));
 
             }else{
 

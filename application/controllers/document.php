@@ -164,17 +164,28 @@ class Document_Controller extends Base_Controller {
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
 			if(isset($doc['expiring'])){
-				$doc['expiring'] = ($doc['expiring'] < Config::get('parama.expiration_alert_days') && $doc['expiring'] > 0)?'<span class="expiring">'.$doc['expiring'].' day(s)</span>':'';
+				
+				if($doc['expiring'] == 'Today'){
+					$doc['expiring'] = '<span class="expiring now">'.$doc['expiring'].'</span>';
+				}elseif($doc['expiring'] < 0){
+					$doc['expiring'] = '<span class="expiring yesterday">'.abs($doc['expiring']).' day(s) ago</span>';
+				}elseif($doc['expiring'] != false){
+					$doc['expiring'] = '<span class="expiring">'.$doc['expiring'].' day(s)</span>';						
+				}else{
+					$doc['expiring'] = '';
+				}
+
 			}else{
+
 				$doc['expiring'] = '';
 			}
 
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
-				date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
-				isset($doc['expiryDate'])?date('Y-m-d', $doc['expiryDate']->sec):'',
+				date('d-m-Y H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
+				isset($doc['expiryDate'])?date('d-m-Y', $doc['expiryDate']->sec):'',
 				$doc['expiring'],
 				$doc['creatorName'],
 				isset($doc['access'])?ucfirst($doc['access']):'',
@@ -297,10 +308,27 @@ class Document_Controller extends Base_Controller {
 			//pre save transform
 			unset($data['csrf_token']);
 
+	            $datetimeNow = new DateTime(date('Y-m-d',time()));
+	            $datetimeThen = new DateTime($data['expiryDate']);
+
+	            $indays = $datetimeNow->diff($datetimeThen);
+
+	            if($indays->days > $data['alertStart']){
+	            	$data['expiring'] = false;
+	            }else{
+	            	if($indays->days == 0){
+		            	$data['expiring'] = 'Today';
+	            	}elseif($indays->invert == 0){
+		            	$data['expiring'] = $indays->days;
+	            	}elseif($indays->invert == 1){
+		            	$data['expiring'] = $indays->days * -1;
+	            	}
+	            }
+
+
 			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
 			$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
 
-			$data['expiring'] = 0;
 
 			$data['createdDate'] = new MongoDate();
 			$data['lastUpdate'] = new MongoDate();
@@ -308,6 +336,13 @@ class Document_Controller extends Base_Controller {
 			$data['creatorId'] = Auth::user()->id;
 
 			$data['useAsTemplate'] = (isset($data['useAsTemplate']))?$data['useAsTemplate']:'No';
+
+			if(isset($data['alertStart'])){
+				if($data['alertStart'] > Config::get('parama.expiration_alert_days')){
+					$data['alertStart'] = Config::get('parama.expiration_alert_days');
+				}
+				$data['alertStart'] = new MongoInt64($data['alertStart']);
+			}
 
 			$sharelist = explode(',', $data['docShare']);
 			if(is_array($sharelist)){
@@ -514,14 +549,47 @@ class Document_Controller extends Base_Controller {
 
 			$id = new MongoId($data['id']);
 
+	            $datetimeNow = new DateTime(date('Y-m-d',time()));
+	            $datetimeThen = new DateTime($data['expiryDate']);
+
+	            $indays = $datetimeNow->diff($datetimeThen);
+
+    	        $exp = new Expiration();
+
+	            if($indays->days > $data['alertStart']){
+	            	$data['expiring'] = false;
+	            	$exp->delete(array('doc_id'=>$id));
+	            }else{
+	            	if($indays->days == 0){
+		            	$data['expiring'] = 'Today';
+	            	}elseif($indays->invert == 0){
+		            	$data['expiring'] = $indays->days;
+	            	}elseif($indays->invert == 1){
+		            	$data['expiring'] = $indays->days * -1;
+	            	}
+					$expiryDate = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+
+	                $exp->update(array('doc_id'=>$id),array('doc_id'=>$id,'expiring'=>$indays->days,'expiryDate'=>$expiryDate,'updated'=>false),array('upsert'=>true));
+	            
+	                // send no message
+	            }
+
+
 			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
 			$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
 			$data['lastUpdate'] = new MongoDate();
 
 			if(isset($data['expiring'])){
-				$data['expiring'] = ($data['expiring'] == '')?0:$data['expiring'];
+				$data['expiring'] = ($data['expiring'] == '')?false:$data['expiring'];
 			}else{
-				$data['expiring'] = 0;
+				$data['expiring'] = false;
+			}
+
+			if(isset($data['alertStart'])){
+				if($data['alertStart'] > Config::get('parama.expiration_alert_days')){
+					$data['alertStart'] = Config::get('parama.expiration_alert_days');
+				}
+				$data['alertStart'] = new MongoInt64($data['alertStart']);
 			}
 
 			unset($data['csrf_token']);
@@ -916,8 +984,19 @@ class Document_Controller extends Base_Controller {
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 			
 			if(isset($doc['expiring'])){
-				$doc['expiring'] = ($doc['expiring'] < Config::get('parama.expiration_alert_days') && $doc['expiring'] > 0)?'<span class="expiring">'.$doc['expiring'].' day(s)</span>':'';
+				
+				if($doc['expiring'] == 'Today'){
+					$doc['expiring'] = '<span class="expiring now">'.$doc['expiring'].'</span>';
+				}elseif($doc['expiring'] < 0){
+					$doc['expiring'] = '<span class="expiring yesterday">'.abs($doc['expiring']).' day(s) ago</span>';
+				}elseif($doc['expiring'] != false){
+					$doc['expiring'] = '<span class="expiring">'.$doc['expiring'].' day(s)</span>';						
+				}else{
+					$doc['expiring'] = '';
+				}
+
 			}else{
+
 				$doc['expiring'] = '';
 			}
 
@@ -928,23 +1007,30 @@ class Document_Controller extends Base_Controller {
 				$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
 							'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
 			}else{
-				if($permissions->{$type}->edit == 1){
-					$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
-							'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
+
+				if(isset($doc['interaction']) && $doc['interaction'] == 'rw'){
+					if($permissions->{$type}->edit == 1){
+						$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
+								'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
+					}else{
+						$edit = '';
+					}
+
+					if($permissions->{$type}->delete == 1){
+						$del = '<i class="foundicon-trash action  has-tip tip-bottom noradius del" title="Delete" id="'.$doc['_id'].'"></i>';
+					}else{
+						$del = '';
+					}
+
+					if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1){
+						$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
+								'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
+					}else{
+						$download = '';
+					}
 				}else{
 					$edit = '';
-				}
-
-				if($permissions->{$type}->delete == 1){
-					$del = '<i class="foundicon-trash action  has-tip tip-bottom noradius del" title="Delete" id="'.$doc['_id'].'"></i>';
-				}else{
 					$del = '';
-				}
-
-				if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1){
-					$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
-							'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
-				}else{
 					$download = '';
 				}
 
@@ -953,9 +1039,9 @@ class Document_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
-				date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
-				isset($doc['expiryDate'])?date('Y-m-d', $doc['expiryDate']->sec):'',
+				date('d-m-Y H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
+				isset($doc['expiryDate'])?date('d-m-Y', $doc['expiryDate']->sec):'',
 				$doc['expiring'],
 				$doc['creatorName'],
 				isset($doc['access'])?ucfirst($doc['access']):'',

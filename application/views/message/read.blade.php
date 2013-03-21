@@ -16,6 +16,9 @@
 	  	@if(isset($doc['cc']))
 	  	<span class="to">Cc : <strong>{{$doc['cc']}}</strong></span><br />
 	  	@endif
+	  	@if(isset($doc['bcc']) && $box == 'outbox')
+	  	<span class="to">Bcc : <strong>{{$doc['bcc']}}</strong></span><br />
+	  	@endif
 
 	  	<span class="subject">Subject : <strong>{{$doc['subject']}}</strong></span>
 		  <ul class="inline-list">

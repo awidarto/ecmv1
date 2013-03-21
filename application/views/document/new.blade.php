@@ -18,7 +18,7 @@
 
       <hr />
 
-      {{ Form::label('access','Who can see this document')}}
+      {{ Form::label('access','Access ( Who can see this document )')}}
       <div class="row">
         <div class="four columns left">
           {{ $form->radio('access','Confidential','confidential',true)}} 
@@ -52,6 +52,29 @@
         </div>   
       </div>
 
+      {{ Form::label('interaction','Interaction ( What can other users do with this document )')}}
+      <div class="row">
+        <div class="four columns left">
+          {{ $form->radio('interaction','Read Only','ro',true)}} 
+        </div>   
+        <div class="eight columns right">
+          <p>
+            <strong>Read Only</strong> access ( default ) will make other users can only be able to read / view this document, regardless of their permission set.<br />
+          </p>
+        </div>   
+      </div>
+
+      <div class="row">
+        <div class="four columns left">
+          {{ $form->radio('interaction','Read & Write','rw')}} 
+        </div>   
+        <div class="eight columns right">
+          <p>
+            <strong>Read & Write</strong> access will enable other users to see and interact further ( ie: edit and/or delete ) according to their permission set. 
+          </p>
+        </div>   
+      </div>
+
       <hr />
 
       {{ $form->file('docupload','Document File')}}
@@ -74,6 +97,28 @@
           {{ $form->text('expiryDate','Expiry Date','',array('class'=>'twelve date')) }}
         </div>
       </div>
+
+      {{ Form::label('alert','Expiration alert')}}
+      <div class="row">
+        <div class="four columns left">
+          {{ $form->radio('alert','Yes','Yes',true)}} 
+        </div>   
+        <div class="eight columns right">
+          {{ $form->radio('alert','No','No')}} 
+        </div>   
+      </div>
+      <div class="row">
+        <div class="left">
+          {{ Form::label('alertStart','Start alert in')}}
+        </div>   
+        <div class="one columns left">
+          {{ $form->text('alertStart','',Config::get('parama.expiration_alert_days'))}}        
+        </div>   
+        <div class="alertsuffix">
+          {{ Form::label('alertStartSuffix',' days before Expiry Date')}}
+        </div>   
+      </div>
+
     </fieldset>
 
     <fieldset>

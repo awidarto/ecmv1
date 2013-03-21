@@ -1246,12 +1246,20 @@ cursor: pointer;
 }
 
 .expiring{
-    background-color: red;
+    background-color: orange;
     color: white;
     padding: 3px;
     display: block;
     font-weight: bold;
     text-align: center
+}
+
+.expiring.now{
+    background-color: red;    
+}
+
+.expiring.yesterday{
+    background-color: maroon;    
 }
 
 .button.action{
