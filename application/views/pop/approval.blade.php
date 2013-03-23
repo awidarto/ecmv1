@@ -148,6 +148,8 @@
 		}else if(data.status == 'AUTHFAILED'){
 			$('#notifier').html('Wrong Password');
 			alert('Authentication failed, please check your Password');
+		}else if(data.status == 'ALREADY'){
+			$('#notifier').html('You have already responded to this request');
 		}
 
 	} 

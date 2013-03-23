@@ -73,6 +73,14 @@ class Search_Controller extends Base_Controller {
 		$searchexpiredFrom = Input::get('expiredFrom');
 		$searchexpiredTo = Input::get('expiredTo');
 
+		$searchcombined = ''; 
+		$searchcombined .= $searchTitle;
+		$searchcombined .= $searchTags;
+		$searchcombined .= $searchcreatedFrom;
+		$searchcombined .= $searchcreatedTo;
+		$searchcombined .= $searchexpiredFrom;
+		$searchcombined .= $searchexpiredTo;
+
 
 		$fields = array('title','createdDate','lastUpdate','creatorName','docFilename','docTag');
 
@@ -125,8 +133,12 @@ class Search_Controller extends Base_Controller {
 
 		if($searchTags != ''){
 			$tags = explode(',',$searchTags);
-			foreach ($tags as $t) {
-				$orarray[] = array('docTag'=>new MongoRegex('/'.$t.'/i'));
+			if(is_array($tags)){
+				foreach ($tags as $t) {
+					$orarray[] = array('docTag'=>new MongoRegex('/'.$t.'/i'));
+				}
+			}else{
+				$orarray[] = array('docTag'=>new MongoRegex('/'.$searchTags.'/i'));
 			}
 		}
 
@@ -161,7 +173,6 @@ class Search_Controller extends Base_Controller {
 		}
 		*/
 		
-
 		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
 
 		if( Auth::user()->role == 'root' ||
@@ -169,30 +180,32 @@ class Search_Controller extends Base_Controller {
 			Auth::user()->role == 'president_director' ||
 			Auth::user()->role == 'bod'
 			){
-
+			
+			// do nothing, can see everything
 
 		}else if( Auth::user()->role == 'client' ||
 			Auth::user()->role == 'principal_vendor' ||
 			Auth::user()->role == 'subcon'){
 
-			$orarray[] = array('creatorId'=>Auth::user()->id);
 			$orarray[] = array('docShare'=>$sharecriteria);
+			$orarray[] = array('creatorId'=>Auth::user()->id);
 
 		}else{
 
-			if(Auth::user()->department == $type){
-				$orarray[] = array('access'=>'general');
-				$orarray[] = array('docShare'=>$sharecriteria);
-			}else{
-				$q['docShare'] = $sharecriteria;
-			}
+			$q['docDepartment'] = trim(Auth::user()->department);
+
+			$orarray[] = array('access'=>'departmental');
+			$orarray[] = array('docShare'=>$sharecriteria);
+			$orarray[] = array('creatorId'=>Auth::user()->id);
+
 		}
+
 
 		if(count($orarray) > 0 ){
 			$q['$or'] = $orarray;
 		}
 
-		//print_r($q);
+		//print_r($orarray);
 
 		$permissions = Auth::user()->permissions;
 
@@ -212,20 +225,27 @@ class Search_Controller extends Base_Controller {
 
 		$count_all = $document->count();
 
-		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count($q);
+		if(trim($searchcombined) == ''){
+			$q = array();
+			$documents = array();
+			$count_display_all = 0;
 		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count();
+			if(count($q) > 0){
+				$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
+				$count_display_all = $document->count($q);
+			}else{
+				$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
+				$count_display_all = $document->count();
+			}
 		}
+
 
 		$aadata = array();
 
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
 
-			if(isset($doc['tags'])){
+			if(isset($doc['tags']) && is_array($doc['tags']) && implode('',$doc['tags']) != ''){
 				$tags = array();
 
 				foreach($doc['tags'] as $t){
@@ -279,8 +299,8 @@ class Search_Controller extends Base_Controller {
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
 				date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
-				isset($doc['expiryDate'])?date('Y-m-d', $doc['expiryDate']->sec):'',
+				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
+				isset($doc['expiryDate'])?date('d-m-Y', $doc['expiryDate']->sec):'',
 				$doc['expiring'],
 				$doc['creatorName'],
 				isset($doc['access'])?ucfirst($doc['access']):'',

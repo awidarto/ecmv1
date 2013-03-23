@@ -49,8 +49,8 @@ class Document_Controller extends Base_Controller {
 
 		//print_r(Auth::user());
 
-		$heads = array('#','Title','Created','Last Update','Expiry Date','Expiring In','Creator','Access','Attachment','Is Template','Tags','Action');
-		$searchinput = array(false,'title','created','last update','expiry date','expiring','creator','access','filename','useAsTemplate','tags',false);
+		$heads = array('#','Title','Department','Created','Last Update','Expiry Date','Expiring In','Creator','Access','Attachment','Is Template','Tags','Action');
+		$searchinput = array(false,'title','department','created','last update','expiry date','expiring','creator','access','filename','useAsTemplate','tags',false);
 
 		$title = 'Document Library';
 
@@ -74,11 +74,11 @@ class Document_Controller extends Base_Controller {
 	public function post_index()
 	{
 
-		$fields = array('title','createdDate','lastUpdate','expiryDate','expiring','creatorName','access','docFilename','useAsTemplate','docTag');
+		$fields = array('title','docDepartment','createdDate','lastUpdate','expiryDate','expiring','creatorName','access','docFilename','useAsTemplate','docTag');
 
-		$rel = array('like','like','like','like','like','like','like','like','like','like');
+		$rel = array('like','like','like','like','like','like','like','like','like','like','like');
 
-		$cond = array('both','both','both','both','both','both','both','both','both','both');
+		$cond = array('both','both','both','both','both','both','both','both','both','both','both');
 
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
@@ -180,9 +180,13 @@ class Document_Controller extends Base_Controller {
 				$doc['expiring'] = '';
 			}
 
+			$download = '<a href="'.URL::to('document/download/'.$doc['_id']).'">'.
+						'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
+
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
+				depttitle($doc['docDepartment']),
 				date('d-m-Y H:i:s', $doc['createdDate']->sec),
 				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				isset($doc['expiryDate'])?date('d-m-Y', $doc['expiryDate']->sec):'',
@@ -193,6 +197,7 @@ class Document_Controller extends Base_Controller {
 				isset($doc['useAsTemplate'])?$doc['useAsTemplate']:'No',
 				$tags,
 				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
+				$download.
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 			);
 			$counter++;
@@ -313,7 +318,7 @@ class Document_Controller extends Base_Controller {
 
 	            $indays = $datetimeNow->diff($datetimeThen);
 
-	            if($indays->days > $data['alertStart']){
+	            if(isset($data['alertStart']) && $indays->days > $data['alertStart']){
 	            	$data['expiring'] = false;
 	            }else{
 	            	if($indays->days == 0){
@@ -557,7 +562,7 @@ class Document_Controller extends Base_Controller {
 
     	        $exp = new Expiration();
 
-	            if($indays->days > $data['alertStart']){
+	            if(isset($data['alertStart']) && $indays->days > $data['alertStart']){
 	            	$data['expiring'] = false;
 	            	$exp->delete(array('doc_id'=>$id));
 	            }else{
@@ -1037,7 +1042,7 @@ class Document_Controller extends Base_Controller {
 				$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
 						'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
 				$del = '<i class="foundicon-trash action del has-tip tip-bottom noradius" title="Delete" id="'.$doc['_id'].'"></i>';
-				$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
+				$download = '<a href="'.URL::to('document/download/'.$doc['_id'].'/'.$type).'">'.
 							'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
 			}else{
 
@@ -1056,7 +1061,7 @@ class Document_Controller extends Base_Controller {
 					}
 
 					if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1){
-						$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
+						$download = '<a href="'.URL::to('document/download/'.$doc['_id'].'/'.$type).'">'.
 								'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
 					}else{
 						$download = '';
@@ -1103,6 +1108,86 @@ class Document_Controller extends Base_Controller {
 	}
 
 
+	public function get_download($id, $type = null){
+
+		$this->crumb = new Breadcrumb();
+		
+
+		if(is_null($type)){
+			$this->crumb->add('document','Document');
+
+		}else{
+
+			$this->crumb->add('document/type/'.$type,'Document');
+			$this->crumb->add('document/type/'.$type,depttitle($type));
+		}
+
+		$this->crumb->add('document/download/'.$id.'/'.$type,'Download Request',false);
+
+
+		$_id = new MongoId($id);
+
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$_id));
+
+		$this->crumb->add('document/download/'.$id.'/'.$type,$doc['title'],false);
+
+		$path = Config::get('parama.storage').$id.'/'.$doc['docFilename'];
+
+
+		$form = new Formly();
+		return View::make('document.downloadrequest')
+					->with('form',$form)
+					->with('docnumber',0)
+					->with('profile',$doc)
+					->with('crumb',$this->crumb)
+					->with('title','Document Download Request');
+
+	}
+
+	public function post_download($id,$type = null){
+		$_id = new MongoId($id);
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$_id));
+
+		$path = Config::get('parama.storage').$id.'/'.$doc['docFilename'];
+
+		if(file_exists($path)){
+
+			$filename = $doc['docFilename'];
+
+			$ext = File::extension($path);
+
+			$dlobj = array(
+				'dltype'=>'document',
+				'document'=>$doc,
+				'downloader'=>Auth::user(),
+				'downloadedfullfilename'=>$filename,
+				'downloadedfilename'=>$filename,
+				'downloadedfileext'=>$ext,
+				'templatename'=>$doc['title'],
+				'doc_number'=>0,
+				'timestamp'=>new MongoDate()
+			);
+
+			$dlog = new Download();
+			$dlog->insert($dlobj);
+
+
+			return Response::download($path, $filename);
+		}else{
+			Event::fire('document.download',array('id'=>$id,'result'=>'FILENOTFOUND'));
+			return Redirect::to('document/download/'.$id.'/'.$type)->with('notify_success','Document attachment does not exist');
+		}
+
+	}
+
+
+
 	public function get_dl($id){
 		$_id = new MongoId($id);
 
@@ -1113,11 +1198,27 @@ class Document_Controller extends Base_Controller {
 		$path = Config::get('parama.storage').$id.'/'.$doc['docFilename'];
 
 		if(file_exists($path)){
-			Event::fire('document.update',array('id'=>$id,'result'=>'OK'));
+			Event::fire('document.download',array('id'=>$id,'result'=>'OK'));
 			$filename = $doc['docFilename'];
+
+			$dlobj = array(
+				'dltype'=>'document',
+				'document'=>$doc,
+				'downloader'=>Auth::user(),
+				'downloadedfullfilename'=>$filename.'.'.$ext,
+				'downloadedfilename'=>$filename,
+				'downloadedfileext'=>$ext,
+				'templatename'=>'',
+				'doc_number'=>'',
+				'timestamp'=>new MongoDate()
+			);
+
+			$dlog = new Download();
+			$dlog->insert($dlobj);
+
 			return Response::download($path, $filename);
 		}else{
-			Event::fire('document.update',array('id'=>$id,'result'=>'FILENOTFOUND'));
+			Event::fire('document.download',array('id'=>$id,'result'=>'FILENOTFOUND'));
 			return false;
 		}
 
@@ -1384,6 +1485,22 @@ class Document_Controller extends Base_Controller {
 					'approvalTransfer'=>$response['fwdto']
 				);
 
+			$docobj = $doc->get(array('_id'=>$_id));
+
+			$already_responded = false;
+
+			if(isset($docobj['approvalResponds'])){
+				foreach($docobj['approvalResponds'] as $responses){
+					if($responses['approverEmail'] == Auth::user()->email && $responses['approverId'] == Auth::user()->id){
+						$already_responded = true;
+					}
+				}
+			}
+
+			if($already_responded == true){
+				return Response::json(array('status'=>'ALREADY'));				
+			}
+
 			if($response['approval'] == 'transfer'){
 				$users = new User();
 
@@ -1400,7 +1517,6 @@ class Document_Controller extends Base_Controller {
 
 				$doc->update(array('_id'=>$_id),array('$push'=>$res3),array('upsert'=>true));
 
-				$docobj = $doc->get(array('_id'=>$_id));
 
 				//print_r($document);
 

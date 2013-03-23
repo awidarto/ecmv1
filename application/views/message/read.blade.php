@@ -22,9 +22,9 @@
 
 	  	<span class="subject">Subject : <strong>{{$doc['subject']}}</strong></span>
 		  <ul class="inline-list">
-		    <li>{{ HTML::link('message/reply/'.$doc['_id'],'Reply')}}</li>
-		    <li>{{ HTML::link('message/replyall/'.$doc['_id'],'Reply All')}}</li>
-		    <li>{{ HTML::link('message/forward/'.$doc['_id'],'Forward')}}</li>
+		    <li>{{ HTML::link('message/reply/'.$box.'/'.$doc['_id'],'Reply')}}</li>
+		    <li>{{ HTML::link('message/replyall/'.$box.'/'.$doc['_id'],'Reply All')}}</li>
+		    <li>{{ HTML::link('message/forward/'.$box.'/'.$doc['_id'],'Forward')}}</li>
 		  </ul>
 	  	<hr />
 

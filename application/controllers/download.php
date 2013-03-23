@@ -150,20 +150,27 @@ class Download_Controller extends Base_Controller {
 		$counter = 1 + $pagestart;
 		foreach ($templates as $doc) {
 
-			$doc['template']['title'] = str_ireplace($hilite, $hilite_replace, $doc['template']['title']);
+			$doc['document']['title'] = str_ireplace($hilite, $hilite_replace, $doc['document']['title']);
 
 			// by default everybody can download template
 
-			$download = '<a href="'.URL::to('template/download/'.$doc['_id']).'">'.
+			$download = '<a href="'.URL::to($doc['dltype'].'/download/'.$doc['_id']).'">'.
 					'<i class="foundicon-down-arrow action"></i></a>&nbsp;';
+
+			if($doc['dltype']== 'document'){
+				$attachment = (isset($doc['downloadedfullfilename']))?'<span class="fileview" id="'.$doc['document']['_id'].'">'.$doc['downloadedfullfilename'].'</span>':'';
+			}else{
+				$attachment = (isset($doc['downloadedfullfilename']))?$doc['downloadedfullfilename']:'';
+			}
 
 			$aadata[] = array(
 				$counter,
-				'<span class="metaview" id="'.$doc['template']['_id'].'">'.$doc['template']['title'].'</span>',
+				'<span class="metaview" id="'.$doc['document']['_id'].'">'.$doc['document']['title'].'</span>',
 				isset($doc['timestamp'])?date('Y-m-d H:i:s', $doc['timestamp']->sec):'',
 				$doc['downloader']['fullname'],
-				isset($doc['doc_number'])?$doc['doc_number']:'',
-				isset($doc['downloadedfullfilename'])?$doc['downloadedfullfilename']:'',
+				(isset($doc['doc_number']) && $doc['doc_number'] != 0)?$doc['doc_number']:'',
+				//isset($doc['downloadedfullfilename'])?$doc['downloadedfullfilename']:'',
+				$attachment,
 				''
 			);
 			$counter++;

@@ -272,9 +272,11 @@ class Message_Controller extends Base_Controller {
 		return Response::json($result);
 	}
 
-	public function get_reply($id)
+	public function get_reply($box,$id)
 	{
-		$this->crumb->add('message/reply/'.$id,'Reply');
+		$this->crumb->add('message/reply/'.$box.'/'.$id,'Reply',false);
+
+		$this->crumb->add('message/reply/'.$box.'/'.$id,$box,false);
 
 		$msg = new Message();
 
@@ -293,6 +295,8 @@ class Message_Controller extends Base_Controller {
 		$message['subject'] = 'Re: '.$message['subject'];
 
 		$message['body'] = "<br /><q>".$message['body']."</q>";
+
+		$this->crumb->add('message/reply/'.$box.'/'.$id,$message['subject']);
 
 		$form = new Formly($message);
 
@@ -389,9 +393,10 @@ class Message_Controller extends Base_Controller {
 		
 	}	
 
-	public function get_forward($id)
+	public function get_forward($box,$id)
 	{
-		$this->crumb->add('message/forward/'.$id,'Forward');
+		$this->crumb->add('message/forward/'.$box.'/'.$id,'Reply',false);
+		$this->crumb->add('message/forward/'.$box.'/'.$id,$box,false);
 
 		$msg = new Message();
 
@@ -413,6 +418,8 @@ class Message_Controller extends Base_Controller {
 		$message['from'] = Auth::user()->email;
 
 		$message['subject'] = 'Fwd: '.$message['subject'];
+
+		$this->crumb->add('message/forward/'.$box.'/'.$id,$message['subject']);
 
 		$form = new Formly($message);
 
@@ -508,9 +515,12 @@ class Message_Controller extends Base_Controller {
 	}	
 
 
-	public function get_replyall($id)
+	public function get_replyall($box,$id)
 	{
-		$this->crumb->add('message/replyall/'.$id,'Reply All');
+		$this->crumb->add('message/replyall/'.$box.'/'.$id,'Reply All',false);
+
+		$this->crumb->add('message/replyall/'.$box.'/'.$id,$box,false);
+
 
 		$msg = new Message();
 
@@ -536,6 +546,7 @@ class Message_Controller extends Base_Controller {
 
 		$message['body'] = "<br /><q>".$message['body']."</q>";
 
+		$this->crumb->add('message/replyall/'.$box.'/'.$id,$message['subject']);
 
 		$ckeditor = new CKEditor();
 

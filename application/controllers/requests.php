@@ -236,7 +236,8 @@ class Requests_Controller extends Base_Controller {
 
 		//$heads = array('#','Title','Created','Requester','Requesting','Status','Attachment','Tags','Action');
 
-		$heads = array('#',
+		$heads = array(
+			array('#',array('class'=>'one')),
 			array('Title',array('class'=>'one')),
 			array('Created',array('class'=>'one')),
 			array('Requester',array('class'=>'one')),
@@ -356,7 +357,7 @@ class Requests_Controller extends Base_Controller {
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
 
-			if(isset($doc['tags'])){
+			if(isset($doc['tags']) && is_array($doc['tags']) && implode('',$doc['tags']) != ''){
 				$tags = array();
 
 				foreach($doc['tags'] as $t){
@@ -467,7 +468,8 @@ class Requests_Controller extends Base_Controller {
 
 		$this->crumb->add('requests/outgoing','Outgoing',false);
 
-		$heads = array('#',
+		$heads = array(
+			array('#',array('class'=>'one')),
 			array('Title',array('class'=>'one')),
 			array('Created',array('class'=>'one')),
 			array('Requester',array('class'=>'one')),
@@ -530,7 +532,15 @@ class Requests_Controller extends Base_Controller {
 
 		$q = array('approvalRequestIds._id'=>$self_id);
 		*/
-		$q = array('creatorId'=>Auth::user()->id);
+		$q = array(
+			'creatorId'=>Auth::user()->id,
+			'docApproval'=>array('$ne'=>'""'),
+			'docRequestToDepartment'=>array('$ne'=>'""'),
+			'$or'=>array(
+				array('docApproval'=>array('$exists'=>true)),
+				array('docRequestToDepartment'=>array('$exists'=>true))
+			)
+		);
 
 
 		$hilite = array();
@@ -590,21 +600,14 @@ class Requests_Controller extends Base_Controller {
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
 
-			if(isset($doc['tags'])){
+			if(isset($doc['tags']) && is_array($doc['tags']) && implode('',$doc['tags']) != ''){
+				$tags = array();
 
-				$tags = implode('',$doc['tags']);
-
-				if($tags != ''){
-					$tags = array();
-
-					foreach($doc['tags'] as $t){
-						$tags[] = '<span class="tagitem">'.$t.'</span>';
-					}
-
-					$tags = implode('',$tags);
-				}else{
-					$tags = '';
+				foreach($doc['tags'] as $t){
+					$tags[] = '<span class="tagitem">'.$t.'</span>';
 				}
+
+				$tags = implode('',$tags);
 
 			}else{
 				$tags = '';

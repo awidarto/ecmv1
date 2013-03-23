@@ -140,7 +140,7 @@
   <div class="five columns right">
     <fieldset>
       <legend>Metadata</legend>
-      @if(is_null($type))
+      @if(is_null($type) || Auth::user()->role == 'root' || Auth::user()->role == 'super' || Auth::user()->role == 'bod' || Auth::user()->role == 'president_director')
         {{$form->select('docDepartment','Department of Origin',Config::get('parama.department'),array('class'=>'four'))}}
       @else
         {{ Form::label('docDepartment','Department of Origin : '.depttitle($type))}}
