@@ -492,6 +492,20 @@ Event::listen('request.approval',function($id,$approvalby){
 
     );
 
+    $message = new Message();
+    
+    $m = array();
+    $m['from'] = 'system@paramanusa.co.id';
+    $m['to'] = $doc['docApprovalRequest'];
+    $m['cc'] = '';
+    $m['bcc'] = '';
+    $m['body'] = HTML::link('document/type/'.$doc['docDepartment'].'/'.$doc['_id'],$doc['title']).' needs your approval.';
+    $m['subject'] = $ev['requester_name'].' requesting approval for '.$doc['title'];
+    $m['createdDate'] = new MongoDate();
+
+    $message->insert($m);
+
+
     if($activity->insert($ev)){
         return true;
     }else{
