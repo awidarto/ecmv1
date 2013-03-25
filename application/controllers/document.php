@@ -438,8 +438,8 @@ class Document_Controller extends Base_Controller {
 
 		$doc_data['oldTag'] = $doc_data['docTag'];
 
-		$doc_data['effectiveDate'] = date('Y-m-d', $doc_data['effectiveDate']->sec);
-		$doc_data['expiryDate'] = date('Y-m-d', $doc_data['expiryDate']->sec);
+		$doc_data['effectiveDate'] = date('d-m-Y', $doc_data['effectiveDate']->sec);
+		$doc_data['expiryDate'] = date('d-m-Y', $doc_data['expiryDate']->sec);
 
 		if(isset($doc_data['useAsTemplate'])){
 			$doc_data['useAsTemplate'] = ($doc_data['useAsTemplate'] == 'No')?false:true;
@@ -531,7 +531,7 @@ class Document_Controller extends Base_Controller {
 
 			if(isset($data['useAsTemplate']) && $data['useAsTemplate'] == 'Yes' && ($data['oldTemplateName'] != $data['templateName'] || $data['oldTemplateName'] == '')){
 				$templatename = trim(strtolower($data['templateName']));
-				$startFrom = ($data['templateNumberStart'] == '')?1:$data['templateNumberStart'];
+				$startFrom = ($data['templateNumberStart'] == '' || $data['templateNumberStart'] <= 0)?1:$data['templateNumberStart'];
 				$startFrom = new MongoInt64($startFrom);
 				// set new sequencer
 				$sequencer = new Sequence();
@@ -1034,11 +1034,22 @@ class Document_Controller extends Base_Controller {
 
 		//$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
 
-		//$realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFilename']);
+		$realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFilename']);
 
 		if(file_exists($realfile)){
-			//$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
-			$file = URL::base().'/document/stream/'.$id;			
+			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+			//$file = URL::base().'/document/stream/'.$id;			
+			$ext = File::extension($realfile);
+			if(in_array($ext, Config::get('kickstart.googledocext'))){
+				if(Config::get('kickstart.usegoogleviewer') == 'true'){
+					$file = 'https://docs.google.com/viewer?embedded=true&url='.$file;
+				}
+			}
+
+			if(in_array($ext, Config::get('kickstart.noviewer'))){
+				$file = URL::base().'/document/noviewer';
+			}			
+
 		}else{
 			$file = URL::base().'/document/notfound';
 		}
@@ -1060,6 +1071,17 @@ class Document_Controller extends Base_Controller {
 		if(file_exists($realfile)){
 			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
 			//$file = URL::base().'/document/stream/'.$id;			
+			$ext = File::extension($realfile);
+			if(in_array($ext, Config::get('kickstart.googledocext'))){
+				if(Config::get('kickstart.usegoogleviewer') == 'true'){
+					$file = 'https://docs.google.com/viewer?embedded=true&url='.$file;
+				}
+			}
+
+			if(in_array($ext, Config::get('kickstart.noviewer'))){
+				$file = URL::base().'/document/noviewer';
+			}
+
 		}else{
 			$file = URL::base().'/document/notfound';
 		}
@@ -1072,6 +1094,12 @@ class Document_Controller extends Base_Controller {
 	{
 
 		return View::make('pop.notfound');
+	}
+
+	public function get_noviewer()
+	{
+
+		return View::make('pop.noviewer');
 	}
 
 	public function get_stream($id)

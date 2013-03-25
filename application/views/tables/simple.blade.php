@@ -198,13 +198,14 @@
 			if ($(e.target).is('.fileview')) {
 				var _id = e.target.id;
 
-				console.log(e);
+				var fileurl = '{{ URL::base().'/storage/' }}' + _id + '/' + e.target.innerHTML;
 
 				$.fancybox({
 					type:'iframe',
-					href: '{{ URL::base().'/storage/' }}' + _id + '/' + e.target.innerHTML,
-					//href: '{{ URL::base().'/document/stream/' }}' + _id,
-					autosize: true
+					href: '{{ URL::to("document/fileview/") }}' + _id,
+					width:'1000',
+					height: '800',
+					autosize: false
 				});
 
 		   	}		   			   	
@@ -225,7 +226,8 @@
 				$.fancybox({
 					type:'iframe',
 					href: '{{ URL::to("document/cover/") }}' + doc_id,
-					autosize: true
+					width:'1000',
+					autosize: false
 				});
 			}
 

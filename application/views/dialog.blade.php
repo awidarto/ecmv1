@@ -30,6 +30,8 @@
   {{ HTML::script('js/jquery.tagsinput.min.js') }}
   {{ HTML::script('js/select2.min.js') }}
 
+  {{ HTML::script('js/jquery.gdocsviewer.js') }}
+
   <!--[if lt IE 8]>
     {{ HTML::style('css/general_enclosed_foundicons_ie7.css') }}
   <![endif]-->

@@ -57,6 +57,15 @@ Route::get('hashme/(:any)',function($mypass){
 	print Hash::make($mypass);
 });
 
+Route::get('browser',function(){
+
+    echo $_SERVER['HTTP_USER_AGENT'] . "\n\n";
+
+    $browser = get_browser(null, true);
+    print_r($browser);
+
+});
+
 // Auth routes
 
 Route::get('login', function()

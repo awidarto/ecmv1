@@ -1,10 +1,33 @@
 <?php
 
 function getavatar($id,$alt = 'avatar-image',$class = 'avatar',$width = '1000'){
+
+	$usr = new User();
+
+	$_id = new MongoId($id);
+
+	$usr = $usr->get(array('_id'=>$_id));
+
+
 	if(file_exists(Config::get('parama.avatarstorage').$id.'/avatar.jpg')){
 		$photo = HTML::image('avatar/'.$id.'/avatar.jpg', $alt, array('class' => $class,'width'=>$width));
 	}else{
-		$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));				
+		if(isset($usr['salutation'])){
+			$salutation = strtolower($usr['salutation']);
+			if(
+		  		$usr['department'] == 'bod' ||
+		  		$usr['department'] == 'president_director' ||
+		  		$usr['department'] == 'operations_director' ||
+		  		$usr['department'] == 'finance_hr_director'
+
+			){
+				$photo = HTML::image('images/'.$salutation.'-bod-no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));				
+			}else{
+				$photo = HTML::image('images/'.$salutation.'-other-no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));				
+			}
+		}else{
+			$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));				
+		}
 	}
 
 	return $photo;

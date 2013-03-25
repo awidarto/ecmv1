@@ -759,6 +759,7 @@ label.check {
 
 .tagsinput{
 	width:100%;
+    margin-bottom: 10px;
 }
 
 .tagitem{
@@ -1430,4 +1431,27 @@ img.avatar{
 }
 .has-tip{
 
+}
+
+.noapproval{
+    color:#ddd;
+}
+
+tfoot input.search_init{
+    font-size: 11px;
+}
+
+.displaybox{
+    padding: 2px;
+    height:500px;
+    display: block;
+}
+
+.displaybox iframe{
+    width: 100%;
+    height:100%;
+}
+
+.fileviewer {
+    border:none;
 }

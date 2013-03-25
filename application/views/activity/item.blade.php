@@ -62,6 +62,14 @@ elseif($doc['event'] == 'request.approval'){
 }elseif($doc['event'] == 'document.expire'){
 	
 	$main_photo = '';
+	//http://localhost/pnu/public/index.php/document/edit/513df31c0b9b34a401000000/general
+
+	if($doc['creator_id'] == Auth::user()->id){
+		$edit = HTML::link('document/edit/'.$doc['doc_id']->__toString().'/'.$doc['department'],'Edit Document');
+	}else{
+		$edit = '';
+	}
+
 	$body = $doc['title'].'  is expiring';
 }else{
 	$main_photo = getavatar($doc['creator_id'],$doc['creator_name'],'twelve');
@@ -86,6 +94,7 @@ elseif($doc['event'] == 'request.approval'){
 					Attachment : <span class="fileview" id="{{ $doc['doc_id'] }}">{{ $doc['doc_filename'] }}</span><br/>
 					<span class="timestamp colorGray">{{ date('Y-m-d H:i:s',$doc['timestamp']->sec) }}</span><br />
 		  			{{-- $body --}}
+		  			{{ (isset($edit))?$edit:''}}
 		    	</p>
 		    </div>
 		  	

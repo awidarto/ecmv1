@@ -240,7 +240,7 @@ class Requests_Controller extends Base_Controller {
 			array('Title',array('class'=>'one')),
 			array('Created',array('class'=>'one')),
 			array('Requester',array('class'=>'one')),
-			array('Requesting',array('class'=>'one')),
+			array('Type',array('class'=>'one')),
 			'Status',
 			array('Attachment',array('class'=>'one')),
 			array('Tags',array('class'=>'one')),
@@ -289,12 +289,15 @@ class Requests_Controller extends Base_Controller {
 
 		$self_id = new MongoId(Auth::user()->id);
 
+		//$q = array('approvalRequestIds._id'=>$self_id);
+
 		$q['$or'] = array(
+			array('approvalRequestIds._id'=>$self_id),
+			array('docRequestToDepartment'=>Auth::user()->department),
 			array('approvalRequestIds.id'=>$self_id),
 			array('docApproval'=> new MongoRegex('/'.Auth::user()->email.'/i'))
 		);
 
-		$q = array('approvalRequestIds._id'=>$self_id);
 
 		$hilite = array();
 		$hilite_replace = array();
@@ -377,15 +380,17 @@ class Requests_Controller extends Base_Controller {
 				}
 			}
 
+			$shallapprove = true;
+
 			$requestTo .= '</ol>';
 
 			if(count($doc['approvalRequestIds']) > 0){
 				$request_type = 'Approval';
 			}else{
-				$request_type = 'General';
+				$request_type = 'Submission';
+				$shallapprove = false;
 			}
 
-			$shallapprove = true;
 
 			if(isset($doc['approvalResponds'])){
 				$status = '<table style="width:100%">';
@@ -418,7 +423,11 @@ class Requests_Controller extends Base_Controller {
 
 
 			}else{
-				$status = 'Pending Approval';
+				if($request_type == 'Approval'){
+					$status = 'Pending Approval';
+				}else{
+					$status = 'Credential Submission';
+				}
 			}			
 
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
@@ -434,7 +443,7 @@ class Requests_Controller extends Base_Controller {
 				$status,
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
-				($shallapprove)?'<i class="foundicon-checkmark has-tip tip-bottom noradius action approvalview" id="'.$doc['_id'].'" title="Approve"></i>':'<i class="foundicon-checkmark has-tip tip-bottom noradius action noapproval" title="Approve"></i>'
+				($shallapprove)?'<i class="foundicon-checkmark has-tip tip-bottom noradius action approvalview" id="'.$doc['_id'].'" title="Approve"></i>':'<i class="foundicon-checkmark tip-bottom noradius action noapproval" title="Approve"></i>'
 			);
 			$counter++;
 		}
@@ -462,15 +471,15 @@ class Requests_Controller extends Base_Controller {
 			array('Title',array('class'=>'one')),
 			array('Created',array('class'=>'one')),
 			array('Requester',array('class'=>'one')),
-			array('Submitting / Requesting',array('class'=>'one')),
-			array('Submitting / Requesting To',array('class'=>'one')),
+			array('Type',array('class'=>'one')),
+			array('Request To',array('class'=>'one')),
 			'Status',
 			array('Attachment',array('class'=>'one')),
 			array('Tags',array('class'=>'one')),
 			array('Action',array('class'=>'one'))
 		);
 		
-		$searchinput = array(false,'title','created','creator','approval from','filename','tags',false);
+		$searchinput = array(false,'title','created','creator','approval from',false,false,'filename','tags',false);
 
 		//if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
 			return View::make('tables.simple')
@@ -582,13 +591,20 @@ class Requests_Controller extends Base_Controller {
 		foreach ($documents as $doc) {
 
 			if(isset($doc['tags'])){
-				$tags = array();
 
-				foreach($doc['tags'] as $t){
-					$tags[] = '<span class="tagitem">'.$t.'</span>';
+				$tags = implode('',$doc['tags']);
+
+				if($tags != ''){
+					$tags = array();
+
+					foreach($doc['tags'] as $t){
+						$tags[] = '<span class="tagitem">'.$t.'</span>';
+					}
+
+					$tags = implode('',$tags);
+				}else{
+					$tags = '';
 				}
-
-				$tags = implode('',$tags);
 
 			}else{
 				$tags = '';
@@ -609,7 +625,7 @@ class Requests_Controller extends Base_Controller {
 				if(count($doc['approvalRequestIds']) > 0){
 					$request_type = 'Approval';
 				}else{
-					$request_type = 'General';
+					$request_type = 'Submission';
 				}
 
 			}else{
@@ -651,7 +667,12 @@ class Requests_Controller extends Base_Controller {
 				}
 				$status .= '</table>';
 			}else{
-				$status = 'Pending Approval / Credential Submission';
+				if($request_type == 'Approval'){
+					$status = 'Pending Approval';
+				}else{
+					$status = 'Credential Submission';
+					$shallapprove = false;
+				}
 			}
 
 

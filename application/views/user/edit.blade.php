@@ -17,6 +17,23 @@
         </tr>
       </table>
     {{ $form->hidden('id',$user['_id'])}}
+
+    {{ Form::label('salutation','Salutation')}}
+
+    <div class="row radioInput">
+        <div class="two columns">
+          {{ $form->radio('salutation','Mr','Mr')}} 
+        </div>   
+        <div class="two columns">
+          {{ $form->radio('salutation','Mrs','Mrs')}} 
+        </div>   
+        <div class="two columns">
+          {{ $form->radio('salutation','Ms','Ms')}} 
+        </div>
+        <div class="six columns">
+        </div>
+    </div>
+
     {{ $form->text('fullname','Full Name.req','',array('class'=>'text')) }}
 
     <h4>Employee Info</h4>
