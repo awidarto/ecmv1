@@ -91,7 +91,8 @@ Route::post('login', function()
     {
         // auth failure! lets go back to the login
         return Redirect::to('login')
-            ->with('login_errors', true);
+            ->with('login_errors', true)
+            ->with_input();
         // pass any error notification you want
         // i like to do it this way  
     }
@@ -220,5 +221,12 @@ Route::filter('csrf', function()
 
 Route::filter('auth', function()
 {
-	if (Auth::guest()) return Redirect::to('login');
+	if (Auth::guest()){
+        Session::put('redirect',URL::full());
+        return Redirect::to('login');   
+    }
+    if($redirect = Session::get('redirect')){
+        Session::forget('redirect');
+        return Redirect::to($redirect);
+    }
 });

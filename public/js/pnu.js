@@ -68,13 +68,13 @@
 			'autocomplete_url': base + 'ajax/email',
 			'autocomplete':{
 				'select':function(event, ui){
-
+					/*
 					if(_.indexOf(sharearray,ui.item.id) < 0){
 						sharearray.push(ui.item.id);
 					}
 
 					console.log(sharearray);
-
+					*/
 					var sh = $('#shared').val();
 
 					if(sh == ''){

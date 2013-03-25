@@ -128,7 +128,7 @@ class User_Controller extends Base_Controller {
 		return View::make('tables.simple')
 			->with('title','User Management')
 			->with('newbutton','New User')
-			->with('disablesort','0,1,4,5')
+			->with('disablesort','0,1')
 			->with('addurl','user/add')
 			->with('searchinput',$searchinput)
 			->with('tags',$tags)

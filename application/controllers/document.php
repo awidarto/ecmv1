@@ -49,8 +49,8 @@ class Document_Controller extends Base_Controller {
 
 		//print_r(Auth::user());
 
-		$heads = array('#','Title','Created','Last Update','Expiry Date','Expiring In','Creator','Access','Attachment','Is Template','Tags','Action');
-		$searchinput = array(false,'title','created','last update','expiry date','expiring','creator','access','filename','useAsTemplate','tags',false);
+		$heads = array('#','Title','Department','Created','Last Update','Expiry Date','Expiring In','Creator','Access','Attachment','Is Template','Tags','Action');
+		$searchinput = array(false,'title','department','created','last update','expiry date','expiring','creator','access','filename','useAsTemplate','tags',false);
 
 		$title = 'Document Library';
 
@@ -74,11 +74,11 @@ class Document_Controller extends Base_Controller {
 	public function post_index()
 	{
 
-		$fields = array('title','createdDate','lastUpdate','expiryDate','expiring','creatorName','access','docFilename','useAsTemplate','docTag');
+		$fields = array('title','docDepartment','createdDate','lastUpdate','expiryDate','expiring','creatorName','access','docFilename','useAsTemplate','docTag');
 
-		$rel = array('like','like','like','like','like','like','like','like','like','like');
+		$rel = array('like','like','like','like','like','like','like','like','like','like','like');
 
-		$cond = array('both','both','both','both','both','both','both','both','both','both');
+		$cond = array('both','both','both','both','both','both','both','both','both','both','both');
 
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
@@ -147,7 +147,7 @@ class Document_Controller extends Base_Controller {
 
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
-			if(isset($doc['tags'])){
+			if(isset($doc['tags']) && is_array($doc['tags']) && implode('',$doc['tags']) != ''){
 				$tags = array();
 
 				foreach($doc['tags'] as $t){
@@ -164,17 +164,32 @@ class Document_Controller extends Base_Controller {
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
 			if(isset($doc['expiring'])){
-				$doc['expiring'] = ($doc['expiring'] < Config::get('parama.expiration_alert_days') && $doc['expiring'] > 0)?'<span class="expiring">'.$doc['expiring'].' day(s)</span>':'';
+				
+				if($doc['expiring'] == 'Today'){
+					$doc['expiring'] = '<span class="expiring now">'.$doc['expiring'].'</span>';
+				}elseif($doc['expiring'] < 0){
+					$doc['expiring'] = '<span class="expiring yesterday">'.abs($doc['expiring']).' day(s) ago</span>';
+				}elseif($doc['expiring'] != false){
+					$doc['expiring'] = '<span class="expiring">'.$doc['expiring'].' day(s)</span>';						
+				}else{
+					$doc['expiring'] = '';
+				}
+
 			}else{
+
 				$doc['expiring'] = '';
 			}
+
+			$download = '<a href="'.URL::to('document/download/'.$doc['_id']).'">'.
+						'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
 
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
-				date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
-				isset($doc['expiryDate'])?date('Y-m-d', $doc['expiryDate']->sec):'',
+				depttitle($doc['docDepartment']),
+				date('d-m-Y H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
+				isset($doc['expiryDate'])?date('d-m-Y', $doc['expiryDate']->sec):'',
 				$doc['expiring'],
 				$doc['creatorName'],
 				isset($doc['access'])?ucfirst($doc['access']):'',
@@ -182,6 +197,7 @@ class Document_Controller extends Base_Controller {
 				isset($doc['useAsTemplate'])?$doc['useAsTemplate']:'No',
 				$tags,
 				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
+				$download.
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 			);
 			$counter++;
@@ -297,10 +313,27 @@ class Document_Controller extends Base_Controller {
 			//pre save transform
 			unset($data['csrf_token']);
 
-			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
-			$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+	            $datetimeNow = new DateTime(date('Y-m-d',time()));
+	            $datetimeThen = new DateTime($data['expiryDate']);
 
-			$data['expiring'] = 0;
+	            $indays = $datetimeNow->diff($datetimeThen);
+
+	            if(isset($data['alertStart']) && $indays->days > $data['alertStart']){
+	            	$data['expiring'] = false;
+	            }else{
+	            	if($indays->days == 0){
+		            	$data['expiring'] = 'Today';
+	            	}elseif($indays->invert == 0){
+		            	$data['expiring'] = $indays->days;
+	            	}elseif($indays->invert == 1){
+		            	$data['expiring'] = $indays->days * -1;
+	            	}
+	            }
+
+
+			$data['effectiveDate'] = ($data['effectiveDate'] == '')?'':new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
+			$data['expiryDate'] =($data['expiryDate'] == '')?'':new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+
 
 			$data['createdDate'] = new MongoDate();
 			$data['lastUpdate'] = new MongoDate();
@@ -308,6 +341,13 @@ class Document_Controller extends Base_Controller {
 			$data['creatorId'] = Auth::user()->id;
 
 			$data['useAsTemplate'] = (isset($data['useAsTemplate']))?$data['useAsTemplate']:'No';
+
+			if(isset($data['alertStart'])){
+				if($data['alertStart'] > Config::get('parama.expiration_alert_days')){
+					$data['alertStart'] = Config::get('parama.expiration_alert_days');
+				}
+				$data['alertStart'] = new MongoInt64($data['alertStart']);
+			}
 
 			$sharelist = explode(',', $data['docShare']);
 			if(is_array($sharelist)){
@@ -437,7 +477,8 @@ class Document_Controller extends Base_Controller {
 		$doc_data = $doc->get(array('_id'=>$id));
 
 		$doc_data['oldTag'] = $doc_data['docTag'];
-
+		$doc_data['oldShare'] = $doc_data['docShare'];
+		
 		$doc_data['effectiveDate'] = date('d-m-Y', $doc_data['effectiveDate']->sec);
 		$doc_data['expiryDate'] = date('d-m-Y', $doc_data['expiryDate']->sec);
 
@@ -514,14 +555,49 @@ class Document_Controller extends Base_Controller {
 
 			$id = new MongoId($data['id']);
 
-			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
-			$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+	            $datetimeNow = new DateTime(date('Y-m-d',time()));
+	            $datetimeThen = new DateTime($data['expiryDate']);
+
+	            $indays = $datetimeNow->diff($datetimeThen);
+
+    	        $exp = new Expiration();
+
+	            if(isset($data['alertStart']) && $indays->days > $data['alertStart']){
+	            	$data['expiring'] = false;
+	            	$exp->delete(array('doc_id'=>$id));
+	            }else{
+	            	if($indays->days == 0){
+		            	$data['expiring'] = 'Today';
+	            	}elseif($indays->invert == 0){
+		            	$data['expiring'] = $indays->days;
+	            	}elseif($indays->invert == 1){
+		            	$data['expiring'] = $indays->days * -1;
+	            	}
+					$expiryDate = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+
+	                $exp->update(array('doc_id'=>$id),array('doc_id'=>$id,'expiring'=>$indays->days,'expiryDate'=>$expiryDate,'updated'=>false),array('upsert'=>true));
+	            
+	                // send no message
+	            }
+
+			$data['effectiveDate'] = ($data['effectiveDate'] == '')?'':new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
+			$data['expiryDate'] =($data['expiryDate'] == '')?'':new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+
+			//$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
+			//$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
 			$data['lastUpdate'] = new MongoDate();
 
 			if(isset($data['expiring'])){
-				$data['expiring'] = ($data['expiring'] == '')?0:$data['expiring'];
+				$data['expiring'] = ($data['expiring'] == '')?false:$data['expiring'];
 			}else{
-				$data['expiring'] = 0;
+				$data['expiring'] = false;
+			}
+
+			if(isset($data['alertStart'])){
+				if($data['alertStart'] > Config::get('parama.expiration_alert_days')){
+					$data['alertStart'] = Config::get('parama.expiration_alert_days');
+				}
+				$data['alertStart'] = new MongoInt64($data['alertStart']);
 			}
 
 			unset($data['csrf_token']);
@@ -543,7 +619,6 @@ class Document_Controller extends Base_Controller {
 					$sequencer->insert(array('_id'=>$templatename,'seq'=>$startFrom),array('upsert'=>true));
 				}
 			}
-
 
 			$sharelist = explode(',', $data['docShare']);
 			if(is_array($sharelist)){
@@ -638,8 +713,14 @@ class Document_Controller extends Base_Controller {
 				$sharedto = explode(',',$data['docShare']);
 
 				if(count($sharedto) > 0  && $data['docShare'] != ''){
+					$oldShared = explode(',', $data['oldShare']);
+
 					foreach($sharedto as $to){
-						Event::fire('document.share',array('id'=>$id,'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+						if(is_array($oldShared) && !in_array($to, $oldShared)){
+							Event::fire('document.share',array('id'=>$id,'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+						}else{
+							Event::fire('document.share',array('id'=>$id,'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+						}
 					}
 				}
 
@@ -717,6 +798,8 @@ class Document_Controller extends Base_Controller {
 				$can_open = true;
 			}
 
+		}else if($type == 'general'){
+			$can_open = true;
 		}else{
 
 			if(Auth::user()->department == $type){
@@ -774,11 +857,11 @@ class Document_Controller extends Base_Controller {
 	public function post_type($type = null)
 	{
 
-		$fields = array('title','createdDate','lastUpdate','expiryDate','creatorName','docFilename','docTag');
+		$fields = array('title','createdDate','lastUpdate','expiryDate','expiring','creatorName','access','docFilename','docTag');
 
-		$rel = array('like','like','like','like','like','like','like');
+		$rel = array('like','like','like','like','like','like','like','like','like');
 
-		$cond = array('both','both','both','both','both','both','both');
+		$cond = array('both','both','both','both','both','both','both','both');
 
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
@@ -789,10 +872,11 @@ class Document_Controller extends Base_Controller {
 		$defdir = -1;
 
 		$idx = 0;
-		$q = array();
 
 		$hilite = array();
 		$hilite_replace = array();
+
+		$sq = array();
 
 		foreach($fields as $field){
 			if(Input::get('sSearch_'.$idx))
@@ -804,23 +888,23 @@ class Document_Controller extends Base_Controller {
 
 				if($rel[$idx] == 'like'){
 					if($cond[$idx] == 'both'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
+						$sq[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
+						$sq[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
+						$sq[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
 					}
 				}else if($rel[$idx] == 'equ'){
-					$q[$field] = Input::get('sSearch_'.$idx);
+					$sq[$field] = Input::get('sSearch_'.$idx);
 				}
 			}
 			$idx++;
 		}
 
+		//start creating query array
+		//$q = array();
+
 		//print_r($q)
-		if(!is_null($type)){
-			$q['docDepartment'] = $type;
-		}
 
 		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
 
@@ -829,27 +913,58 @@ class Document_Controller extends Base_Controller {
 			Auth::user()->role == 'president_director' ||
 			Auth::user()->role == 'bod'
 			){
-
+				if(!is_null($type)){
+					if($type == 'general'){
+						$q = array('access'=>$type);
+					}else{
+						$q = array('docDepartment' => $type);
+					}
+				}
 
 		}else if( Auth::user()->role == 'client' ||
 			Auth::user()->role == 'principal_vendor' ||
 			Auth::user()->role == 'subcon'){
 
-			$q['$or'] = array(
-				array('creatorId'=>Auth::user()->id),
-				array('docShare'=>$sharecriteria)
-			);
+			if(!is_null($type)){
+				if($type == 'general'){
+					$q = array('access'=>$type);
+				}else{
+					$q = array(
+						'docDepartment' => trim($type),
+						'$or'=>array(
+								array('docShare'=>$sharecriteria),
+								array('creatorId'=>Auth::user()->id)
+						)
+					);
+				}
+			}
 
 		}else{
 
-			if(Auth::user()->department == $type){
-				$q['$or'] = array(
-					array('access'=>'general'),
-					array('docShare'=>$sharecriteria)
-				);
-			}else{
-				$q['docShare'] = $sharecriteria;
+			if(!is_null($type)){
+				if($type == 'general'){
+					$q = array('access'=>$type);
+				}else{
+
+					if(Auth::user()->department == $type){
+
+						$q = array(
+							'docDepartment' => trim($type),
+							'$or'=>array(
+									array('access'=>'departmental'),
+									array('docShare'=>$sharecriteria),
+									array('creatorId'=>Auth::user()->id)
+							)
+						);
+
+					}else{
+						$q = array('docShare'=>$sharecriteria);
+					}
+
+
+				}
 			}
+
 		}
 
 
@@ -871,6 +986,10 @@ class Document_Controller extends Base_Controller {
 
 		$count_all = $document->count();
 
+		if(count($sq) > 0){
+			$q = array_merge($sq,$q);
+		}
+
 		if(count($q) > 0){
 			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
 			$count_display_all = $document->count($q);
@@ -888,7 +1007,7 @@ class Document_Controller extends Base_Controller {
 		foreach ($documents as $doc) {
 
 
-			if(isset($doc['tags'])){
+			if(isset($doc['tags']) && is_array($doc['tags']) && implode('',$doc['tags']) != ''){
 				$tags = array();
 
 				foreach($doc['tags'] as $t){
@@ -904,36 +1023,54 @@ class Document_Controller extends Base_Controller {
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 			
-			if(isset($doc['expiring'])){
-				$doc['expiring'] = ($doc['expiring'] < Config::get('parama.expiration_alert_days') && $doc['expiring'] > 0)?'<span class="expiring">'.$doc['expiring'].' day(s)</span>':'';
+			if(isset($doc['expiring']) && isset($doc['alert']) && $doc['alert'] == 'Yes'){
+				
+				if($doc['expiring'] == 'Today'){
+					$doc['expiring'] = '<span class="expiring now">'.$doc['expiring'].'</span>';
+				}elseif($doc['expiring'] < 0){
+					$doc['expiring'] = '<span class="expiring yesterday">'.abs($doc['expiring']).' day(s) ago</span>';
+				}elseif($doc['expiring'] != false){
+					$doc['expiring'] = '<span class="expiring">'.$doc['expiring'].' day(s)</span>';						
+				}else{
+					$doc['expiring'] = '';
+				}
+
 			}else{
+
 				$doc['expiring'] = '';
 			}
 
-			if($doc['creatorId'] == Auth::user()->id || $doc['docDepartment'] == Auth::user()->department){
+			if($doc['creatorId'] == Auth::user()->id){
 				$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
 						'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
 				$del = '<i class="foundicon-trash action del has-tip tip-bottom noradius" title="Delete" id="'.$doc['_id'].'"></i>';
-				$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
+				$download = '<a href="'.URL::to('document/download/'.$doc['_id'].'/'.$type).'">'.
 							'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
 			}else{
-				if($permissions->{$type}->edit == 1){
-					$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
-							'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
+
+				if(isset($doc['interaction']) && $doc['interaction'] == 'rw'){
+					if($permissions->{$type}->edit == 1){
+						$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
+								'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
+					}else{
+						$edit = '';
+					}
+
+					if($permissions->{$type}->delete == 1){
+						$del = '<i class="foundicon-trash action  has-tip tip-bottom noradius del" title="Delete" id="'.$doc['_id'].'"></i>';
+					}else{
+						$del = '';
+					}
+
+					if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1){
+						$download = '<a href="'.URL::to('document/download/'.$doc['_id'].'/'.$type).'">'.
+								'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
+					}else{
+						$download = '';
+					}
 				}else{
 					$edit = '';
-				}
-
-				if($permissions->{$type}->delete == 1){
-					$del = '<i class="foundicon-trash action  has-tip tip-bottom noradius del" title="Delete" id="'.$doc['_id'].'"></i>';
-				}else{
 					$del = '';
-				}
-
-				if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1){
-					$download = '<a href="'.URL::to('document/dl/'.$doc['_id'].'/'.$type).'">'.
-							'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
-				}else{
 					$download = '';
 				}
 
@@ -942,9 +1079,9 @@ class Document_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
-				date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
-				isset($doc['expiryDate'])?date('Y-m-d', $doc['expiryDate']->sec):'',
+				date('d-m-Y H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
+				isset($doc['expiryDate'])?date('d-m-Y', $doc['expiryDate']->sec):'',
 				$doc['expiring'],
 				$doc['creatorName'],
 				isset($doc['access'])?ucfirst($doc['access']):'',
@@ -973,6 +1110,86 @@ class Document_Controller extends Base_Controller {
 	}
 
 
+	public function get_download($id, $type = null){
+
+		$this->crumb = new Breadcrumb();
+		
+
+		if(is_null($type)){
+			$this->crumb->add('document','Document');
+
+		}else{
+
+			$this->crumb->add('document/type/'.$type,'Document');
+			$this->crumb->add('document/type/'.$type,depttitle($type));
+		}
+
+		$this->crumb->add('document/download/'.$id.'/'.$type,'Download Request',false);
+
+
+		$_id = new MongoId($id);
+
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$_id));
+
+		$this->crumb->add('document/download/'.$id.'/'.$type,$doc['title'],false);
+
+		$path = Config::get('parama.storage').$id.'/'.$doc['docFilename'];
+
+
+		$form = new Formly();
+		return View::make('document.downloadrequest')
+					->with('form',$form)
+					->with('docnumber',0)
+					->with('profile',$doc)
+					->with('crumb',$this->crumb)
+					->with('title','Document Download Request');
+
+	}
+
+	public function post_download($id,$type = null){
+		$_id = new MongoId($id);
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$_id));
+
+		$path = Config::get('parama.storage').$id.'/'.$doc['docFilename'];
+
+		if(file_exists($path)){
+
+			$filename = $doc['docFilename'];
+
+			$ext = File::extension($path);
+
+			$dlobj = array(
+				'dltype'=>'document',
+				'document'=>$doc,
+				'downloader'=>Auth::user(),
+				'downloadedfullfilename'=>$filename,
+				'downloadedfilename'=>$filename,
+				'downloadedfileext'=>$ext,
+				'templatename'=>$doc['title'],
+				'doc_number'=>0,
+				'timestamp'=>new MongoDate()
+			);
+
+			$dlog = new Download();
+			$dlog->insert($dlobj);
+
+
+			return Response::download($path, $filename);
+		}else{
+			Event::fire('document.download',array('id'=>$id,'result'=>'FILENOTFOUND'));
+			return Redirect::to('document/download/'.$id.'/'.$type)->with('notify_success','Document attachment does not exist');
+		}
+
+	}
+
+
+
 	public function get_dl($id){
 		$_id = new MongoId($id);
 
@@ -983,11 +1200,27 @@ class Document_Controller extends Base_Controller {
 		$path = Config::get('parama.storage').$id.'/'.$doc['docFilename'];
 
 		if(file_exists($path)){
-			Event::fire('document.update',array('id'=>$id,'result'=>'OK'));
+			Event::fire('document.download',array('id'=>$id,'result'=>'OK'));
 			$filename = $doc['docFilename'];
+
+			$dlobj = array(
+				'dltype'=>'document',
+				'document'=>$doc,
+				'downloader'=>Auth::user(),
+				'downloadedfullfilename'=>$filename.'.'.$ext,
+				'downloadedfilename'=>$filename,
+				'downloadedfileext'=>$ext,
+				'templatename'=>'',
+				'doc_number'=>'',
+				'timestamp'=>new MongoDate()
+			);
+
+			$dlog = new Download();
+			$dlog->insert($dlobj);
+
 			return Response::download($path, $filename);
 		}else{
-			Event::fire('document.update',array('id'=>$id,'result'=>'FILENOTFOUND'));
+			Event::fire('document.download',array('id'=>$id,'result'=>'FILENOTFOUND'));
 			return false;
 		}
 
@@ -1087,7 +1320,8 @@ class Document_Controller extends Base_Controller {
 		}
 
 
-		return View::make('pop.approval')->with('doc',$doc)->with('form',$form)->with('href',$file)->with('ajaxpost','document/approve');
+		return View::make('pop.approval')->with('doc',$doc)->with('form',$form)->with('href',$file)
+			->with('ajaxpost','document/approve');
 	}
 
 	public function get_notfound()
@@ -1253,6 +1487,22 @@ class Document_Controller extends Base_Controller {
 					'approvalTransfer'=>$response['fwdto']
 				);
 
+			$docobj = $doc->get(array('_id'=>$_id));
+
+			$already_responded = false;
+
+			if(isset($docobj['approvalResponds'])){
+				foreach($docobj['approvalResponds'] as $responses){
+					if($responses['approverEmail'] == Auth::user()->email && $responses['approverId'] == Auth::user()->id){
+						$already_responded = true;
+					}
+				}
+			}
+
+			if($already_responded == true){
+				return Response::json(array('status'=>'ALREADY'));				
+			}
+
 			if($response['approval'] == 'transfer'){
 				$users = new User();
 
@@ -1269,7 +1519,6 @@ class Document_Controller extends Base_Controller {
 
 				$doc->update(array('_id'=>$_id),array('$push'=>$res3),array('upsert'=>true));
 
-				$docobj = $doc->get(array('_id'=>$_id));
 
 				//print_r($document);
 

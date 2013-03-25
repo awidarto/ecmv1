@@ -332,7 +332,8 @@ class Template_Controller extends Base_Controller {
 			$ext = File::extension($path);
 
 			$dlobj = array(
-				'template'=>$doc,
+				'dltype'=>'template',
+				'document'=>$doc,
 				'downloader'=>Auth::user(),
 				'downloadedfullfilename'=>$filename.'.'.$ext,
 				'downloadedfilename'=>$filename,

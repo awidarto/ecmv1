@@ -1,34 +1,28 @@
 @layout('dialog')
 
 @section('content')
+		<div class="row">
+		<div class="twelve columns">
+	{{$form->open('','POST',array('class'=>'custom','id'=>'transferForm'))}}
+			<fieldset>
+				{{ $form->hidden('opportunityId',$id,array('id'=>$id))}}
+				{{ $form->hidden('opportunityNumber',$num,array('id'=>$num))}}
 
-<div class="row fileviewer-container">
-	<div class="twelve columns">
-		<iframe class="fileviewer" src="{{$href}}" width="100%" height="100%"></iframe>
-	</div>
-</div>
+				{{ $form->text('docTender','Tender Number','',array('id'=>'tender_number','class'=>'auto_tender_number four','rows'=>'1', 'style'=>'width:100%')) }}
 
-{{$form->open('','POST',array('class'=>'custom','id'=>'approveForm'))}}
-	<h4>Document Approval</h4>
-	<div class="row-fluid approval-container">
-	  	<div class="three columns">
-		    {{ $form->radio('approval','Approve','yes',true)}} 
-		    {{ $form->radio('approval','Not Approve','no')}} 
-		    {{ $form->radio('approval','Transfer To','transfer')}} 
-			{{ $form->text('fwdto','','',array('class'=>'text auto_user','id'=>'fwdto')) }}
-		</div>   
-		<div class="six columns">
-	  		{{ $form->hidden('docid',$doc['_id']->__toString(),array('id'=>'docId'))}}
-		    {{ $form->textarea('note','Note','',array('class'=>'eleven right','id'=>'note', 'rows'=>'4')) }}
-			<div id="notifier"></div>
-		</div>	    
-{{ $form->close()}}
-		<div class="three columns">
-			{{ $form->password('pass','Password.req','',array('class'=>'text','id'=>'pass')) }}
-			{{ Form::submit('OK',array('class'=>'button','id'=>'doaction'))}}&nbsp;&nbsp;
-			{{ Form::button('Cancel',array('class'=>'button','id'=>'docancel'))}}
+				<div id="notifier"></div>
+
+				{{ $form->hidden('docTenderId','',array('id'=>'tender_id')) }}
+
+			</fieldset>
 		</div>
-	</div>    
+		</div>
+		<hr />
+		<div class="row right">
+		{{ Form::button('Add',array('class'=>'button','id'=>'savecontact'))}}&nbsp;&nbsp;
+		{{ Form::button('Cancel',array('class'=>'button','id'=>'docancel'))}}
+		</div>
+	{{ $form->close()}}
 
 {{ HTML::script('js/jquery.form.js') }}
 
@@ -54,7 +48,7 @@
 	    }; 
 	 
 	    // bind to the form's submit event 
-	    $('#approveForm').submit(function() { 
+	    $('#transferForm').submit(function() { 
 	        // inside event callbacks 'this' is the DOM element so we first 
 	        // wrap it in a jQuery object and then invoke ajaxSubmit 
 	        $(this).ajaxSubmit(options); 
@@ -65,50 +59,6 @@
 	    }); 
 	}); 
 
-/*
-	$('#doaction').click(function(){
-		var _id = $('#docId').val();
-		var pass = $('#pass').val();
-		var note = $('#note').val();
-		var fwdto = $('#fwdto').val();
-		var approve = $('input:radio[name=approve]:checked').val();
-
-		$('#notifier').html('Processing...');
-
-		$.post('{{ URL::to($ajaxpost) }}',{'docid':_id, 'pass': pass,'fwdto':fwdto, 'approval':approve,'note':note}, function(data) {
-			if(data.status == 'OK'){
-				$('#notifier').html('Approval Success');
-				//parent.oTable.fnDraw();
-				parent.jQuery.fancybox.close();
-
-				//redraw table
-				//alert("Item id : " + _id + " deleted");
-			}else if(data.status == 'AUTHFAILED'){
-				$('#notifier').html('Wrong Password');
-				alert('Authentication failed, please check your Password');
-			}
-		},'json');
-
-		return false;
-	});
-
-	$('#passboxs').keyup(function(){
-
-		passval = $('#passbox').val();
-
-
-		var passboxreplace = '';
-
-		for(var i = 0;i < passval.length;i++){
-			passboxreplace += '*';
-		}
-
-		$('#passbox').val(passboxreplace);
-
-		$('#pass').val(passval);
-
-	});
-*/
 	function preSubmission(formData, jqForm, options){
 	    var queryString = $.param(formData); 
 	 
@@ -139,7 +89,7 @@
 	    var data = responseObj;
 
 		if(data.status == 'OK'){
-			$('#notifier').html('Approval Success');
+			$('#notifier').html('Transfer Success');
 			//parent.oTable.fnDraw();
 			parent.jQuery.fancybox.close();
 
@@ -148,8 +98,6 @@
 		}else if(data.status == 'AUTHFAILED'){
 			$('#notifier').html('Wrong Password');
 			alert('Authentication failed, please check your Password');
-		}else if(data.status == 'ALREADY'){
-			$('#notifier').html('You have already responded to this request');
 		}
 
 	} 
@@ -161,5 +109,5 @@
 
 </script>
 
-@endsection
 
+@endsection

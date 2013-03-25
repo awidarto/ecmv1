@@ -170,7 +170,7 @@ class Message_Controller extends Base_Controller {
 
 			$aadata[] = array(
 				$doc['from'],
-				HTML::link('message/read/'.$doc['_id'],$doc['subject']),
+				HTML::link('message/read/inbox/'.$doc['_id'],$doc['subject']),
 				date('Y-m-d h:i:s',$doc['createdDate']->sec)
 			);
 		}
@@ -255,7 +255,7 @@ class Message_Controller extends Base_Controller {
 
 			$aadata[] = array(
 				$doc['to'],
-				HTML::link('message/read/'.$doc['_id'],$doc['subject']),
+				HTML::link('message/read/outbox/'.$doc['_id'],$doc['subject']),
 				date('Y-m-d h:i:s',$doc['createdDate']->sec)
 			);
 		}
@@ -272,9 +272,11 @@ class Message_Controller extends Base_Controller {
 		return Response::json($result);
 	}
 
-	public function get_reply($id)
+	public function get_reply($box,$id)
 	{
-		$this->crumb->add('message/reply/'.$id,'Reply');
+		$this->crumb->add('message/reply/'.$box.'/'.$id,'Reply',false);
+
+		$this->crumb->add('message/reply/'.$box.'/'.$id,$box,false);
 
 		$msg = new Message();
 
@@ -293,6 +295,8 @@ class Message_Controller extends Base_Controller {
 		$message['subject'] = 'Re: '.$message['subject'];
 
 		$message['body'] = "<br /><q>".$message['body']."</q>";
+
+		$this->crumb->add('message/reply/'.$box.'/'.$id,$message['subject']);
 
 		$form = new Formly($message);
 
@@ -389,9 +393,10 @@ class Message_Controller extends Base_Controller {
 		
 	}	
 
-	public function get_forward($id)
+	public function get_forward($box,$id)
 	{
-		$this->crumb->add('message/forward/'.$id,'Forward');
+		$this->crumb->add('message/forward/'.$box.'/'.$id,'Reply',false);
+		$this->crumb->add('message/forward/'.$box.'/'.$id,$box,false);
 
 		$msg = new Message();
 
@@ -413,6 +418,8 @@ class Message_Controller extends Base_Controller {
 		$message['from'] = Auth::user()->email;
 
 		$message['subject'] = 'Fwd: '.$message['subject'];
+
+		$this->crumb->add('message/forward/'.$box.'/'.$id,$message['subject']);
 
 		$form = new Formly($message);
 
@@ -508,9 +515,12 @@ class Message_Controller extends Base_Controller {
 	}	
 
 
-	public function get_replyall($id)
+	public function get_replyall($box,$id)
 	{
-		$this->crumb->add('message/replyall/'.$id,'Reply All');
+		$this->crumb->add('message/replyall/'.$box.'/'.$id,'Reply All',false);
+
+		$this->crumb->add('message/replyall/'.$box.'/'.$id,$box,false);
+
 
 		$msg = new Message();
 
@@ -518,7 +528,13 @@ class Message_Controller extends Base_Controller {
 
 		$message = $msg->get(array('_id'=>$_id));
 
-		$message['to'] = $message['from'];
+		$to = explode(',', $message['to']);
+
+		$to[] = $message['from'];
+
+		$to = array_unique($to);
+
+		$message['to'] = implode(',',$to);
 
 		$message['from'] = Auth::user()->email;
 
@@ -530,6 +546,7 @@ class Message_Controller extends Base_Controller {
 
 		$message['body'] = "<br /><q>".$message['body']."</q>";
 
+		$this->crumb->add('message/replyall/'.$box.'/'.$id,$message['subject']);
 
 		$ckeditor = new CKEditor();
 
@@ -718,19 +735,23 @@ class Message_Controller extends Base_Controller {
 		
 	}	
 
-	public function get_read($id){
+	public function get_read($box,$id){
 
-		$this->crumb->add('message/read/'.$id,'Read',false);
+		$this->crumb->add('message/read/'.$box.'/'.$id,'Read',false);
+
+		$this->crumb->add('message/read/'.$box.'/'.$id,$box,false);
+
 		$id = new MongoId($id);
 
 		$document = new Message();
 
 		$doc = $document->get(array('_id'=>$id));
 
-		$this->crumb->add('message/read/'.$id,$doc['subject']);
+		$this->crumb->add('message/read/'.$box.'/'.$id,$doc['subject']);
 
 		return View::make('message.read')
 			->with('crumb',$this->crumb)
+			->with('box',$box)
 			->with('doc',$doc);
 	}
 

@@ -51,11 +51,14 @@ Target Scope  :  Supply of All Misc. Manual Valves
           {{ $form->checkbox('saveToContact','Update Contact in Client Database','Yes',false)}}
 
     </fieldset>
-
+<?php
+/*
     <fieldset>
       <legend>Contact Persons</legend>
       {{ View::make('partials.contacttable')->render() }}
     </fieldset>
+*/
+?>
 
   </div>
   <div class="four columns right">

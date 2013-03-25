@@ -59,6 +59,7 @@
 		</div>
 		<div class="eight columns">
 			<h5>Related Documents</h5>
+				<div class="foundicon-add-doc button right transfer action" id="{{ $opportunity['opportunityNumber'] }}" >&nbsp;&nbsp;<span>Transfer To Tender</span></div>
 				<table class="dataTable">
 				    <thead>
 				        <tr>
@@ -145,7 +146,7 @@
 		        "sAjaxSource": "{{$ajaxsourcedoc}}",
 				"oLanguage": { "sSearch": "Search "},
 				"sPaginationType": "full_numbers",
-				"sDom": 'T<"clear">lfrtip',
+				"sDom": 'T<"clear">lrtip',
 				"oTableTools": {
 					"sSwfPath": "assets/swf/copy_csv_xls_pdf.swf"
 				},
@@ -172,7 +173,7 @@
 		        "sAjaxSource": "{{$ajaxsourcecontact}}",
 				"oLanguage": { "sSearch": "Search "},
 				"sPaginationType": "full_numbers",
-				"sDom": 'T<"clear">lfrtip',
+				"sDom": 'T<"clear">lrtip',
 				"oTableTools": {
 					"sSwfPath": "assets/swf/copy_csv_xls_pdf.swf"
 				},
@@ -199,7 +200,7 @@
 		        "sAjaxSource": "{{$ajaxsourceprogress}}",
 				"oLanguage": { "sSearch": "Search "},
 				"sPaginationType": "full_numbers",
-				"sDom": 'T<"clear">lfrtip',
+				"sDom": 'T<"clear">lrtip',
 				"oTableTools": {
 					"sSwfPath": "assets/swf/copy_csv_xls_pdf.swf"
 				},
@@ -389,6 +390,18 @@
 				type:'iframe',
 				width:'800',
 				href: '{{ URL::to("contact/contactperson/".$opportunity["_id"]) }}',
+				autosize: false,
+				afterClose:function(){
+					cTable.fnDraw();
+				}
+			});
+		});
+
+		$('.transfer').click(function(){
+			$.fancybox({
+				type:'iframe',
+				width:'800',
+				href: '{{ URL::to("opportunity/transfer/".$opportunity["_id"].'/'.$opportunity["opportunityNumber"]) }}',
 				autosize: false,
 				afterClose:function(){
 					cTable.fnDraw();

@@ -17,19 +17,62 @@
 
       <hr />
 
-      {{ Form::label('access','This document is')}}
+      {{ Form::label('access','Access ( Who can see this document )')}}
       <div class="row">
-        <div class="five columns left">
+        <div class="four columns left">
           {{ $form->radio('access','Confidential','confidential',true)}} 
         </div>   
-        <div class="five columns right">
-          {{ $form->radio('access','General','general')}} 
+        <div class="eight columns right">
+          <p>
+            <strong>Confidential</strong> document ( default ) can only be seen by its creator and people it was shared with.<br />
+          </p>
         </div>   
       </div>
-      <p>
-        <strong>Confidential</strong> document ( default ) can only be seen by its creator and people it was shared with.<br />
-        <strong>General</strong> document will be able to be seen by creator's peers at the same department, and superiors with higher access level. 
-      </p>
+
+      <div class="row">
+        <div class="four columns left">
+          {{ $form->radio('access','Departmental','departmental')}} 
+        </div>   
+        <div class="eight columns right">
+          <p>
+            <strong>Departmental</strong> document will be able to be seen by creator's peers at the same department. 
+          </p>
+        </div>   
+      </div>
+
+      <div class="row">
+        <div class="four columns left">
+          {{ $form->radio('access','General','general')}} 
+        </div>   
+        <div class="eight columns right">
+          <p>
+            <strong>General</strong> document will be able to be seen by all employees in the company, and listed in General document section. 
+          </p>
+        </div>   
+      </div>
+
+      {{ Form::label('interaction','Interaction ( What can other users do with this document )')}}
+      <div class="row">
+        <div class="four columns left">
+          {{ $form->radio('interaction','Read Only','ro',true)}} 
+        </div>   
+        <div class="eight columns right">
+          <p>
+            <strong>Read Only</strong> access ( default ) will make other users can only be able to read / view this document, regardless of their permission set.<br />
+          </p>
+        </div>   
+      </div>
+
+      <div class="row">
+        <div class="four columns left">
+          {{ $form->radio('interaction','Read & Write','rw')}} 
+        </div>   
+        <div class="eight columns right">
+          <p>
+            <strong>Read & Write</strong> access will enable other users to see and interact further ( ie: edit and/or delete ) according to their permission set. 
+          </p>
+        </div>   
+      </div>
 
       <hr />
 
@@ -44,7 +87,6 @@
 
     <fieldset>
       <legend>Effective Dates & Expiration</legend>
-
       <div class="row">
         <div class="five columns left">
           {{ $form->text('effectiveDate','Effective Date','',array('class'=>'twelve date')) }}
@@ -53,6 +95,29 @@
           {{ $form->text('expiryDate','Expiry Date','',array('class'=>'twelve date')) }}
         </div>
       </div>
+
+      {{ Form::label('alert','Expiration alert')}}
+      <div class="row">
+        <div class="four columns left">
+          {{ $form->radio('alert','Yes','Yes',true)}} 
+        </div>   
+        <div class="eight columns right">
+          {{ $form->radio('alert','No','No')}} 
+        </div>   
+      </div>
+      <div class="row">
+        <div class="left">
+          {{ Form::label('alertStart','Start alert in')}}
+        </div>   
+        <div class="one columns left">
+          {{ $form->text('alertStart','',Config::get('parama.expiration_alert_days'))}}        
+        </div>   
+        <div class="alertsuffix">
+          {{ Form::label('alertStartSuffix',' days before Expiry Date')}}
+        </div>   
+      </div>
+
+    </fieldset>
 
     </fieldset>
 
@@ -63,7 +128,11 @@
 
     <fieldset>
       <legend>Approval Request</legend>
-      {{ $form->text('docApprovalRequest','Request Approval From','',array('class'=>'tag_email four', 'style'=>'width:100%')) }}
+      {{ $form->checkbox('doRequestApproval','Request for Approval','Yes',false,array('class'=>'check', 'id'=>'doApproval'))}}
+
+      <div id='doApprovalContainer' >
+        {{ $form->text('docApprovalRequest','Request Approval From','',array('class'=>'tag_email four','style'=>'width:100%')) }}
+      </div>
     </fieldset>
 
   </div>
