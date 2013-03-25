@@ -331,8 +331,8 @@ class Document_Controller extends Base_Controller {
 	            }
 
 
-			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
-			$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+			$data['effectiveDate'] = ($data['effectiveDate'] == '')?'':new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
+			$data['expiryDate'] =($data['expiryDate'] == '')?'':new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
 
 
 			$data['createdDate'] = new MongoDate();
@@ -580,9 +580,11 @@ class Document_Controller extends Base_Controller {
 	                // send no message
 	            }
 
+			$data['effectiveDate'] = ($data['effectiveDate'] == '')?'':new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
+			$data['expiryDate'] =($data['expiryDate'] == '')?'':new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
 
-			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
-			$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+			//$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
+			//$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
 			$data['lastUpdate'] = new MongoDate();
 
 			if(isset($data['expiring'])){

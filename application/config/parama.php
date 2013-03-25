@@ -189,7 +189,7 @@
       'cancelled'=>'Cancelled',
       'declined'=>'Declined'
     ),
-  'expiration_alert_days'=>14,
+  'expiration_alert_days'=>30,
 
 
 );

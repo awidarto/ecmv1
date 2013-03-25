@@ -938,8 +938,11 @@ class Requests_Controller extends Base_Controller {
 			//pre save transform
 			unset($data['csrf_token']);
 
-			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
-			$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+			$data['effectiveDate'] = ($data['effectiveDate'] == '')?'':new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
+			$data['expiryDate'] =($data['expiryDate'] == '')?'':new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+
+			//$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
+			//$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
 
 			$data['createdDate'] = new MongoDate();
 			$data['lastUpdate'] = new MongoDate();
@@ -1087,8 +1090,12 @@ class Requests_Controller extends Base_Controller {
 	    	
 			$id = new MongoId($data['id']);
 
-			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
-			$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+			$data['effectiveDate'] = ($data['effectiveDate'] == '')?'':new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
+			$data['expiryDate'] =($data['expiryDate'] == '')?'':new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+
+			//$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
+			//$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+			
 			$data['lastUpdate'] = new MongoDate();
 
 			unset($data['csrf_token']);
