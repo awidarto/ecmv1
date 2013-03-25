@@ -39,7 +39,7 @@
 <hr />
 <div class="row right">
 {{ Form::submit('Save',array('class'=>'button'))}}&nbsp;&nbsp;
-{{ Form::reset('Reset',array('class'=>'button'))}}
+<a class="button" href="javascript:window.history.back();">Cancel</a>
 </div>
 {{$form->close()}}
 

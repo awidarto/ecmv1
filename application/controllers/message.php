@@ -532,7 +532,16 @@ class Message_Controller extends Base_Controller {
 
 		$to[] = $message['from'];
 
-		$to = array_unique($to);
+		$tos = array_unique($to);
+
+		$to = array();
+
+		foreach($tos as $t){
+			if($t != Auth::user()->email){
+				$to[] = $t;
+			}
+		}
+
 
 		$message['to'] = implode(',',$to);
 

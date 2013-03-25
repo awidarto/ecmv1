@@ -481,11 +481,12 @@ class Opportunity_Controller extends Base_Controller {
 	    	
 	    	//print_r($data);
 
+	    	
 			//pre save transform
 			unset($data['csrf_token']);
 
-			$data['opportunityDate'] = new MongoDate(strtotime($data['opportunityDate'].' 00:00:00'));
-			$data['closingDate'] = new MongoDate(strtotime($data['closingDate'].' 00:00:00'));
+			$data['opportunityDate'] =($data['opportunityDate'] == '')?'': new MongoDate(strtotime($data['opportunityDate'].' 00:00:00'));
+			$data['closingDate'] = ($data['closingDate']== '')?'':new MongoDate(strtotime($data['closingDate'].' 00:00:00'));
 
 			$data['createdDate'] = new MongoDate();
 			$data['lastUpdate'] = new MongoDate();
@@ -554,7 +555,7 @@ class Opportunity_Controller extends Base_Controller {
 
 
 				Event::fire('opportunity.create',array('id'=>$newobj['_id'],'result'=>'OK'));
-
+				
 		    	return Redirect::to('opportunity')->with('notify_success','Document saved successfully');
 			}else{
 				Event::fire('opportunity.create',array('id'=>$id,'result'=>'FAILED'));
@@ -1009,9 +1010,10 @@ class Opportunity_Controller extends Base_Controller {
 			){
 
 			$q = array(
+				'docOpportunity' => trim($num),
 				'$or'=>array(
-						array('docOpportunity' => trim($num)),
-						array('docOpportunityId' => $id),
+						array('deleted'=>false),
+						array('deleted'=>array('$exists'=>false))
 					)
 				);
 
@@ -1023,7 +1025,9 @@ class Opportunity_Controller extends Base_Controller {
 				'docOpportunity' => trim($num),
 				'$or'=>array(
 						array('docShare'=>$sharecriteria),
-						array('creatorId'=>Auth::user()->id)
+						array('creatorId'=>Auth::user()->id),
+						array('deleted'=>false),
+						array('deleted'=>array('$exists'=>false))
 				)
 			);
 
@@ -1035,7 +1039,9 @@ class Opportunity_Controller extends Base_Controller {
 						array('access' => 'departmental'),
 						//array('access' => 'general'),
 						array('docShare'=>$sharecriteria),
-						array('creatorId'=>Auth::user()->id)
+						array('creatorId'=>Auth::user()->id),
+						array('deleted'=>false),
+						array('deleted'=>array('$exists'=>false))
 				)
 			);
 		}
@@ -1207,6 +1213,14 @@ class Opportunity_Controller extends Base_Controller {
 			Auth::user()->role == 'bod'
 			){
 
+				$q = array(
+					'docTender' => trim($num),
+					'$or'=>array(
+							array('deleted'=>false),
+							array('deleted'=>array('$exists'=>false)),
+						)
+					);
+
 
 		}else if( Auth::user()->role == 'client' ||
 			Auth::user()->role == 'principal_vendor' ||
@@ -1265,13 +1279,14 @@ class Opportunity_Controller extends Base_Controller {
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
 
+			$deleted = (isset($doc['deleted']) && $doc['deleted'] == true)?'*':'';
 
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
 			$aadata[] = array(
 				$counter,
-				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
+				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].$deleted.'</span>',
 				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
 				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
 				$doc['creatorName'],

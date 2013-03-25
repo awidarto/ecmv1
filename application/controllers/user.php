@@ -39,6 +39,7 @@ class User_Controller extends Base_Controller {
 
 		date_default_timezone_set('Asia/Jakarta');
 		$this->filter('before','auth');
+
 	}
 
 	public function get_index()
@@ -46,6 +47,8 @@ class User_Controller extends Base_Controller {
 		$user = new User();
 
 		$user_profile = $user->get(array('email'=>Auth::user()->email));
+
+		Session::set('previous',URL::full());
 
 		return View::make('user.profile')->with('profile',$user_profile);
 	}

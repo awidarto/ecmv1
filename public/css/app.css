@@ -436,7 +436,7 @@ table.dataTable{
 	cursor:pointer;
 }
 
-.del{
+.del, .purge{
 	color:red;
 }
 

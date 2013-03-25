@@ -135,6 +135,11 @@ class Document_Controller extends Base_Controller {
 
 		$count_all = $document->count();
 
+		$q['$or'] = array(
+			array('deleted'=>false),
+			array('deleted'=>array('$exists'=>false))
+		);
+
 		if(count($q) > 0){
 			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
 			$count_display_all = $document->count($q);
@@ -215,6 +220,184 @@ class Document_Controller extends Base_Controller {
 		return Response::json($result);
 	}
 
+
+	public function get_trash()
+	{
+		$this->crumb->add('document/trash','Trash');
+
+		//print_r(Auth::user());
+
+		$heads = array('#','Title','Department','Created','Last Update','Expiry Date','Expiring In','Creator','Access','Attachment','Is Template','Tags','Action');
+		$searchinput = array(false,'title','department','created','last update','expiry date','expiring','creator','access','filename','useAsTemplate','tags',false);
+
+		$title = 'Document Trash';
+
+		if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
+			return View::make('tables.simple')
+				->with('title',$title)
+				->with('newbutton','')
+				->with('disablesort','0,5,6')
+				->with('addurl','')
+				->with('searchinput',$searchinput)
+				->with('ajaxsource',URL::to('document/trash'))
+				->with('ajaxdel',URL::to('document/purge'))
+				->with('ajaxrestore',URL::to('document/restore'))
+				->with('crumb',$this->crumb)
+				->with('heads',$heads);
+		}else{
+			return View::make('document.restricted')
+							->with('title',$title);
+		}
+	}
+
+	public function post_trash()
+	{
+
+		$fields = array('title','docDepartment','createdDate','lastUpdate','expiryDate','expiring','creatorName','access','docFilename','useAsTemplate','docTag');
+
+		$rel = array('like','like','like','like','like','like','like','like','like','like','like');
+
+		$cond = array('both','both','both','both','both','both','both','both','both','both','both');
+
+		$pagestart = Input::get('iDisplayStart');
+		$pagelength = Input::get('iDisplayLength');
+
+		$limit = array($pagelength, $pagestart);
+
+		$defsort = 1;
+		$defdir = -1;
+
+		$idx = 0;
+		$q = array();
+
+		$hilite = array();
+		$hilite_replace = array();
+
+		foreach($fields as $field){
+			if(Input::get('sSearch_'.$idx))
+			{
+
+				$hilite_item = Input::get('sSearch_'.$idx);
+				$hilite[] = $hilite_item;
+				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
+
+				if($rel[$idx] == 'like'){
+					if($cond[$idx] == 'both'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
+					}else if($cond[$idx] == 'before'){
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
+					}else if($cond[$idx] == 'after'){
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
+					}
+				}else if($rel[$idx] == 'equ'){
+					$q[$field] = Input::get('sSearch_'.$idx);
+				}
+			}
+			$idx++;
+		}
+
+		//print_r($q)
+
+		$document = new Document();
+
+		/* first column is always sequence number, so must be omitted */
+		$fidx = Input::get('iSortCol_0');
+		if($fidx == 0){
+			$fidx = $defsort;
+			$sort_col = $fields[$fidx];
+			$sort_dir = $defdir;
+		}else{
+			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
+			$sort_col = $fields[$fidx];
+			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		}
+
+		$count_all = $document->count();
+
+		$q['deleted'] = true;
+
+		if(count($q) > 0){
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count($q);
+		}else{
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count();
+		}
+
+		$aadata = array();
+
+		$counter = 1 + $pagestart;
+		foreach ($documents as $doc) {
+			if(isset($doc['tags']) && is_array($doc['tags']) && implode('',$doc['tags']) != ''){
+				$tags = array();
+
+				foreach($doc['tags'] as $t){
+					$tags[] = '<span class="tagitem">'.$t.'</span>';
+				}
+
+				$tags = implode('',$tags);
+
+			}else{
+				$tags = '';
+			}
+
+			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
+			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
+
+			if(isset($doc['expiring'])){
+				
+				if($doc['expiring'] == 'Today'){
+					$doc['expiring'] = '<span class="expiring now">'.$doc['expiring'].'</span>';
+				}elseif($doc['expiring'] < 0){
+					$doc['expiring'] = '<span class="expiring yesterday">'.abs($doc['expiring']).' day(s) ago</span>';
+				}elseif($doc['expiring'] != false){
+					$doc['expiring'] = '<span class="expiring">'.$doc['expiring'].' day(s)</span>';						
+				}else{
+					$doc['expiring'] = '';
+				}
+
+			}else{
+
+				$doc['expiring'] = '';
+			}
+
+			$download = '<a href="'.URL::to('document/download/'.$doc['_id']).'">'.
+						'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
+
+			$aadata[] = array(
+				$counter,
+				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
+				depttitle($doc['docDepartment']),
+				date('d-m-Y H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
+				isset($doc['expiryDate'])?date('d-m-Y', $doc['expiryDate']->sec):'',
+				$doc['expiring'],
+				$doc['creatorName'],
+				isset($doc['access'])?ucfirst($doc['access']):'',
+				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
+				isset($doc['useAsTemplate'])?$doc['useAsTemplate']:'No',
+				$tags,
+				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
+				$download.
+				'<i class="foundicon-refresh action restore" id="'.$doc['_id'].'"></i>&nbsp;'.
+				'<i class="foundicon-remove action purge" id="'.$doc['_id'].'"></i>'
+			);
+			$counter++;
+		}
+
+
+		$result = array(
+			'sEcho'=> Input::get('sEcho'),
+			'iTotalRecords'=>$count_all,
+			'iTotalDisplayRecords'=> $count_display_all,
+			'aaData'=>$aadata,
+			'qrs'=>$q
+		);
+
+		return Response::json($result);
+	}
+
+
 	public function post_del(){
 		$id = Input::get('id');
 
@@ -227,7 +410,7 @@ class Document_Controller extends Base_Controller {
 			$id = new MongoId($id);
 
 
-			if($user->delete(array('_id'=>$id))){
+			if($user->update(array('_id'=>$id),array('$set'=>array('deleted'=>true)))){
 				Event::fire('document.delete',array('id'=>$id,'result'=>'OK'));
 				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
 			}else{
@@ -239,6 +422,53 @@ class Document_Controller extends Base_Controller {
 		print json_encode($result);
 	}
 
+	public function post_purge(){
+		$id = Input::get('id');
+
+		$user = new Document();
+
+		if(is_null($id)){
+			$result = array('status'=>'ERR','data'=>'NOID');
+		}else{
+
+			$id = new MongoId($id);
+
+
+			if($user->delete(array('_id'=>$id))){
+				Event::fire('document.purge',array('id'=>$id,'result'=>'OK'));
+				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
+			}else{
+				Event::fire('document.purge',array('id'=>$id,'result'=>'FAILED'));
+				$result = array('status'=>'ERR','data'=>'DELETEFAILED');
+			}
+		}
+
+		print json_encode($result);
+	}
+
+	public function post_restore(){
+		$id = Input::get('id');
+
+		$user = new Document();
+
+		if(is_null($id)){
+			$result = array('status'=>'ERR','data'=>'NOID');
+		}else{
+
+			$id = new MongoId($id);
+
+
+			if($user->update(array('_id'=>$id),array('$set'=>array('deleted'=>false)))){
+				Event::fire('document.restore',array('id'=>$id,'result'=>'OK'));
+				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
+			}else{
+				Event::fire('document.restore',array('id'=>$id,'result'=>'FAILED'));
+				$result = array('status'=>'ERR','data'=>'DELETEFAILED');
+			}
+		}
+
+		print json_encode($result);
+	}
 
 	public function get_add($type = null){
 
@@ -915,9 +1145,21 @@ class Document_Controller extends Base_Controller {
 			){
 				if(!is_null($type)){
 					if($type == 'general'){
-						$q = array('access'=>$type);
+						$q = array(
+							'access'=>$type,
+							'$or'=>array(
+									array('deleted'=>false),
+									array('deleted'=>array('$exists'=>false))
+							)
+						);
 					}else{
-						$q = array('docDepartment' => $type);
+						$q = array(
+							'docDepartment' => $type,
+							'$or'=>array(
+									array('deleted'=>false),
+									array('deleted'=>array('$exists'=>false))
+							)
+						);
 					}
 				}
 
@@ -933,7 +1175,9 @@ class Document_Controller extends Base_Controller {
 						'docDepartment' => trim($type),
 						'$or'=>array(
 								array('docShare'=>$sharecriteria),
-								array('creatorId'=>Auth::user()->id)
+								array('creatorId'=>Auth::user()->id),
+								array('deleted'=>false),
+								array('deleted'=>array('$exists'=>false))
 						)
 					);
 				}
@@ -943,22 +1187,38 @@ class Document_Controller extends Base_Controller {
 
 			if(!is_null($type)){
 				if($type == 'general'){
-					$q = array('access'=>$type);
+					$q = array(
+						'access'=>$type,
+						'$or'=> array(
+							array('deleted'=>false),
+							array('deleted'=>array('$exists'=>false))
+						)						
+					);
+
 				}else{
 
 					if(Auth::user()->department == $type){
 
 						$q = array(
 							'docDepartment' => trim($type),
+							'deleted'=>false,
 							'$or'=>array(
 									array('access'=>'departmental'),
 									array('docShare'=>$sharecriteria),
-									array('creatorId'=>Auth::user()->id)
+									array('creatorId'=>Auth::user()->id),
+									array('deleted'=>array('$exists'=>false))
 							)
 						);
 
 					}else{
-						$q = array('docShare'=>$sharecriteria);
+						$q = array(
+							array('docShare'=>$sharecriteria),
+							'$or'=> array(
+								array('deleted'=>false),
+								array('deleted'=>array('$exists'=>false))
+							)
+						);
+
 					}
 
 
@@ -1040,7 +1300,12 @@ class Document_Controller extends Base_Controller {
 				$doc['expiring'] = '';
 			}
 
-			if($doc['creatorId'] == Auth::user()->id){
+			if($doc['creatorId'] == Auth::user()->id ||
+									Auth::user()->role == 'root' ||
+									Auth::user()->role == 'super' ||
+									Auth::user()->role == 'president_director' ||
+									Auth::user()->role == 'bod'
+				){
 				$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
 						'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
 				$del = '<i class="foundicon-trash action del has-tip tip-bottom noradius" title="Delete" id="'.$doc['_id'].'"></i>';
