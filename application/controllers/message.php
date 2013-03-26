@@ -39,16 +39,40 @@ class Message_Controller extends Base_Controller {
 		$this->filter('before','auth');
 	}
 
+	public function post_del(){
+		$id = Input::get('id');
+
+		$msg = new Message();
+
+		if(is_null($id)){
+			$result = array('status'=>'ERR','data'=>'NOID');
+		}else{
+
+			$id = new MongoId($id);
+
+			if($msg->update(array('_id'=>$id),array('$addToSet'=>array('delete'=>array('email'=>Auth::user()->email,'timestamp'=>new MongoDate()))),array('upsert'=>true))){
+				Event::fire('message.delete',array('id'=>$id,'result'=>'OK'));
+				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
+			}else{
+				Event::fire('message.delete',array('id'=>$id,'result'=>'FAILED'));
+				$result = array('status'=>'ERR','data'=>'DELETEFAILED');
+			}
+		}
+
+		print json_encode($result);
+	}
+
+
 	public function get_index()
 	{
 
-	    $heads = array('From','Subject','Timestamp');
-	    $colclass = array('one','','three');
-	    $searchinput = array('from','subject','timestamp');
+	    $heads = array('From','','Subject','Timestamp','Action');
+	    $colclass = array('one','one','','two','one');
+	    $searchinput = array('from',false,'subject','timestamp',false);
 
-	    $outheads = array('To','Subject','Timestamp');
-	    $outcolclass = array('one','','three');
-	    $outsearchinput = array('to','subject','timestamp');
+	    $outheads = array('To','Subject','Timestamp','Action');
+	    $outcolclass = array('one','','two','one');
+	    $outsearchinput = array('to','subject','timestamp',false);
 
 	    return View::make('tables.message')
 	        ->with('title','Messages')
@@ -60,6 +84,7 @@ class Message_Controller extends Base_Controller {
 	        ->with('outsearchinput',$outsearchinput)
 	        ->with('newbutton','New Message')
 			->with('addurl','message/new')
+			->with('ajaxdel','message/del')
 	        ->with('disablesort','0')
 	        ->with('crumb',$this->crumb)
 	        ->with('ajaxsource',URL::to('message'))
@@ -119,6 +144,11 @@ class Message_Controller extends Base_Controller {
 						array('bcc'=>$self_email_regex)
 					)
 				),
+				array('$or'=>array(
+						array('delete'=>array('$exists'=>false)),
+						array('delete.email'=>array('$not'=>$self_email_regex))
+					)
+				)
 			);
 
 			/*
@@ -136,10 +166,19 @@ class Message_Controller extends Base_Controller {
 			*/
 
 		}else{
-			$q = array('$or'=>array(
-				array('to'=>$self_email_regex),
-				array('cc'=>$self_email_regex),
-				array('bcc'=>$self_email_regex)
+			$q['$and'] = array(
+					array( 
+						'$or'=>array(
+						array('to'=>$self_email_regex),
+						array('cc'=>$self_email_regex),
+						array('bcc'=>$self_email_regex)
+						)
+					),
+					array('$or'=>array(
+						array('delete'=>array('$exists'=>false)),
+						array('delete.email'=>array('$not'=>$self_email_regex))
+					)				
+				
 			));
 		}
 
@@ -167,11 +206,25 @@ class Message_Controller extends Base_Controller {
 			$action .= '<li>'.HTML::link('message/forward/'.$doc['_id'],'Forward').'</li>';
 			$action .= '</ul>';
 
+			$read = 'U';
+			if(isset($doc['read'])){
+				foreach ($doc['read'] as $rd) {
+					if($rd['email'] == Auth::user()->email){
+						$read = 'R';
+					}
+				}
+
+			}else{
+				$read = 'U';
+			}
 
 			$aadata[] = array(
 				$doc['from'],
+				$read,
 				HTML::link('message/read/inbox/'.$doc['_id'],$doc['subject']),
-				date('Y-m-d h:i:s',$doc['createdDate']->sec)
+				date('Y-m-d h:i:s',$doc['createdDate']->sec),
+				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
+
 			);
 		}
 
@@ -254,9 +307,10 @@ class Message_Controller extends Base_Controller {
 			$item = str_replace($hilite, $hilite_replace, $item);
 
 			$aadata[] = array(
-				$doc['to'],
+				str_replace(',',', ',$doc['to']),
 				HTML::link('message/read/outbox/'.$doc['_id'],$doc['subject']),
-				date('Y-m-d h:i:s',$doc['createdDate']->sec)
+				date('Y-m-d h:i:s',$doc['createdDate']->sec),
+				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 			);
 		}
 
@@ -294,7 +348,15 @@ class Message_Controller extends Base_Controller {
 
 		$message['subject'] = 'Re: '.$message['subject'];
 
-		$message['body'] = "<br /><q>".$message['body']."</q>";
+		$quote = '<p>------- original message -------<br />';
+
+		$quote .= date('\O\n d m Y, \a\t H:i',$message['createdDate']->sec).', '.$message['from'].' wrote:</p>';
+		
+		//On 25 Mar 2013, at 11:03, Oddie Octaviadi <oddieoctaviadi@gmail.com> wrote:
+
+		$message['body'] = $quote."<p>".$message['body']."</p>";
+
+		$message['body'] .= '<p>------- original message end-------</p>';
 
 		$this->crumb->add('message/reply/'.$box.'/'.$id,$message['subject']);
 
@@ -755,6 +817,8 @@ class Message_Controller extends Base_Controller {
 		$document = new Message();
 
 		$doc = $document->get(array('_id'=>$id));
+
+		$document->update(array('_id'=>$id),array('$addToSet'=>array('read'=>array('email'=>Auth::user()->email,'timestamp'=>new MongoDate()))),array('upsert'=>true));
 
 		$this->crumb->add('message/read/'.$box.'/'.$id,$doc['subject']);
 

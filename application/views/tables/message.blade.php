@@ -52,8 +52,8 @@
 	        	?>
 	        	@foreach($outheads as $head)
 	        		<th 
-	        			@if(isset($colclass[$hid]))
-	        				class="{{$colclass[$hid]}}"
+	        			@if(isset($outcolclass[$hid]))
+	        				class="{{$outcolclass[$hid]}}"
 	        			@endif
 	        			<?php $hid++ ?>
 	        		>
@@ -185,6 +185,23 @@
 		} );
 
 		$('table.dataTable').click(function(e){
+
+			if ($(e.target).is('.del')) {
+				var _id = e.target.id;
+				var answer = confirm("Are you sure you want to delete this item ?");
+				if (answer){
+					$.post('{{ URL::to($ajaxdel) }}',{'id':_id}, function(data) {
+						if(data.status == 'OK'){
+							//redraw table
+							oTable.fnDraw();
+							outTable.fnDraw();
+							alert("Item id : " + _id + " deleted");
+						}
+					},'json');
+				}else{
+					alert("Delete cancelled");
+				}
+		   	}
 
 			if ($(e.target).is('.pop')) {
 				var _id = e.target.id;
