@@ -10,7 +10,11 @@ function getavatar($id,$alt = 'avatar-image',$class = 'avatar',$width = '1000'){
 
 
 	if(file_exists(Config::get('parama.avatarstorage').$id.'/avatar.jpg')){
-		$photo = HTML::image('avatar/'.$id.'/avatar.jpg', $alt, array('class' => $class,'width'=>$width));
+		$avatarpath = realpath(Config::get('parama.avatarstorage')).'/'.$id;
+		$time = time();
+		$url = URL::to_asset('avatar/'.$id.'/avatar.jpg');
+		$photo = '<a id="avatarimagefancy" href="'.$url.'">'.HTML::image('avatar/'.$id.'/avatar.jpg?'.$time, $alt, array('class' => $class,'width'=>$width)).'</a>';
+		
 	}else{
 		if(isset($usr['salutation'])){
 			$salutation = strtolower($usr['salutation']);
@@ -22,11 +26,14 @@ function getavatar($id,$alt = 'avatar-image',$class = 'avatar',$width = '1000'){
 
 			){
 				$photo = HTML::image('images/'.$salutation.'-bod-no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));				
+				
 			}else{
 				$photo = HTML::image('images/'.$salutation.'-other-no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));				
 			}
 		}else{
+			
 			$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));				
+			
 		}
 	}
 
@@ -41,6 +48,7 @@ function getavatarbyemail($email,$alt = 'avatar-image',$class = 'avatar'){
 	$id = $usr['_id'];
 
 	if(file_exists(Config::get('parama.avatarstorage').$id.'/avatar.jpg')){
+		
 		$photo = HTML::image('avatar/'.$id.'/avatar.jpg', $alt, array('class' => $class));
 	}else{
 		$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class));				
@@ -53,7 +61,8 @@ function getavatarbyemail($email,$alt = 'avatar-image',$class = 'avatar'){
 
 function getphoto($id,$alt = 'avatar-image',$class = 'avatar',$width = '1000'){
 	if(file_exists(Config::get('parama.photostorage').$id.'/formal.jpg')){
-		$photo = HTML::image('employees/'.$id.'/formal.jpg', $alt, array('class' => $class,'width'=>$width));
+		$url = URL::to_asset('employees/'.$id.'/formal.jpg');
+		$photo = '<a id="avatarimagefancy" href="'.$url.'">'.HTML::image('employees/'.$id.'/formal.jpg', $alt, array('class' => $class,'width'=>$width)).'</a>';
 	}else{
 		$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));				
 	}
@@ -133,5 +142,21 @@ function fixfilename($filename)
 	$label = str_replace(array(' '), '_', $label);
 
 	return $label;
+}
+
+function recurse_copy($src,$dst) {
+    $dir = opendir($src); 
+    @mkdir($dst); 
+    while(false !== ( $file = readdir($dir)) ) { 
+        if (( $file != '.' ) && ( $file != '..' )) { 
+            if ( is_dir($src . '/' . $file) ) { 
+                recurse_copy($src . '/' . $file,$dst . '/' . $file); 
+            } 
+            else { 
+                copy($src . '/' . $file,$dst . '/' . $file); 
+            } 
+        } 
+    } 
+    closedir($dir); 
 }
 ?>

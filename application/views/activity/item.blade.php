@@ -2,6 +2,7 @@
 
 $doc_photo = '';
 $avatar_name = '';
+$system_photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => 'ten'));
 
 if(isset($doc['creator_id'])){
 	$doc_photo = getavatar($doc['creator_id'],$doc['creator_name'],'ten');
@@ -79,6 +80,7 @@ elseif($doc['event'] == 'request.approval'){
 }elseif($doc['event'] == 'document.expire'){
 	
 	$main_photo = '';
+	$doc_photo = $system_photo;
 	//http://localhost/pnu/public/index.php/document/edit/513df31c0b9b34a401000000/general
 
 	if($doc['creator_id'] == Auth::user()->id){
@@ -103,7 +105,7 @@ elseif($doc['event'] == 'request.approval'){
 <div class="event-item twelve">
 
 	<div class="row">
-			@if(isset($doc_photo) || $doc_photo == '')
+			@if(isset($doc_photo))
 				<div class="one columns">
 					{{ $doc_photo }}
 					<span class="avatarname">{{ $avatar_name }}</span>

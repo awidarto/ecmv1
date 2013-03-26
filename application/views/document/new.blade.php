@@ -221,6 +221,7 @@
     $('#newdoc').submit();
   });
 
+
 </script>
 
 @endsection

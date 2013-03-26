@@ -623,7 +623,27 @@ class Employee_Controller extends Base_Controller {
 
 			$user = new Employee();
 
-			if($user->insert($data)){
+			if($obj = $user->insert($data)){
+				//find avatar directory
+				$userid = $obj['userId'];
+				$employeeid = $obj['_id'];
+				$userdirectoryavatar = realpath(Config::get('parama.avatarstorage')).'/'.$userid;
+				
+
+				
+				//make directory employee
+				$newdir = realpath(Config::get('parama.photostorage')).'/'.$employeeid;
+
+				if(!file_exists($newdir)){
+					mkdir($newdir,0777);
+				}
+
+				recurse_copy($userdirectoryavatar,$newdir);
+				$useravatar = realpath(Config::get('parama.photostorage')).'/'.$employeeid.'/avatar.jpg';
+				$useravatarnew = realpath(Config::get('parama.photostorage')).'/'.$employeeid.'/formal.jpg';
+				rename($useravatar, $useravatarnew);
+
+		    	
 		    	return Redirect::to('employee')->with('notify_success','Employee saved successfully');
 			}else{
 		    	return Redirect::to('employee')->with('notify_success','Employee saving failed');

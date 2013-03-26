@@ -1,7 +1,8 @@
     $(document).ready(function(){
 
     	//base = 'http://localhost/pnu/public/';
-
+    	$("a#avatarimagefancy").fancybox();
+    	
     	var sharelist = {};
 
 		$('.date').datepicker({
