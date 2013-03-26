@@ -788,9 +788,10 @@ class Tender_Controller extends Base_Controller {
 			){
 
 			$q = array(
+				'docTender' => trim($num),
 				'$or'=>array(
-						array('docTender' => trim($num)),
-						array('docTenderId' => $id),
+						array('deleted'=>false),
+						array('deleted'=>array('$exists'=>false)),
 					)
 				);
 
@@ -799,10 +800,12 @@ class Tender_Controller extends Base_Controller {
 			Auth::user()->role == 'subcon'){
 
 			$q = array(
-				'docProject' => trim($num),
+				'docTender' => trim($num),
 				'$or'=>array(
 						array('docShare'=>$sharecriteria),
-						array('creatorId'=>Auth::user()->id)
+						array('creatorId'=>Auth::user()->id),
+						array('deleted'=>false),
+						array('deleted'=>array('$exists'=>false))
 				)
 			);
 
@@ -814,10 +817,13 @@ class Tender_Controller extends Base_Controller {
 						array('access' => 'departmental'),
 						//array('access' => 'general'),
 						array('docShare'=>$sharecriteria),
-						array('creatorId'=>Auth::user()->id)
+						array('creatorId'=>Auth::user()->id),
+						array('deleted'=>false),
+						array('deleted'=>array('$exists'=>false))
 				)
 			);
 		}
+
 
 
 		$permissions = Auth::user()->permissions;
@@ -901,9 +907,11 @@ class Tender_Controller extends Base_Controller {
 
 			}
 
+			$deleted = (isset($doc['deleted']) && $doc['deleted'] == true)?'*':'';
+
 			$aadata[] = array(
 				$counter,
-				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
+				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].$deleted.'</span>',
 				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
 				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
 				$doc['creatorName'],

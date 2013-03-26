@@ -6,6 +6,8 @@
 <h3>{{$title}}</h3>
 </div>
 
+{{ Asset::container('ckeditor')->scripts(); }}
+
 {{$form->open_for_files('content/add','POST',array('class'=>'custom','id'=>'newdoc'))}}
 <div class="row">
   <div class="seven columns left">
@@ -14,7 +16,7 @@
 
     {{ $form->textarea('description','Description.req','',array('class'=>'text')) }}
 
-    {{ $form->textarea('body','Body','',array('class'=>'text')) }}
+    {{ $editor->editor('body')}}    
 
   </div>
   <div class="four columns right">
@@ -46,7 +48,7 @@
 <hr />
 <div class="row right">
 {{ Form::submit('Save',array('class'=>'button'))}}&nbsp;&nbsp;
-{{ Form::reset('Reset',array('class'=>'button'))}}
+<a class="button" href="javascript:window.history.back();">Cancel</a>
 </div>
 {{$form->close()}}
 

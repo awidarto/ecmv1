@@ -17,6 +17,7 @@
 	<div class="six columns">
 		{{$form->text('title','Title Contains','',array('id'=>'searchTitle'))}}
 
+		{{$form->text('creator','Created By','',array('id'=>'searchCreator'))}}
 		<div class="row">
 			<div class="six columns">
 				{{$form->text('createdFrom','Created Between','',array('id'=>'createdFrom','class'=>'date'))}}
@@ -125,6 +126,7 @@
 			    "fnServerData": function ( sSource, aoData, fnCallback ) {
 
 			    	var searchTitle = $('#searchTitle').val();
+			    	var searchCreator = $('#searchCreator').val();
 			    	var searchTags = $('#searchTags').val();
 			    	var searchcreatedFrom = $('#createdFrom').val();
 			    	var searchcreatedTo = $('#createdTo').val();
@@ -134,6 +136,11 @@
 			    	aoData.push({
 			    		'name': 'searchTitle',
 			    		'value': searchTitle
+			    	});
+
+			    	aoData.push({
+			    		'name': 'searchCreator',
+			    		'value': searchCreator
 			    	});
 
 			    	aoData.push({

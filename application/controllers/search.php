@@ -67,6 +67,7 @@ class Search_Controller extends Base_Controller {
 		$type = Auth::user()->department;
 
 		$searchTitle = Input::get('searchTitle');
+		$searchCreator = Input::get('searchCreator');
 		$searchTags = Input::get('searchTags');
 		$searchcreatedFrom = Input::get('createdFrom');
 		$searchcreatedTo = Input::get('createdTo');
@@ -75,6 +76,7 @@ class Search_Controller extends Base_Controller {
 
 		$searchcombined = ''; 
 		$searchcombined .= $searchTitle;
+		$searchcombined .= $searchCreator;
 		$searchcombined .= $searchTags;
 		$searchcombined .= $searchcreatedFrom;
 		$searchcombined .= $searchcreatedTo;
@@ -82,11 +84,11 @@ class Search_Controller extends Base_Controller {
 		$searchcombined .= $searchexpiredTo;
 
 
-		$fields = array('title','createdDate','lastUpdate','creatorName','docFilename','docTag');
+		$fields = array('title','creatorName','createdDate','lastUpdate','creatorName','docFilename','docTag');
 
-		$rel = array('like','like','like','like','like','like');
+		$rel = array('like','like','like','like','like','like','like');
 
-		$cond = array('both','both','both','both','both','both');
+		$cond = array('both','both','both','both','both','both','both');
 
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
@@ -127,6 +129,10 @@ class Search_Controller extends Base_Controller {
 
 		if($searchTitle != ''){
 			$q['title'] = new MongoRegex('/'.$searchTitle.'/i');
+		}
+
+		if($searchCreator != ''){
+			$q['creatorName'] = new MongoRegex('/'.$searchCreator.'/i');
 		}
 
 		$orarray = array();

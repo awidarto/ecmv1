@@ -167,6 +167,22 @@
 
 		$('table.dataTable').click(function(e){
 
+			if ($(e.target).is('.purge')) {
+				var _id = e.target.id;
+				var answer = confirm("Are you sure you want to purge this item ?");
+				if (answer){
+					$.post('{{ URL::to($ajaxdel) }}',{'id':_id}, function(data) {
+						if(data.status == 'OK'){
+							//redraw table
+							oTable.fnDraw();
+							alert("Item id : " + _id + " purged");
+						}
+					},'json');
+				}else{
+					alert("Purge cancelled");
+				}
+		   	}
+
 			if ($(e.target).is('.del')) {
 				var _id = e.target.id;
 				var answer = confirm("Are you sure you want to delete this item ?");
@@ -179,10 +195,29 @@
 						}
 					},'json');
 				}else{
-					alert("Deletion cancelled");
+					alert("Delete cancelled");
 				}
 		   	}
 
+		   	@if(isset($ajaxrestore))
+
+				if ($(e.target).is('.restore')) {
+					var _id = e.target.id;
+					var answer = confirm("Are you sure you want to restore this item ?");
+					if (answer){
+						$.post('{{ URL::to($ajaxrestore) }}',{'id':_id}, function(data) {
+							if(data.status == 'OK'){
+								//redraw table
+								oTable.fnDraw();
+								alert("Item id : " + _id + " restored");
+							}
+						},'json');
+					}else{
+						alert("Restore cancelled");
+					}
+			   	}
+
+		   	@endif
 			if ($(e.target).is('.pop')) {
 				var _id = e.target.id;
 				var _rel = $(e.target).attr('rel');

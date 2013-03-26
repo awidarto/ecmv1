@@ -31,16 +31,14 @@
         print $role;
 
         */
-
-
 	?>
     <div class="one columns mobile sidenav">
       <dl class="vertical tabs">
         <!--<dd><a href="{{ URL::base() }}"><i class="foundicon homeicon iconnew sidemenu"></i>Home</a></dd>-->
             <dd><a href="{{ URL::to('document/add/'.$doctype) }}"><i class="foundicon iconnew add sidemenu"></i>New<br />Document</a></dd>
             @if($role != 'subcon')
-                <dd><a href="{{ URL::to('message') }}"><i class="foundicon mail iconnew sidemenu"></i>Messages</a></dd>
-                <dd><a href="{{ URL::to('requests/incoming') }}"><i class="foundicon iconnew download sidemenu"></i>Incoming Requests</a></dd>
+                <dd><div class="badge">{{ ($message_count == 0)?'':$message_count }}</div><a href="{{ URL::to('message') }}"><i class="foundicon mail iconnew sidemenu"></i>Messages</a></dd>
+                <dd><div class="badge">{{ ($incoming_request == 0 )?'':$incoming_request }}</div><a href="{{ URL::to('requests/incoming') }}"><i class="foundicon iconnew download sidemenu"></i>Incoming Requests</a></dd>
                 <dd><a href="{{ URL::to('requests/outgoing') }}"><i class="foundicon iconnew upload sidemenu"></i>Submissions <br />&<br /> Requests</a></dd>
                 <dd><a href="{{ URL::to('template') }}"><i class="foundicon page iconnew sidemenu"></i>Templates</a></dd>
 

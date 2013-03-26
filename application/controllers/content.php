@@ -194,11 +194,14 @@ class Content_Controller extends Base_Controller {
 
 		$this->crumb->add('content/add','New Article');
 
+		$ckeditor = new CKEditor();
+
 		$form = new Formly();
 		return View::make('content.new')
-					->with('form',$form)
-					->with('crumb',$this->crumb)
-					->with('title','New Article');
+			->with('form',$form)
+			->with('editor',$ckeditor)
+			->with('crumb',$this->crumb)
+			->with('title','New Article');
 
 	}
 
@@ -290,11 +293,14 @@ class Content_Controller extends Base_Controller {
 
 		$this->crumb->add('project/edit/'.$id,$doc_data['title']);
 
+		$ckeditor = new CKEditor();
+
 		$form = Formly::make($doc_data);
 
 		return View::make('content.edit')
 					->with('doc',$doc_data)
 					->with('form',$form)
+					->with('editor',$ckeditor)
 					->with('crumb',$this->crumb)
 					->with('title','Edit Project');
 

@@ -66,6 +66,7 @@
       <li>{{ HTML::link('users', 'User Manager' ) }}</li>
       <li>{{ HTML::link('contact/client', 'Clients' ) }}</li>
       <li>{{ HTML::link('contact/vendor', 'Vendors' ) }}</li>
+      <li>{{ HTML::link('document/trash', 'Document Trash' ) }}</li>
     </ul>
   </li>
 @endif
