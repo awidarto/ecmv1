@@ -16,7 +16,23 @@ View::composer('master',function($view){
     $message = new Message();
     $messages = $message->find(array(), array(),array('createdDate'=>-1),array(10,0));
 
-    $message_count = $message->count(array('$or'=>array(array('to'=>$email_regex),array('cc'=>$email_regex),array('bcc'=>$email_regex)),'read.email'=>array('$not'=>$email_regex)));
+    $message_count = $message->count(
+        array(
+                '$and'=>array(
+                    array('$or'=>array(
+                        array('to'=>$email_regex),
+                        array('cc'=>$email_regex),
+                        array('bcc'=>$email_regex)),
+                        'read.email'=>array('$not'=>$email_regex)
+                    ),
+                    array('$or'=>array(
+                        array('delete'=>array('$exists'=>false)),
+                        array('delete.email'=>array('$not'=>$email_regex))
+                    )               
+                )
+            )
+        )
+    );
 
     $doc = new Document();
 
