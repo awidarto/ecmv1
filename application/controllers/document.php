@@ -1347,7 +1347,7 @@ class Document_Controller extends Base_Controller {
 				date('d-m-Y H:i:s', $doc['createdDate']->sec),
 				(isset($doc['lastUpdate']) && $doc['lastUpdate'] != '')?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				(isset($doc['expiryDate']) && $doc['expiryDate'] != '')?date('d-m-Y', $doc['expiryDate']->sec):'',
-				$doc['expiring'],
+				(isset($doc['alert']) && $doc['alert'] == 'Yes')?$doc['expiring']:'',
 				$doc['creatorName'],
 				isset($doc['access'])?ucfirst($doc['access']):'',
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
