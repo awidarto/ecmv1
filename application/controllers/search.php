@@ -36,6 +36,7 @@ class Search_Controller extends Base_Controller {
 		$this->crumb = new Breadcrumb();
 		$this->crumb->add('search','Search');
 
+		date_default_timezone_set('Asia/Jakarta');
 		$this->filter('before','auth');
 	}
 
@@ -304,7 +305,7 @@ class Search_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
-				date('Y-m-d H:i:s', $doc['createdDate']->sec),
+				date('d-m-Y H:i:s', $doc['createdDate']->sec),
 				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				isset($doc['expiryDate'])?date('d-m-Y', $doc['expiryDate']->sec):'',
 				$doc['expiring'],
@@ -390,7 +391,7 @@ class Search_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				$doc['title'],
-				date('Y-m-d h:i:s',$doc['createdDate']->sec),
+				date('d-m-Y H:i:s',$doc['createdDate']->sec),
 				$doc['creatorName'],
 				$doc['creatorName'],
 				implode(',',$doc['tags']),

@@ -543,7 +543,7 @@ class Document_Controller extends Base_Controller {
 			//pre save transform
 			unset($data['csrf_token']);
 
-	            $datetimeNow = new DateTime(date('Y-m-d',time()));
+	            $datetimeNow = new DateTime(date('d-m-Y',time()));
 	            $datetimeThen = new DateTime($data['expiryDate']);
 
 	            $indays = $datetimeNow->diff($datetimeThen);
@@ -785,7 +785,7 @@ class Document_Controller extends Base_Controller {
 
 			$id = new MongoId($data['id']);
 
-	            $datetimeNow = new DateTime(date('Y-m-d',time()));
+	            $datetimeNow = new DateTime(date('d-m-Y',time()));
 	            $datetimeThen = new DateTime($data['expiryDate']);
 
 	            $indays = $datetimeNow->diff($datetimeThen);

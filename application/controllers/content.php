@@ -288,8 +288,8 @@ class Content_Controller extends Base_Controller {
 
 		$doc_data['oldTag'] = $doc_data['tag'];
 
-		$doc_data['startDate'] = date('Y-m-d', $doc_data['startDate']->sec);
-		$doc_data['endDate'] = date('Y-m-d', $doc_data['endDate']->sec);
+		$doc_data['startDate'] = date('d-m-Y', $doc_data['startDate']->sec);
+		$doc_data['endDate'] = date('d-m-Y', $doc_data['endDate']->sec);
 
 		$this->crumb->add('project/edit/'.$id,$doc_data['title']);
 

@@ -341,7 +341,7 @@ class Activity_Controller extends Base_Controller {
 		foreach ($documents as $doc) {
 			$aadata[] = array(
 				$counter,
-				(isset($doc['timestamp']))?date('Y-m-d H:i:s',$doc['timestamp']->sec):'no time record',
+				(isset($doc['timestamp']))?date('d-m-Y H:i:s',$doc['timestamp']->sec):'no time record',
 				$this->name_of_user($doc['user_id']->__toString()),
 				(isset($doc['doc_id']))?$this->title_of_doc($doc['doc_id']->__toString()):'',
 				'<i class="foundicon-edit action"></i>&nbsp;<i class="foundicon-trash action"></i>'
@@ -436,7 +436,7 @@ class Activity_Controller extends Base_Controller {
 		foreach ($documents as $doc) {
 			$aadata[] = array(
 				$counter,
-				(isset($doc['timestamp']))?date('Y-m-d H:i:s',$doc['timestamp']->sec):'no time record',
+				(isset($doc['timestamp']))?date('d-m-Y H:i:s',$doc['timestamp']->sec):'no time record',
 				$this->name_of_user($doc['user_id']->__toString()),
 				(isset($doc['doc_id']))?$this->title_of_doc($doc['doc_id']->__toString()):'',
 				'<i class="foundicon-edit action"></i>&nbsp;<i class="foundicon-trash action"></i>'

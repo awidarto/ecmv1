@@ -531,8 +531,8 @@ class Contact_Controller extends Base_Controller {
 
 		unset($doc_data['saveToContact']);
 
-		$doc_data['contactDate'] = (isset($doc_data['contactDate']))?date('Y-m-d', $doc_data['contactDate']->sec):'';
-		$doc_data['closingDate'] = (isset($doc_data['closingDate']))?date('Y-m-d', $doc_data['closingDate']->sec):'';
+		$doc_data['contactDate'] = (isset($doc_data['contactDate']))?date('d-m-Y', $doc_data['contactDate']->sec):'';
+		$doc_data['closingDate'] = (isset($doc_data['closingDate']))?date('d-m-Y', $doc_data['closingDate']->sec):'';
 
 		$this->crumb->add('contact/edit/'.$id,$doc_data['contactNumber']);
 
@@ -898,8 +898,8 @@ class Contact_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
-				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				//date('d-m-Y H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				$doc['creatorName'],
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				''//$edit.$download.$del

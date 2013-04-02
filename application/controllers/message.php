@@ -36,6 +36,7 @@ class Message_Controller extends Base_Controller {
 		$this->crumb = new Breadcrumb();
 		$this->crumb->add('message','Messages');
 
+		date_default_timezone_set('Asia/Jakarta');
 		$this->filter('before','auth');
 	}
 
@@ -222,7 +223,7 @@ class Message_Controller extends Base_Controller {
 				$doc['from'],
 				$read,
 				HTML::link('message/read/inbox/'.$doc['_id'],$doc['subject']),
-				date('Y-m-d h:i:s',$doc['createdDate']->sec),
+				date('d-m-Y H:i:s',$doc['createdDate']->sec),
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 
 			);
@@ -309,7 +310,7 @@ class Message_Controller extends Base_Controller {
 			$aadata[] = array(
 				str_replace(',',', ',$doc['to']),
 				HTML::link('message/read/outbox/'.$doc['_id'],$doc['subject']),
-				date('Y-m-d h:i:s',$doc['createdDate']->sec),
+				date('d-m-Y H:i:s',$doc['createdDate']->sec),
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 			);
 		}

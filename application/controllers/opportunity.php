@@ -36,6 +36,7 @@ class Opportunity_Controller extends Base_Controller {
 		$this->filter('before','auth');
 		$this->crumb = new Breadcrumb();
 		$this->crumb->add('opportunity','Opportunity');
+		date_default_timezone_set('Asia/Jakarta');
 	}
 
 	public function get_index()
@@ -278,12 +279,12 @@ class Opportunity_Controller extends Base_Controller {
 
 			*/
 
-				date('Y-m-d', $doc['opportunityDate']->sec),
+				date('d-m-Y', $doc['opportunityDate']->sec),
 				HTML::link('opportunity/view/'.$doc['_id'],$doc['opportunityNumber']),
 				$doc['clientCompany'],
 				$doc['projectName'],
 				$doc['targetScopeDescription'],
-				date('Y-m-d', $doc['closingDate']->sec),
+				date('d-m-Y', $doc['closingDate']->sec),
 				$doc['opportunityPIC'],
 				//$doc['estimatedCurrency'],
 				//number_format((double)$doc['estimatedValue'],2,',','.'),
@@ -295,8 +296,8 @@ class Opportunity_Controller extends Base_Controller {
 				//$doc['opportunityShare'],
 				//$doc['opportunityDepartment'],
 				//$doc['opportunityLead'],
-				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				//isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				//date('d-m-Y H:i:s', $doc['createdDate']->sec),
+				//isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				$tags,
 				'<a href="'.URL::to('opportunity/edit/'.$doc['_id']).'"><i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;'.
 				'<i class="foundicon-trash action del has-tip tip-bottom noradius" id="'.$doc['_id'].'" title="Delete"></i>'
@@ -581,8 +582,8 @@ class Opportunity_Controller extends Base_Controller {
 
 		unset($doc_data['saveToContact']);
 
-		$doc_data['opportunityDate'] = (isset($doc_data['opportunityDate']))?date('Y-m-d', $doc_data['opportunityDate']->sec):'';
-		$doc_data['closingDate'] = (isset($doc_data['closingDate']))?date('Y-m-d', $doc_data['closingDate']->sec):'';
+		$doc_data['opportunityDate'] = (isset($doc_data['opportunityDate']))?date('d-m-Y', $doc_data['opportunityDate']->sec):'';
+		$doc_data['closingDate'] = (isset($doc_data['closingDate']))?date('d-m-Y', $doc_data['closingDate']->sec):'';
 
 		$this->crumb->add('opportunity/edit/'.$id,$doc_data['opportunityNumber']);
 
@@ -932,7 +933,7 @@ class Opportunity_Controller extends Base_Controller {
 
 			$aadata[] = array(
 				$counter,
-				date('Y-m-d H:i:s', $doc['timestamp']->sec),
+				date('d-m-Y H:i:s', $doc['timestamp']->sec),
 				$doc['userInitial'],
 				$doc['progressInput'],
 				$comments.$commentform,
@@ -1131,8 +1132,8 @@ class Opportunity_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
-				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				//date('d-m-Y H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				$doc['creatorName'],
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$edit.$download.$del
@@ -1287,8 +1288,8 @@ class Opportunity_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].$deleted.'</span>',
-				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				//date('d-m-Y H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				$doc['creatorName'],
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				''//$edit.$download.$del

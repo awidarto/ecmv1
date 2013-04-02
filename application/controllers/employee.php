@@ -323,11 +323,11 @@ class Employee_Controller extends Base_Controller {
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
-				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
+				//date('d-m-Y H:i:s', $doc['createdDate']->sec),
 				$cats[$doc['docCategory']],
-				isset($doc['effectiveDate'])?date('Y-m-d H:i:s', $doc['effectiveDate']->sec):'',
-				isset($doc['expiryDate'])?date('Y-m-d H:i:s', $doc['expiryDate']->sec):'',
-				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				isset($doc['effectiveDate'])?date('d-m-Y H:i:s', $doc['effectiveDate']->sec):'',
+				isset($doc['expiryDate'])?date('d-m-Y H:i:s', $doc['expiryDate']->sec):'',
+				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				$doc['creatorName'],
 				''//$edit.$download.$del
 			);

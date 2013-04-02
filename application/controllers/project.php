@@ -36,6 +36,7 @@ class Project_Controller extends Base_Controller {
 		$this->filter('before','auth');
 		$this->crumb = new Breadcrumb();
 		$this->crumb->add('project','Project');
+		date_default_timezone_set('Asia/Jakarta');
 	}
 
 	public function get_index()
@@ -256,8 +257,8 @@ class Project_Controller extends Base_Controller {
 				$doc['clientName'],
 				$doc['briefScopeDescription'],
 				$doc['deliveryTerm'],
-				date('Y-m-d', $doc['effectiveDate']->sec),
-				date('Y-m-d', $doc['dueDate']->sec),
+				date('d-m-Y', $doc['effectiveDate']->sec),
+				date('d-m-Y', $doc['dueDate']->sec),
 				//$doc['projectVendor'],
 				$doc['projectPIC'],
 
@@ -274,8 +275,8 @@ class Project_Controller extends Base_Controller {
 				//$doc['projectShare'],
 				//$doc['projectDepartment'],
 				//$doc['projectLead'],
-				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				//isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				//date('d-m-Y H:i:s', $doc['createdDate']->sec),
+				//isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				$tags,
 				'<a href="'.URL::to('project/edit/'.$doc['_id']).'"><i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;'.
 				'<i class="foundicon-trash action del has-tip tip-bottom noradius" id="'.$doc['_id'].'" title="Delete"></i>'
@@ -510,8 +511,8 @@ class Project_Controller extends Base_Controller {
 
 		$doc_data['oldTag'] = $doc_data['projectTag'];
 
-		$doc_data['effectiveDate'] = (isset($doc_data['effectiveDate']))?date('Y-m-d', $doc_data['effectiveDate']->sec):'';
-		$doc_data['dueDate'] = (isset($doc_data['dueDate']))?date('Y-m-d', $doc_data['dueDate']->sec):'';
+		$doc_data['effectiveDate'] = (isset($doc_data['effectiveDate']))?date('d-m-Y', $doc_data['effectiveDate']->sec):'';
+		$doc_data['dueDate'] = (isset($doc_data['dueDate']))?date('d-m-Y', $doc_data['dueDate']->sec):'';
 
 		$doc_data['contractPriceUSD'] = ($doc_data['contractPriceUSD'] != '')?$doc_data['contractPriceUSD']:0;
 		$doc_data['contractPriceEURO'] = ($doc_data['contractPriceEURO'] != '')?$doc_data['contractPriceEURO']:0;
@@ -928,8 +929,8 @@ class Project_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].$deleted.'</span>',
-				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				//date('d-m-Y H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				$doc['creatorName'],
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$edit.$download.$del
@@ -1046,7 +1047,7 @@ class Project_Controller extends Base_Controller {
 
 			$aadata[] = array(
 				$counter,
-				date('Y-m-d H:i:s', $doc['timestamp']->sec),
+				date('d-m-Y H:i:s', $doc['timestamp']->sec),
 				$doc['userInitial'],
 				$doc['progressInput'],
 				$comments.$commentform,

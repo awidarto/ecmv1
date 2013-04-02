@@ -36,6 +36,7 @@ class Tender_Controller extends Base_Controller {
 		$this->filter('before','auth');
 		$this->crumb = new Breadcrumb();
 		$this->crumb->add('tender','Tender');
+		date_default_timezone_set('Asia/Jakarta');
 	}
 
 	public function get_index()
@@ -245,13 +246,13 @@ class Tender_Controller extends Base_Controller {
 
 			$aadata[] = array(
 				$counter,
-				date('Y-m-d', $doc['tenderDate']->sec),
+				date('d-m-Y', $doc['tenderDate']->sec),
 				HTML::link('tender/view/'.$doc['_id'],$doc['tenderNumber']),
 				$doc['clientTenderNumber'],
 				$doc['clientName'],
 				$doc['briefScopeDescription'],
 				$doc['deliveryTerm'],
-				date('Y-m-d', $doc['closingDate']->sec),
+				date('d-m-Y', $doc['closingDate']->sec),
 				$doc['tenderSystem'],
 				$doc['tenderPIC'],
 				(isset($doc['bidPriceUSD']))?number_format((double)$doc['bidPriceUSD'],2,',','.'):'',
@@ -265,8 +266,8 @@ class Tender_Controller extends Base_Controller {
 				//$doc['tenderShare'],
 				//$doc['tenderDepartment'],
 				//$doc['tenderLead'],
-				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				//isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				//date('d-m-Y H:i:s', $doc['createdDate']->sec),
+				//isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				$tags,
 				'<a href="'.URL::to('tender/edit/'.$doc['_id']).'"><i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;'.
 				'<i class="foundicon-trash action del has-tip tip-bottom noradius" id="'.$doc['_id'].'" title="Delete"></i>'
@@ -501,8 +502,8 @@ class Tender_Controller extends Base_Controller {
 
 		$doc_data['oldTag'] = $doc_data['tenderTag'];
 
-		$doc_data['tenderDate'] = (isset($doc_data['tenderDate']))?date('Y-m-d', $doc_data['tenderDate']->sec):'';
-		$doc_data['closingDate'] = (isset($doc_data['closingDate']))?date('Y-m-d', $doc_data['closingDate']->sec):'';
+		$doc_data['tenderDate'] = (isset($doc_data['tenderDate']))?date('d-m-Y', $doc_data['tenderDate']->sec):'';
+		$doc_data['closingDate'] = (isset($doc_data['closingDate']))?date('d-m-Y', $doc_data['closingDate']->sec):'';
 
 		$this->crumb->add('tender/edit/'.$id,$doc_data['tenderNumber']);
 
@@ -912,8 +913,8 @@ class Tender_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].$deleted.'</span>',
-				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				//date('d-m-Y H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				$doc['creatorName'],
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$edit.$download.$del
@@ -1129,8 +1130,8 @@ class Tender_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
-				//date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				//date('d-m-Y H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				$doc['creatorName'],
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				''//$edit.$download.$del
@@ -1247,7 +1248,7 @@ class Tender_Controller extends Base_Controller {
 
 			$aadata[] = array(
 				$counter,
-				date('Y-m-d H:i:s', $doc['timestamp']->sec),
+				date('d-m-Y H:i:s', $doc['timestamp']->sec),
 				$doc['userInitial'],
 				$doc['progressInput'],
 				$comments.$commentform,

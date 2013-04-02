@@ -1,5 +1,4 @@
 <?php
-
 class Download_Controller extends Base_Controller {
 
 	/*
@@ -166,7 +165,7 @@ class Download_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['document']['_id'].'">'.$doc['document']['title'].'</span>',
-				isset($doc['timestamp'])?date('Y-m-d H:i:s', $doc['timestamp']->sec):'',
+				isset($doc['timestamp'])?date('d-m-Y H:i:s', $doc['timestamp']->sec):'',
 				$doc['downloader']['fullname'],
 				(isset($doc['doc_number']) && $doc['doc_number'] != 0)?$doc['doc_number']:'',
 				//isset($doc['downloadedfullfilename'])?$doc['downloadedfullfilename']:'',

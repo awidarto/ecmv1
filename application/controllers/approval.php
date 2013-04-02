@@ -191,7 +191,7 @@ class Approval_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
-				date('Y-m-d H:i:s', $doc['createdDate']->sec),
+				date('d-m-Y H:i:s', $doc['createdDate']->sec),
 				$doc['creatorName'],
 				//$requestTo,
 				$request_type,
@@ -377,8 +377,8 @@ class Approval_Controller extends Base_Controller {
 
 		$doc_data['oldTag'] = $doc_data['docTag'];
 
-		$doc_data['effectiveDate'] = date('Y-m-d', $doc_data['effectiveDate']->sec);
-		$doc_data['expiryDate'] = date('Y-m-d', $doc_data['expiryDate']->sec);
+		$doc_data['effectiveDate'] = date('d-m-Y', $doc_data['effectiveDate']->sec);
+		$doc_data['expiryDate'] = date('d-m-Y', $doc_data['expiryDate']->sec);
 
 
 		if(is_null($type)){
@@ -644,8 +644,8 @@ class Approval_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
-				date('Y-m-d H:i:s', $doc['createdDate']->sec),
-				isset($doc['lastUpdate'])?date('Y-m-d H:i:s', $doc['lastUpdate']->sec):'',
+				date('d-m-Y H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				$doc['creatorName'],
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
@@ -756,7 +756,7 @@ class Approval_Controller extends Base_Controller {
 			$aadata[] = array(
 				$counter,
 				$doc['title'],
-				date('Y-m-d h:i:s',$doc['createdDate']),
+				date('d-m-Y h:i:s',$doc['createdDate']),
 				$doc['creatorName'],
 				$doc['creatorName'],
 				implode(',',$doc['tag']),
