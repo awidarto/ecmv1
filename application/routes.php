@@ -32,25 +32,75 @@
 |
 */
 
-Route::controller(array('document','user','message','import','template','download','contact','project','tender','opportunity','search','activity','finance','hr','qc','warehouse','employee','requests','approval','category','content','ajax'));
+Route::controller(array('document','user','message','import','graph','template','download','contact','project','tender','opportunity','search','activity','finance','hr','qc','warehouse','employee','requests','approval','category','content','ajax'));
 
 
 Route::get('/',  array('before'=>'auth', function()
 {
-    $heads = array('Event','Action');
-    //$searchinput = array(false,'title','created','last update','creator','project manager','tags',false);
-    $searchinput = array(false,'project','tags',false);
+    if(Auth::user()->role == 'president_director' || Auth::user()->role == 'bod'){
+        $heads = array('Event','Action');
+        //$searchinput = array(false,'title','created','last update','creator','project manager','tags',false);
+        $searchinput = array(false,'project','tags',false);
 
-    $crumb = new Breadcrumb();
+        $crumb = new Breadcrumb();
 
-    return View::make('tables.event')
-        ->with('title','')
-        ->with('newbutton','New Event')
-        ->with('disablesort','0')
-        ->with('crumb',$crumb)
-        ->with('searchinput',$searchinput)
-        ->with('ajaxsource',URL::to('activity'));
+        return View::make('tables.dashboard')
+            ->with('title','')
+            ->with('newbutton','New Event')
+            ->with('disablesort','0')
+            ->with('crumb',$crumb)
+            ->with('searchinput',$searchinput)
+            ->with('ajaxsource',URL::to('activity'));
+
+    }else{
+        $heads = array('Event','Action');
+        //$searchinput = array(false,'title','created','last update','creator','project manager','tags',false);
+        $searchinput = array(false,'project','tags',false);
+
+        $crumb = new Breadcrumb();
+
+        return View::make('tables.event')
+            ->with('title','')
+            ->with('newbutton','New Event')
+            ->with('disablesort','0')
+            ->with('crumb',$crumb)
+            ->with('searchinput',$searchinput)
+            ->with('ajaxsource',URL::to('activity'));
+    }
 }));
+
+Route::get('testgraph',function(){
+
+    return View::make('testgraph');    
+});
+
+Route::get('graph',function(){
+
+    /* Create your dataset object */ 
+    $myData = new pData(); 
+
+    /* Add data in your dataset */ 
+    $myData->addPoints(array(1,3,4,3,5));
+
+    /* Create a pChart object and associate your dataset */ 
+    $myPicture = new pImage(700,230,$myData);
+
+    /* Choose a nice font */
+    $myPicture->setFontProperties(array("FontName"=>path('app')."libraries/pchart/fonts/Forgotte.ttf","FontSize"=>11));
+
+    /* Define the boundaries of the graph area */
+    $myPicture->setGraphArea(60,40,670,190);
+
+    /* Draw the scale, keep everything automatic */ 
+    $myPicture->drawScale();
+
+    /* Draw the scale, keep everything automatic */ 
+    $myPicture->drawSplineChart();
+
+    /* Render the picture (choose the best way) */
+    $myPicture->autoOutput("pictures/example.basic.png");
+
+});
 
 Route::get('hashme/(:any)',function($mypass){
 

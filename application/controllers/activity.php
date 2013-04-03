@@ -123,9 +123,9 @@ class Activity_Controller extends Base_Controller {
 
 			$aadata[] = array(
 				$item,
-				'<a href="'.URL::to('project/view/'.$doc['_id']).'"><i class="foundicon-clock action"></i></a>&nbsp;'.
-				'<a href="'.URL::to('project/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
-				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
+				//'<a href="'.URL::to('project/view/'.$doc['_id']).'"><i class="foundicon-clock action"></i></a>&nbsp;'.
+				//'<a href="'.URL::to('project/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
+				//'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
 			);
 		}
 
