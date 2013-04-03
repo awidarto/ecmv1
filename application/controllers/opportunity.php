@@ -231,6 +231,8 @@ class Opportunity_Controller extends Base_Controller {
 
 		//print_r($q)
 
+		$permissions = Auth::user()->permissions;
+
 		$document = new Opportunity();
 
 		/* first column is always sequence number, so must be omitted */
@@ -272,6 +274,37 @@ class Opportunity_Controller extends Base_Controller {
 			}else{
 				$tags = '';
 			}
+
+			if($doc['creatorId'] == Auth::user()->id ||
+									Auth::user()->role == 'root' ||
+									Auth::user()->role == 'super' ||
+									Auth::user()->role == 'president_director' ||
+									Auth::user()->role == 'bod'
+			){
+
+				$edit = '<a href="'.URL::to('opportunity/edit/'.$doc['_id']).'"><i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
+				$del = '<i class="foundicon-trash action del has-tip tip-bottom noradius" id="'.$doc['_id'].'" title="Delete"></i>';
+
+			}else{
+
+				$edit = '';
+				$del = '';
+
+				if(isset($permissions->opportunity) && $permissions->opportunity->edit == 1){
+					$edit = '<a href="'.URL::to('opportunity/edit/'.$doc['_id']).'"><i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
+				}else{
+					$edit = '';
+				}
+
+				if(isset($permissions->opportunity) && $permissions->opportunity->delete == 1){
+					$del = '<i class="foundicon-trash action del has-tip tip-bottom noradius" id="'.$doc['_id'].'" title="Delete"></i>';
+				}else{
+					$del = '';
+				}
+
+			}
+
+			
 
 			$aadata[] = array(
 				$counter,
@@ -327,8 +360,7 @@ class Opportunity_Controller extends Base_Controller {
 				//date('d-m-Y H:i:s', $doc['createdDate']->sec),
 				//isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				$tags,
-				'<a href="'.URL::to('opportunity/edit/'.$doc['_id']).'"><i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;'.
-				'<i class="foundicon-trash action del has-tip tip-bottom noradius" id="'.$doc['_id'].'" title="Delete"></i>'
+				$edit.$del
 			);
 			$counter++;
 		}
