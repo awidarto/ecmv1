@@ -200,6 +200,31 @@ class Tender_Controller extends Base_Controller {
 			$idx++;
 		}
 
+		$self_email = new MongoRegex('/'.Auth::user()->email.'/i');
+
+
+		if( Auth::user()->role == 'root' ||
+			Auth::user()->role == 'super' ||
+			Auth::user()->role == 'president_director' ||
+			Auth::user()->role == 'bod'
+			){
+			
+			// roots can see all
+
+		}else if( Auth::user()->role == 'client' ||
+			Auth::user()->role == 'principal_vendor' ||
+			Auth::user()->role == 'subcon'){
+
+		}else{
+
+			$q['$or'] = array(
+				array('tenderShare'=>$self_email),
+				array('tenderPIC'=>$self_email),
+				array('creatorId'=>Auth::user()->id)
+				);
+
+		}
+
 		//print_r($q)
 
 		$document = new Tender();
@@ -254,7 +279,7 @@ class Tender_Controller extends Base_Controller {
 				$doc['deliveryTerm'],
 				date('d-m-Y', $doc['closingDate']->sec),
 				$doc['tenderSystem'],
-				$doc['tenderPIC'],
+				str_replace(',', ', ', $doc['tenderPIC']),
 				(isset($doc['bidPriceUSD']))?number_format((double)$doc['bidPriceUSD'],2,',','.'):'',
 				(isset($doc['bidPriceEURO']))?number_format((double)$doc['bidPriceEURO'],2,',','.'):'',
 				(isset($doc['bidPriceIDR']))?number_format((double)$doc['bidPriceIDR'],2,',','.'):'',

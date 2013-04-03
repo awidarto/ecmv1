@@ -201,6 +201,32 @@ class Opportunity_Controller extends Base_Controller {
 			$idx++;
 		}
 
+		$self_email = new MongoRegex('/'.Auth::user()->email.'/i');
+
+
+		if( Auth::user()->role == 'root' ||
+			Auth::user()->role == 'super' ||
+			Auth::user()->role == 'president_director' ||
+			Auth::user()->role == 'bod'
+			){
+			
+			// roots can see all
+
+		}else if( Auth::user()->role == 'client' ||
+			Auth::user()->role == 'principal_vendor' ||
+			Auth::user()->role == 'subcon'){
+
+		}else{
+
+			$q['$or'] = array(
+				array('opportunityShare'=>$self_email),
+				array('opportunityPIC'=>$self_email),
+				array('creatorId'=>Auth::user()->id)
+				);
+
+		}
+
+
 		//print_r($q)
 
 		$document = new Opportunity();
@@ -285,7 +311,7 @@ class Opportunity_Controller extends Base_Controller {
 				$doc['projectName'],
 				$doc['targetScopeDescription'],
 				date('d-m-Y', $doc['closingDate']->sec),
-				$doc['opportunityPIC'],
+				str_replace(',', ', ', $doc['opportunityPIC']),
 				//$doc['estimatedCurrency'],
 				//number_format((double)$doc['estimatedValue'],2,',','.'),
 				//$doc['equivalentEstimatedCurrency'],

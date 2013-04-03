@@ -9,86 +9,106 @@
 {{$form->open_for_files('project/add','POST',array('class'=>'custom','id'=>'newdoc'))}}
 <div class="row">
   <div class="six columns left">
-    <h4>Project Info</h4>
 
-<!--
-      JOB REGISTER
-      YEAR :  2013
-      Form No :
-NO
-JOB NO.
-CLIENT'S PO / CONTRACT NO.
-CLIENT'S NAME
-BRIEF CONTRACT SCOPE DESCRIPTION
-DELIVERY TERMS
-EFFECTIVE DATE
-DUE DATE
-CONTRACT PRICE  (US $)  (EURO)  (IDR X 1,000) (US $)
-EQUIVALENT CONTRACT PRICE   (US $)
-PERSON IN CHARGE
-STATUS
-REMARKS
+    <fieldset>
+      <legend>Client Info</legend>
 
+        {{ $form->text('clientName','Client\'s Name.req','',array('class'=>'text')) }}
 
--->
+        {{ $form->text('clientPONumber','Client\'s PO / Contract No.req','',array('class'=>'text')) }}
 
-    {{ $form->text('projectNumber','Project Number','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
+        {{ $form->textarea('briefScopeDescription','Brief Scope Description.req','',array('class'=>'text')) }}
 
-    {{ $form->text('clientPONumber','Client\'s PO / Contract No.req','',array('class'=>'text')) }}
+        {{ $form->textarea('deliveryTerm','Delivery Terms','',array('class'=>'text')) }}
 
-    {{ $form->text('clientName','Client\'s Name.req','',array('class'=>'text')) }}
+        {{ $form->text('projectVendor','Project Vendor','',array('class'=>'auto_user text')) }}
 
-    {{ $form->textarea('briefScopeDescription','Brief Scope Description.req','',array('class'=>'text')) }}
-
-    {{ $form->textarea('deliveryTerm','Delivery Terms','',array('class'=>'text')) }}
-
-    {{ $form->text('effectiveDate','Effective Date','',array('class'=>'five date')) }}
-
-    {{ $form->text('dueDate','Due Date','',array('class'=>'five date')) }}
-
-    {{ $form->text('projectVendor','Project Vendor','',array('class'=>'auto_user text')) }}
+    </fieldset>
 
   </div>
-  <div class="five columns right">
-    <h4>Project Details</h4>
+  <div class="six columns right">
+    <fieldset>
+      <legend>Project Details</legend>
+
+        <div class="row">
+          <div class="five columns">
+            {{ $form->select('projectDepartment','Department of Origin',Config::get('parama.department'))}}
+          </div>
+          <div class="six columns">
+            {{ $form->text('projectNumber','Project Number','') }}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="six columns">
+            {{ $form->text('effectiveDate','Effective Date','',array('class'=>'five date')) }}
+          </div>
+          <div class="six columns">
+            {{ $form->text('dueDate','Due Date','',array('class'=>'five date')) }}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="five columns">
+            {{ $form->select('projectStatus','Status',Config::get('parama.projectstatus'))}}
+          </div>
+          <div class="six columns">
+            {{ $form->text('projectLead','Related Opportunity','',array('class'=>'tag_opportunity four','rows'=>'1', 'style'=>'width:100%')) }}
+          </div>
+        </div>
 
 
-    {{ $form->text('projectPIC','Persons In Charge','',array('id'=>'project_manager','class'=>'tag_initial_inline four','rows'=>'1', 'style'=>'width:100%')) }}
-
-    <div class="row">
-      <div class="two columns">
-        {{Form::label('contractPriceUSD','Contract Price')}}
-      </div>
-      <div class="nine columns">
-        {{ $form->text('contractPriceUSD','USD','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
-        {{ $form->text('contractPriceEURO','EURO','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
-        {{ $form->text('contractPriceIDR','IDR','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
-      </div>
-    </div>
-
-    <div class="row">
-      <div class="two columns">
-        {{Form::label('equivalentContractPriceUSD','Equivalent Contract Price')}}
-      </div>
-      <div class="nine columns">
-        {{ $form->text('equivalentContractPriceUSD','USD','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
-      </div>
-    </div>
-
-    {{ $form->select('projectStatus','Status',Config::get('parama.projectstatus'))}}
-
-    {{ $form->textarea('projectRemark','Remarks','',array('class'=>'text')) }}
+        {{ $form->text('projectPIC','Persons In Charge & Assignments','',array('id'=>'project_manager','class'=>'tag_email four','rows'=>'1', 'style'=>'width:100%')) }}
 
 
+        {{ $form->textarea('projectRemark','Remarks','',array('class'=>'text')) }}
+
+        {{ $form->text('projectTag','Tag','',array('class'=>'tag_keyword four','rows'=>'1', 'style'=>'width:100%')) }}
+
+    </fieldset>
+
+    <fieldset>
+      <legend>Project Values</legend>
+
+        <div class="row">
+          <div class="three columns">
+            {{Form::label('contractPriceUSD','Contract Price')}}
+          </div>
+          <div class="eight columns">
+            {{ $form->text('contractPriceUSD','USD','') }}
+            {{ $form->text('contractPriceEURO','EURO','') }}
+            {{ $form->text('contractPriceIDR','IDR','') }}
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="three columns">
+            {{Form::label('equivalentContractPriceUSD','Equivalent Contract Price')}}
+          </div>
+          <div class="eight columns">
+            {{ $form->text('equivalentContractPriceUSD','USD','') }}
+          </div>
+        </div>
+
+    </fieldset>
+
+    <fieldset>
+      <legend>Shares</legend>
+        {{ $form->text('projectShare','Shared to','',array('class'=>'tag_email four')) }}
+    </fieldset>
+
+
+
+
+
+    <?php
+    /*
     {{ $form->text('projectApproval','Approved by','',array('class'=>'tag_email four', 'style'=>'width:100%')) }}
+    */
+    ?>
 
-    {{ $form->text('projectShare','Shared to','',array('class'=>'tag_email four','style'=>'width:100%')) }}
 
-    {{ $form->select('projectDepartment','Department of Origin',Config::get('parama.department'),array('class'=>'four'))}}
 
-    {{ $form->text('projectLead','Related Opportunity','',array('class'=>'tag_opportunity four','rows'=>'1', 'style'=>'width:100%')) }}
-
-    {{ $form->text('projectTag','Tag','',array('class'=>'tag_keyword four','rows'=>'1', 'style'=>'width:100%')) }}
 
   </div>
 </div>

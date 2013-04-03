@@ -89,8 +89,8 @@ class Project_Controller extends Base_Controller {
 		$colclass = array('one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one');
 		//$colclass = false;
 		//$searchinput = array(false,'title','created','last update','creator','project manager','tags',false);
-		$searchinput = array(false,
-
+		$searchinput = array(
+			false,
 			'projectNumber',
 			'clientProjectNumber',
 			'clientName',
@@ -139,7 +139,7 @@ class Project_Controller extends Base_Controller {
 
 
 		$fields = array(
-			'effectiveDate',
+			//'effectiveDate',
 			'projectNumber',
 			'clientPONumber',
 			'clientName',
@@ -207,6 +207,32 @@ class Project_Controller extends Base_Controller {
 
 		//print_r($q)
 
+		$self_email = new MongoRegex('/'.Auth::user()->email.'/i');
+
+
+		if( Auth::user()->role == 'root' ||
+			Auth::user()->role == 'super' ||
+			Auth::user()->role == 'president_director' ||
+			Auth::user()->role == 'bod'
+			){
+			
+			// roots can see all
+
+		}else if( Auth::user()->role == 'client' ||
+			Auth::user()->role == 'principal_vendor' ||
+			Auth::user()->role == 'subcon'){
+
+		}else{
+
+			$q['$or'] = array(
+				array('projectShare'=>$self_email),
+				array('projectPIC'=>$self_email),
+				array('creatorId'=>Auth::user()->id)
+				);
+
+		}
+
+
 		$document = new Project();
 
 		/* first column is always sequence number, so must be omitted */
@@ -260,7 +286,7 @@ class Project_Controller extends Base_Controller {
 				date('d-m-Y', $doc['effectiveDate']->sec),
 				date('d-m-Y', $doc['dueDate']->sec),
 				//$doc['projectVendor'],
-				$doc['projectPIC'],
+				str_replace(',', ', ', $doc['projectPIC']),
 
 				(isset($doc['contractPriceUSD']))?number_format((double)$doc['contractPriceUSD'],2,',','.'):'',
 				(isset($doc['contractPriceEURO']))?number_format((double)$doc['contractPriceEURO'],2,',','.'):'',
@@ -296,136 +322,6 @@ class Project_Controller extends Base_Controller {
 		return Response::json($result);
 	}
 
-
-	public function __post_index()
-	{
-		$fields = array(array('title','body'),'projectTag');
-
-		$rel = array('like','like');
-
-		$cond = array('both','both');
-
-		$pagestart = Input::get('iDisplayStart');
-		$pagelength = Input::get('iDisplayLength');
-
-		$limit = array($pagelength, $pagestart);
-
-		$defsort = 1;
-		$defdir = -1;
-
-		$idx = 0;
-		$q = array();
-		$hilite = array();
-		$hilite_replace = array();
-		foreach($fields as $field){
-			if(Input::get('sSearch_'.$idx))
-			{
-				$hilite_item = Input::get('sSearch_'.$idx);
-				$hilite[] = $hilite_item;
-				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
-
-				if($rel[$idx] == 'like'){
-					if(is_array($field)){
-						$q = array('$or'=>'');
-						$sub = array();
-						foreach($field as $f){
-							if($cond[$idx] == 'both'){
-								$sub[] = array($f=> new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i') );
-							}else if($cond[$idx] == 'before'){
-								$sub[] = array($f=> new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i') );						
-							}else if($cond[$idx] == 'after'){
-								$sub[] = array($f=> new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i') );						
-							}
-						}
-						$q['$or'] = $sub;
-					}else{
-						if($cond[$idx] == 'both'){
-							$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
-						}else if($cond[$idx] == 'before'){
-							$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
-						}else if($cond[$idx] == 'after'){
-							$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
-						}						
-					}
-				}else if($rel[$idx] == 'equ'){
-					$q[$field] = Input::get('sSearch_'.$idx);
-				}
-			}
-			$idx++;
-		}
-
-
-		$document = new Project();
-
-		/* first column is always sequence number, so must be omitted */
-		$fidx = Input::get('iSortCol_0');
-		if($fidx == 0){
-			$fidx = $defsort;			
-			$sort_col = $fields[$fidx];
-			$sort_dir = $defdir;
-		}else{
-			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
-			$sort_col = $fields[$fidx];
-			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
-		}
-
-
-		$count_all = $document->count();
-
-		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count($q);
-		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count();
-		}
-
-
-
-
-		$aadata = array();
-
-		$counter = 1 + $pagestart;
-		foreach ($documents as $doc) {
-			if(isset($doc['tags'])){
-				$tags = array();
-
-				foreach($doc['tags'] as $t){
-					$tags[] = '<span class="tagitem">'.$t.'</span>';
-				}
-
-				$tags = implode('',$tags);
-
-			}else{
-				$tags = '';
-			}
-
-			$item = View::make('project.item')->with('doc',$doc)->with('popsrc','project/view')->with('tags',$tags)->render();
-
-			$item = str_replace($hilite, $hilite_replace, $item);
-
-			$aadata[] = array(
-				$counter,
-				$item,
-				$tags,
-				'<a href="'.URL::to('project/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
-				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
-			);
-			$counter++;
-		}
-
-		
-		$result = array(
-			'sEcho'=> Input::get('sEcho'),
-			'iTotalRecords'=>$count_all,
-			'iTotalDisplayRecords'=> $count_display_all,
-			'aaData'=>$aadata,
-			'qrs'=>$q
-		);
-
-		return Response::json($result);
-
-	}
 
 	public function get_add(){
 
