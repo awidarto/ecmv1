@@ -222,6 +222,8 @@ class Project_Controller extends Base_Controller {
 			Auth::user()->role == 'principal_vendor' ||
 			Auth::user()->role == 'subcon'){
 
+			$q['projectShare'] = $self_email;
+
 		}else{
 
 			$q['$or'] = array(

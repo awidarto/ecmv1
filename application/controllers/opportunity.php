@@ -216,6 +216,8 @@ class Opportunity_Controller extends Base_Controller {
 			Auth::user()->role == 'principal_vendor' ||
 			Auth::user()->role == 'subcon'){
 
+			$q['opportunityShare'] = $self_email;
+
 		}else{
 
 			$q['$or'] = array(
