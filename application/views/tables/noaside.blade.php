@@ -9,7 +9,7 @@
 	@if(isset($importurl) && $importurl != '')
 		<a class="foundicon-add-doc button right newdoc action" href="{{URL::to($importurl)}}">&nbsp;&nbsp;<span>{{$importbutton}}</span></a>
 	@endif
-	@if(isset($addurl))
+	@if(isset($addurl) && $addurl != '')
 		<a class="foundicon-add-doc button right newdoc action clearfix" href="{{URL::to($addurl)}}">&nbsp;&nbsp;<span>{{$newbutton}}</span></a>
 	@endif
 </div>

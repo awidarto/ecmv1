@@ -108,13 +108,39 @@ class Opportunity_Controller extends Base_Controller {
 
 			,false);
 
+			$importurl = '';
+			$addurl = '';
+
+			if( Auth::user()->role == 'root' ||
+				Auth::user()->role == 'super' ||
+				Auth::user()->role == 'president_director' ||
+				Auth::user()->role == 'bod'
+				){
+
+				$importurl = 'import/doimport/opportunity';
+				$addurl = 'opportunity/add';				
+				// roots can see all
+
+			}else if( Auth::user()->role == 'client' ||
+				Auth::user()->role == 'principal_vendor' ||
+				Auth::user()->role == 'subcon'){
+
+				$importurl = '';
+				$addurl = '';
+
+			}else{
+
+			}
+
+
+
 		return View::make('tables.noaside')
 			->with('title','Opportunity')
 			->with('newbutton','New Opportunity')
 			->with('disablesort','0,3')
-			->with('addurl','opportunity/add')
+			->with('addurl',$addurl)
 			->with('importbutton','Import Opportunity Data')
-			->with('importurl','import/doimport/opportunity')
+			->with('importurl',$importurl)
 			->with('excludecol','14,15,16,17,18,19,20,21,22')
 			->with('colclass',$colclass)
 			->with('searchinput',$searchinput)
@@ -304,7 +330,7 @@ class Opportunity_Controller extends Base_Controller {
 
 			}
 
-			
+
 
 			$aadata[] = array(
 				$counter,
