@@ -14,15 +14,25 @@
 	<div class="nine columns left">
 
 		<h3>Project 2013</h3>
-		
-		<img src="{{ URL::to('chart/projecttimeline')}}" alt="graphtest" style="position:left;margin-right:20px;"/>
-		<img src="{{ URL::to('chart/projectvaluepie')}}" alt="graphtest" style="position:left;margin-right:20px;"/>
+		<div class="row">
+			<div class="eight columns">
+				<img src="{{ URL::to('chart/projecttimeline')}}" alt="graphtest" style="position:left;max-width: 200%;"/>
+			</div>
+			<div class="four columns">
+				<img src="{{ URL::to('chart/projectvaluepie')}}" alt="graphtest" style="position:left;"/>
+			</div>
+		</div>
 
 		<div class="clear">&nbsp;</div>
 		<h3>Tender 2013</h3>
-		
-		<img src="{{ URL::to('chart/tendertimeline')}}" alt="graphtest" style="position:left;margin-right:20px;"/>
-		<img src="{{ URL::to('chart/tendervaluepie')}}" alt="graphtest" style="position:left;margin-right:20px;"/>
+		<div class="row">
+			<div class="eight columns">
+				<img src="{{ URL::to('chart/tendertimeline')}}" alt="graphtest" style="position:left;max-width: 200%;"/>
+			</div>
+			<div class="four columns">
+				<img src="{{ URL::to('chart/tendervaluepie')}}" alt="graphtest" style="position:left;"/>
+			</div>
+		</div>
 	</div>
 	<div class="three columns right">
 		<table class="dataTable">

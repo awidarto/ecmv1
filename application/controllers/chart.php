@@ -85,15 +85,15 @@ class Chart_Controller extends Base_Controller {
 		$MyData->setAbscissa("Months"); 
 
 		/* Create the pChart object */ 
-		$myPicture = new pImage(800,230,$MyData); 
+		$myPicture = new pImage(800,280,$MyData); 
 
 		/* Turn of Antialiasing */ 
 		$myPicture->Antialias = FALSE; 
 
 		/* Add a border to the picture */ 
-		$myPicture->drawGradientArea(0,0,800,230,DIRECTION_VERTICAL,array("StartR"=>240,"StartG"=>240,"StartB"=>240,"EndR"=>180,"EndG"=>180,"EndB"=>180,"Alpha"=>100)); 
-		$myPicture->drawGradientArea(0,0,800,230,DIRECTION_HORIZONTAL,array("StartR"=>240,"StartG"=>240,"StartB"=>240,"EndR"=>180,"EndG"=>180,"EndB"=>180,"Alpha"=>20)); 
-		$myPicture->drawRectangle(0,0,799,229,array("R"=>0,"G"=>0,"B"=>0)); 
+		$myPicture->drawGradientArea(0,0,500,270,DIRECTION_VERTICAL,array("StartR"=>240,"StartG"=>240,"StartB"=>240,"EndR"=>180,"EndG"=>180,"EndB"=>180,"Alpha"=>100)); 
+		$myPicture->drawGradientArea(0,0,500,270,DIRECTION_HORIZONTAL,array("StartR"=>240,"StartG"=>240,"StartB"=>240,"EndR"=>180,"EndG"=>180,"EndB"=>180,"Alpha"=>20)); 
+		$myPicture->drawRectangle(0,0,499,270,array("R"=>0,"G"=>0,"B"=>0)); 
 
 		/* Set the default font */ 
 		/* Choose a nice font */
@@ -101,14 +101,14 @@ class Chart_Controller extends Base_Controller {
 		 
 
 		 /* Define the chart area */ 
-		 $myPicture->setGraphArea(60,40,780,200); 
+		 $myPicture->setGraphArea(60,40,480,230); 
 
 		 /* Draw the scale */ 
-		 $scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE); 
+		 $scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE,"LabelRotation"=>45); 
 		 $myPicture->drawScale($scaleSettings); 
 
 		 /* Write the chart legend */ 
-		 $myPicture->drawLegend(600,18,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL)); 
+		 $myPicture->drawLegend(350,18,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL)); 
 
 		 /* Turn on shadow computing */  
 		 $myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10)); 
@@ -180,16 +180,17 @@ class Chart_Controller extends Base_Controller {
 		$MyData->setSerieDescription("Months","Month"); 
 		$MyData->setAbscissa("Months"); 
 
+		
 		/* Create the pChart object */ 
-		$myPicture = new pImage(800,230,$MyData); 
+		$myPicture = new pImage(800,280,$MyData); 
 
 		/* Turn of Antialiasing */ 
 		$myPicture->Antialias = FALSE; 
 
 		/* Add a border to the picture */ 
-		$myPicture->drawGradientArea(0,0,800,230,DIRECTION_VERTICAL,array("StartR"=>240,"StartG"=>240,"StartB"=>240,"EndR"=>180,"EndG"=>180,"EndB"=>180,"Alpha"=>100)); 
-		$myPicture->drawGradientArea(0,0,800,230,DIRECTION_HORIZONTAL,array("StartR"=>240,"StartG"=>240,"StartB"=>240,"EndR"=>180,"EndG"=>180,"EndB"=>180,"Alpha"=>20)); 
-		$myPicture->drawRectangle(0,0,799,229,array("R"=>0,"G"=>0,"B"=>0)); 
+		$myPicture->drawGradientArea(0,0,500,270,DIRECTION_VERTICAL,array("StartR"=>240,"StartG"=>240,"StartB"=>240,"EndR"=>180,"EndG"=>180,"EndB"=>180,"Alpha"=>100)); 
+		$myPicture->drawGradientArea(0,0,500,270,DIRECTION_HORIZONTAL,array("StartR"=>240,"StartG"=>240,"StartB"=>240,"EndR"=>180,"EndG"=>180,"EndB"=>180,"Alpha"=>20)); 
+		$myPicture->drawRectangle(0,0,499,270,array("R"=>0,"G"=>0,"B"=>0)); 
 
 		/* Set the default font */ 
 		/* Choose a nice font */
@@ -197,14 +198,14 @@ class Chart_Controller extends Base_Controller {
 		 
 
 		 /* Define the chart area */ 
-		 $myPicture->setGraphArea(60,40,780,200); 
+		 $myPicture->setGraphArea(60,40,480,230); 
 
 		 /* Draw the scale */ 
-		 $scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE); 
+		 $scaleSettings = array("GridR"=>200,"GridG"=>200,"GridB"=>200,"DrawSubTicks"=>TRUE,"CycleBackground"=>TRUE,"LabelRotation"=>45); 
 		 $myPicture->drawScale($scaleSettings); 
 
 		 /* Write the chart legend */ 
-		 $myPicture->drawLegend(600,18,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL)); 
+		 $myPicture->drawLegend(350,18,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_HORIZONTAL)); 
 
 		 /* Turn on shadow computing */  
 		 $myPicture->setShadow(TRUE,array("X"=>1,"Y"=>1,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10)); 
@@ -240,7 +241,7 @@ class Chart_Controller extends Base_Controller {
 		 $MyData->setAbscissa("Labels"); 
 
 		 /* Create the pChart object */ 
-		 $myPicture = new pImage(240,180,$MyData,TRUE); 
+		 $myPicture = new pImage(240,280,$MyData,TRUE); 
 
 		 /* Set the default font properties */  
 		 $myPicture->setFontProperties(array("FontName"=>"../fonts/Forgotte.ttf","FontSize"=>6,"R"=>80,"G"=>80,"B"=>80)); 
@@ -252,12 +253,12 @@ class Chart_Controller extends Base_Controller {
 		 $myPicture->setShadow(TRUE,array("X"=>3,"Y"=>3,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10)); 
 
 		 /* Draw a splitted pie chart */  
-		 $PieChart->draw3DPie(140,90,array("Radius"=>100,"DataGapAngle"=>12,"DataGapRadius"=>10,"Border"=>TRUE)); 
+		 $PieChart->draw3DPie(135,140,array("Radius"=>100,"DataGapAngle"=>12,"DataGapRadius"=>10,"Border"=>TRUE)); 
 
 		 /* Write the legend box */  
 		 $myPicture->setFontProperties(array("FontName"=>path('app')."libraries/pchart/fonts/Silkscreen.ttf","FontSize"=>6,"R"=>0,"G"=>0,"B"=>0));
 
-		 $PieChart->drawPieLegend(0,0,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_VERTICAL)); 
+		 $PieChart->drawPieLegend(0,6,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_VERTICAL)); 
 
 		 /* Render the picture (choose the best way) */ 
 		 $myPicture->autoOutput("pictures/example.draw3DPie.transparent.png"); 
@@ -286,7 +287,7 @@ class Chart_Controller extends Base_Controller {
 		 $MyData->setAbscissa("Labels"); 
 
 		 /* Create the pChart object */ 
-		 $myPicture = new pImage(240,180,$MyData,TRUE); 
+		 $myPicture = new pImage(240,280,$MyData,TRUE); 
 
 		 /* Set the default font properties */  
 		 $myPicture->setFontProperties(array("FontName"=>"../fonts/Forgotte.ttf","FontSize"=>6,"R"=>80,"G"=>80,"B"=>80)); 
@@ -298,12 +299,12 @@ class Chart_Controller extends Base_Controller {
 		 $myPicture->setShadow(TRUE,array("X"=>3,"Y"=>3,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10)); 
 
 		 /* Draw a splitted pie chart */  
-		 $PieChart->draw3DPie(140,90,array("Radius"=>100,"DataGapAngle"=>12,"DataGapRadius"=>10,"Border"=>TRUE)); 
+		 $PieChart->draw3DPie(135,140,array("Radius"=>100,"DataGapAngle"=>12,"DataGapRadius"=>10,"Border"=>TRUE)); 
 
 		 /* Write the legend box */  
 		 $myPicture->setFontProperties(array("FontName"=>path('app')."libraries/pchart/fonts/Silkscreen.ttf","FontSize"=>6,"R"=>0,"G"=>0,"B"=>0));
 
-		 $PieChart->drawPieLegend(0,0,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_VERTICAL)); 
+		 $PieChart->drawPieLegend(0,6,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_VERTICAL)); 
 
 		 /* Render the picture (choose the best way) */ 
 		 $myPicture->autoOutput("pictures/example.draw3DPie.transparent.png"); 
@@ -420,7 +421,7 @@ class Chart_Controller extends Base_Controller {
 		 $myPicture->setShadow(TRUE,array("X"=>3,"Y"=>3,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10)); 
 
 		 /* Draw a splitted pie chart */  
-		 $PieChart->draw3DPie(140,90,array("Radius"=>100,"DataGapAngle"=>12,"DataGapRadius"=>10,"Border"=>TRUE)); 
+		 $PieChart->draw3DPie(130,90,array("Radius"=>100,"DataGapAngle"=>12,"DataGapRadius"=>10,"Border"=>TRUE)); 
 
 		 /* Write the legend box */  
 		 $myPicture->setFontProperties(array("FontName"=>path('app')."libraries/pchart/fonts/Silkscreen.ttf","FontSize"=>6,"R"=>0,"G"=>0,"B"=>0));
