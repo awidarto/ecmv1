@@ -8,13 +8,12 @@
 
 {{$form->open_for_files('opportunity/add','POST',array('class'=>'custom','id'=>'newdoc'))}}
 <div class="row">
-  <div class="seven columns left">
-    <h4>Prospective Client</h4>
+  <div class="six columns left">
 
       {{ $form->hidden('contact_id','',array('id'=>'contact_id'))}}
 
     <fieldset>
-        <legend>Company</legend>
+        <legend>Prospective Client</legend>
           {{ $form->text('clientCompany','Company Name.req','',array('class'=>'auto_client_contact text')) }}
 
           {{ $form->text('clientStreet','Street.req','',array('class'=>'text','id'=>'clientStreet')) }}
@@ -35,27 +34,48 @@
 
     </fieldset>
   </div>
-  <div class="four columns right">
-    <h4>Opportunity Details</h4>
+  <div class="six columns right">
+    <fieldset>
+        <legend>Opportunity Details</legend>
 
-    <div class="row">
-      <div class="five columns">
-        {{ $form->text('opportunityDate','Date','',array('class'=>'date')) }}
-      </div>
-      <div class="six columns">
-        {{ $form->text('opportunityNumber','Opportunity Number','') }}
-      </div>
-    </div>
+        <div class="row">
+          <div class="five columns">
+            {{ $form->select('opportunityDepartment','Department of Origin',Config::get('parama.department'),array('class'=>'four'))}}
+          </div>
+          <div class="six columns">
+            {{ $form->text('opportunityNumber','Opportunity Number','') }}
+          </div>
+        </div>
 
+        <div class="row">
+          <div class="six columns">
+            {{ $form->text('opportunityDate','Opportunity Date','',array('class'=>'date')) }}
+          </div>
+          <div class="six columns">
+            {{ $form->text('closingDate','Closing Date','',array('class'=>'date')) }}
+          </div>
+        </div>
 
+        <div class="row">
+          <div class="five columns">
+            {{ $form->select('opportunityStatus','Status',Config::get('parama.opportunitystatus'))}}
+          </div>
+          <div class="six columns">
+          </div>
+        </div>
 
-    {{ $form->text('projectName','Project Name','',array('class'=>'text')) }}
+        {{ $form->text('projectName','Project Name','',array('class'=>'text')) }}
 
-    {{ $form->textarea('targetScopeDescription','Target Scope Description.req','',array('class'=>'text')) }}
+        {{ $form->textarea('targetScopeDescription','Target Scope Description.req','',array('class'=>'text')) }}
 
-    {{ $form->text('closingDate','Closing Date','',array('class'=>'five date')) }}
+        {{ $form->text('opportunityPIC','Persons In Charge & Assignment','',array('id'=>'opportunity_manager','class'=>'tag_email four','rows'=>'1', 'style'=>'width:100%')) }}
 
-    {{ $form->text('opportunityPIC','Persons In Charge','',array('id'=>'opportunity_manager','class'=>'tag_initial_inline four','rows'=>'1', 'style'=>'width:100%')) }}
+        {{ $form->textarea('opportunityRemark','Remarks','',array('class'=>'text')) }}
+
+        {{ $form->text('opportunityTag','Tag','',array('class'=>'tag_keyword four','rows'=>'1', 'style'=>'width:100%')) }}
+
+    </fieldset>
+
 
 <?php
     /*
@@ -76,21 +96,14 @@
         {{ $form->text('equivalentEstimatedValue','Equivalent Estimated Value','',array('class'=>'four','rows'=>'1', 'style'=>'width:100%')) }}
       </div>
     </div>
-    */
-?>
-
-    {{ $form->select('opportunityStatus','Status',Config::get('parama.opportunitystatus'))}}
-
-    {{ $form->textarea('opportunityRemark','Remarks','',array('class'=>'text')) }}
-
-
     {{ $form->text('opportunityApproval','Approved by','',array('class'=>'tag_email four', 'style'=>'width:100%')) }}
 
-    {{ $form->text('opportunityShare','Shared to','',array('class'=>'tag_email four','style'=>'width:100%')) }}
-
-    {{ $form->select('opportunityDepartment','Department of Origin',Config::get('parama.department'),array('class'=>'four'))}}
-
-    {{ $form->text('opportunityTag','Tag','',array('class'=>'tag_keyword four','rows'=>'1', 'style'=>'width:100%')) }}
+    */
+?>
+    <fieldset>
+      <legend>Shares</legend>
+        {{ $form->text('opportunityShare','Shared to','',array('class'=>'tag_email four','style'=>'width:100%')) }}
+    </fieldset>
   </div>
 </div>
 <hr />

@@ -201,7 +201,37 @@ class Opportunity_Controller extends Base_Controller {
 			$idx++;
 		}
 
+		$self_email = new MongoRegex('/'.Auth::user()->email.'/i');
+
+
+		if( Auth::user()->role == 'root' ||
+			Auth::user()->role == 'super' ||
+			Auth::user()->role == 'president_director' ||
+			Auth::user()->role == 'bod'
+			){
+			
+			// roots can see all
+
+		}else if( Auth::user()->role == 'client' ||
+			Auth::user()->role == 'principal_vendor' ||
+			Auth::user()->role == 'subcon'){
+
+			$q['opportunityShare'] = $self_email;
+
+		}else{
+
+			$q['$or'] = array(
+				array('opportunityShare'=>$self_email),
+				array('opportunityPIC'=>$self_email),
+				array('creatorId'=>Auth::user()->id)
+				);
+
+		}
+
+
 		//print_r($q)
+
+		$permissions = Auth::user()->permissions;
 
 		$document = new Opportunity();
 
@@ -245,6 +275,37 @@ class Opportunity_Controller extends Base_Controller {
 				$tags = '';
 			}
 
+			if($doc['creatorId'] == Auth::user()->id ||
+									Auth::user()->role == 'root' ||
+									Auth::user()->role == 'super' ||
+									Auth::user()->role == 'president_director' ||
+									Auth::user()->role == 'bod'
+			){
+
+				$edit = '<a href="'.URL::to('opportunity/edit/'.$doc['_id']).'"><i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
+				$del = '<i class="foundicon-trash action del has-tip tip-bottom noradius" id="'.$doc['_id'].'" title="Delete"></i>';
+
+			}else{
+
+				$edit = '';
+				$del = '';
+
+				if(isset($permissions->opportunity) && $permissions->opportunity->edit == 1){
+					$edit = '<a href="'.URL::to('opportunity/edit/'.$doc['_id']).'"><i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
+				}else{
+					$edit = '';
+				}
+
+				if(isset($permissions->opportunity) && $permissions->opportunity->delete == 1){
+					$del = '<i class="foundicon-trash action del has-tip tip-bottom noradius" id="'.$doc['_id'].'" title="Delete"></i>';
+				}else{
+					$del = '';
+				}
+
+			}
+
+			
+
 			$aadata[] = array(
 				$counter,
 
@@ -285,7 +346,7 @@ class Opportunity_Controller extends Base_Controller {
 				$doc['projectName'],
 				$doc['targetScopeDescription'],
 				date('d-m-Y', $doc['closingDate']->sec),
-				$doc['opportunityPIC'],
+				str_replace(',', ', ', $doc['opportunityPIC']),
 				//$doc['estimatedCurrency'],
 				//number_format((double)$doc['estimatedValue'],2,',','.'),
 				//$doc['equivalentEstimatedCurrency'],
@@ -299,8 +360,7 @@ class Opportunity_Controller extends Base_Controller {
 				//date('d-m-Y H:i:s', $doc['createdDate']->sec),
 				//isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				$tags,
-				'<a href="'.URL::to('opportunity/edit/'.$doc['_id']).'"><i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;'.
-				'<i class="foundicon-trash action del has-tip tip-bottom noradius" id="'.$doc['_id'].'" title="Delete"></i>'
+				$edit.$del
 			);
 			$counter++;
 		}
