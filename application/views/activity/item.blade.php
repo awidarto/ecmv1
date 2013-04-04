@@ -106,10 +106,13 @@ elseif($doc['event'] == 'request.approval'){
 
 	<div class="row">
 			@if(isset($doc_photo))
+				@if(Auth::user()->role == 'president_director' || Auth::user()->role == 'bod')
+				@else
 				<div class="one columns">
 					{{ $doc_photo }}
 					<span class="avatarname">{{ $avatar_name }}</span>
 				</div>
+				@endif
 				<div class="eleven columns">
 			@else
 				<div class="twelve columns">
