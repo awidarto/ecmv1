@@ -12,7 +12,17 @@
 
 <div class="row">
 	<div class="nine columns left">
-		<p>graph here</p>
+
+		<h3>Project 2013</h3>
+		
+		<img src="{{ URL::to('chart/projecttimeline')}}" alt="graphtest" style="position:left;margin-right:20px;"/>
+		<img src="{{ URL::to('chart/projectvaluepie')}}" alt="graphtest" style="position:left;margin-right:20px;"/>
+
+		<div class="clear">&nbsp;</div>
+		<h3>Tender 2013</h3>
+		
+		<img src="{{ URL::to('chart/tendertimeline')}}" alt="graphtest" style="position:left;margin-right:20px;"/>
+		<img src="{{ URL::to('chart/tendervaluepie')}}" alt="graphtest" style="position:left;margin-right:20px;"/>
 	</div>
 	<div class="three columns right">
 		<table class="dataTable">

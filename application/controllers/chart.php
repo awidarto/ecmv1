@@ -220,6 +220,97 @@ class Chart_Controller extends Base_Controller {
 	    
 	}
 
+	public function get_projectvaluepie(){
+		$status = Config::get('parama.projectstatus');
+
+		$total = 0;
+		foreach ($status as $key => $value) {
+			$bystat[$key] = $this->projectvaluebystatus($key);					# code...
+		}
+
+		//print_r($bystat);
+
+		/* Create and populate the pData object */ 
+		 $MyData = new pData();    
+		 $MyData->addPoints(array_values($bystat),"ScoreA");   
+		 $MyData->setSerieDescription("ScoreA","Application A"); 
+
+		 /* Define the absissa serie */ 
+		 $MyData->addPoints(array_keys($bystat),"Labels"); 
+		 $MyData->setAbscissa("Labels"); 
+
+		 /* Create the pChart object */ 
+		 $myPicture = new pImage(240,180,$MyData,TRUE); 
+
+		 /* Set the default font properties */  
+		 $myPicture->setFontProperties(array("FontName"=>"../fonts/Forgotte.ttf","FontSize"=>6,"R"=>80,"G"=>80,"B"=>80)); 
+
+		 /* Create the pPie object */  
+		 $PieChart = new pPie($myPicture,$MyData); 
+
+		 /* Enable shadow computing */  
+		 $myPicture->setShadow(TRUE,array("X"=>3,"Y"=>3,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10)); 
+
+		 /* Draw a splitted pie chart */  
+		 $PieChart->draw3DPie(140,90,array("Radius"=>100,"DataGapAngle"=>12,"DataGapRadius"=>10,"Border"=>TRUE)); 
+
+		 /* Write the legend box */  
+		 $myPicture->setFontProperties(array("FontName"=>path('app')."libraries/pchart/fonts/Silkscreen.ttf","FontSize"=>6,"R"=>0,"G"=>0,"B"=>0));
+
+		 $PieChart->drawPieLegend(0,0,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_VERTICAL)); 
+
+		 /* Render the picture (choose the best way) */ 
+		 $myPicture->autoOutput("pictures/example.draw3DPie.transparent.png"); 
+
+
+	}
+
+
+	public function get_tendervaluepie(){
+		$status = Config::get('parama.tenderstatus');
+
+		$total = 0;
+		foreach ($status as $key => $value) {
+			$bystat[$key] = $this->tendervaluebystatus($key);					# code...
+		}
+
+		//print_r($bystat);
+
+		/* Create and populate the pData object */ 
+		 $MyData = new pData();    
+		 $MyData->addPoints(array_values($bystat),"ScoreA");   
+		 $MyData->setSerieDescription("ScoreA","Application A"); 
+
+		 /* Define the absissa serie */ 
+		 $MyData->addPoints(array_keys($bystat),"Labels"); 
+		 $MyData->setAbscissa("Labels"); 
+
+		 /* Create the pChart object */ 
+		 $myPicture = new pImage(240,180,$MyData,TRUE); 
+
+		 /* Set the default font properties */  
+		 $myPicture->setFontProperties(array("FontName"=>"../fonts/Forgotte.ttf","FontSize"=>6,"R"=>80,"G"=>80,"B"=>80)); 
+
+		 /* Create the pPie object */  
+		 $PieChart = new pPie($myPicture,$MyData); 
+
+		 /* Enable shadow computing */  
+		 $myPicture->setShadow(TRUE,array("X"=>3,"Y"=>3,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10)); 
+
+		 /* Draw a splitted pie chart */  
+		 $PieChart->draw3DPie(140,90,array("Radius"=>100,"DataGapAngle"=>12,"DataGapRadius"=>10,"Border"=>TRUE)); 
+
+		 /* Write the legend box */  
+		 $myPicture->setFontProperties(array("FontName"=>path('app')."libraries/pchart/fonts/Silkscreen.ttf","FontSize"=>6,"R"=>0,"G"=>0,"B"=>0));
+
+		 $PieChart->drawPieLegend(0,0,array("Style"=>LEGEND_NOBORDER,"Mode"=>LEGEND_VERTICAL)); 
+
+		 /* Render the picture (choose the best way) */ 
+		 $myPicture->autoOutput("pictures/example.draw3DPie.transparent.png"); 
+
+
+	}
+
 
 	public function get_projectpie(){
 
@@ -345,7 +436,47 @@ class Chart_Controller extends Base_Controller {
 		return View::make('testgraph'); 
 	}
 
-	
+	public function projectvaluebystatus($status = 'inprogress'){
+
+		$projects = new Project();
+
+		$year = date('Y',time());
+
+		$datefrom = '01-01-'.$year;
+		$dateto = '31-12-'.$year;
+		$dateFrom = new MongoDate(strtotime($datefrom." 00:00:00"));
+		$dateTo = new MongoDate(strtotime($dateto." 23:59:59"));
+
+		$dataresult = $projects->find(array('createdDate'=>array('$gte'=>$dateFrom,'$lte'=>$dateTo),'projectStatus'=>$status));
+		$dataresultvalue =0;
+		foreach ($dataresult as $key => $value) {
+			$dataresultvalue += $value['equivalentContractPriceUSD'];
+		}
+
+		return $dataresultvalue;
+
+	}
+
+	public function tendervaluebystatus($status = 'inprogress'){
+
+		$projects = new Tender();
+
+		$year = date('Y',time());
+
+		$datefrom = '01-01-'.$year;
+		$dateto = '31-12-'.$year;
+		$dateFrom = new MongoDate(strtotime($datefrom." 00:00:00"));
+		$dateTo = new MongoDate(strtotime($dateto." 23:59:59"));
+
+		$dataresult = $projects->find(array('createdDate'=>array('$gte'=>$dateFrom,'$lte'=>$dateTo),'tenderStatus'=>$status));
+		$dataresultvalue =0;
+		foreach ($dataresult as $key => $value) {
+			$dataresultvalue += $value['equivalentBidPriceUSD'];
+		}
+
+		return $dataresultvalue;
+
+	}
 
 	public function valueproject($month=0,$status){
 		
