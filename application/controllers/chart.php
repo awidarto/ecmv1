@@ -244,7 +244,7 @@ class Chart_Controller extends Base_Controller {
 		 $myPicture = new pImage(240,280,$MyData,TRUE); 
 
 		 /* Set the default font properties */  
-		 $myPicture->setFontProperties(array("FontName"=>"../fonts/Forgotte.ttf","FontSize"=>6,"R"=>80,"G"=>80,"B"=>80)); 
+		 $myPicture->setFontProperties(array("FontName"=>path('app')."libraries/pchart/fonts/Forgotte.ttf","FontSize"=>11,"R"=>80,"G"=>80,"B"=>80)); 
 
 		 /* Create the pPie object */  
 		 $PieChart = new pPie($myPicture,$MyData); 
@@ -253,7 +253,7 @@ class Chart_Controller extends Base_Controller {
 		 $myPicture->setShadow(TRUE,array("X"=>3,"Y"=>3,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10)); 
 
 		 /* Draw a splitted pie chart */  
-		 $PieChart->draw3DPie(135,140,array("Radius"=>100,"DataGapAngle"=>12,"DataGapRadius"=>10,"Border"=>TRUE)); 
+		 $PieChart->draw3DPie(135,140,array("Radius"=>100,"DataGapAngle"=>12,"DataGapRadius"=>10,"Border"=>TRUE,"WriteValues"=>PIE_VALUE_NATURAL)); 
 
 		 /* Write the legend box */  
 		 $myPicture->setFontProperties(array("FontName"=>path('app')."libraries/pchart/fonts/Silkscreen.ttf","FontSize"=>6,"R"=>0,"G"=>0,"B"=>0));
@@ -290,7 +290,7 @@ class Chart_Controller extends Base_Controller {
 		 $myPicture = new pImage(240,280,$MyData,TRUE); 
 
 		 /* Set the default font properties */  
-		 $myPicture->setFontProperties(array("FontName"=>"../fonts/Forgotte.ttf","FontSize"=>6,"R"=>80,"G"=>80,"B"=>80)); 
+		 $myPicture->setFontProperties(array("FontName"=>path('app')."libraries/pchart/fonts/Forgotte.ttf","FontSize"=>11,"R"=>80,"G"=>80,"B"=>80)); 
 
 		 /* Create the pPie object */  
 		 $PieChart = new pPie($myPicture,$MyData); 
@@ -299,7 +299,7 @@ class Chart_Controller extends Base_Controller {
 		 $myPicture->setShadow(TRUE,array("X"=>3,"Y"=>3,"R"=>0,"G"=>0,"B"=>0,"Alpha"=>10)); 
 
 		 /* Draw a splitted pie chart */  
-		 $PieChart->draw3DPie(135,140,array("Radius"=>100,"DataGapAngle"=>12,"DataGapRadius"=>10,"Border"=>TRUE)); 
+		 $PieChart->draw3DPie(135,140,array("Radius"=>100,"DataGapAngle"=>12,"DataGapRadius"=>10,"Border"=>TRUE,"WriteValues"=>PIE_VALUE_NATURAL,"LabelColor"=>PIE_LABEL_COLOR_MANUAL)); 
 
 		 /* Write the legend box */  
 		 $myPicture->setFontProperties(array("FontName"=>path('app')."libraries/pchart/fonts/Silkscreen.ttf","FontSize"=>6,"R"=>0,"G"=>0,"B"=>0));
