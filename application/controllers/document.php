@@ -54,6 +54,8 @@ class Document_Controller extends Base_Controller {
 
 		$title = 'Document Library';
 
+		$categories = json_encode(Config::get('category.all'));
+
 		if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
 			return View::make('tables.simple')
 				->with('title',$title)
@@ -61,6 +63,7 @@ class Document_Controller extends Base_Controller {
 				->with('disablesort','0,5,6')
 				->with('addurl','document/add')
 				->with('searchinput',$searchinput)
+				//->with('category',$categories)
 				->with('ajaxsource',URL::to('document'))
 				->with('ajaxdel',URL::to('document/del'))
 				->with('crumb',$this->crumb)
@@ -82,6 +85,10 @@ class Document_Controller extends Base_Controller {
 
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
+
+		$searchCategory = Input::get('searchCategory');
+
+		$searchCategory = (!isset($searchCategory) || $searchCategory == '')?'all':$searchCategory;
 
 		$limit = array($pagelength, $pagestart);
 
@@ -135,10 +142,15 @@ class Document_Controller extends Base_Controller {
 
 		$count_all = $document->count();
 
+		//$q['deleted'] = false;
 		$q['$or'] = array(
 			array('deleted'=>false),
 			array('deleted'=>array('$exists'=>false))
 		);
+
+		if($searchCategory != 'all'){
+			$q['docCategory'] = $searchCategory;
+		}
 
 		if(count($q) > 0){
 			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
@@ -1002,15 +1014,33 @@ class Document_Controller extends Base_Controller {
 		// by default can not open the page
 		$can_open = false;
 
+		$permissions = Auth::user()->permissions;
+
+
 		if( Auth::user()->role == 'root' ||
+			Auth::user()->role == 'president_director' 
+			/*
+			||
 			Auth::user()->role == 'super' ||
-			Auth::user()->role == 'president_director' ||
+			Auth::user()->role == 'operations_director' ||
+			Auth::user()->role == 'finance_hr_director' ||
 			Auth::user()->role == 'bod'
+			*/
 			){
 
 			// these roles are super users
 
 			$can_open = true;
+
+		}else if( Auth::user()->role == 'super' ||
+			Auth::user()->role == 'operations_director' ||
+			Auth::user()->role == 'finance_hr_director' ||
+			Auth::user()->role == 'bod' 
+		){
+
+			if($permissions->{$type}->read == 1){
+				$can_open = true;
+			}
 
 		}else if( Auth::user()->role == 'client' ||
 			Auth::user()->role == 'principal_vendor' ||
@@ -1045,12 +1075,11 @@ class Document_Controller extends Base_Controller {
 			$shared = $doc->count($q);
 			$created = $doc->count($q);
 
-			if($shared > 0 || $created > 0){
+			if($shared > 0 || $created > 0 || $permissions->{$type}->read == 1){
 				$can_open = true;
 			}
 		}
 
-		$permissions = Auth::user()->permissions;
 
 		//print_r($permissions);
 
@@ -1096,6 +1125,10 @@ class Document_Controller extends Base_Controller {
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
 
+		$searchCategory = Input::get('searchCategory');
+
+		$searchCategory = (!isset($searchCategory) || $searchCategory == '')?'all':$searchCategory;
+
 		$limit = array($pagelength, $pagestart);
 
 		$defsort = 1;
@@ -1138,6 +1171,8 @@ class Document_Controller extends Base_Controller {
 
 		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
 
+		$permissions = Auth::user()->permissions;
+
 		if( Auth::user()->role == 'root' ||
 			Auth::user()->role == 'super' ||
 			Auth::user()->role == 'president_director' ||
@@ -1162,6 +1197,32 @@ class Document_Controller extends Base_Controller {
 						);
 					}
 				}
+
+		}else if( Auth::user()->role == 'super' ||
+			Auth::user()->role == 'operations_director' ||
+			Auth::user()->role == 'finance_hr_director' ||
+			Auth::user()->role == 'bod' 
+		){
+
+			if(!is_null($type)){
+				if($type == 'general'){
+					$q = array(
+						'access'=>$type,
+						'$or'=>array(
+								array('deleted'=>false),
+								array('deleted'=>array('$exists'=>false))
+						)
+					);
+				}else{
+					$q = array(
+						'docDepartment' => $type,
+						'$or'=>array(
+								array('deleted'=>false),
+								array('deleted'=>array('$exists'=>false))
+						)
+					);
+				}
+			}
 
 		}else if( Auth::user()->role == 'client' ||
 			Auth::user()->role == 'principal_vendor' ||
@@ -1210,6 +1271,21 @@ class Document_Controller extends Base_Controller {
 							)
 						);
 
+					}else if($permissions->{$type}->read == 1){
+
+						$q = array(
+							'docDepartment' => trim($type),
+							'deleted'=>false,
+							'access'=>'departmental'
+							//'$or'=>array(
+									//array('access'=>'departmental'),
+									//array('docShare'=>$sharecriteria),
+									//array('creatorId'=>Auth::user()->id),
+									//array('deleted'=>array('$exists'=>false))
+							//)
+						);
+
+
 					}else{
 						$q = array(
 							array('docShare'=>$sharecriteria),
@@ -1228,7 +1304,6 @@ class Document_Controller extends Base_Controller {
 		}
 
 
-		$permissions = Auth::user()->permissions;
 
 		$document = new Document();
 
@@ -1248,6 +1323,10 @@ class Document_Controller extends Base_Controller {
 
 		if(count($sq) > 0){
 			$q = array_merge($sq,$q);
+		}
+
+		if($searchCategory != 'all'){
+			$q['docCategory'] = $searchCategory;
 		}
 
 		if(count($q) > 0){

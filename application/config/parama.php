@@ -34,7 +34,7 @@
 			'correspondences'=>'Correspondences',
 			'minutesofmeeting'=>'Minutes of Meeting',
 			'progress_report'=>'Progress Report',
-		),
+		  ),
 		'Marketing'=>array(
 			'marketing'=>'Marketing',
 			'tender'=>'Tender',

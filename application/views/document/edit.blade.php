@@ -163,11 +163,11 @@
   </div>
   <div class="five columns right">
     <fieldset>
-      <legend>Metadata</legend>
+      <legend>Filing System</legend>
 
       {{$form->select('docDepartment','Department of Origin',Config::get('parama.department'),null,array('class'=>'ten'))}}
 
-      {{ $form->select('docCategory','Category',Config::get('parama.doc_type'),null,array('class'=>'ten'))}}
+      {{ $form->select('docCategory','Folders',Config::get('parama.doc_type'),null,array('class'=>'ten'))}}
 
       {{ $form->select('docOriginalTemplate','Original Template',$templates,array('class'=>'four'))}}
 

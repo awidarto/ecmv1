@@ -139,7 +139,7 @@
   </div>
   <div class="five columns right">
     <fieldset>
-      <legend>Metadata</legend>
+      <legend>Filing System</legend>
       @if(is_null($type) || Auth::user()->role == 'root' || Auth::user()->role == 'super' || Auth::user()->role == 'bod' || Auth::user()->role == 'president_director')
         {{$form->select('docDepartment','Department of Origin',Config::get('parama.department'),array('class'=>'four'))}}
       @else
@@ -148,7 +148,7 @@
       @endif
 
 
-      {{ $form->select('docCategory','Category',Config::get('parama.doc_type'),array('class'=>'four'))}}
+      {{ $form->select('docCategory','Folders',Config::get('parama.doc_type'),array('class'=>'four'))}}
 
       {{ $form->select('docOriginalTemplate','Original Template',$templates,array('class'=>'four'))}}
 

@@ -13,67 +13,115 @@
 	@endif
 </div>
 <div class="row">
-	<table class="dataTable">
-	    <thead>
-	        <tr>
-	        	@foreach($heads as $head)
-	        		@if(is_array($head))
-	        			<th 
-	        				@foreach($head[1] as $key=>$val)
-	        					{{ $key }}="{{ $val }}"
+	<div class="two columns" id="categoryTree">
 
-	        				@endforeach
-	        			>
-	        			{{ $head[0] }}
-	        			</th>
-	        		@else
-	        		<th>
-	        			{{ $head }}
-	        		</th>
-	        		@endif
-	        	@endforeach
-	        </tr>
-	        @if(isset($secondheads) && !is_null($secondheads))
-	        	<tr>
-	        	@foreach($secondheads as $head)
-	        		@if(is_array($head))
-	        			<th 
-	        				@foreach($head[1] as $key=>$val)
-	        					{{ $key }}="{{ $val }}"
+	</div>
+	<div class="ten columns">
+		<table class="dataTable">
+		    <thead>
+		        <tr>
+		        	@foreach($heads as $head)
+		        		@if(is_array($head))
+		        			<th 
+		        				@foreach($head[1] as $key=>$val)
+		        					{{ $key }}="{{ $val }}"
 
-	        				@endforeach
-	        			>
-	        			{{ $head[0] }}
-	        			</th>
-	        		@else
-	        		<th>
-	        			{{ $head }}
-	        		</th>
-	        		@endif
-	        	@endforeach
-	        	</tr>
-	        @endif
-	    </thead>
-	    <tbody>
-	    </tbody>
-	    <tfoot>
-	    <tr>
-	    	@foreach($searchinput as $in)
-	    		@if($in)
-	        		<td><input type="text" name="search_{{$in}}" id="search_{{$in}}" value="Search {{$in}}" class="search_init" /></td>
-	    		@else
-	        		<td>&nbsp;</td>
-	    		@endif
-	    	@endforeach        	
-	    </tr>
-	    </tfoot>
-	</table>
+		        				@endforeach
+		        			>
+		        			{{ $head[0] }}
+		        			</th>
+		        		@else
+		        		<th>
+		        			{{ $head }}
+		        		</th>
+		        		@endif
+		        	@endforeach
+		        </tr>
+		        @if(isset($secondheads) && !is_null($secondheads))
+		        	<tr>
+		        	@foreach($secondheads as $head)
+		        		@if(is_array($head))
+		        			<th 
+		        				@foreach($head[1] as $key=>$val)
+		        					{{ $key }}="{{ $val }}"
+
+		        				@endforeach
+		        			>
+		        			{{ $head[0] }}
+		        			</th>
+		        		@else
+		        		<th>
+		        			{{ $head }}
+		        		</th>
+		        		@endif
+		        	@endforeach
+		        	</tr>
+		        @endif
+		    </thead>
+		    <tbody>
+		    </tbody>
+		    <tfoot>
+		    <tr>
+		    	@foreach($searchinput as $in)
+		    		@if($in)
+		        		<td><input type="text" name="search_{{$in}}" id="search_{{$in}}" value="Search {{$in}}" class="search_init" /></td>
+		    		@else
+		        		<td>&nbsp;</td>
+		    		@endif
+		    	@endforeach        	
+		    </tr>
+		    </tfoot>
+		</table>
+	</div>
 </div>
 
   <script type="text/javascript">
     $(document).ready(function(){
 		var asInitVals = new Array();
-        var oTable = $('.dataTable').DataTable(
+
+		var currentCategory = 'all';
+
+		@if(isset($category))
+			var catdata = {{$category}};
+		@else
+			var catdata = [
+				{"label":"All","id":"all"},
+				{"label":"General",
+					"id":"parent",
+					"children":[
+						{"label":"References","id":"references"},
+						{"label":"Correspondences","id":"correspondences"},
+						{"label":"Minutes of Meeting","id":"minutesofmeeting"},
+						{"label":"Progress Report","id":"progressreport"}
+					]
+				},
+				{	
+					"label":"Indoor Sales",
+					"id":"parent",
+					"children":[
+						{"label":"References","id":"references"},
+						{"label":"Communication",
+							"id":"communication",
+							"children":[
+								{"label":"Letter","id":"letter"},
+								{"label":"Email","id":"email"}
+							]
+						},
+						{"label":"Minutes of Meeting","id":"minutesofmeeting"},
+						{"label":"Progress Report","id":"progressreport"}
+					]
+				}
+			];
+
+		@endif
+
+		$('#categoryTree').tree(
+			{
+				data:catdata
+			}
+		);
+
+        oTable = $('.dataTable').DataTable(
 			{
 				"bProcessing": true,
 		        "bServerSide": true,
@@ -93,6 +141,11 @@
 				    { "bSortable": false, "aTargets": [ {{ $disablesort }} ] }
 				 ],
 			    "fnServerData": function ( sSource, aoData, fnCallback ) {
+			    	aoData.push({
+			    		'name': 'searchCategory',
+			    		'value': currentCategory
+			    	});
+
 		            $.ajax( {
 		                "dataType": 'json', 
 		                "type": "POST", 
@@ -103,6 +156,19 @@
 		        }
 			}
         );
+
+		$('#categoryTree').bind(
+		    'tree.click',
+		    function(event) {
+		        // The clicked node is 'event.node'
+		        var node = event.node;
+		        currentCategory = node.id;
+		        console.log(node.id);
+		        if( node.id != 'parent'){
+					oTable.fnDraw();
+		        }
+		    }
+		);
 
 		$('tfoot input').keyup( function () {
 			/* Filter on the column (the index) of this element */

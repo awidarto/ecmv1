@@ -1481,3 +1481,8 @@ tfoot input.search_init{
     margin-top:5px;
 
 }
+
+#categoryTree{
+    border:thin solid #ddd;
+    margin-top:30px;
+}
