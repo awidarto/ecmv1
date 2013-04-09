@@ -30,7 +30,14 @@
 						"id":"communication",
 						"children":[
 							{"label":"Letter","id":"letter"},
-							{"label":"Email","id":"email"}
+							{"label":"Email","id":"email",
+								"children":[
+									{"label":"References","id":"references"},
+									{"label":"Correspondences","id":"correspondences"},
+									{"label":"Minutes of Meeting","id":"minutesofmeeting"},
+									{"label":"Progress Report","id":"progressreport"}
+								]
+							}
 						]
 					},
 					{"label":"Minutes of Meeting","id":"minutesofmeeting"},
@@ -44,6 +51,17 @@
 				data:catdata
 			}
 		);
+
+		$('#categoryTree').bind(
+		    'tree.init',
+		    function() {
+		    	console.log('init');
+				//$('ul.jqtree_common').css({'overflow':'visible'});
+		    }
+		);
+
+		$('ul.jqtree_common').css({'overflow':'visible'});
+
 
     });
 

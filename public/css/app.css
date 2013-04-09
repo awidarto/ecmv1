@@ -1486,3 +1486,15 @@ tfoot input.search_init{
     border:thin solid #ddd;
     margin-top:30px;
 }
+
+ul.jqtree_common {
+    overflow:visible;
+}
+
+ul.jqtree-tree .jqtree-toggler {
+    left:0;
+}
+
+ul.jqtree-tree li.jqtree-folder .jqtree-title {
+    margin-left: 15px;
+}
