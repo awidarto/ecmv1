@@ -22,6 +22,8 @@
 
 		})
 
+		$('li.jqtree_common ul.jqtree_common ').css( "overflow", "scroll" );
+
 		$('.tag_initial_inline').tagsInput({
 			'autocomplete_url': base + 'ajax/initial',
 		   	'height':'40px',
