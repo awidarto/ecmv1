@@ -1498,3 +1498,14 @@ ul.jqtree-tree .jqtree-toggler {
 ul.jqtree-tree li.jqtree-folder .jqtree-title {
     margin-left: 15px;
 }
+
+ul.jqtree-tree li.jqtree-selected > .jqtree-element, 
+ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover{
+    background: transparent; 
+}
+
+ul.jqtree-tree li.jqtree-selected > .jqtree-element .jqtree-title, 
+ul.jqtree-tree li.jqtree-selected > .jqtree-element .jqtree-title:hover{
+    background-color: #97BDD6;
+    padding:3px;
+}
