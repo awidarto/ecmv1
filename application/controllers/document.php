@@ -994,8 +994,8 @@ class Document_Controller extends Base_Controller {
 		$this->crumb->add('document/type/'.$type,'Document');
 		$this->crumb->add('document/type/'.$type,depttitle($type));
 
-		$heads = array('#','Title','Created','Last Update','Expiry Date','Expiring In','Creator','Access','Attachment','Tags','Action');
-		$searchinput = array(false,'title','created','last update','exoiry date','expiring','creator','access','filename','tags',false);
+		$heads = array('#','Title','Created','Last Update','Expiry Date','Expiring In','Creator','Access','Folder','Attachment','Tags','Action');
+		$searchinput = array(false,'title','created','last update','exoiry date','expiring','creator','access','folder','filename','tags',false);
 
 		$dept = Config::get('parama.department');
 
@@ -1116,11 +1116,11 @@ class Document_Controller extends Base_Controller {
 	public function post_type($type = null)
 	{
 
-		$fields = array('title','createdDate','lastUpdate','expiryDate','expiring','creatorName','access','docFilename','docTag');
+		$fields = array('title','createdDate','lastUpdate','expiryDate','expiring','creatorName','access','docCategory','docFilename','docTag');
 
-		$rel = array('like','like','like','like','like','like','like','like','like');
+		$rel = array('like','like','like','like','like','like','like','like','like','like');
 
-		$cond = array('both','both','both','both','both','both','both','both');
+		$cond = array('both','both','both','both','both','both','both','both','both');
 
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
@@ -1429,6 +1429,7 @@ class Document_Controller extends Base_Controller {
 				(isset($doc['alert']) && $doc['alert'] == 'Yes')?$doc['expiring']:'',
 				$doc['creatorName'],
 				isset($doc['access'])?ucfirst($doc['access']):'',
+				ucfirst($doc['docCategory']),
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
 				$edit.$download.$del

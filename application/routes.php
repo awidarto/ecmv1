@@ -74,6 +74,11 @@ Route::get('testgraph',function(){
     return View::make('testgraph');    
 });
 
+Route::get('testpage',function(){
+
+    return View::make('testpage');    
+});
+
 Route::get('graph',function(){
 
     /* Create your dataset object */ 
