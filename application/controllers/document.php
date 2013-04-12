@@ -504,10 +504,16 @@ class Document_Controller extends Base_Controller {
 			$templates[$t['_id']->__toString()] = $t['title'];
 		}
 
+		if(is_null($type)){
+			$category = json_encode(Config::get('category.all'));
+		}else{
+			$category = json_encode(Config::get('category.'.$type));
+		}
 
 		$form = new Formly();
 		return View::make('document.new')
 					->with('form',$form)
+					->with('category',$category)
 					->with('templates',$templates)
 					->with('type',$type)
 					->with('crumb',$this->crumb)
@@ -746,12 +752,18 @@ class Document_Controller extends Base_Controller {
 			$templates[$t['_id']->__toString()] = $t['title'];
 		}
 
+		if(is_null($type)){
+			$category = json_encode(Config::get('category.all'));
+		}else{
+			$category = json_encode(Config::get('category.'.$type));
+		}
 
 		$form = Formly::make($doc_data);
 
 		return View::make('document.edit')
 					->with('doc',$doc_data)
 					->with('templates',$templates)
+					->with('category',$category)
 					->with('form',$form)
 					->with('type',$type)
 					->with('crumb',$this->crumb)
@@ -999,6 +1011,12 @@ class Document_Controller extends Base_Controller {
 
 		$dept = Config::get('parama.department');
 
+		if(is_null($type)){
+			$category = json_encode(Config::get('category.all'));
+		}else{
+			$category = json_encode(Config::get('category.'.$type));
+		}
+
 		$title = $dept[$type];
 
 		$doc = new Document();
@@ -1099,6 +1117,7 @@ class Document_Controller extends Base_Controller {
 				->with('title',$title)
 				->with('newbutton','New Document')
 				->with('disablesort','0,5,6')
+				->with('category',$category)
 				->with('addurl',$addurl)
 				->with('searchinput',$searchinput)
 				->with('ajaxsource',URL::to('document/type/'.$type))
@@ -1429,7 +1448,7 @@ class Document_Controller extends Base_Controller {
 				(isset($doc['alert']) && $doc['alert'] == 'Yes')?$doc['expiring']:'',
 				$doc['creatorName'],
 				isset($doc['access'])?ucfirst($doc['access']):'',
-				ucfirst($doc['docCategory']),
+				isset($doc['docCategoryLabel'])?ucfirst($doc['docCategoryLabel']):'-',
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
 				$edit.$download.$del

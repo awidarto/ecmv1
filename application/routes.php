@@ -69,6 +69,15 @@ Route::get('/',  array('before'=>'auth', function()
     }
 }));
 
+Route::get('testyml',function(){
+
+    $parsed = Yaml::from_file('public/yml/project_control.yml')->to_array();
+
+    print_r($parsed);
+
+    print json_encode($parsed);
+});
+
 Route::get('testgraph',function(){
 
     return View::make('testgraph');    

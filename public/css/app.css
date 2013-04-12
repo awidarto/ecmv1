@@ -1484,7 +1484,20 @@ tfoot input.search_init{
 
 #categoryTree{
     border:thin solid #ddd;
-    margin-top:30px;
+    padding-bottom: 10px;
+}
+
+#categoryBox{
+    margin:0;
+    padding:0;
+}
+
+#expandTree{
+    margin-left: 120px;
+    margin-top: 10px;
+    margin-bottom: 8px;
+    display:block;
+    cursor: pointer;
 }
 
 ul.jqtree_common {
@@ -1497,6 +1510,7 @@ ul.jqtree-tree .jqtree-toggler {
 
 ul.jqtree-tree li.jqtree-folder .jqtree-title {
     margin-left: 15px;
+    padding:5px;
 }
 
 ul.jqtree-tree li.jqtree-selected > .jqtree-element, 
@@ -1507,5 +1521,9 @@ ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover{
 ul.jqtree-tree li.jqtree-selected > .jqtree-element .jqtree-title, 
 ul.jqtree-tree li.jqtree-selected > .jqtree-element .jqtree-title:hover{
     background-color: #97BDD6;
-    padding:3px;
+    padding:5px;
+}
+
+ul.jqtree-tree{
+    margin-left: 5px;
 }

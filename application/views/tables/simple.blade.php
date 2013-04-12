@@ -13,8 +13,10 @@
 	@endif
 </div>
 <div class="row">
-	<div class="two columns" id="categoryTree">
+	<div class="two columns" id="categoryBox">
+		<div id="categoryTree">
 
+		</div>
 	</div>
 	<div class="ten columns">
 		<table class="dataTable">
@@ -117,7 +119,23 @@
 
 		$('#categoryTree').tree(
 			{
-				data:catdata
+				data:catdata,
+				autoOpen:true
+
+				/*,
+				selectable: true,				
+			    onCanSelectNode: function(node) {
+			        if (node.children.length == 0) {
+			            // Nodes without children can be selected
+			            return true;
+			        }
+			        else {
+			            // Nodes with children cannot be selected
+			            return false;
+		        	}
+				}
+				*/
+				
 			}
 		);
 
