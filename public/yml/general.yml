@@ -1,0 +1,46 @@
+- label: All
+- label: Brochures/Catalogues
+  children:
+    - label: Valves
+      children:
+        - label: Ball Valves
+        - label: Dual Plate Check Valves
+        - label: Nozzle Check Valves
+        - label: Swing Check Valves
+        - label: Lift Check Valves
+        - label: Gate Valves
+        - label: Globe Valves
+        - label: Butterfly Valves
+    - label: Control And Safety Valves
+    - label: Pumps
+    - label: Generators
+    - label: Lubrication Equipment
+    - label: Water Filtration System
+    - label: Steam Trap And Strainers
+    - label: Steel Products
+      children:
+        - label: Structural Steels
+        - label: Pipes
+        - label: Pipe Fittings
+    - label: ESC Sheet Pile
+    - label: Cable Trays
+- label: Codes And Standards
+  children:
+    - label: ASTM
+    - label: API
+    - label: ISO
+    - label: Europian Standards
+    - label: Other Standards
+- label: General Specifications
+  children:
+    - label: TEPI Specifications
+    - label: BP Specifications
+    - label: Chevron Specifications
+    - label: Other Specifications
+- label: Incoterms
+- label: Procedures
+  children:
+    - label: HSE Procedure
+    - label: QA/QC Procedures
+    - label: Other Procedures
+- label: PNU Misc. Information

@@ -507,7 +507,12 @@ class Document_Controller extends Base_Controller {
 		if(is_null($type)){
 			$category = json_encode(Config::get('category.all'));
 		}else{
-			$category = json_encode(Config::get('category.'.$type));
+			if(file_exists('public/yml/project_control.yml')){
+				$parsed = Yaml::from_file('public/yml/'.$type.'.yml')->to_array();
+				$category = json_encode($parsed);
+			}else{
+				$category = json_encode(Config::get('category.'.$type));
+			}
 		}
 
 		$form = new Formly();
@@ -755,7 +760,12 @@ class Document_Controller extends Base_Controller {
 		if(is_null($type)){
 			$category = json_encode(Config::get('category.all'));
 		}else{
-			$category = json_encode(Config::get('category.'.$type));
+			if(file_exists('public/yml/project_control.yml')){
+				$parsed = Yaml::from_file('public/yml/'.$type.'.yml')->to_array();
+				$category = json_encode($parsed);
+			}else{
+				$category = json_encode(Config::get('category.'.$type));
+			}
 		}
 
 		$form = Formly::make($doc_data);
@@ -1014,7 +1024,12 @@ class Document_Controller extends Base_Controller {
 		if(is_null($type)){
 			$category = json_encode(Config::get('category.all'));
 		}else{
-			$category = json_encode(Config::get('category.'.$type));
+			if(file_exists('public/yml/project_control.yml')){
+				$parsed = Yaml::from_file('public/yml/'.$type.'.yml')->to_array();
+				$category = json_encode($parsed);
+			}else{
+				$category = json_encode(Config::get('category.'.$type));
+			}
 		}
 
 		$title = $dept[$type];

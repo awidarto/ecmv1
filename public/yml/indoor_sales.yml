@@ -1,0 +1,96 @@
+- label: All
+- label: General Files
+  children:
+    - label: General Correspondances
+      children:
+        - label: Incoming Correspondences
+          children:
+            - label: Letters
+            - label: Faxes
+            - label: E-mails
+        - label: Outgoing Correspondences
+          children:
+            - label: Letters
+            - label: Faxes
+            - label: E-mails
+    - label: Agreements
+      children:
+        - label: Agency Agreements
+        - label: Other Agreements
+    - label: Tender Check List Form
+    - label: Tender Estimate Form
+    - label: Tender Register
+    - label: Job Register
+- label: Tender Documents
+  children:
+    - label: Tender Pre-qualification
+      children:
+        - label: PQ Document
+        - label: Response To PQ Document
+        - label: Consortium Agreement (if Applicable)
+    - label: Bid / Rfq Document (c/w All Attachments)
+    - label: Administrative & Technical Proposal
+      children:
+        - label: Administrative & Technical Proposal Check List
+        - label: Supporting Documents
+          children:
+            - label: Vendor/principal's Technical Proposal
+            - label: Subcontractor's Technical Proposal
+            - label: Other Supporting Documents
+        - label: Administrative & Technical Bid Proposal Submission
+    - label: Commercial Proposal
+      children:
+        - label: Commercial Proposal Check List
+        - label: Supporting Documents
+          children:
+            - label: Vendor/principal's Commercial Proposal
+            - label: Subcontractor's Commercial Proposal
+            - label: Other Supporting Documents
+        - label: Tender Estimate
+        - label: Commercial Bid Proposal Submission
+    - label: Correspondences
+      children:
+        - label: Incoming Correspondences
+          children:
+            - label: Letters
+            - label: Faxes
+            - label: E-mails
+        - label: Outgoing Correspondences
+          children:
+            - label: Letters
+            - label: Faxes
+            - label: E-mails
+    - label: Minutes Of Meeting (mom)
+    - label: Bid Opening Result
+- label: Contract/po Agreement (if Bid Successful)
+  children:
+    - label: Contract/po Agreement With Client
+      children:
+        - label: Contract/po Attachments
+          children:
+            - label: General Terms And Conditions
+            - label: Technical Documents
+            - label: Contract/po Acknowledgement To Client
+            - label: Performance Bond
+            - label: Kick Off MoM
+    - label: Contract/po Agreement With Vendor/principal
+      children:
+        - label: Contract/po Attachments
+          children:
+            - label: General Terms And Conditions
+            - label: Technical Documents
+            - label: Contract/po Acknowledgement From Vendor/principal
+    - label: Contract/po Agreement With Subcontractor/3rd Party
+      children:
+        - label: Contract/po Attachments
+          children:
+            - label: General Terms And Conditions
+            - label: Technical Documents
+            - label: Contract/po Acknowledgement From Subcontractor/3rd Party
+    - label: Handover Package To Project Control
+      children:
+        - label: Unprice Contract/PO Agreement 
+          children:
+            - label: With Client (c/w All Attachments)
+            - label: With Vendor / Principal (c/w All Attachments)
+            - label: With Subcontractor / 3rd Party (c/w All Attachments)

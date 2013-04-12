@@ -1500,6 +1500,14 @@ tfoot input.search_init{
     cursor: pointer;
 }
 
+#categoryTree{
+    overflow:hidden;
+}
+
+.jqtree-title{
+    font-size: 9pt;
+}
+
 ul.jqtree_common {
     overflow:visible;
 }

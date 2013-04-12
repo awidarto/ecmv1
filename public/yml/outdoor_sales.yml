@@ -1,0 +1,32 @@
+- label: All
+- label: General Files
+  children:
+    - label: General Correspondances
+      children:
+        - label: Incoming Correspondences
+          children:
+            - label: Letters
+            - label: Faxes
+            - label: E-mails
+        - label: Outgoing Correspondences
+          children:
+            - label: Letters
+            - label: Faxes
+            - label: E-mails
+    - label: Marketing Tools
+      children:
+        - label: PNU Brochures
+        - label: PNU Catalogues
+        - label: PNU Company Profiles
+        - label: PNU Website
+    - label: Special Events
+      children:
+        - label: Exhibition
+        - label: Seminar
+        - label: Other Special Events
+    - label: Business Plan
+    - label: Marketing Report Form
+- label: Marketing Report
+  children:
+    - label: Related To Tender
+    - label: Related To Opportunities

@@ -1,0 +1,75 @@
+- label: All
+- label: Finance
+  children:
+    - label: Correspondances
+      children:
+        - label: Incoming Correspondences
+          children:
+            - label: Letters
+            - label: Faxes
+            - label: E-mails
+        - label: Outgoing Correspondences
+          children:
+            - label: Letters
+            - label: Faxes
+            - label: E-mails
+    - label: Banking
+      children:
+        - label: Bank Reconciliation
+        - label: BI Exchange Rate
+        - label: Bank Guarantees
+        - label: Deposits
+    - label: Invoicing
+      children:
+        - label: Invoices
+        - label: Tax Invoices
+    - label: Journal
+      children:
+        - label: Petty Cash
+        - label: Payment Advice
+        - label: Payment Voucher
+    - label: List Of Routine Monthly Payment
+    - label: Weekly Reports
+      children:
+        - label: Cash Status
+        - label: Cash Advance
+        - label: Account Receivable Status
+        - label: Account Payable Status
+        - label: List Received Order And Status
+    - label: Mothly Reports
+    - label: Salary
+    - label: Payroll
+    - label: Jamsostek
+    - label: Taxes
+      children:
+        - label: Monthly Taxes
+          children:
+            - label: PPH 21
+            - label: PPH 23
+            - label: PPH 25
+            - label: Pasal 2 Ayat 4
+            - label: PPN
+        - label: Yearly Taxes
+          children:
+            - label: SPT Tahunan 29 (badan)
+    - label: Annual Financial Report
+    - label: Audited Annual Financial Report
+- label: Accounting
+  children:
+    - label: List Journal Adjustment
+    - label: Mothly Subledger
+      children:
+        - label: Prepayment
+        - label: Account Receivable Trade
+        - label: Account Receivable Others
+        - label: Stock Regular Verification
+        - label: Cash Advance
+        - label: Account Payable Trade
+        - label: Account Payable Others
+        - label: Accruals
+        - label: Refundable Deposits
+    - label: Mothly Reports
+      children:
+        - label: Profit/loss
+        - label: Balance Sheet
+        - label: Forecast/budget
