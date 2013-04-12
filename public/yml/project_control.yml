@@ -1,64 +1,96 @@
 - label: All
 - label: General Files
-  id: General_files
+  id: parent
   children:
         - label: MoM Intern Coordination Meeting
-          id: Mom
+          id: pc_general_mom_intern_coordination_meeting
         - label: Other Files
-          id: Other_files
-- label: Jobs
-  id: Jobs
+          id: pc_general_other_files
+- label: Job / Project Documents
+  id: parent
   children:
     - label: Handover Package From Indoor Sales
-      id: Handover
+      id: parent
       children:
             - label: Unprice Contract/PO Agreement
-              id: Unprice_client
+              id: parent
               children:
                 - label: With Client (c/w All Attachments)
-                  id: unprice_client
+                  id: pc_handover_unprice_contract_po_client
                 - label: With Vendor/principal (c/w All Attachments)
-                  id: unprice_vendor
+                  id: pc_handover_unprice_contract_po_vendor_principal
                 - label: Subcontractor/3rd Party (c/w All Attachments)
-                  id: unprice_subcon
+                  id: pc_handover_unprice_contract_po_subcontractor
     - label: Correspondences
+      id: parent
       children:
         - label: Incoming Correspondences
+          id: parent
           children:
-                - label: Letters
-                - label: Faxes
-                - label: E-mails
+            - label: Letters
+              id: pc_correspondences_incoming_letters
+            - label: Faxes
+              id: pc_correspondences_incoming_faxes
+            - label: E-mails
+              id: pc_correspondences_incoming_emails
         - label: Outgoing Correspondences
+          id: parent
           children:
-                - label: Letters
-                - label: Faxes
-                - label: E-mails
+            - label: Letters
+              id: pc_correspondences_outgoing_letters
+            - label: Faxes
+              id: pc_correspondences_outgoing_faxes
+            - label: E-mails
+              id: pc_correspondences_outgoing_emails
     - label: Minutes Of Meeting (mom)
+      id: parent
       children:
-            - label: Mom With Client
-            - label: Mom With Vendor / Principal
-            - label: Mom With Subcontractor / 3rd Party
+            - label: MoM With Client
+              id: pc_mom_with_client
+            - label: MoM With Vendor / Principal
+              id: pc_mom_with_vendor_principal
+            - label: MoM With Subcontractor / 3rd Party
+              id: pc_mom_with_subcontractor
     - label: Documentation
+      id: parent
       children:
         - label: Schedule And Progress Report
+          id: parent
           children:
             - label: Manufacturing Schedule
+              id: pc_schedule_progress_manufacturing
             - label: Vendor/principal/subcontractor Progress Report
+              id: pc_schedule_progress_vendor_principal_subcontractor_progress_report
             - label: Progress Report Submission To Client
+              id: pc_schedule_progress_report_submission_to_client
         - label: Manufacturing Documents
-         children:
-            - label: Supplier Document Requirement List (sdrl)
+          id: parent
+          children:
+            - label: Supplier Document Requirement List (SDRL)
+              id: pc_manufacturing_document_sdrl
             - label: Inspection And Test Plan
+              id: pc_manufacturing_document_inspection_test
             - label: Design Engineering & Drawings
-            - label: Fabrication Procedures Including Wps And Pqr (if Applicable)
+              id: pc_manufacturing_document_design_engineering_drawing
+            - label: Fabrication Procedures Including WPS And PQR (if Applicable)
+              id: pc_manufacturing_document_fabrication_procedures_wps_pqr
             - label: Painting Procedure
+              id: pc_manufacturing_document_painting_procedures
             - label: Testing Procedures
+              id: pc_manufacturing_document_testing_procedures
             - label: Packing Procedure (if Applicable)
+              id: pc_manufacturing_document_packing_procedures
             - label: Inspection Reports & Certificates
-            - label: Technical Manual (vendor Data Book)
+              id: pc_manufacturing_document_inspection_reports_certificates
+            - label: Technical Manual (Vendor Data Book)
+              id: pc_manufacturing_document_technical_manual_vendor_data_book
         - label: Documents Required For Delivery And Customs Clearance
     - label: Invoice And Payment
+      id: parent
       children:
-        - label: Invoice And Payment - Cient
+        - label: Invoice And Payment - Client
+          id: fa_invoices_payment_client
         - label: Invoice And Payment - Vendor/principal
+          id: fa_invoices_payment_vendor_principal
         - label: Invoice And Payment - Subcontractor/3rd Party
+          id: fa_invoices_payment_subcontractor

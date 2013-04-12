@@ -1,96 +1,165 @@
 - label: All
+  id: parent
 - label: General Files
+  id: parent
   children:
     - label: General Correspondances
+      id: parent
       children:
         - label: Incoming Correspondences
+          id: parent
           children:
             - label: Letters
+              id: is_general_correspondences_incoming_letters
             - label: Faxes
+              id: is_general_correspondences_incoming_faxes
             - label: E-mails
+              id: is_general_correspondences_incoming_emails
         - label: Outgoing Correspondences
+          id: parent
           children:
             - label: Letters
+              id: is_general_correspondences_outgoing_letters
             - label: Faxes
+              id: is_general_correspondences_outgoing_faxes
             - label: E-mails
+              id: is_general_correspondences_outgoing_emails
     - label: Agreements
+      id: parent
       children:
         - label: Agency Agreements
+          id: is_agreements_agency
         - label: Other Agreements
+          id: is_agreements_other
     - label: Tender Check List Form
+      id: is_tender_check_list_form
     - label: Tender Estimate Form
+      id: is_tender_estimate_form
     - label: Tender Register
+      id: is_tender_register
     - label: Job Register
+      id: is_tender_job_register
 - label: Tender Documents
+  id: parent
   children:
     - label: Tender Pre-qualification
+      id: parent
       children:
         - label: PQ Document
+          id: is_pq_document
         - label: Response To PQ Document
+          id: is_pq_response_to_pq
         - label: Consortium Agreement (if Applicable)
+          id: is_pq_consortium_agreement
     - label: Bid / Rfq Document (c/w All Attachments)
+      id: is_bid_rfq_document
     - label: Administrative & Technical Proposal
+      id: parent
       children:
         - label: Administrative & Technical Proposal Check List
+          id: is_administrative_technical_proposal_check_list
         - label: Supporting Documents
+          id: parent
           children:
             - label: Vendor/principal's Technical Proposal
+              id: is_vendor_principal_technical_proposal
             - label: Subcontractor's Technical Proposal
+              id: is_subcontractor_technical_proposal
             - label: Other Supporting Documents
+              id: is_other_technical_proposal
         - label: Administrative & Technical Bid Proposal Submission
+          id: is_administrative_technical_bid_proposal_submission
     - label: Commercial Proposal
+      id: parent
       children:
         - label: Commercial Proposal Check List
+          id: is_commercial_proposal_check_list
         - label: Supporting Documents
+          id: parent
           children:
             - label: Vendor/principal's Commercial Proposal
+              id: is_vendor_principal_commercial_proposal
             - label: Subcontractor's Commercial Proposal
+              id: is_subcontractor_commercial_proposal
             - label: Other Supporting Documents
+              id: is_other_supporting_documents
         - label: Tender Estimate
         - label: Commercial Bid Proposal Submission
     - label: Correspondences
+      id: parent
       children:
         - label: Incoming Correspondences
+          id: parent
           children:
             - label: Letters
+              id: is_tender_correspondences_incoming_letters
             - label: Faxes
+              id: is_tender_correspondences_incoming_faxes
             - label: E-mails
+              id: is_tender_correspondences_incoming_emails
         - label: Outgoing Correspondences
+          id: parent
           children:
             - label: Letters
+              id: is_tender_correspondences_outgoing_letters
             - label: Faxes
+              id: is_tender_correspondences_outgoing_faxes
             - label: E-mails
+              id: is_tender_correspondences_outgoing_emails
     - label: Minutes Of Meeting (mom)
     - label: Bid Opening Result
-- label: Contract/po Agreement (if Bid Successful)
+- label: Contract/PO Agreement (if Bid Successful)
+  id: parent
   children:
-    - label: Contract/po Agreement With Client
+    - label: Contract/PO Agreement With Client
+      id: parent
       children:
         - label: Contract/po Attachments
+          id: parent
           children:
             - label: General Terms And Conditions
+              id: is_contract_po_agreement_client_general_terms_conditions
             - label: Technical Documents
-            - label: Contract/po Acknowledgement To Client
+              id: is_contract_po_agreement_client_technical_documents
+            - label: Contract/PO Acknowledgement To Client
+              id: is_contract_po_agreement_client_acknowledgement_to_client
             - label: Performance Bond
+              id: is_contract_po_agreement_client_performance_bond
             - label: Kick Off MoM
-    - label: Contract/po Agreement With Vendor/principal
+              id: is_contract_po_agreement_client_kick_off_mom
+    - label: Contract/PO Agreement With Vendor/principal
+      id: parent
       children:
-        - label: Contract/po Attachments
+        - label: Contract/PO Attachments
+          id: parent
           children:
             - label: General Terms And Conditions
+              id: is_contract_po_agreement_vendor_principal_general_terms_conditions
             - label: Technical Documents
-            - label: Contract/po Acknowledgement From Vendor/principal
+              id: is_contract_po_agreement_vendor_principal_technical_documents
+            - label: Contract/PO Acknowledgement From Vendor/principal
+              id: is_contract_po_agreement_vendor_principal_acknowledgement_from_vendor_principal
     - label: Contract/po Agreement With Subcontractor/3rd Party
+      id: parent
       children:
         - label: Contract/po Attachments
+          id: parent
           children:
             - label: General Terms And Conditions
+              id: is_contract_po_agreement_subcontractor_general_terms_conditions
             - label: Technical Documents
+              id: is_contract_po_agreement_subcontractor_technical_documents
             - label: Contract/po Acknowledgement From Subcontractor/3rd Party
+              id: is_contract_po_agreement_subcontractor_acknowledgement_from_subcontractor
     - label: Handover Package To Project Control
+      id: parent
       children:
         - label: Unprice Contract/PO Agreement 
+          id: parent
           children:
             - label: With Client (c/w All Attachments)
+              id: pc_handover_unprice_contract_po_client
             - label: With Vendor / Principal (c/w All Attachments)
+              id: pc_handover_unprice_contract_po_vendor_principal
             - label: With Subcontractor / 3rd Party (c/w All Attachments)
+              id: pc_handover_unprice_contract_po_subcontractor
