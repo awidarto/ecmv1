@@ -10,35 +10,35 @@
           id: parent
           children:
             - label: Letters
-              id: is_general_correspondences_incoming_letters
+              id: btbp_general_correspondences_incoming_letters
             - label: Faxes
-              id: is_general_correspondences_incoming_faxes
+              id: btbp_general_correspondences_incoming_faxes
             - label: E-mails
-              id: is_general_correspondences_incoming_emails
+              id: btbp_general_correspondences_incoming_emails
         - label: Outgoing Correspondences
           id: parent
           children:
             - label: Letters
-              id: is_general_correspondences_outgoing_letters
+              id: btbp_general_correspondences_outgoing_letters
             - label: Faxes
-              id: is_general_correspondences_outgoing_faxes
+              id: btbp_general_correspondences_outgoing_faxes
             - label: E-mails
-              id: is_general_correspondences_outgoing_emails
+              id: btbp_general_correspondences_outgoing_emails
     - label: Agreements
       id: parent
       children:
         - label: Agency Agreements
-          id: is_agreements_agency
+          id: btbp_agreements_agency
         - label: Other Agreements
-          id: is_agreements_other
+          id: btbp_agreements_other
     - label: Tender Check List Form
-      id: is_tender_check_list_form
+      id: btbp_tender_check_list_form
     - label: Tender Estimate Form
-      id: is_tender_estimate_form
+      id: btbp_tender_estimate_form
     - label: Tender Register
-      id: is_tender_register
+      id: btbp_tender_register
     - label: Job Register
-      id: is_tender_job_register
+      id: btbp_tender_job_register
 - label: Tender Documents
   id: parent
   children:
@@ -46,43 +46,43 @@
       id: parent
       children:
         - label: PQ Document
-          id: is_pq_document
+          id: btbp_pq_document
         - label: Response To PQ Document
-          id: is_pq_response_to_pq
+          id: btbp_pq_response_to_pq
         - label: Consortium Agreement (if Applicable)
-          id: is_pq_consortium_agreement
+          id: btbp_pq_consortium_agreement
     - label: Bid / Rfq Document (c/w All Attachments)
-      id: is_bid_rfq_document
+      id: btbp_bid_rfq_document
     - label: Administrative & Technical Proposal
       id: parent
       children:
         - label: Administrative & Technical Proposal Check List
-          id: is_administrative_technical_proposal_check_list
+          id: btbp_administrative_technical_proposal_check_list
         - label: Supporting Documents
           id: parent
           children:
             - label: Vendor/principal's Technical Proposal
-              id: is_vendor_principal_technical_proposal
+              id: btbp_vendor_principal_technical_proposal
             - label: Subcontractor's Technical Proposal
-              id: is_subcontractor_technical_proposal
+              id: btbp_subcontractor_technical_proposal
             - label: Other Supporting Documents
-              id: is_other_technical_proposal
+              id: btbp_other_technical_proposal
         - label: Administrative & Technical Bid Proposal Submission
-          id: is_administrative_technical_bid_proposal_submission
+          id: btbp_administrative_technical_bid_proposal_submission
     - label: Commercial Proposal
       id: parent
       children:
         - label: Commercial Proposal Check List
-          id: is_commercial_proposal_check_list
+          id: btbp_commercial_proposal_check_list
         - label: Supporting Documents
           id: parent
           children:
             - label: Vendor/principal's Commercial Proposal
-              id: is_vendor_principal_commercial_proposal
+              id: btbp_vendor_principal_commercial_proposal
             - label: Subcontractor's Commercial Proposal
-              id: is_subcontractor_commercial_proposal
+              id: btbp_subcontractor_commercial_proposal
             - label: Other Supporting Documents
-              id: is_other_supporting_documents
+              id: btbp_other_supporting_documents
         - label: Tender Estimate
         - label: Commercial Bid Proposal Submission
     - label: Correspondences
@@ -92,20 +92,20 @@
           id: parent
           children:
             - label: Letters
-              id: is_tender_correspondences_incoming_letters
+              id: btbp_tender_correspondences_incoming_letters
             - label: Faxes
-              id: is_tender_correspondences_incoming_faxes
+              id: btbp_tender_correspondences_incoming_faxes
             - label: E-mails
-              id: is_tender_correspondences_incoming_emails
+              id: btbp_tender_correspondences_incoming_emails
         - label: Outgoing Correspondences
           id: parent
           children:
             - label: Letters
-              id: is_tender_correspondences_outgoing_letters
+              id: btbp_tender_correspondences_outgoing_letters
             - label: Faxes
-              id: is_tender_correspondences_outgoing_faxes
+              id: btbp_tender_correspondences_outgoing_faxes
             - label: E-mails
-              id: is_tender_correspondences_outgoing_emails
+              id: btbp_tender_correspondences_outgoing_emails
     - label: Minutes Of Meeting (mom)
     - label: Bid Opening Result
 - label: Contract/PO Agreement (if Bid Successful)
@@ -118,15 +118,15 @@
           id: parent
           children:
             - label: General Terms And Conditions
-              id: is_contract_po_agreement_client_general_terms_conditions
+              id: btbp_contract_po_agreement_client_general_terms_conditions
             - label: Technical Documents
-              id: is_contract_po_agreement_client_technical_documents
+              id: btbp_contract_po_agreement_client_technical_documents
             - label: Contract/PO Acknowledgement To Client
-              id: is_contract_po_agreement_client_acknowledgement_to_client
+              id: btbp_contract_po_agreement_client_acknowledgement_to_client
             - label: Performance Bond
-              id: is_contract_po_agreement_client_performance_bond
+              id: btbp_contract_po_agreement_client_performance_bond
             - label: Kick Off MoM
-              id: is_contract_po_agreement_client_kick_off_mom
+              id: btbp_contract_po_agreement_client_kick_off_mom
     - label: Contract/PO Agreement With Vendor/principal
       id: parent
       children:
@@ -134,11 +134,11 @@
           id: parent
           children:
             - label: General Terms And Conditions
-              id: is_contract_po_agreement_vendor_principal_general_terms_conditions
+              id: btbp_contract_po_agreement_vendor_principal_general_terms_conditions
             - label: Technical Documents
-              id: is_contract_po_agreement_vendor_principal_technical_documents
+              id: btbp_contract_po_agreement_vendor_principal_technical_documents
             - label: Contract/PO Acknowledgement From Vendor/principal
-              id: is_contract_po_agreement_vendor_principal_acknowledgement_from_vendor_principal
+              id: btbp_contract_po_agreement_vendor_principal_acknowledgement_from_vendor_principal
     - label: Contract/po Agreement With Subcontractor/3rd Party
       id: parent
       children:
@@ -146,11 +146,11 @@
           id: parent
           children:
             - label: General Terms And Conditions
-              id: is_contract_po_agreement_subcontractor_general_terms_conditions
+              id: btbp_contract_po_agreement_subcontractor_general_terms_conditions
             - label: Technical Documents
-              id: is_contract_po_agreement_subcontractor_technical_documents
+              id: btbp_contract_po_agreement_subcontractor_technical_documents
             - label: Contract/po Acknowledgement From Subcontractor/3rd Party
-              id: is_contract_po_agreement_subcontractor_acknowledgement_from_subcontractor
+              id: btbp_contract_po_agreement_subcontractor_acknowledgement_from_subcontractor
     - label: Handover Package To Project Control
       id: parent
       children:
@@ -158,8 +158,8 @@
           id: parent
           children:
             - label: With Client (c/w All Attachments)
-              id: is_handover_unprice_contract_po_client
+              id: btbp_handover_unprice_contract_po_client
             - label: With Vendor / Principal (c/w All Attachments)
-              id: is_handover_unprice_contract_po_vendor_principal
+              id: btbp_handover_unprice_contract_po_vendor_principal
             - label: With Subcontractor / 3rd Party (c/w All Attachments)
-              id: is_handover_unprice_contract_po_subcontractor
+              id: btbp_handover_unprice_contract_po_subcontractor

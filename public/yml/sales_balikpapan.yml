@@ -1,0 +1,57 @@
+- label: All
+  id: all
+- label: General Files
+  id: parent
+  children:
+    - label: General Correspondances
+      id: parent
+      children:
+        - label: Incoming Correspondences
+          id: parent
+          children:
+            - label: Letters
+              id: smbp_general_correspondences_incoming_letters
+            - label: Faxes
+              id: smbp_general_correspondences_incoming_faxes
+            - label: E-mails
+              id: smbp_general_correspondences_incoming_emails
+        - label: Outgoing Correspondences
+          id: parent
+          children:
+            - label: Letters
+              id: smbp_general_correspondences_outgoing_letters
+            - label: Faxes
+              id: smbp_general_correspondences_outgoing_faxes
+            - label: E-mails
+              id: smbp_general_correspondences_outgoing_emails
+    - label: Marketing Tools
+      id: parent
+      children:
+        - label: PNU Brochures
+          id: smbp_pnu_brochures
+        - label: PNU Catalogues
+          id: smbp_pnu_catalogues
+        - label: PNU Company Profiles
+          id: smbp_pnu_company_profiles
+        - label: PNU Website
+          id: smbp_pnu_website
+    - label: Special Events
+      id: parent
+      children:
+        - label: Exhibition
+          id: smbp_special_events_exhibition
+        - label: Seminar
+          id: smbp_special_events_seminar
+        - label: Other Special Events
+          id: smbp_special_events_other
+    - label: Business Plan
+      id: smbp_business_plan
+    - label: Marketing Report Form
+      id: smbp_marketing_report_form
+- label: Marketing Report
+  id: parent
+  children:
+    - label: Related To Tender
+      id: smbp_marketing_report_related_to_tender
+    - label: Related To Opportunities
+      id: smbp_marketing_report_related_to_opportunities

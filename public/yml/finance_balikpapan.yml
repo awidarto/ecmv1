@@ -1,75 +1,145 @@
 - label: All
+  id: all
 - label: Finance
+  id: parent
   children:
-    - label: Correspondances
+    - label: Correspondences
+      id: parent
       children:
         - label: Incoming Correspondences
+          id: parent
           children:
             - label: Letters
+              id: fabp_correspondences_incoming_letters
             - label: Faxes
+              id: fabp_correspondences_incoming_faxes
             - label: E-mails
+              id: fabp_correspondences_incoming_emails
         - label: Outgoing Correspondences
+          id: parent
           children:
             - label: Letters
+              id: fabp_correspondences_outgoing_letters
             - label: Faxes
+              id: fabp_correspondences_outgoing_faxes
             - label: E-mails
+              id: fabp_correspondences_outgoing_emails
     - label: Banking
+      id: parent
       children:
         - label: Bank Reconciliation
+          id: fabp_banking_bank_reconciliation
         - label: BI Exchange Rate
+          id: fabp_banking_bi_exchange_rate
         - label: Bank Guarantees
+          id: fabp_banking_bank_guarantees
         - label: Deposits
+          id: fabp_banking_deposits
     - label: Invoicing
+      id: parent
       children:
         - label: Invoices
+          id: parent
+          children:
+            - label: Invoice And Payment - Client
+              id: fabp_invoices_payment_client
+            - label: Invoice And Payment - Vendor/principal
+              id: fabp_invoices_payment_vendor_principal
+            - label: Invoice And Payment - Subcontractor/3rd Party
+              id: fabp_invoices_payment_subcontractor
+            - label: Invoice And Payment - Others
+              id: fabp_invoices_payment_others
         - label: Tax Invoices
+          id: fabp_tax_invoices
     - label: Journal
+      id: parent
       children:
         - label: Petty Cash
+          id: fabp_petty_cash
         - label: Payment Advice
+          id: fabp_payment_advice
         - label: Payment Voucher
+          id: fabp_payment_voucher
     - label: List Of Routine Monthly Payment
+      id: fabp_list_of_routine_monthly_payment
     - label: Weekly Reports
+      id: parent
       children:
         - label: Cash Status
+          id: fabp_weekly_cash_status
         - label: Cash Advance
+          id: fabp_weekly_cash_advance
         - label: Account Receivable Status
+          id: fabp_weekly_account_receivable_status
         - label: Account Payable Status
+          id: fabp_weekly_account_payable_status
         - label: List Received Order And Status
+          id: fabp_weekly_list_received_order_and_status
     - label: Mothly Reports
+      id: fabp_monthly_reports
     - label: Salary
+      id: fabp_salary
     - label: Payroll
+      id: fabp_payroll
     - label: Jamsostek
+      id: fabp_jamsostek
     - label: Taxes
+      id: parent
       children:
         - label: Monthly Taxes
+          id: parent
           children:
             - label: PPH 21
+              id: fabp_monthly_taxes_pph_21
             - label: PPH 23
+              id: fabp_monthly_taxes_pph_23
             - label: PPH 25
+              id: fabp_monthly_taxes_pph_25
             - label: Pasal 2 Ayat 4
+              id: fabp_monthly_taxes_pph_pasal_2_ayat_4
             - label: PPN
+              id: fabp_monthly_taxes_ppn
         - label: Yearly Taxes
+          id: parent
           children:
             - label: SPT Tahunan 29 (badan)
+              id: fabp_yearly_taxes_spt_tahunan_29_badan
     - label: Annual Financial Report
+      id: fabp_annual_financial_report
     - label: Audited Annual Financial Report
+      id: fabp_audited_annual_financial_report
 - label: Accounting
+  id: parent
   children:
     - label: List Journal Adjustment
+      id: fabp_list_journal_adjustment
     - label: Mothly Subledger
+      id: parent
       children:
         - label: Prepayment
+          id: fabp_monthly_subledger_prepayment
         - label: Account Receivable Trade
+          id: fabp_monthly_subledger_account_receivable_trade
         - label: Account Receivable Others
+          id: fabp_monthly_subledger_account_receivable_others
         - label: Stock Regular Verification
+          id: fabp_monthly_subledger_stock_regular_verification
         - label: Cash Advance
+          id: fabp_monthly_subledger_cash_advance
         - label: Account Payable Trade
+          id: fabp_monthly_subledger_account_payable_trade
         - label: Account Payable Others
+          id: fabp_monthly_subledger_account_payable_others
         - label: Accruals
+          id: fabp_monthly_subledger_accruals
         - label: Refundable Deposits
+          id: fabp_monthly_subledger_refundable_deposits
     - label: Mothly Reports
+      id: parent
       children:
         - label: Profit/loss
+          id: fabp_monthly_reports_profit_loss
         - label: Balance Sheet
+          id: fabp_monthly_reports_balance_sheets
         - label: Forecast/budget
+          id: fabp_monthly_reports_profit_forecast_budget
