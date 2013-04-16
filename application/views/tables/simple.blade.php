@@ -13,12 +13,16 @@
 	@endif
 </div>
 <div class="row">
+	@if(isset($category))
 	<div class="two columns" id="categoryBox">
 		<div id="categoryTree">
 
 		</div>
 	</div>
 	<div class="ten columns">
+	@else
+	<div class="twelve columns">
+	@endif
 		<table class="dataTable">
 		    <thead>
 		        <tr>
