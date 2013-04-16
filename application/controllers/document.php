@@ -1022,9 +1022,10 @@ class Document_Controller extends Base_Controller {
 		$dept = Config::get('parama.department');
 
 		if(is_null($type)){
-			$category = json_encode(Config::get('category.all'));
+			$category = false;
+			//$category = json_encode(Config::get('category.all'));
 		}else{
-			if(file_exists('public/yml/project_control.yml')){
+			if(file_exists('public/yml/'.$type.'.yml')){
 				$parsed = Yaml::from_file('public/yml/'.$type.'.yml')->to_array();
 				$category = json_encode($parsed);
 			}else{
