@@ -1,4 +1,3 @@
-- label: All
 - label: General Files
   id: parent
   children:

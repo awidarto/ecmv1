@@ -1,5 +1,3 @@
-- label:
-  id: all
 - label: List Of Stock Materials
   id: parent
   children:
