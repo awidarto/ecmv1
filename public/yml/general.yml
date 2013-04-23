@@ -1,5 +1,3 @@
-- label: All
-  id: all
 - label: Brochures/Catalogues
   id: parent
   children:

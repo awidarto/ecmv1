@@ -124,7 +124,7 @@
 		$('#categoryTree').tree(
 			{
 				data:catdata,
-				autoOpen:true
+				autoOpen:false
 
 				/*,
 				selectable: true,				

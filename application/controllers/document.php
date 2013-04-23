@@ -498,6 +498,8 @@ class Document_Controller extends Base_Controller {
 
 		$template = $doc->find(array('useAsTemplate'=>'Yes'));
 
+		$permissions = Auth::user()->permissions;
+
 		$templates = array();
 		$templates['none'] = 'None';
 		foreach($template as $t){
@@ -507,12 +509,37 @@ class Document_Controller extends Base_Controller {
 		if(is_null($type)){
 			$category = json_encode(Config::get('category.all'));
 		}else{
+
+			$types = Config::get('parama.department');
+			$types = array_keys($types);
+
+			$fullarray = array();
+
+			foreach ($types as $t) {
+				if(file_exists('public/yml/'.$t.'.yml') && ($permissions->{$t}->read == 1 || $t == $type)){
+					$parsed = Yaml::from_file('public/yml/'.$t.'.yml')->to_array();
+					$parent = array('label'=>depttitle($t),'id'=>'parent','children'=>$parsed);
+					$fullarray[] = $parent;
+				}
+			}
+
+			$all = array('label'=>'All','id'=>'all');
+
+			array_unshift($fullarray, $all);
+
+			$category = json_encode($fullarray);
+
+
+			/*
 			if(file_exists('public/yml/project_control.yml')){
 				$parsed = Yaml::from_file('public/yml/'.$type.'.yml')->to_array();
 				$category = json_encode($parsed);
 			}else{
 				$category = json_encode(Config::get('category.'.$type));
 			}
+			*/
+
+
 		}
 
 		$form = new Formly();
@@ -757,15 +784,39 @@ class Document_Controller extends Base_Controller {
 			$templates[$t['_id']->__toString()] = $t['title'];
 		}
 
+		$permissions = Auth::user()->permissions;
+
 		if(is_null($type)){
 			$category = json_encode(Config::get('category.all'));
 		}else{
+
+			$types = Config::get('parama.department');
+			$types = array_keys($types);
+
+			$fullarray = array();
+
+			foreach ($types as $t) {
+				if(file_exists('public/yml/'.$t.'.yml') && ($permissions->{$t}->read == 1 || $t == $type)){
+					$parsed = Yaml::from_file('public/yml/'.$t.'.yml')->to_array();
+					$parent = array('label'=>depttitle($t),'id'=>'parent','children'=>$parsed);
+					$fullarray[] = $parent;
+				}
+			}
+
+			$all = array('label'=>'All','id'=>'all');
+
+			array_unshift($fullarray, $all);
+
+			$category = json_encode($fullarray);
+
+			/*
 			if(file_exists('public/yml/project_control.yml')){
 				$parsed = Yaml::from_file('public/yml/'.$type.'.yml')->to_array();
 				$category = json_encode($parsed);
 			}else{
 				$category = json_encode(Config::get('category.'.$type));
 			}
+			*/
 		}
 
 		$form = Formly::make($doc_data);
@@ -1021,16 +1072,74 @@ class Document_Controller extends Base_Controller {
 
 		$dept = Config::get('parama.department');
 
+		$permissions = Auth::user()->permissions;
+
 		if(is_null($type)){
 			$category = false;
 			//$category = json_encode(Config::get('category.all'));
 		}else{
-			if(file_exists('public/yml/'.$type.'.yml')){
-				$parsed = Yaml::from_file('public/yml/'.$type.'.yml')->to_array();
-				$category = json_encode($parsed);
+			$therole = Auth::user()->role;
+
+			if($type == 'president_director'){
+
+				$types = Config::get('parama.department');
+				$types = array_keys($types);
+
+				$fullarray = array();
+
+				foreach ($types as $t) {
+					if(file_exists('public/yml/'.$t.'.yml')){
+						$parsed = Yaml::from_file('public/yml/'.$t.'.yml')->to_array();
+						$parent = array('label'=>depttitle($t),'id'=>'parent','children'=>$parsed);
+						$fullarray[] = $parent;
+					}
+				}
+
+				$all = array('label'=>'All','id'=>'all');
+
+				array_unshift($fullarray, $all);
+
+				$category = json_encode($fullarray);
+
+
+			}else if($type == 'operations_director'){
+
+				$types = Config::get('parama.department');
+				$types = array_keys($types);
+
+				$fullarray = array();
+
+				foreach ($types as $t) {
+					if(file_exists('public/yml/'.$t.'.yml') && $permissions->{$t}->read == 1){
+						$parsed = Yaml::from_file('public/yml/'.$t.'.yml')->to_array();
+						$parent = array('label'=>depttitle($t),'id'=>'parent','children'=>$parsed);
+						$fullarray[] = $parent;
+					}
+				}
+
+				$all = array('label'=>'All','id'=>'all');
+
+				array_unshift($fullarray, $all);
+
+				$category = json_encode($fullarray);
+
+
 			}else{
-				$category = json_encode(Config::get('category.'.$type));
+
+				if(file_exists('public/yml/'.$type.'.yml')){
+					$parsed = Yaml::from_file('public/yml/'.$type.'.yml')->to_array();
+
+					$all = array('label'=>'All','id'=>'all');
+
+					array_unshift($parsed, $all);
+
+					$category = json_encode($parsed);
+				}else{
+					$category = json_encode(Config::get('category.'.$type));
+				}
+
 			}
+
 		}
 
 		$title = $dept[$type];
@@ -1047,9 +1156,6 @@ class Document_Controller extends Base_Controller {
 
 		// by default can not open the page
 		$can_open = false;
-
-		$permissions = Auth::user()->permissions;
-
 
 		if( Auth::user()->role == 'root' ||
 			Auth::user()->role == 'president_director' 

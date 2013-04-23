@@ -1,4 +1,3 @@
-- label: All
 - label: Human Resources
   children:
     - label: Company Rules And Regulation
