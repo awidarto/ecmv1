@@ -382,7 +382,7 @@ class Document_Controller extends Base_Controller {
 				depttitle($doc['docDepartment']),
 				date('d-m-Y H:i:s', $doc['createdDate']->sec),
 				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
-				isset($doc['expiryDate'])?date('d-m-Y', $doc['expiryDate']->sec):'',
+				(isset($doc['expiryDate']) && $doc['expiryDate'] != '')?date('d-m-Y', $doc['expiryDate']->sec):'',
 				$doc['expiring'],
 				$doc['creatorName'],
 				isset($doc['access'])?ucfirst($doc['access']):'',
@@ -1088,7 +1088,9 @@ class Document_Controller extends Base_Controller {
 				$fullarray = array();
 
 				foreach ($types as $t) {
-					if(file_exists('public/yml/'.$t.'.yml')){
+					$nodisplay = ($t == 'finance_hr_director' || $t == 'operations_director')?true:false;
+
+					if(file_exists('public/yml/'.$t.'.yml') && $nodisplay == false){
 						$parsed = Yaml::from_file('public/yml/'.$t.'.yml')->to_array();
 						$parent = array('label'=>depttitle($t),'id'=>'parent','children'=>$parsed);
 						$fullarray[] = $parent;
@@ -1110,7 +1112,9 @@ class Document_Controller extends Base_Controller {
 				$fullarray = array();
 
 				foreach ($types as $t) {
-					if(file_exists('public/yml/'.$t.'.yml') && $permissions->{$t}->read == 1){
+					$nodisplay = ($t == 'finance_hr_director' || $t == 'finance_balikpapan' || $t == 'finance_pusat' || $t == 'hr_admin')?true:false;
+
+					if(file_exists('public/yml/'.$t.'.yml') && $nodisplay == false){
 						$parsed = Yaml::from_file('public/yml/'.$t.'.yml')->to_array();
 						$parent = array('label'=>depttitle($t),'id'=>'parent','children'=>$parsed);
 						$fullarray[] = $parent;
