@@ -1067,8 +1067,13 @@ class Document_Controller extends Base_Controller {
 		$this->crumb->add('document/type/'.$type,'Document');
 		$this->crumb->add('document/type/'.$type,depttitle($type));
 
-		$heads = array('#','Title','Created','Last Update','Expiry Date','Expiring In','Creator','Access','Folder','Attachment','Tags','Action');
-		$searchinput = array(false,'title','created','last update','exoiry date','expiring','creator','access','folder','filename','tags',false);
+		$heads = array('#',
+			'Title','Created','Last Update',
+			//'Expiry Date','Expiring In','Creator',
+			'Access','Folder','Attachment','Tags','Action');
+		$searchinput = array(false,'title','created','last update',
+			//'expiry date','expiring','creator',
+			'access','folder','filename','tags',false);
 
 		$dept = Config::get('parama.department');
 
@@ -1248,6 +1253,7 @@ class Document_Controller extends Base_Controller {
 				->with('searchinput',$searchinput)
 				->with('ajaxsource',URL::to('document/type/'.$type))
 				->with('ajaxdel',URL::to('document/del'))
+				->with('filteron',true)
 				->with('crumb',$this->crumb)
 				->with('heads',$heads);
 		}else{
@@ -1261,9 +1267,13 @@ class Document_Controller extends Base_Controller {
 	public function post_type($type = null)
 	{
 
-		$fields = array('title','createdDate','lastUpdate','expiryDate','expiring','creatorName','access','docCategory','docFilename','docTag');
+		$fields = array('title','createdDate','lastUpdate',
+			//'expiryDate','expiring','creatorName',
+			'access','docCategory','docFilename','docTag');
 
-		$rel = array('like','like','like','like','like','like','like','like','like','like');
+		$rel = array('like','like','like',
+			//'like','like','like',
+			'like','like','like','like');
 
 		$cond = array('both','both','both','both','both','both','both','both','both');
 
@@ -1271,8 +1281,15 @@ class Document_Controller extends Base_Controller {
 		$pagelength = Input::get('iDisplayLength');
 
 		$searchCategory = Input::get('searchCategory');
-
 		$searchCategory = (!isset($searchCategory) || $searchCategory == '')?'all':$searchCategory;
+
+
+		$searchOpportunityNo = Input::get('filterOpportunityNo');
+		$searchOpportunityNo = (!isset($searchOpportunityNo) || $searchOpportunityNo == '')?'all':$searchOpportunityNo;
+		$searchTenderNo = Input::get('filterTenderNo');
+		$searchTenderNo = (!isset($searchTenderNo) || $searchTenderNo == '')?'all':$searchTenderNo;
+		$searchProjectNo = Input::get('filterProjectNo');
+		$searchProjectNo = (!isset($searchProjectNo) || $searchProjectNo == '')?'all':$searchProjectNo;
 
 		$limit = array($pagelength, $pagestart);
 
@@ -1307,6 +1324,21 @@ class Document_Controller extends Base_Controller {
 				}
 			}
 			$idx++;
+		}
+
+		if($searchProjectNo != 'all'){
+			$project_no = new MongoRegex('/'.$searchProjectNo.'/i');
+			$sq['docProject'] = $project_no;
+		}
+
+		if($searchTenderNo != 'all'){
+			$tender_no = new MongoRegex('/'.$searchTenderNo.'/i');
+			$sq['docTender'] = $tender_no;
+		}
+
+		if($searchOpportunityNo != 'all'){
+			$opportunity_no = new MongoRegex('/'.$searchOpportunityNo.'/i');
+			$sq['docOpportunity'] = $opportunity_no;
 		}
 
 		//start creating query array
@@ -1570,9 +1602,9 @@ class Document_Controller extends Base_Controller {
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
 				date('d-m-Y H:i:s', $doc['createdDate']->sec),
 				(isset($doc['lastUpdate']) && $doc['lastUpdate'] != '')?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
-				(isset($doc['expiryDate']) && $doc['expiryDate'] != '')?date('d-m-Y', $doc['expiryDate']->sec):'',
-				(isset($doc['alert']) && $doc['alert'] == 'Yes')?$doc['expiring']:'',
-				$doc['creatorName'],
+				//(isset($doc['expiryDate']) && $doc['expiryDate'] != '')?date('d-m-Y', $doc['expiryDate']->sec):'',
+				//(isset($doc['alert']) && $doc['alert'] == 'Yes')?$doc['expiring']:'',
+				//$doc['creatorName'],
 				isset($doc['access'])?ucfirst($doc['access']):'',
 				isset($doc['docCategoryLabel'])?ucfirst($doc['docCategoryLabel']):'-',
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',

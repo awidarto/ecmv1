@@ -54,10 +54,13 @@
       id: gen_api
     - label: ISO
       id: gen_iso
-    - label: Europian Standards
+    - label: European Standards
       id: gen_european_standards
     - label: Other Standards
-      id: gen_other_standards
+      id: parent
+      children:
+      - label: Incoterms
+        id: gen_incoterms
 - label: General Specifications
   id: parent
   children:
@@ -69,8 +72,6 @@
       id: gen_chevron_specifications
     - label: Other Specifications
       id: gen_other_specifications
-- label: Incoterms
-  id: gen_incoterms
 - label: Procedures
   id: parent
   children:
