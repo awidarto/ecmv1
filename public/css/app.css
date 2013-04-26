@@ -482,16 +482,16 @@ body.front .container-content{
 
 }
 #paramanusaLogofront{
-    background: transparent url(../images/logo.png);
-    width: 150px;
-    height: 84px;
+    background: transparent url(../images/logo-loginhigh.png);
+    width: 200px;
+    height: 108px;
     margin-left:30px;
     text-indent: -99999px;
     float: left;
     margin-top: 31px;
 }
 #paramanusaLogo a{
-	background: transparent url(../images/logo.png);
+	background: transparent url(../images/logohigh.png);
 	width: 150px;
 	height: 84px;
 	margin-left:30px;
@@ -632,7 +632,7 @@ body.front .mainheader #paramanusaLogo{
 	padding-bottom: 10px;
 }
 body.front .container-content{
-	margin: 40px 0;
+	margin: 55px 0;
 	text-align: center;
 	width: 100%;
 	float: none;
@@ -921,7 +921,7 @@ a.inlink {
 }
 body.front .loginheader h1#paramanusaLogofront{
 	margin:0 auto;
-	margin-top: 15px;
+	margin-top: 25px;
 	margin-bottom: 10px;
 	text-align: center;
     
