@@ -1445,7 +1445,8 @@ img.avatar{
     color:#ddd;
 }
 
-tfoot input.search_init{
+tfoot input.search_init, thead input.search_init{
+    line-height: 14px;
     font-size: 11px;
 }
 
@@ -1534,4 +1535,8 @@ ul.jqtree-tree li.jqtree-selected > .jqtree-element .jqtree-title:hover{
 
 ul.jqtree-tree{
     margin-left: 5px;
+}
+
+#filtertable{
+    width:100%;
 }
