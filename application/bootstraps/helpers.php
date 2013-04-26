@@ -120,8 +120,13 @@ function roletitle($role){
 }
 
 function depttitle($dept){
-	$depttitles = Config::get('parama.department');
-	return $depttitles[$dept];
+	if(is_null($dept)){
+		$depttitles = 'No Title';
+	}else{
+		$depttitles = Config::get('parama.department');
+		$depttitles = $depttitles[$dept];
+	}
+	return $depttitles;
 }
 
 function limitwords($string, $word_limit)

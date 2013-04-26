@@ -1,0 +1,18 @@
+- label: Material Inspection Report
+  id: parent
+  children:
+    - label: Inspection At Warehouse
+      id: qc_mir_at_warehouse
+    - label: On Site Inspection
+      id: qc_mir_on_site
+- label: Non Compliance Report
+  id: qc_non_compliance_report
+- label: Valve Testing Report
+  id: parent
+  children:
+    - label: Testing At Warehouse
+      id: qc_valve_testing_at_warehouse
+    - label: Site Acceptance Test (SAT)
+      id: qc_valve_testing_site_acceptance_test_sat
+- label: Valve Test Procedures
+  id: qc_valve_test_procedure

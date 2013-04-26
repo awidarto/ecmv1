@@ -13,10 +13,38 @@
 	@endif
 </div>
 <div class="row">
-	<div class="two columns" id="categoryTree">
+	@if(isset($category))
+	<div class="two columns" id="categoryBox">
+		<div id="categoryTree">
 
+		</div>
 	</div>
 	<div class="ten columns">
+	@else
+	<div class="twelve columns">
+	@endif
+		@if(isset($filteron) && $filteron == true)
+			<table id="filtertable">
+				<thead>
+			    	<tr>
+			    		<th colspan="2">
+			    			<label for="filter_projectno">Opportunity #</label>
+			        		<input type="text" name="filter_opportunityno" id="filter_opportunityno" value="" placeholder="Filter Opportunity No." class="search_init" />
+			    		</th>
+			    		<th  colspan="2">
+			    			<label for="filter_projectno">Tender #</label>
+			        		<input type="text" name="filter_tenderno" id="filter_tenderno" value="" placeholder="Filter Tender No." class="search_init" />
+			    		</th>
+			    		<th  colspan="2">
+			    			<label for="filter_projectno">Project #</label>
+			        		<input type="text" name="filter_projectno" id="filter_projectno" value="" placeholder="Filter Project No." class="search_init" />
+			    		</th>
+			    	</tr>
+				</thead>
+			</table>
+
+		@endif
+
 		<table class="dataTable">
 		    <thead>
 		        <tr>
@@ -117,7 +145,23 @@
 
 		$('#categoryTree').tree(
 			{
-				data:catdata
+				data:catdata,
+				autoOpen:false
+
+				/*,
+				selectable: true,				
+			    onCanSelectNode: function(node) {
+			        if (node.children.length == 0) {
+			            // Nodes without children can be selected
+			            return true;
+			        }
+			        else {
+			            // Nodes with children cannot be selected
+			            return false;
+		        	}
+				}
+				*/
+				
 			}
 		);
 
@@ -141,6 +185,21 @@
 				    { "bSortable": false, "aTargets": [ {{ $disablesort }} ] }
 				 ],
 			    "fnServerData": function ( sSource, aoData, fnCallback ) {
+			    	aoData.push({
+			    		'name': 'filterProjectNo',
+			    		'value': $('#filter_projectno').val()
+			    	});
+
+			    	aoData.push({
+			    		'name': 'filterTenderNo',
+			    		'value': $('#filter_tenderno').val()
+			    	});
+
+			    	aoData.push({
+			    		'name': 'filterOpportunityNo',
+			    		'value': $('#filter_opportunityno').val()
+			    	});
+
 			    	aoData.push({
 			    		'name': 'searchCategory',
 			    		'value': currentCategory
@@ -200,22 +259,20 @@
 		} );
 
 
-
-
 		$('.filter input').keyup( function () {
 			/* Filter on the column (the index) of this element */
 			oTable.fnFilter( this.value, $('.filter input').index(this) );
 		} );
 
+
+
+		//thead filter
 		/*
-		 * Support functions to provide a little bit of 'user friendlyness' to the textboxes in 
-		 * the footer
-		 */
-		$('.filter input').each( function (i) {
+		$('thead input').each( function (i) {
 			asInitVals[i] = this.value;
 		} );
 
-		$('.filter input').focus( function () {
+		$('thead input').focus( function () {
 			if ( this.className == 'search_init' )
 			{
 				this.className = '';
@@ -223,13 +280,21 @@
 			}
 		} );
 
-		$('.filter input').blur( function (i) {
+		$('thead input').blur( function (i) {
 			if ( this.value == '' )
 			{
 				this.className = 'search_init';
-				this.value = asInitVals[$('.filter input').index(this)];
+				//this.value = asInitVals[$('thead input').index(this)];
 			}
 		} );
+		*/
+		
+		$('thead input').keyup( function () {
+			/* Filter on the column (the index) of this element */
+			//oTable.fnFilter( this.value, $('tfoot input').index(this) );
+			oTable.fnDraw();
+		} );
+
 
 		$('table.dataTable').click(function(e){
 

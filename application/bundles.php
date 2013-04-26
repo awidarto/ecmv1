@@ -40,6 +40,7 @@ return array(
 	'mongovel' => array('auto'=>true),
 	'resizer'=>array('auto'=>true),
 	'html2pdf' => array('auto' => true),
+	'yaml' => array('auto' => true),
 	'formly' => array(
 	    'autoloads' => array(
 	        'map' => array(

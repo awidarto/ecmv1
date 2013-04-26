@@ -146,9 +146,15 @@
         {{ Form::label('docDepartment','Department of Origin : '.depttitle($type))}}
         {{ $form->hidden('docDepartment',$type)}}
       @endif
+      {{ $form->text('docCategoryLabel','Folders','',array('class'=>'four','id'=>'docCategoryLabel','rows'=>'1', 'style'=>'width:100%')) }}
+      {{ $form->hidden('docCategoryParents','',array('id'=>'docCategoryParents')) }}
+      {{ $form->hidden('docCategory','',array('id'=>'docCategory')) }}
+      <div class="twelve columns" id="categoryBox">
+        <div id="categoryTree">
 
+        </div>
+      </div>
 
-      {{ $form->select('docCategory','Folders',Config::get('parama.doc_type'),array('class'=>'four'))}}
 
       {{ $form->select('docOriginalTemplate','Original Template',$templates,array('class'=>'four'))}}
 
@@ -220,6 +226,33 @@
     $('#upload-indicator').toggle();
     $('#newdoc').submit();
   });
+
+  var currentCategory = 'all';
+  var catdata = {{$category}};
+
+  $('#categoryTree').tree(
+    {
+      data:catdata,
+      autoOpen:false      
+    }
+  );
+
+  $('#categoryTree').bind(
+      'tree.click',
+      function(event) {
+          // The clicked node is 'event.node'
+          var node = event.node;
+          currentCategory = node.id;
+          console.log(node);
+          if( node.id != 'parent'){
+            $('#docCategory').val(currentCategory);
+            $('#docCategoryLabel').val(node.name);
+            $('#docCategoryParents').val(node.parents);
+          }
+      }
+  );
+
+
 
 
 </script>

@@ -136,7 +136,7 @@
   		'sales_kemang'=>'S&M Kemang',
   		'sales_balikpapan'=>'S&M Balikpapan',
       'tender_balikpapan'=>'Bid & Tender Balikpapan',
-  		'hr_admin'=>'HR Admin',
+  		'hr_admin'=>'HR & GA',
   		'warehouse'=>'Warehouse',
   		'qc'=>'Quality Control',
   		'clients'=>'Clients',

@@ -382,7 +382,7 @@ class Document_Controller extends Base_Controller {
 				depttitle($doc['docDepartment']),
 				date('d-m-Y H:i:s', $doc['createdDate']->sec),
 				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
-				isset($doc['expiryDate'])?date('d-m-Y', $doc['expiryDate']->sec):'',
+				(isset($doc['expiryDate']) && $doc['expiryDate'] != '')?date('d-m-Y', $doc['expiryDate']->sec):'',
 				$doc['expiring'],
 				$doc['creatorName'],
 				isset($doc['access'])?ucfirst($doc['access']):'',
@@ -498,16 +498,54 @@ class Document_Controller extends Base_Controller {
 
 		$template = $doc->find(array('useAsTemplate'=>'Yes'));
 
+		$permissions = Auth::user()->permissions;
+
 		$templates = array();
 		$templates['none'] = 'None';
 		foreach($template as $t){
 			$templates[$t['_id']->__toString()] = $t['title'];
 		}
 
+		if(is_null($type)){
+			$category = json_encode(Config::get('category.all'));
+		}else{
+
+			$types = Config::get('parama.department');
+			$types = array_keys($types);
+
+			$fullarray = array();
+
+			foreach ($types as $t) {
+				if(file_exists('public/yml/'.$t.'.yml') && ($permissions->{$t}->read == 1 || $t == $type)){
+					$parsed = Yaml::from_file('public/yml/'.$t.'.yml')->to_array();
+					$parent = array('label'=>depttitle($t),'id'=>'parent','children'=>$parsed);
+					$fullarray[] = $parent;
+				}
+			}
+
+			$all = array('label'=>'All','id'=>'all');
+
+			array_unshift($fullarray, $all);
+
+			$category = json_encode($fullarray);
+
+
+			/*
+			if(file_exists('public/yml/project_control.yml')){
+				$parsed = Yaml::from_file('public/yml/'.$type.'.yml')->to_array();
+				$category = json_encode($parsed);
+			}else{
+				$category = json_encode(Config::get('category.'.$type));
+			}
+			*/
+
+
+		}
 
 		$form = new Formly();
 		return View::make('document.new')
 					->with('form',$form)
+					->with('category',$category)
 					->with('templates',$templates)
 					->with('type',$type)
 					->with('crumb',$this->crumb)
@@ -746,12 +784,47 @@ class Document_Controller extends Base_Controller {
 			$templates[$t['_id']->__toString()] = $t['title'];
 		}
 
+		$permissions = Auth::user()->permissions;
+
+		if(is_null($type)){
+			$category = json_encode(Config::get('category.all'));
+		}else{
+
+			$types = Config::get('parama.department');
+			$types = array_keys($types);
+
+			$fullarray = array();
+
+			foreach ($types as $t) {
+				if(file_exists('public/yml/'.$t.'.yml') && ($permissions->{$t}->read == 1 || $t == $type)){
+					$parsed = Yaml::from_file('public/yml/'.$t.'.yml')->to_array();
+					$parent = array('label'=>depttitle($t),'id'=>'parent','children'=>$parsed);
+					$fullarray[] = $parent;
+				}
+			}
+
+			$all = array('label'=>'All','id'=>'all');
+
+			array_unshift($fullarray, $all);
+
+			$category = json_encode($fullarray);
+
+			/*
+			if(file_exists('public/yml/project_control.yml')){
+				$parsed = Yaml::from_file('public/yml/'.$type.'.yml')->to_array();
+				$category = json_encode($parsed);
+			}else{
+				$category = json_encode(Config::get('category.'.$type));
+			}
+			*/
+		}
 
 		$form = Formly::make($doc_data);
 
 		return View::make('document.edit')
 					->with('doc',$doc_data)
 					->with('templates',$templates)
+					->with('category',$category)
 					->with('form',$form)
 					->with('type',$type)
 					->with('crumb',$this->crumb)
@@ -994,10 +1067,89 @@ class Document_Controller extends Base_Controller {
 		$this->crumb->add('document/type/'.$type,'Document');
 		$this->crumb->add('document/type/'.$type,depttitle($type));
 
-		$heads = array('#','Title','Created','Last Update','Expiry Date','Expiring In','Creator','Access','Folder','Attachment','Tags','Action');
-		$searchinput = array(false,'title','created','last update','exoiry date','expiring','creator','access','folder','filename','tags',false);
+		$heads = array('#',
+			'Title','Created','Last Update',
+			//'Expiry Date','Expiring In','Creator',
+			'Access','Folder','Attachment','Tags','Action');
+		$searchinput = array(false,'title','created','last update',
+			//'expiry date','expiring','creator',
+			'access','folder','filename','tags',false);
 
 		$dept = Config::get('parama.department');
+
+		$permissions = Auth::user()->permissions;
+
+		if(is_null($type)){
+			$category = false;
+			//$category = json_encode(Config::get('category.all'));
+		}else{
+			$therole = Auth::user()->role;
+
+			if($type == 'president_director'){
+
+				$types = Config::get('parama.department');
+				$types = array_keys($types);
+
+				$fullarray = array();
+
+				foreach ($types as $t) {
+					$nodisplay = ($t == 'finance_hr_director' || $t == 'operations_director')?true:false;
+
+					if(file_exists('public/yml/'.$t.'.yml') && $nodisplay == false){
+						$parsed = Yaml::from_file('public/yml/'.$t.'.yml')->to_array();
+						$parent = array('label'=>depttitle($t),'id'=>'parent','children'=>$parsed);
+						$fullarray[] = $parent;
+					}
+				}
+
+				$all = array('label'=>'All','id'=>'all');
+
+				array_unshift($fullarray, $all);
+
+				$category = json_encode($fullarray);
+
+
+			}else if($type == 'operations_director'){
+
+				$types = Config::get('parama.department');
+				$types = array_keys($types);
+
+				$fullarray = array();
+
+				foreach ($types as $t) {
+					$nodisplay = ($t == 'finance_hr_director' || $t == 'finance_balikpapan' || $t == 'finance_pusat' || $t == 'hr_admin')?true:false;
+
+					if(file_exists('public/yml/'.$t.'.yml') && $nodisplay == false){
+						$parsed = Yaml::from_file('public/yml/'.$t.'.yml')->to_array();
+						$parent = array('label'=>depttitle($t),'id'=>'parent','children'=>$parsed);
+						$fullarray[] = $parent;
+					}
+				}
+
+				$all = array('label'=>'All','id'=>'all');
+
+				array_unshift($fullarray, $all);
+
+				$category = json_encode($fullarray);
+
+
+			}else{
+
+				if(file_exists('public/yml/'.$type.'.yml')){
+					$parsed = Yaml::from_file('public/yml/'.$type.'.yml')->to_array();
+
+					$all = array('label'=>'All','id'=>'all');
+
+					array_unshift($parsed, $all);
+
+					$category = json_encode($parsed);
+				}else{
+					$category = json_encode(Config::get('category.'.$type));
+				}
+
+			}
+
+		}
 
 		$title = $dept[$type];
 
@@ -1013,9 +1165,6 @@ class Document_Controller extends Base_Controller {
 
 		// by default can not open the page
 		$can_open = false;
-
-		$permissions = Auth::user()->permissions;
-
 
 		if( Auth::user()->role == 'root' ||
 			Auth::user()->role == 'president_director' 
@@ -1099,10 +1248,12 @@ class Document_Controller extends Base_Controller {
 				->with('title',$title)
 				->with('newbutton','New Document')
 				->with('disablesort','0,5,6')
+				->with('category',$category)
 				->with('addurl',$addurl)
 				->with('searchinput',$searchinput)
 				->with('ajaxsource',URL::to('document/type/'.$type))
 				->with('ajaxdel',URL::to('document/del'))
+				->with('filteron',true)
 				->with('crumb',$this->crumb)
 				->with('heads',$heads);
 		}else{
@@ -1116,9 +1267,13 @@ class Document_Controller extends Base_Controller {
 	public function post_type($type = null)
 	{
 
-		$fields = array('title','createdDate','lastUpdate','expiryDate','expiring','creatorName','access','docCategory','docFilename','docTag');
+		$fields = array('title','createdDate','lastUpdate',
+			//'expiryDate','expiring','creatorName',
+			'access','docCategory','docFilename','docTag');
 
-		$rel = array('like','like','like','like','like','like','like','like','like','like');
+		$rel = array('like','like','like',
+			//'like','like','like',
+			'like','like','like','like');
 
 		$cond = array('both','both','both','both','both','both','both','both','both');
 
@@ -1126,8 +1281,15 @@ class Document_Controller extends Base_Controller {
 		$pagelength = Input::get('iDisplayLength');
 
 		$searchCategory = Input::get('searchCategory');
-
 		$searchCategory = (!isset($searchCategory) || $searchCategory == '')?'all':$searchCategory;
+
+
+		$searchOpportunityNo = Input::get('filterOpportunityNo');
+		$searchOpportunityNo = (!isset($searchOpportunityNo) || $searchOpportunityNo == '')?'all':$searchOpportunityNo;
+		$searchTenderNo = Input::get('filterTenderNo');
+		$searchTenderNo = (!isset($searchTenderNo) || $searchTenderNo == '')?'all':$searchTenderNo;
+		$searchProjectNo = Input::get('filterProjectNo');
+		$searchProjectNo = (!isset($searchProjectNo) || $searchProjectNo == '')?'all':$searchProjectNo;
 
 		$limit = array($pagelength, $pagestart);
 
@@ -1162,6 +1324,21 @@ class Document_Controller extends Base_Controller {
 				}
 			}
 			$idx++;
+		}
+
+		if($searchProjectNo != 'all'){
+			$project_no = new MongoRegex('/'.$searchProjectNo.'/i');
+			$sq['docProject'] = $project_no;
+		}
+
+		if($searchTenderNo != 'all'){
+			$tender_no = new MongoRegex('/'.$searchTenderNo.'/i');
+			$sq['docTender'] = $tender_no;
+		}
+
+		if($searchOpportunityNo != 'all'){
+			$opportunity_no = new MongoRegex('/'.$searchOpportunityNo.'/i');
+			$sq['docOpportunity'] = $opportunity_no;
 		}
 
 		//start creating query array
@@ -1425,11 +1602,11 @@ class Document_Controller extends Base_Controller {
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
 				date('d-m-Y H:i:s', $doc['createdDate']->sec),
 				(isset($doc['lastUpdate']) && $doc['lastUpdate'] != '')?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
-				(isset($doc['expiryDate']) && $doc['expiryDate'] != '')?date('d-m-Y', $doc['expiryDate']->sec):'',
-				(isset($doc['alert']) && $doc['alert'] == 'Yes')?$doc['expiring']:'',
-				$doc['creatorName'],
+				//(isset($doc['expiryDate']) && $doc['expiryDate'] != '')?date('d-m-Y', $doc['expiryDate']->sec):'',
+				//(isset($doc['alert']) && $doc['alert'] == 'Yes')?$doc['expiring']:'',
+				//$doc['creatorName'],
 				isset($doc['access'])?ucfirst($doc['access']):'',
-				ucfirst($doc['docCategory']),
+				isset($doc['docCategoryLabel'])?ucfirst($doc['docCategoryLabel']):'-',
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				$tags,
 				$edit.$download.$del

@@ -14,7 +14,7 @@
   {{ HTML::style('css/foundation.min.css') }}
   {{ HTML::style('css/jquery-datatables/demo_table.css') }}
   {{ HTML::style('css/flick/jquery-ui-1.9.2.custom.min.css') }}
-  
+
   {{ HTML::style('css/general_enclosed_foundicons.css') }}
   {{ HTML::style('css/general_foundicons.css') }}
   {{ HTML::style('css/jquery.tagsinput.css') }}

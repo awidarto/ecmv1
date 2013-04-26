@@ -33,7 +33,14 @@
 							{"label":"Email","id":"email",
 								"children":[
 									{"label":"References","id":"references"},
-									{"label":"Correspondences","id":"correspondences"},
+									{"label":"Correspondences","id":"correspondences",
+										"children":[
+											{"label":"References","id":"references"},
+											{"label":"Correspondences","id":"correspondences"},
+											{"label":"Minutes of Meeting","id":"minutesofmeeting"},
+											{"label":"Progress Report","id":"progressreport"}
+										]
+									},
 									{"label":"Minutes of Meeting","id":"minutesofmeeting"},
 									{"label":"Progress Report","id":"progressreport"}
 								]
@@ -48,7 +55,8 @@
 
 		$('#categoryTree').tree(
 			{
-				data:catdata
+				data:catdata,
+				autoOpen:true
 			}
 		);
 

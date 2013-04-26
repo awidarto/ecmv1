@@ -1,0 +1,34 @@
+- label: List Of Stock Materials
+  id: parent
+  children:
+    - label: Ball Valves
+      id: wh_ball_valves
+    - label: Dual Plate Check Valves
+      id: wh_dual_plate_check_valves
+    - label: Other Valves
+      id: wh_other_valves
+    - label: Other Materials
+      id: wh_other_materials
+- label: Warehouse Equipment
+  id: parent
+  children:
+    - label: List Of Handling Equipment
+      id: wh_list_of_handling_equipment
+    - label: List Of Pressure Test Equipment
+      id: wh_list_of_pressure_test_equipment
+    - label: List Of Equipment Spare Parts
+      id: wh_list_of_equipment_spare_parts
+    - label: List Of Tools And Materials For Pressure Test
+      id: wh_list_of_tools_and_materials_for_pressure_test
+- label: Material Receiving Report
+  id: parent
+  children:
+    - label: MRR Per Job No
+      id: wh_mrr_per_job_no
+- label: Material Dispatching Report
+  id: parent
+  children:
+    - label: MDR Per Job No
+      id: wh_mdr_per_job_no
+- label: Valve Repair And Test
+  id: wh_valve_repair_and_test

@@ -1,0 +1,85 @@
+- label: Brochures/Catalogues
+  id: parent
+  children:
+    - label: Valves
+      id: parent
+      children:
+        - label: Ball Valves
+          id: gen_ball_valves
+        - label: Dual Plate Check Valves
+          id: gen_dual_plate_check_valves
+        - label: Nozzle Check Valves
+          id: gen_nozzle_check_valves
+        - label: Swing Check Valves
+          id: gen_swing_check_valves
+        - label: Lift Check Valves
+          id: gen_check_valves
+        - label: Gate Valves
+          id: gen_gate_valves
+        - label: Globe Valves
+          id: gen_globe_valves
+        - label: Butterfly Valves
+          id: gen_butterfly_valves
+    - label: Control And Safety Valves
+      id: gen_control_and_safety_valves
+    - label: Pumps
+      id: gen_pumps
+    - label: Generators
+      id: gen_generators
+    - label: Lubrication Equipment
+      id: gen_lubrication_equipment
+    - label: Water Filtration System
+      id: gen_water_filtration_system
+    - label: Steam Trap And Strainers
+      id: gen_steam_trap_and_strainers
+    - label: Steel Products
+      id: parent
+      children:
+        - label: Structural Steels
+          id: gen_structural_steels
+        - label: Pipes
+          id: gen_pipes
+        - label: Pipe Fittings
+          id: gen_pipe_fittings
+    - label: ESC Sheet Pile
+      id: gen_esc_sheet_pile
+    - label: Cable Trays
+      id: gen_cable_trays
+- label: Codes And Standards
+  id: parent
+  children:
+    - label: ASTM
+      id: gen_astm
+    - label: API
+      id: gen_api
+    - label: ISO
+      id: gen_iso
+    - label: European Standards
+      id: gen_european_standards
+    - label: Other Standards
+      id: parent
+      children:
+      - label: Incoterms
+        id: gen_incoterms
+- label: General Specifications
+  id: parent
+  children:
+    - label: TEPI Specifications
+      id: gen_tepi_specifications
+    - label: BP Specifications
+      id: gen_bp_specifications
+    - label: Chevron Specifications
+      id: gen_chevron_specifications
+    - label: Other Specifications
+      id: gen_other_specifications
+- label: Procedures
+  id: parent
+  children:
+    - label: HSE Procedure
+      id: gen_hse_procedure
+    - label: QA/QC Procedures
+      id: gen_qa_qc_procedures
+    - label: Other Procedures
+      id: gen_other_procedures
+- label: PNU Misc. Information
+  id: gen_pnu_misc_information
