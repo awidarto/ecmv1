@@ -506,41 +506,7 @@ class Document_Controller extends Base_Controller {
 			$templates[$t['_id']->__toString()] = $t['title'];
 		}
 
-		if(is_null($type)){
-			$category = json_encode(Config::get('category.all'));
-		}else{
-
-			$types = Config::get('parama.department');
-			$types = array_keys($types);
-
-			$fullarray = array();
-
-			foreach ($types as $t) {
-				if(file_exists('public/yml/'.$t.'.yml') && ($permissions->{$t}->read == 1 || $t == $type)){
-					$parsed = Yaml::from_file('public/yml/'.$t.'.yml')->to_array();
-					$parent = array('label'=>depttitle($t),'id'=>'parent','children'=>$parsed);
-					$fullarray[] = $parent;
-				}
-			}
-
-			$all = array('label'=>'All','id'=>'all');
-
-			array_unshift($fullarray, $all);
-
-			$category = json_encode($fullarray);
-
-
-			/*
-			if(file_exists('public/yml/project_control.yml')){
-				$parsed = Yaml::from_file('public/yml/'.$type.'.yml')->to_array();
-				$category = json_encode($parsed);
-			}else{
-				$category = json_encode(Config::get('category.'.$type));
-			}
-			*/
-
-
-		}
+		$category = $this->getCategory($type);
 
 		$form = new Formly();
 		return View::make('document.new')
@@ -786,38 +752,8 @@ class Document_Controller extends Base_Controller {
 
 		$permissions = Auth::user()->permissions;
 
-		if(is_null($type)){
-			$category = json_encode(Config::get('category.all'));
-		}else{
 
-			$types = Config::get('parama.department');
-			$types = array_keys($types);
-
-			$fullarray = array();
-
-			foreach ($types as $t) {
-				if(file_exists('public/yml/'.$t.'.yml') && ($permissions->{$t}->read == 1 || $t == $type)){
-					$parsed = Yaml::from_file('public/yml/'.$t.'.yml')->to_array();
-					$parent = array('label'=>depttitle($t),'id'=>'parent','children'=>$parsed);
-					$fullarray[] = $parent;
-				}
-			}
-
-			$all = array('label'=>'All','id'=>'all');
-
-			array_unshift($fullarray, $all);
-
-			$category = json_encode($fullarray);
-
-			/*
-			if(file_exists('public/yml/project_control.yml')){
-				$parsed = Yaml::from_file('public/yml/'.$type.'.yml')->to_array();
-				$category = json_encode($parsed);
-			}else{
-				$category = json_encode(Config::get('category.'.$type));
-			}
-			*/
-		}
+		$category = $this->getCategory($type);
 
 		$form = Formly::make($doc_data);
 
@@ -1079,6 +1015,8 @@ class Document_Controller extends Base_Controller {
 
 		$permissions = Auth::user()->permissions;
 
+		$category = $this->getCategory($type);
+		/*
 		if(is_null($type)){
 			$category = false;
 			//$category = json_encode(Config::get('category.all'));
@@ -1150,6 +1088,7 @@ class Document_Controller extends Base_Controller {
 			}
 
 		}
+		*/
 
 		$title = $dept[$type];
 
@@ -2065,6 +2004,84 @@ class Document_Controller extends Base_Controller {
 
 
 
+	}
+
+	private function getCategory($type = null){
+
+		$permissions = Auth::user()->permissions;
+
+		if(is_null($type)){
+			$category = false;
+			//$category = json_encode(Config::get('category.all'));
+		}else{
+			$therole = Auth::user()->role;
+
+			if($type == 'president_director'){
+
+				$types = Config::get('parama.department');
+				$types = array_keys($types);
+
+				$fullarray = array();
+
+				foreach ($types as $t) {
+					$nodisplay = ($t == 'finance_hr_director' || $t == 'operations_director')?true:false;
+
+					if(file_exists('public/yml/'.$t.'.yml') && $nodisplay == false){
+						$parsed = Yaml::from_file('public/yml/'.$t.'.yml')->to_array();
+						$parent = array('label'=>depttitle($t),'id'=>'parent','children'=>$parsed);
+						$fullarray[] = $parent;
+					}
+				}
+
+				$all = array('label'=>'All','id'=>'all');
+
+				array_unshift($fullarray, $all);
+
+				$category = json_encode($fullarray);
+
+
+			}else if($type == 'operations_director'){
+
+				$types = Config::get('parama.department');
+				$types = array_keys($types);
+
+				$fullarray = array();
+
+				foreach ($types as $t) {
+					$nodisplay = ($t == 'finance_hr_director' || $t == 'finance_balikpapan' || $t == 'finance_pusat' || $t == 'hr_admin')?true:false;
+
+					if(file_exists('public/yml/'.$t.'.yml') && $nodisplay == false){
+						$parsed = Yaml::from_file('public/yml/'.$t.'.yml')->to_array();
+						$parent = array('label'=>depttitle($t),'id'=>'parent','children'=>$parsed);
+						$fullarray[] = $parent;
+					}
+				}
+
+				$all = array('label'=>'All','id'=>'all');
+
+				array_unshift($fullarray, $all);
+
+				$category = json_encode($fullarray);
+
+			}else{
+
+				if(file_exists('public/yml/'.$type.'.yml')){
+					$parsed = Yaml::from_file('public/yml/'.$type.'.yml')->to_array();
+
+					$all = array('label'=>'All','id'=>'all');
+
+					array_unshift($parsed, $all);
+
+					$category = json_encode($parsed);
+				}else{
+					$category = json_encode(Config::get('category.'.$type));
+				}
+
+			}
+
+		}
+
+		return $category;
 	}
 
 }
