@@ -129,6 +129,10 @@ function depttitle($dept){
 	return $depttitles;
 }
 
+function breaksentence($string, $chunklength = 100){
+	return chunk_split($string,$chunklength,' ');
+}
+
 function limitwords($string, $word_limit)
 {
     $words = explode(" ",$string);

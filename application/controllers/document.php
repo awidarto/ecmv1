@@ -1546,7 +1546,7 @@ class Document_Controller extends Base_Controller {
 				//$doc['creatorName'],
 				isset($doc['access'])?ucfirst($doc['access']):'',
 				isset($doc['docCategoryLabel'])?ucfirst($doc['docCategoryLabel']):'-',
-				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
+				isset($doc['docFilename'])?'<span class="fileview has-tip tip-bottom noradius" "title"="'.$doc['docFilename'].'" id="'.$doc['_id'].'">'.breaksentence($doc['docFilename']).'</span>':'',
 				$tags,
 				$edit.$download.$del
 				/*
