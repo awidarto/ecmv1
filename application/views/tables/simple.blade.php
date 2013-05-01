@@ -204,13 +204,20 @@
 			    		'name': 'searchCategory',
 			    		'value': currentCategory
 			    	});
+			    	/*
+					$.getJSON( sSource, aoData, function (json) {
+						fnCallback(json);
+					});
+					*/	
 
 		            $.ajax( {
 		                "dataType": 'json', 
 		                "type": "POST", 
 		                "url": sSource, 
 		                "data": aoData, 
-		                "success": fnCallback
+		                "success": function(json){
+		                	fnCallback(json);
+		                }
 		            } );
 		        }
 			}
