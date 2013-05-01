@@ -130,7 +130,7 @@ function depttitle($dept){
 }
 
 function breaksentence($string, $chunklength = 100){
-	if(strlen($string) >= $chunklength){
+	if(strlen($string) <= $chunklength){
 		return $string;
 	}else{
 		return chunk_split($string,$chunklength,'-');
