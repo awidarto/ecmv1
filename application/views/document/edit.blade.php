@@ -150,14 +150,14 @@
     <fieldset>
       <legend>Document Sharing</legend>
       {{ $form->hidden('oldShare','')}}
-      {{ $form->text('docShare','Shared This Document to','',array('class'=>'tag_email four','style'=>'width:100%')) }}
+      {{ $form->textarea('docShare','Shared This Document to','',array('class'=>'tag_email four','style'=>'width:100%')) }}
     </fieldset>
 
     <fieldset>
       <legend>Approval Request</legend>
 
       {{ $form->checkbox('doRequestApproval','Re-request for Approval','Yes',false,array('class'=>'check', 'id'=>'doApproval'))}}
-      {{ $form->text('docApprovalRequest','Request Approval From','',array('class'=>'tag_email four', 'style'=>'width:100%')) }}
+      {{ $form->textarea('docApprovalRequest','Request Approval From','',array('class'=>'tag_email four', 'style'=>'width:100%')) }}
     </fieldset>
 
   </div>
