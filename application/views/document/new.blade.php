@@ -123,7 +123,7 @@
 
     <fieldset>
       <legend>Document Sharing</legend>
-      {{ $form->text('docShare','Share This Document to','',array('class'=>'tag_shared four','style'=>'width:100%')) }}
+      {{ $form->textarea('docShare','Share This Document to','',array('class'=>'tag_shared four','style'=>'width:100%')) }}
     </fieldset>
 
     <fieldset>
@@ -131,7 +131,7 @@
       {{ $form->checkbox('doRequestApproval','Request for Approval','Yes',false,array('class'=>'check', 'id'=>'doApproval'))}}
 
       <div id='doApprovalContainer' >
-        {{ $form->text('docApprovalRequest','Request Approval From','',array('class'=>'tag_email four','style'=>'width:100%')) }}
+        {{ $form->textarea('docApprovalRequest','Request Approval From','',array('class'=>'tag_email four','style'=>'width:100%')) }}
       </div>
     </fieldset>
 

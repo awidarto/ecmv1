@@ -5,6 +5,14 @@
     	
     	var sharelist = {};
 
+		function split( val ) {
+      		return val.split( /,\s*/ );
+    	}
+
+	    function extractLast( term ) {
+	      return split( term ).pop();
+	    }
+
 		$('.date').datepicker({
 			dateFormat: "dd-mm-yy"
 		});
@@ -45,6 +53,155 @@
 		   	'placeholderColor' : '#666666'
 		});
 
+		$('.tag_email_inline').attr('placeholder','add email').bind( "keydown", function( event ) {
+	        if ( event.keyCode === $.ui.keyCode.TAB && 
+	        	$( this ).data( "ui-autocomplete" ).menu.active ){
+					event.preventDefault();
+	        }
+		}).autocomplete({
+	        source: function( request, response ) {
+				$.getJSON( base + 'ajax/email', 
+				{
+				term: extractLast( request.term )
+				}, 
+				response );
+	        },
+	        search: function() {
+				// custom minLength
+				var term = extractLast( this.value );
+				if ( term.length < 2 ) {
+				return false;
+				}
+	        },
+	        focus: function() {
+				// prevent value inserted on focus
+				return false;
+	        },
+	        select: function( event, ui ) {
+				var terms = split( this.value );
+				// remove the current input
+				terms.pop();
+				// add the selected item
+				terms.push( ui.item.value );
+				// add placeholder to get the comma-and-space at the end
+				terms.push( "" );
+				this.value = terms.join( ", " );
+				return false;
+	        }
+		});
+
+		$('.tag_keyword').attr('placeholder','add keyword').bind( "keydown", function( event ) {
+	        if ( event.keyCode === $.ui.keyCode.TAB && 
+	        	$( this ).data( "ui-autocomplete" ).menu.active ){
+					event.preventDefault();
+	        }
+		}).autocomplete({
+	        source: function( request, response ) {
+				$.getJSON( base + 'ajax/tag', 
+				{
+					term: extractLast( request.term )
+				}, 
+				response );
+	        },
+	        search: function() {
+				// custom minLength
+				var term = extractLast( this.value );
+				if ( term.length < 2 ) {
+				return false;
+				}
+	        },
+	        focus: function() {
+				// prevent value inserted on focus
+				return false;
+	        },
+	        select: function( event, ui ) {
+				var terms = split( this.value );
+				// remove the current input
+				terms.pop();
+				// add the selected item
+				terms.push( ui.item.value );
+				// add placeholder to get the comma-and-space at the end
+				terms.push( "" );
+				this.value = terms.join( ", " );
+				return false;
+	        }
+		});
+
+		$('.tag_email').attr('placeholder','add email').bind( "keydown", function( event ) {
+	        if ( event.keyCode === $.ui.keyCode.TAB && 
+	        	$( this ).data( "ui-autocomplete" ).menu.active ){
+					event.preventDefault();
+	        }
+		}).autocomplete({
+	        source: function( request, response ) {
+				$.getJSON( base + 'ajax/email', 
+				{
+					term: extractLast( request.term )
+				}, 
+				response );
+	        },
+	        search: function() {
+				// custom minLength
+				var term = extractLast( this.value );
+				if ( term.length < 2 ) {
+				return false;
+				}
+	        },
+	        focus: function() {
+				// prevent value inserted on focus
+				return false;
+	        },
+	        select: function( event, ui ) {
+				var terms = split( this.value );
+				// remove the current input
+				terms.pop();
+				// add the selected item
+				terms.push( ui.item.value );
+				// add placeholder to get the comma-and-space at the end
+				terms.push( "" );
+				this.value = terms.join( ", " );
+				return false;
+	        }
+		});
+
+		$('.tag_shared').attr('placeholder','add email').bind( "keydown", function( event ) {
+	        if ( event.keyCode === $.ui.keyCode.TAB && 
+	        	$( this ).data( "ui-autocomplete" ).menu.active ){
+					event.preventDefault();
+	        }
+		}).autocomplete({
+	        source: function( request, response ) {
+				$.getJSON( base + 'ajax/email', 
+				{
+					term: extractLast( request.term )
+				}, 
+				response );
+	        },
+	        search: function() {
+				// custom minLength
+				var term = extractLast( this.value );
+				if ( term.length < 2 ) {
+				return false;
+				}
+	        },
+	        focus: function() {
+				// prevent value inserted on focus
+				return false;
+	        },
+	        select: function( event, ui ) {
+				var terms = split( this.value );
+				// remove the current input
+				terms.pop();
+				// add the selected item
+				terms.push( ui.item.value );
+				// add placeholder to get the comma-and-space at the end
+				terms.push( "" );
+				this.value = terms.join( ", " );
+				return false;
+	        }
+		});
+
+		/*
 		$('.tag_email_inline').tagsInput({
 			'autocomplete_url': base + 'ajax/email',
 		   	'height':'40px',
@@ -66,18 +223,10 @@
 		   	'placeholderColor' : '#666666'
 		});
 
-
 		$('.tag_email').tagsInput({
 			'autocomplete_url': base + 'ajax/email',
 			'autocomplete':{
 				'select':function(event, ui){
-					/*
-					if(_.indexOf(sharearray,ui.item.id) < 0){
-						sharearray.push(ui.item.id);
-					}
-
-					console.log(sharearray);
-					*/
 					var sh = $('#shared').val();
 
 					if(sh == ''){
@@ -106,6 +255,9 @@
 		   	'placeholderColor' : '#666666'
 		});
 
+
+
+
 		$('.tag_shared').tagsInput({
 			'autocomplete_url': base + 'ajax/email',
 			'autocomplete':{
@@ -132,6 +284,8 @@
 		   	'placeholderColor' : '#666666'
 		});
 
+		*/
+
 		$('.tag_rev').tagsInput({
 			'autocomplete_url': base + 'ajax/rev',
 		   	'height':'100px',
@@ -153,6 +307,7 @@
 		   	'placeholderColor' : '#666666'
 		});
 
+		/*
 		$('.tag_keyword').tagsInput({
 			'autocomplete_url': base + 'ajax/tag',
 		   'height':'100px',
@@ -173,6 +328,8 @@
 		   'maxChars' : 0, //if not provided there is no limit,
 		   'placeholderColor' : '#666666'
 		});
+
+    */
 
 		$('.tag_project').autocomplete({
 			source: base + 'ajax/project'
