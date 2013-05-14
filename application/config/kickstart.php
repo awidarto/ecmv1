@@ -1,5 +1,6 @@
 <?php 
 return array(
+  'system_email'=>'system@paramanusa.co.id',
   'storage'=>'public/storage/',
   'avatarstorage'=>'public/avatar/',
   'photostorage'=>'public/employees/',

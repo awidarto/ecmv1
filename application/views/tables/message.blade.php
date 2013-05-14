@@ -10,6 +10,36 @@
 </div>
 @endif
 
+<h4><i class="foundicon-flag del"></i>&nbsp;Notifications</h4>
+<div class="row">
+	<table class="dataTable" id="notifications">
+	    <thead>
+	        <tr>
+	        	<?php
+		        	if(!isset($colclass)){
+		        		$colclass = array();
+		        	}
+	        		$hid = 0;
+	        	?>
+	        	@foreach($heads as $head)
+	        		<th 
+	        			@if(isset($colclass[$hid]))
+	        				class="{{$colclass[$hid]}}"
+	        			@endif
+	        			<?php $hid++ ?>
+	        		>
+	        			{{ $head }}
+	        		</th>
+	        	@endforeach
+	        </tr>
+	    </thead>
+
+	    <tbody>
+	    </tbody>
+	</table>
+</div>
+
+
 <h4><i class="foundicon-down-arrow"></i>&nbsp;Inbox</h4>
 <div class="row">
 	<table class="dataTable" id="inbox">
@@ -123,6 +153,34 @@
 			}
         );
 
+        var nTable = $('#notifications').DataTable(
+			{
+				"bProcessing": true,
+		        "bServerSide": true,
+		        "sAjaxSource": "{{$ajaxsourcenotifications}}",
+				"oLanguage": { "sSearch": "Search "},
+				"sPaginationType": "full_numbers",
+				"sDom": 'T<"clear">lfrtip',
+				"oTableTools": {
+					"sSwfPath": "assets/swf/copy_csv_xls_pdf.swf"
+				},
+				"aLengthMenu": [[ 3, 5, 10, 15, 25, 50, 100], [3, 5, 10, 15, 25, 50, 100]],
+				"iDisplayLength":3,
+				"aoColumnDefs": [ 
+				    { "bSortable": false, "aTargets": [ {{ $disablesort }} ] }
+				 ],
+			    "fnServerData": function ( sSource, aoData, fnCallback ) {
+		            $.ajax( {
+		                "dataType": 'json', 
+		                "type": "POST", 
+		                "url": sSource, 
+		                "data": aoData, 
+		                "success": fnCallback
+		            } );
+		        }
+			}
+        );
+
 		$('tfoot input').keyup( function () {
 			/* Filter on the column (the index) of this element */
 			oTable.fnFilter( this.value, $('tfoot input').index(this) );
@@ -193,6 +251,7 @@
 					$.post('{{ URL::to($ajaxdel) }}',{'id':_id}, function(data) {
 						if(data.status == 'OK'){
 							//redraw table
+							nTable.fnDraw();
 							oTable.fnDraw();
 							outTable.fnDraw();
 							alert("Item id : " + _id + " deleted");
