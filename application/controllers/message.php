@@ -89,6 +89,7 @@ class Message_Controller extends Base_Controller {
 	        ->with('disablesort','0')
 	        ->with('crumb',$this->crumb)
 	        ->with('ajaxsource',URL::to('message'))
+	        ->with('ajaxsourcenotifications',URL::to('message/notification'))
 	        ->with('ajaxsourceoutbox',URL::to('message/outbox'));
 
 	}
@@ -132,6 +133,7 @@ class Message_Controller extends Base_Controller {
 			//$q['from'] = $self_email_regex;
 
 			$q['$and'] = array(
+				array('$not'=>array('from'=>Config::get('kickstart.system_email'))),
 				array('$or'=>array(
 						array('from'=>$search),
 						array('to'=>$search),
@@ -168,6 +170,7 @@ class Message_Controller extends Base_Controller {
 
 		}else{
 			$q['$and'] = array(
+					array('$not'=>array('from'=>Config::get('kickstart.system_email'))),
 					array( 
 						'$or'=>array(
 						array('to'=>$self_email_regex),
@@ -181,6 +184,173 @@ class Message_Controller extends Base_Controller {
 					)				
 				
 			));
+		}
+
+
+
+		if(count($q) > 0){
+			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count($q);
+		}else{
+			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
+			$count_display_all = $document->count();
+		}
+
+		$aadata = array();
+
+		foreach ($documents as $doc) {
+
+			//$item = View::make('message.item')->with('doc',$doc)->with('popsrc','message/view')->render();
+
+			//$item = str_replace($hilite, $hilite_replace, $item);
+
+			$action = '<ul class="inline-list">';
+			$action .= '<li>'.HTML::link('message/reply/'.$doc['_id'],'Reply').'</li>';
+			$action .= '<li>'.HTML::link('message/replyall/'.$doc['_id'],'Reply All').'</li>';
+			$action .= '<li>'.HTML::link('message/forward/'.$doc['_id'],'Forward').'</li>';
+			$action .= '</ul>';
+
+			$read = 'U';
+			if(isset($doc['read'])){
+				foreach ($doc['read'] as $rd) {
+					if($rd['email'] == Auth::user()->email){
+						$read = 'R';
+					}
+				}
+
+			}else{
+				$read = 'U';
+			}
+
+			$aadata[] = array(
+				$doc['from'],
+				$read,
+				HTML::link('message/read/inbox/'.$doc['_id'],$doc['subject']),
+				date('d-m-Y H:i:s',$doc['createdDate']->sec),
+				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
+
+			);
+		}
+
+		
+		$result = array(
+			'sEcho'=> Input::get('sEcho'),
+			'iTotalRecords'=>$count_all,
+			'iTotalDisplayRecords'=> $count_display_all,
+			'aaData'=>$aadata,
+			'qrs'=>$q
+		);
+
+		return Response::json($result);
+	}
+
+	public function post_notification(){
+
+
+		$pagestart = Input::get('iDisplayStart');
+		$pagelength = Input::get('iDisplayLength');
+
+		$search = Input::get('sSearch');
+
+		$limit = array($pagelength, $pagestart);
+
+		$defsort = 1;
+		$defdir = -1;
+
+		$idx = 0;
+		$q = array();
+
+		$hilite = array();
+		$hilite_replace = array();
+
+		$document = new Message();
+
+		$count_all = $document->count();
+
+		$sort_col = 'createdDate';
+		$sort_dir = -1;
+
+		//print_r(Auth::user());
+
+		$self_id = new MongoId(Auth::user()->id);
+
+		$self_email_regex = new MongoRegex('/'.Auth::user()->email.'/i');
+
+		if($search != ''){
+			$search = new MongoRegex('/'.$search.'/i');
+			//$q['from'] = $self_email_regex;
+
+			$q['$and'] = array(
+				array('from'=>Config::get('kickstart.system_email')),
+				array('$or'=>array(
+						array('to'=>$search),
+						array('subject'=>$search),
+						array('body'=>$search)
+					)
+				),
+				array('$or'=>array(
+						array('to'=>$self_email_regex),
+						array('cc'=>$self_email_regex),
+						array('bcc'=>$self_email_regex)
+					)
+				),
+				array('$or'=>array(
+						array('delete'=>array('$exists'=>false)),
+						array('delete.email'=>array('$not'=>$self_email_regex))
+					)
+				)
+			);
+
+			/*
+			$q['$or'] = array(
+				array('from'=>$search),
+				array('to'=>$search),
+				array('subject'=>$search),
+				array('body'=>$search)
+			);
+			$q = array('$or'=>array(
+				array('to'=>$self_email_regex),
+				array('cc'=>$self_email_regex),
+				array('bcc'=>$self_email_regex),
+			));
+			*/
+
+		}else{
+
+			/*
+			$q['$and'] = array(
+					array( 
+						'$or'=>array(
+						array('from'=>Config::get('kickstart.system_email')),
+						array('to'=>$self_email_regex),
+						array('cc'=>$self_email_regex),
+						array('bcc'=>$self_email_regex)
+						)
+					),
+					array('$or'=>array(
+						array('delete'=>array('$exists'=>false)),
+						array('delete.email'=>array('$not'=>$self_email_regex))
+					)				
+				
+			));
+			*/
+
+			$q['$and'] = array(
+					array('from'=>Config::get('kickstart.system_email')),
+					array( 
+						'$or'=>array(
+							array('to'=>$self_email_regex),
+							array('cc'=>$self_email_regex),
+							array('bcc'=>$self_email_regex)
+						)
+					),
+					array('$or'=>array(
+						array('delete'=>array('$exists'=>false)),
+						array('delete.email'=>array('$not'=>$self_email_regex))
+					)				
+				
+			));
+
 		}
 
 
@@ -326,6 +496,7 @@ class Message_Controller extends Base_Controller {
 
 		return Response::json($result);
 	}
+
 
 	public function get_reply($box,$id)
 	{
