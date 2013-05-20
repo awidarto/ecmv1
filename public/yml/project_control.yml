@@ -84,6 +84,7 @@
             - label: Technical Manual (Vendor Data Book)
               id: pc_manufacturing_document_technical_manual_vendor_data_book
         - label: Documents Required For Delivery And Customs Clearance
+        - label: Approved Documentation
     - label: Invoice And Payment
       id: parent
       children:
