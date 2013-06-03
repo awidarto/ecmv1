@@ -206,7 +206,7 @@ class Document_Controller extends Base_Controller {
 				depttitle($doc['docDepartment']),
 				date('d-m-Y H:i:s', $doc['createdDate']->sec),
 				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
-				isset($doc['expiryDate'])?date('d-m-Y', $doc['expiryDate']->sec):'',
+				isset($doc['expiryDate']) && $doc['expiryDate'] != '' ?date('d-m-Y', $doc['expiryDate']->sec):'',
 				$doc['expiring'],
 				$doc['creatorName'],
 				isset($doc['access'])?ucfirst($doc['access']):'',
@@ -663,6 +663,17 @@ class Document_Controller extends Base_Controller {
 
 					Input::upload('docupload',$newdir,$docupload['name']);
 
+					$inpath = $newdir.'/'.$docupload['name'];
+					$ext = File::extension($inpath);
+
+					if($ext == 'pdf'){
+						$outpath = str_replace('.'.$ext, '', $inpath);
+
+						File::mkdir($outpath);
+
+						$cmd = pdf2images($inpath,$outpath);
+					}
+
 				}
 
 				if(count($data['tags']) > 0){
@@ -945,7 +956,23 @@ class Document_Controller extends Base_Controller {
 
 					$withfile = true;
 
+					$inpath = $dirname.'/'.$docupload['name'];
+
+					$ext = File::extension($inpath);
+
+					if($ext == 'pdf'){
+						$outpath = str_replace('.'.$ext, '', $inpath);
+
+						if(File::exists($outpath) == false){
+							File::mkdir($outpath);
+						}
+						
+						$cmd = pdf2images($inpath,$outpath);
+					}
+
 				}
+
+
 
 			}
 
@@ -1730,11 +1757,26 @@ class Document_Controller extends Base_Controller {
 
 		$realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFilename']);
 
+		$poppage = 'pop.fileview';
+
 		if(file_exists($realfile)){
 			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
 			//$file = URL::base().'/document/stream/'.$id;			
 			$ext = File::extension($realfile);
-			if(in_array($ext, Config::get('kickstart.googledocext'))){
+			if($ext == 'pdf'){
+				$pagepath = str_replace('.'.$ext, '', $realfile);
+
+				if(File::exists($pagepath) == false){
+					File::mkdir($pagepath);
+					$cmd = pdf2images($realfile,$pagepath);
+				}
+
+				$pages = getpages($pagepath);
+				$doc['pages'] = $pages;
+				$doc['pagepath'] = str_replace('.'.$ext, '', $file);
+				$poppage = 'pop.galleryview';
+
+			}else if(in_array($ext, Config::get('kickstart.googledocext'))){
 				if(Config::get('kickstart.usegoogleviewer') == 'true'){
 					$file = 'https://docs.google.com/viewer?embedded=true&url='.$file;
 				}
@@ -1748,7 +1790,7 @@ class Document_Controller extends Base_Controller {
 			$file = URL::base().'/document/notfound';
 		}
 
-		return View::make('pop.fileview')->with('doc',$doc)->with('href',$file);
+		return View::make($poppage)->with('doc',$doc)->with('href',$file);
 	}
 
 	public function get_approve($id){
