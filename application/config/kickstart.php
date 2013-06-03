@@ -140,5 +140,6 @@ return array(
     'usegoogleviewer'=>true,
     'googledocext'=>array('docx','xlsx','pptx','doc','xls','ppt'),
     'noviewer'=>array('zip','rar','gzip','tar.gz','tgz','tbz','pages','key'),
+    'pdf2image_exec'=>'/usr/local/bin/gs',
     
 );

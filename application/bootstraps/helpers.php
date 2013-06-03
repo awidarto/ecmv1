@@ -1,5 +1,32 @@
 <?php
 
+function pdf2images($inpath,$outdir){
+	$cmd = '%s -q -dNOPAUSE -dBATCH -sDEVICE=pngalpha -r96 -dEPSCrop -sOutputFile=%s/page_%%d.png %s';
+
+	$cmd = sprintf($cmd,Config::get('kickstart.pdf2image_exec'), $outdir, $inpath);
+
+	//print $cmd;
+
+	$ex = shell_exec($cmd);
+
+	return $ex;
+}
+
+function getpages($inpath){
+	$pnum = scandir($inpath);
+	$pnum = count($pnum)-2;
+
+	$pages = array();
+
+	for($p = 1; $p <= $pnum;$p++)
+	{
+		$pages[] = 'page_'.$p;
+	}
+
+	return $pages;
+}
+
+
 function getavatar($id,$alt = 'avatar-image',$class = 'avatar',$width = '1000'){
 
 	$usr = new User();

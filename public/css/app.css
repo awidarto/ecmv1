@@ -1450,6 +1450,13 @@ tfoot input.search_init, thead input.search_init{
     font-size: 11px;
 }
 
+.displayboxscroll{
+    padding: 2px;
+    height:500px;
+    display: block;
+    overflow: auto;
+}
+
 .displaybox{
     padding: 2px;
     height:500px;
