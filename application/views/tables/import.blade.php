@@ -269,6 +269,7 @@
 
 
 		$('#select_all').click(function(){
+			//alert('select all');
 			if($('#select_all').is(':checked')){
 				$('.selector').attr('checked', true);
 			}else{
@@ -277,6 +278,7 @@
 		});
 
 		$('#override_all').click(function(){
+			//alert('override all');
 			if($('#override_all').is(':checked')){
 				$('.overselector').attr('checked', true);
 			}else{
