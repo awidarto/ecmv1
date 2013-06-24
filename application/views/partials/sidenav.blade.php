@@ -51,6 +51,7 @@
                 @if($role == 'hr_admin' || $role == 'root' || $role == 'super' || $role == 'president' || $role == 'bod')
                     <dd><a href="{{ URL::to('employee') }}"><i class="foundicon iconnew group sidemenu"></i>Human Resources</a></dd>
                 @endif
+                <dd><a href="{{ URL::to('myhr') }}"><i class="foundicon iconnew user sidemenu"></i>My Employment</a></dd>
                 <!--<dd><a href="{{ URL::to('user/profile') }}"><i class="foundicon iconnew user sidemenu"></i>Profile</a></dd>
                 <dd><a href="{{ URL::to('search') }}"><i class="foundicon search iconnew sidemenu"></i>Search</a></dd>-->
             @else

@@ -94,6 +94,7 @@ class Import_Controller extends Base_Controller {
 		$searchinput = array();
 
 		$form = new Formly();
+		$form->framework = 'bootstrap';
 
 		$select_all = $form->checkbox('select_all','','',false,array('id'=>'select_all'));
 
@@ -153,7 +154,8 @@ class Import_Controller extends Base_Controller {
 
 	public function post_loader($controller,$id)
 	{
-
+		$excel = new Excel();
+		
 		$imp = new Importcache();
 
 		$ihead = $imp->get(array('cache_id'=>$id, 'cache_head'=>true));
@@ -274,6 +276,48 @@ class Import_Controller extends Base_Controller {
 
 		}else if($controller == 'opportunity'){
 
+			$attending = new Opportunity();
+
+			$email_arrays = array();
+
+			foreach($attendees as $e){
+				$email_arrays[] = array('opportunityNumber'=>$e['opportunity_no']);
+			}
+
+			//print_r($email_arrays);
+
+			$email_check = $attending->find(array('$or'=>$email_arrays),array('opportunityNumber'=>1,'_id'=>-1));
+
+			$email_arrays = array();
+
+			foreach($email_check as $ec){
+				$email_arrays[] = $ec['opportunityNumber'];
+			}
+			
+			// contact dupes
+
+			$contacts = new Person();
+
+			$contact_arrays = array();
+
+			foreach($attendees as $e){
+				if(isset($e['email'])){
+					$contact_arrays[] = array('personEmail'=>$e['email']);
+				}
+			}
+
+			//print_r($contact_arrays);
+
+			$contact_check = $contacts->find(array('$or'=>$contact_arrays),array('personEmail'=>1,'_id'=>-1));
+
+			//print_r($contact_check);
+
+			$contact_arrays = array();
+
+			foreach($contact_check as $ec){
+				$contact_arrays[] = $ec['personEmail'];
+			}
+
 		}
 
 		//print_r($email_arrays);
@@ -282,6 +326,7 @@ class Import_Controller extends Base_Controller {
 		$aadata = array();
 
 		$form = new Formly();
+		$form->framework = 'bootstrap';
 
 		$counter = 1 + $pagestart;
 
@@ -294,10 +339,19 @@ class Import_Controller extends Base_Controller {
 
 			for($i = 0; $i < count($fields); $i++){
 
-				if(in_array($doc[$fields[$i]], $email_arrays)){
-					$adata[$i] = '<span class="duplicateemail">'.$doc[$fields[$i]].'</spam>';
+				if($controller == 'opportunity'){
+					if(in_array($doc[$fields[$i]], $contact_arrays) || in_array($doc[$fields[$i]], $email_arrays) ){
+						$adata[$i] = '<span class="duplicateemail">'.$doc[$fields[$i]].'</span>';
+					}else{
+						$adata[$i] = $doc[$fields[$i]];
+					}
+
 				}else{
-					$adata[$i] = $doc[$fields[$i]];
+					if(in_array($doc[$fields[$i]], $email_arrays) ){
+						$adata[$i] = '<span class="duplicateemail">'.$doc[$fields[$i]].'</span>';
+					}else{
+						$adata[$i] = $doc[$fields[$i]];
+					}
 				}
 
 			}
@@ -328,6 +382,22 @@ class Import_Controller extends Base_Controller {
 				}
 
 			}else if($controller == 'opportunity'){
+
+				//$doc['date'] = date('Y-m-d',$excel->toPHPdate($doc['date']));
+
+				//print_r($contact_arrays);
+
+
+				if( strtolower($doc['entry_type']) == 'main' && in_array($doc['opportunity_no'], $email_arrays)){
+					$override = $form->checkbox('over[]','',$doc['_id'],'',array('id'=>'over_'.$doc['_id'],'class'=>'overselector'));
+					$exist = $form->hidden('existing[]',$doc['_id']);
+				}else if( strtolower($doc['entry_type']) == 'contact' && in_array($doc['email'], $contact_arrays ) ){
+					$override = $form->checkbox('over[]','',$doc['_id'],'',array('id'=>'over_'.$doc['_id'],'class'=>'overselector'));
+					$exist = $form->hidden('existing[]',$doc['_id']);
+				}else{
+					$override = '';
+					$exist = '';
+				}
 
 			}
 
@@ -395,9 +465,19 @@ class Import_Controller extends Base_Controller {
 
 			}else if($controller == 'opportunity'){
 
+				$target = new Opportunity();
+				$target_identifier = 'opportunityNumber';
+
+				$contacts = new Person();
+
 			}
 
 			$i2o = Config::get('import.'.$controller.'_map');
+			$i2c = Config::get('import.contact_map');
+
+			$company_filler = '';
+			$opportunity_tracker = '';
+
 
 			$commit_count = 0;
 
@@ -405,6 +485,7 @@ class Import_Controller extends Base_Controller {
 				//print_r($comobj);
 
 				$tocommit = Config::get('import.'.$controller.'_template');
+				$contacttocommit = Config::get('import.contact_template');
 
 
 				for($i = 0; $i < $data['head_count']; $i++ ){
@@ -419,6 +500,22 @@ class Import_Controller extends Base_Controller {
 				// import and group identifier
 				$tocommit['cache_id'] = $comobj['cache_id'];
 				$tocommit['cache_obj'] = $comobj['_id'];
+
+				// only for opportunity import
+
+
+				for($i = 0; $i < $data['head_count']; $i++ ){
+
+					$okey = $data['map_'.$i];
+					if(isset($i2c[$okey])){
+						$contacttocommit[$i2c[$okey]] = $comobj[$okey];
+						//print $okey.' --> '.$i2o[$okey]."<br />\r\n";
+					}
+				}
+
+				$contacttocommit['cache_id'] = $comobj['cache_id'];
+				$contacttocommit['cache_obj'] = $comobj['_id'];
+
 
 				if(isset($data['over'])){
 					if( in_array($comobj['_id']->__toString(), $data['over'])){
@@ -463,27 +560,72 @@ class Import_Controller extends Base_Controller {
 					$tocommit['closingDate'] = new MongoDate(strtotime($tocommit['closingDate']));
 					$tocommit['tenderDate']  = new MongoDate(strtotime($tocommit['tenderDate']));
 				}else if($controller == 'opportunity'){
+					if($tocommit['opportunityDate'] != ''){
+						$tocommit['opportunityDate'] = date('Y-m-d',$excel->toPHPdate($tocommit['opportunityDate']));
+						$tocommit['opportunityDate'] = new MongoDate(strtotime($tocommit['opportunityDate']));
+					}
 
 				}
 
+				if($controller == 'opportunity'){
+					print_r($contacttocommit);
+					//print var_dump($override)."\r\n";
+					//print var_dump($existing)."\r\n";
+				}
 
+				
 				if($override == true){
 
 					$attobj = $target->get(array($target_identifier=>$tocommit[$target_identifier]));
 
 					$tocommit['lastUpdate'] = new MongoDate();
+					$contacttocommit['lastUpdate'] = new MongoDate();
 
-					if($target->update(array($target_identifier=>$tocommit[$target_identifier]),array('$set'=>$tocommit))){
+					
+					$is_main = true;
 
-						Event::fire($controller.'.update',array('id'=>$attobj['_id'],'result'=>'OK'));
+					if($controller == 'opportunity'){
 
-						$commitedobj[] = $tocommit;
+						if(strtoupper($tocommit['entry_type']) == strtoupper( 'Contact' )){
+							$is_main = false;
+						}else{
+							$is_main = true;
+						}
 
-						$icache->update(array($target_identifier=>$tocommit[$target_identifier]),array('$set'=>array('cache_commit'=>true)));
+						if($contacts->update(array('personEmail'=>$contacttocommit['personEmail']),array('$set'=>$contacttocommit),array('upsert'=>true))){
 
-						$commit_count++;
+							Event::fire($controller.'.update',array('id'=>$attobj['_id'],'result'=>'OK'));
+
+							$commitedobj[] = $contacttocommit;
+
+							$icache->update(array('email'=>$contacttocommit['personEmail']),array('$set'=>array('cache_commit'=>true)));
+
+							$commit_count++;
+
+						}
+
 
 					}
+
+					if($is_main == true){
+
+						if($target->update(array($target_identifier=>$tocommit[$target_identifier]),array('$set'=>$tocommit))){
+
+							Event::fire($controller.'.update',array('id'=>$attobj['_id'],'result'=>'OK'));
+
+							$commitedobj[] = $tocommit;
+
+							$icache->update(array($target_identifier=>$tocommit[$target_identifier]),array('$set'=>array('cache_commit'=>true)));
+
+							$commit_count++;
+
+						}
+
+
+					}
+
+
+
 				}else if($existing == false){
 
 
@@ -492,22 +634,59 @@ class Import_Controller extends Base_Controller {
 					$tocommit['creatorName'] = Auth::user()->fullname;
 					$tocommit['creatorId'] = Auth::user()->id;
 
+					$contacttocommit['createdDate'] = new MongoDate();
+					$contacttocommit['lastUpdate'] = new MongoDate();
+					$contacttocommit['creatorName'] = Auth::user()->fullname;
+					$contacttocommit['creatorId'] = Auth::user()->id;
 
-					if($obj = $target->insert($tocommit)){
+					$is_main = true;
 
-						Event::fire($controller.'.create',array('id'=>$obj['_id'],'result'=>'OK'));
+					if($controller == 'opportunity'){
 
-						$commitedobj[] = $tocommit;
+						if(strtoupper($tocommit['entry_type']) == strtoupper( 'Contact' )){
+							$is_main = false;					
+						}else{
+							$is_main = true;					
+						}
 
-						$icache->update(array($target_identifier=>$tocommit[$target_identifier]),array('$set'=>array('cache_commit'=>true)));
+						if($obj = $contacts->insert($contacttocommit)){
 
-						$commit_count++;
+								Event::fire('contact.create',array('id'=>$obj['_id'],'result'=>'OK'));
+
+								$commitedobj[] = $contacttocommit;
+
+								$icache->update(array('email'=>$contacttocommit['personEmail']),array('$set'=>array('cache_commit'=>true)));
+
+								$commit_count++;
+
+						}
 
 					}
 
+					if($is_main == true){
+
+						if($obj = $target->insert($tocommit)){
+
+								Event::fire($controller.'.create',array('id'=>$obj['_id'],'result'=>'OK'));
+
+								$commitedobj[] = $tocommit;
+
+								$icache->update(array($target_identifier=>$tocommit[$target_identifier]),array('$set'=>array('cache_commit'=>true)));
+
+								$commit_count++;
+
+						}
+
+					}
+
+
+
+	
 				}
 
 			}
+
+			//exit();
 
 			return Redirect::to('import/preview/'.$controller.'/'.$importid)->with('notify_success','Committing '.$commit_count.' record(s)');
 		}else{

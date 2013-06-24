@@ -42,6 +42,58 @@
             'status' => 'status',
             'remarks' => 'remarks'
 		),
+/*
+initiating_department	
+clients_name	
+name	
+position	
+email	
+direct_line	
+mobile	
+target_scope_description	
+project_name	 
+person_in_charge	
+report_comments	 
+remarks
+*/
+		'opportunity_valid_head_selects'=>array(
+
+			'unmapped'=>'unmapped',
+			'no'=>'no',
+            'date'=>'date',
+            'opportunity_no'=>'opportunity_no',
+            'initiating_department'=>'initiating_department',
+            'clients_name' => 	'clients_name',
+            'entry_type'=>'entry_type',
+			'name'=>'name',	
+			'position'=>'position',	
+			'email'=>'email',	
+			'direct_line'=>'direct_line',
+			'mobile'=>'mobile',	
+            'target_scope_description' => 	'target_scope_description',
+            'project_name' => 'project_name',
+            'person_in_charge' => 'person_in_charge',
+            'report_comments' => 'report_comments',
+            'opportunity_status' => 'opportunity_status',
+            'remarks' => 'remarks'
+		),
+
+		'opportunity_map'=>array(
+
+            'date'=>'opportunityDate',
+            'opportunity_no'=>'opportunityNumber',
+            'clients_name' => 'clientCompany',
+            'initiating_department'=>'opportunityDepartment',
+            'target_scope_description' => 	'briefScopeDescription',
+			'name'=>'clientContactName',	
+            'target_scope_description' => 	'targetScopeDescription',
+            'project_name' => 'projectName',
+            'person_in_charge' => 'opportunityPIC',
+            'report_comments' => 'reportComments',
+            'opportunity_status' => 'opportunityStatus',
+            'remarks' => 'opportunityRemark',
+            'entry_type' => 'entry_type'
+		),		
 
 		'project_map'=>array(
             'job_no' => 'projectNumber',
@@ -157,6 +209,42 @@
 
 		),
 
+		'contact_map'=>array(
+
+			'name'=>'personName',	
+			'position'=>'personPosition',	
+			'email'=>'personEmail',	
+			'direct_line'=>'personPhone',
+			'mobile'=>'personMobile',
+			'opportunity_no' => 'opportunityNumber',
+            'clients_name' => 'personCompany'
+
+
+/*
+'companyId',
+'companyName',
+'personCompany',
+'',
+'personId',
+'',
+,
+'',
+'' 
+
+            'date'=>'tenderDate',
+            'tender_no'=>'tenderNumber',
+            'clients_tender_no'=>'clientTenderNumber',
+            'clients_name' => 	'clientName',
+            'brief_scope_description' => 	'briefScopeDescription',
+            'delivery_terms' => 	'deliveryTerm',
+            'closing_date' => 	'closingDate',
+            'tender_system' => 	'tenderSystem',
+            'bid_price_usd' => 	'bidPriceUSD',
+            'bid_price_euro' => 'bidPriceEURO',
+            'bid_price_idr' => 'bidPriceIDR',
+*/
+        ),
+
 		'tender_template'=>array(
 
 			'bidPriceUSD'=> '',
@@ -184,7 +272,35 @@
 			'tenderTag'=> '' 			
 		),
 
+		'opportunity_template'=>array(
 
+			'clientCompany'=> '',
+			'clientContactName'=>'',
+			'clientStreet'=> '',
+			'clientCity'=> '',
+			'clientZIP'=> '',
+			'clientPhone'=> '',
+			'clientMobile'=> '',
+			'clientPosition'=> '',
+			'clientFax'=> '',
+			'clientEmail'=> '',
+			'clientWebsite'=> '',
+			'saveToContact'=> '',
+			'opportunityDepartment'=> '',
+			'opportunityNumber'=> '',
+			'opportunityDate'=> '',
+			'closingDate'=> '',
+			'reportComments'=>'',
+			'opportunityStatus'=> '',
+			'projectName'=> '',
+			'targetScopeDescription'=> '',
+			'opportunityPIC'=> '',
+			'opportunityRemark'=> '',
+			'opportunityTag'=> '',
+			'opportunityShare'=> '',
+			'opportunityContactPersons'=>'',
+			'entry_type'=>''
+		),
 
 	);
 

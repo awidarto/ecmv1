@@ -55,7 +55,7 @@ class Opportunity_Controller extends Base_Controller {
 			//'clientWebsite',
 			'Project Name',
 			'Target Scope Description',
-			'Closing Date',
+			//'Closing Date',
 			'Opportunity PIC',
 			//'Estimated Currency',
 			//'Estimated Value',
@@ -90,7 +90,7 @@ class Opportunity_Controller extends Base_Controller {
 			//'clientWebsite',
 			'projectName',
 			'targetScopeDescription',
-			'closingDate',
+			//'closingDate',
 			'opportunityPIC',
 			//'estimatedCurrency',
 			//'estimatedValue',
@@ -169,7 +169,7 @@ class Opportunity_Controller extends Base_Controller {
 			//'clientWebsite',
 			'projectName',
 			'targetScopeDescription',
-			'closingDate',
+			//'closingDate',
 			'opportunityPIC',
 			//'estimatedCurrency',
 			//'estimatedValue',
@@ -371,7 +371,7 @@ class Opportunity_Controller extends Base_Controller {
 				$doc['clientCompany'],
 				$doc['projectName'],
 				$doc['targetScopeDescription'],
-				date('d-m-Y', $doc['closingDate']->sec),
+				//date('d-m-Y', $doc['closingDate']->sec),
 				str_replace(',', ', ', $doc['opportunityPIC']),
 				//$doc['estimatedCurrency'],
 				//number_format((double)$doc['estimatedValue'],2,',','.'),
@@ -1441,6 +1441,14 @@ class Opportunity_Controller extends Base_Controller {
 
 		$newcontact = Input::get();
 
+		$opportunity = new Opportunity();
+
+		$_id = new MongoId($id);
+
+		$opp = $opportunity->get(array('_id'=>$_id));
+
+		$newcontact['opportunityNumber'] = $opp['opportunityNumber'];
+
 		$contact = new Person();
 
 		if($newcontact['personId'] == ''){
@@ -1448,9 +1456,6 @@ class Opportunity_Controller extends Base_Controller {
 			//$contact->insert($newcontact,array('upsert'=>true));
 		}
 
-		$opportunity = new Opportunity();
-
-		$_id = new MongoId($id);
 
 		$pushData['opportunityContactPersons'] = $newcontact;
 
@@ -1576,7 +1581,9 @@ class Opportunity_Controller extends Base_Controller {
 
 		$opp = $document->get(array('_id'=>$_id));
 
-		$documents = $opp['opportunityContactPersons'];
+		$persons = new Person();
+
+		$documents = $persons->find(array('opportunityNumber'=>$opp['opportunityNumber'] ) );
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');

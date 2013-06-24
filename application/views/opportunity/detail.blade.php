@@ -26,12 +26,6 @@
 					<td class="detail-info">{{ $opportunity['opportunityPIC'] }}</td>
 				</tr>
 				<tr>
-					<td class="detail-title">Closing Date</td>
-					<td class="detail-info">	
-						<span>{{date('d-m-Y',$opportunity['closingDate']->sec)}}</span>
-					</td>
-				</tr>
-				<tr>
 					<td class="detail-title">Opportunity Date</td>
 					<td class="detail-info">	
 						<span>{{date('d-m-Y',$opportunity['opportunityDate']->sec)}}</span>
