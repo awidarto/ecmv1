@@ -10,7 +10,21 @@ function getCategory($type = null){
 	}else{
 		$therole = Auth::user()->role;
 
-		if($type == 'president_director'){
+		if($type == 'my_employment'){
+
+			if(file_exists('public/yml/my_employment.yml')){
+				$parsed = Yaml::from_file('public/yml/my_employment.yml')->to_array();
+
+				$all = array('label'=>'All','id'=>'all');
+
+				array_unshift($parsed, $all);
+
+				$category = json_encode($parsed);
+			}else{
+				$category = json_encode(Config::get('category.'.$type));
+			}
+
+		}else if($type == 'president_director'){
 
 			$types = Config::get('parama.department');
 			$types = array_keys($types);
@@ -73,6 +87,23 @@ function getCategory($type = null){
 
 		}
 
+	}
+
+	return $category;
+}
+
+function getEmpCategory(){
+
+	if(file_exists('public/yml/my_employment.yml')){
+		$parsed = Yaml::from_file('public/yml/my_employment.yml')->to_array();
+
+		$all = array('label'=>'All','id'=>'all');
+
+		array_unshift($parsed, $all);
+
+		$category = json_encode($parsed);
+	}else{
+		$category = json_encode(Config::get('category.'.$type));
 	}
 
 	return $category;
