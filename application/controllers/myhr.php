@@ -12,9 +12,9 @@ class Myhr_Controller extends Base_Controller {
 	|
 	| This controller responds to URIs beginning with "home", and it also
 	| serves as the default controller for the application, meaning it
-	| handles myhr to the root of the application.
+	| handles requests to the root of the application.
 	|
-	| You can respond to GET myhr to "/home/profile" like so:
+	| You can respond to GET requests to "/home/profile" like so:
 	|
 	|		public function action_profile()
 	|		{
@@ -37,247 +37,49 @@ class Myhr_Controller extends Base_Controller {
 
 	public function __construct(){
 		$this->crumb = new Breadcrumb();
-		$this->crumb->add('myhr','My Employment',false);
+		$this->crumb->add('myhr','My Employment');
 
 		date_default_timezone_set('Asia/Jakarta');
 		$this->filter('before','auth');
 	}
 
-	public function get_index()
+	public function get_trash()
 	{
+		$this->crumb->add('document/trash','Trash');
 
-		$heads = array('#','Title','Created','Requester','Requesting','Attachment','Tags','Action');
-		$searchinput = array(false,'title','created','creator','approval from','filename','tags',false);
+		//print_r(Auth::user());
 
-		//if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
+		$heads = array('#','Title','Department','Created','Last Update','Expiry Date','Expiring In','Creator','Access','Attachment','Is Template','Tags','Action');
+		$searchinput = array(false,'title','department','created','last update','expiry date','expiring','creator','access','filename','useAsTemplate','tags',false);
+
+		$title = 'Document Trash';
+
+		if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
 			return View::make('tables.simple')
-				->with('title','My Employment')
-				->with('newbutton','New Document')
-				->with('addurl','myhr/submit')
-				->with('disablesort','0,5,6')
-				->with('searchinput',$searchinput)
-				->with('ajaxsource',URL::to('myhr'))
-				->with('ajaxdel',URL::to('myhr/del'))
-				->with('crumb',$this->crumb)
-				->with('heads',$heads);
-		/*
-		}else{
-			return View::make('document.restricted')
-							->with('title',$title);			
-		}
-		*/
-	}
-
-	public function post_index()
-	{
-
-		$fields = array('title','createdDate','creatorName','docApproval','docFilename','docTag');
-
-		$rel = array('like','like','like','like','like','like');
-
-		$cond = array('both','both','both','both','both','both');
-
-		$pagestart = Input::get('iDisplayStart');
-		$pagelength = Input::get('iDisplayLength');
-
-		$limit = array($pagelength, $pagestart);
-
-		$defsort = 1;
-		$defdir = -1;
-
-		$idx = 0;
-		$q = array();
-
-		$self_id = new MongoId(Auth::user()->id);
-
-		$q = array(
-			'employmentDoc'=>'Yes',
-			'deleted'=>false
-			);
-
-
-
-		$hilite = array();
-		$hilite_replace = array();
-
-		foreach($fields as $field){
-			if(Input::get('sSearch_'.$idx))
-			{
-
-				$hilite_item = Input::get('sSearch_'.$idx);
-				$hilite[] = $hilite_item;
-				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
-
-				if($rel[$idx] == 'like'){
-					if($cond[$idx] == 'both'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
-					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
-					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
-					}
-				}else if($rel[$idx] == 'equ'){
-					$q[$field] = Input::get('sSearch_'.$idx);
-				}
-			}
-			$idx++;
-		}
-
-		//print_r($q)
-
-		$document = new Document();
-
-		/* first column is always sequence number, so must be omitted */
-		$fidx = Input::get('iSortCol_0');
-		if($fidx == 0){
-			$fidx = $defsort;			
-			$sort_col = $fields[$fidx];
-			$sort_dir = $defdir;
-		}else{
-			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
-			$sort_col = $fields[$fidx];
-			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
-		}
-
-		$count_all = $document->count();
-
-		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count($q);
-		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count();
-		}
-
-		$aadata = array();
-
-		$counter = 1 + $pagestart;
-		foreach ($documents as $doc) {
-
-			if(isset($doc['tags'])){
-				$tags = array();
-
-				foreach($doc['tags'] as $t){
-					$tags[] = '<span class="tagitem">'.$t.'</span>';
-				}
-
-				$tags = implode('',$tags);
-
-			}else{
-				$tags = '';
-			}
-
-			$requestTo = '<ol>';
-
-			foreach ($doc['approvalRequestIds'] as $r) {
-				if($r['_id'] == $self_id){
-					//$requestTo .= '<li><span class="approvalview" id="'.$doc['_id'].'">'.$r['fullname'].'</span></li>';
-					$requestTo .= '<li><strong>'.$r['fullname'].' (You)</strong></li>';
-				}else{
-					$requestTo .= '<li>'.$r['fullname'].'</li>';
-				}
-			}
-
-			$requestTo .= '</ol>';
-
-			if(count($doc['approvalRequestIds']) > 0){
-				$request_type = 'Approval';
-			}else{
-				$request_type = 'General';
-			}
-
-			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
-			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
-
-			$status = '<table>';
-			foreach($doc['approvalResponds'] as $c){
-				$timestamp = date('d-m-Y H:i:s',$c['approvalDate']->sec);
-				$status .= '<tr>';
-				$status .= '<td><span class="commentTime">'.$timestamp.'</span>'.$c['approverName'].'</td>';
-				$status .= '<td><p>'.$c['approvalNote'].'</p></td>';
-				$status .= '</tr>';
-			}
-			$status .= '</table>';
-
-
-			$aadata[] = array(
-				$counter,
-				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
-				date('d-m-Y H:i:s', $doc['createdDate']->sec),
-				$doc['creatorName'],
-				//$requestTo,
-				$request_type,
-				$status,
-				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
-				$tags,
-				'<i class="foundicon-checkmark action approvalview" id="'.$doc['_id'].'"></i>&nbsp;'.
-				'<i class="foundicon-right-arrow action forwardview" id="'.$doc['_id'].'"></i>'
-			);
-			$counter++;
-		}
-
-		
-		$result = array(
-			'sEcho'=> Input::get('sEcho'),
-			'iTotalRecords'=>$count_all,
-			'iTotalDisplayRecords'=> $count_display_all,
-			'aaData'=>$aadata,
-			'qrs'=>$q
-		);
-
-		return Response::json($result);
-	}
-
-// incoming
-
-	public function get_incoming()
-	{
-
-		$this->crumb->add('myhr/incoming','Incoming',false);
-
-		//$heads = array('#','Title','Created','Requester','Requesting','Status','Attachment','Tags','Action');
-
-		$heads = array(
-			array('#',array('class'=>'one')),
-			array('Title',array('class'=>'one')),
-			array('Created',array('class'=>'one')),
-			array('Requester',array('class'=>'one')),
-			array('Type',array('class'=>'one')),
-			'Status',
-			array('Attachment',array('class'=>'one')),
-			array('Tags',array('class'=>'one')),
-			array('Action',array('class'=>'one'))
-		);
-
-		$searchinput = array(false,'title','created','creator','approval from','status','filename','tags',false);
-
-		//if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
-			return View::make('tables.simple')
-				->with('title','Incoming Requests')
+				->with('title',$title)
 				->with('newbutton','')
 				->with('disablesort','0,5,6')
-				->with('addurl','myhr/submit')
+				->with('addurl','')
 				->with('searchinput',$searchinput)
-				->with('ajaxsource',URL::to('myhr/incoming'))
-				->with('ajaxdel',URL::to('myhr/del'))
+				->with('ajaxsource',URL::to('document/trash'))
+				->with('ajaxdel',URL::to('document/purge'))
+				->with('ajaxrestore',URL::to('document/restore'))
 				->with('crumb',$this->crumb)
 				->with('heads',$heads);
-		/*
 		}else{
 			return View::make('document.restricted')
-							->with('title',$title);			
+							->with('title',$title);
 		}
-		*/
 	}
 
-	public function post_incoming()
+	public function post_trash()
 	{
 
-		$fields = array('title','createdDate','creatorName','docApproval','status','docFilename','docTag');
+		$fields = array('title','docDepartment','createdDate','lastUpdate','expiryDate','expiring','creatorName','access','docFilename','useAsTemplate','docTag');
 
-		$rel = array('like','like','like','like','like','like','like');
+		$rel = array('like','like','like','like','like','like','like','like','like','like','like');
 
-		$cond = array('both','both','both','both','both','both','both');
+		$cond = array('both','both','both','both','both','both','both','both','both','both','both');
 
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
@@ -289,18 +91,6 @@ class Myhr_Controller extends Base_Controller {
 
 		$idx = 0;
 		$q = array();
-
-		$self_id = new MongoId(Auth::user()->id);
-
-		//$q = array('approvalRequestIds._id'=>$self_id);
-
-		$q['$or'] = array(
-			array('approvalRequestIds._id'=>$self_id),
-			array('docRequestToDepartment'=>Auth::user()->department),
-			array('approvalRequestIds.id'=>$self_id),
-			array('docApproval'=> new MongoRegex('/'.Auth::user()->email.'/i'))
-		);
-
 
 		$hilite = array();
 		$hilite_replace = array();
@@ -317,9 +107,9 @@ class Myhr_Controller extends Base_Controller {
 					if($cond[$idx] == 'both'){
 						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
 					}
 				}else if($rel[$idx] == 'equ'){
 					$q[$field] = Input::get('sSearch_'.$idx);
@@ -335,7 +125,7 @@ class Myhr_Controller extends Base_Controller {
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
 		if($fidx == 0){
-			$fidx = $defsort;			
+			$fidx = $defsort;
 			$sort_col = $fields[$fidx];
 			$sort_dir = $defdir;
 		}else{
@@ -345,6 +135,8 @@ class Myhr_Controller extends Base_Controller {
 		}
 
 		$count_all = $document->count();
+
+		$q['deleted'] = true;
 
 		if(count($q) > 0){
 			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
@@ -358,7 +150,6 @@ class Myhr_Controller extends Base_Controller {
 
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
-
 			if(isset($doc['tags']) && is_array($doc['tags']) && implode('',$doc['tags']) != ''){
 				$tags = array();
 
@@ -372,86 +163,51 @@ class Myhr_Controller extends Base_Controller {
 				$tags = '';
 			}
 
-			$requestTo = '<ol>';
-
-			foreach ($doc['approvalRequestIds'] as $r) {
-				if($r['_id'] == $self_id){
-					//$requestTo .= '<li><span class="approvalview" id="'.$doc['_id'].'">'.$r['fullname'].'</span></li>';
-					$requestTo .= '<li><strong>'.$r['fullname'].' (You)</strong></li>';
-				}else{
-					$requestTo .= '<li>'.$r['fullname'].'</li>';
-				}
-			}
-
-			$shallapprove = true;
-
-			$requestTo .= '</ol>';
-
-			if(count($doc['approvalRequestIds']) > 0){
-				$request_type = 'Approval';
-			}else{
-				$request_type = 'Submission';
-				$shallapprove = false;
-			}
-
-
-			if(isset($doc['approvalResponds'])){
-				$status = '<table style="width:100%">';
-				$status .= '<thead><tr>';
-				$status .= '<th>Status</th><th>By</th><th>Detail</th>';
-
-				$status .= '</tr></thead>';
-				foreach($doc['approvalResponds'] as $c){
-					if($c['approval'] == 'transfer'){
-						$appstatus = 'Transferred';
-					}else if($c['approval'] == 'yes'){
-						$appstatus = 'Approved';
-					}else if($c['approval'] == 'no'){
-						$appstatus = 'Not Approved';
-					}
-					$timestamp = date('d-m-Y h:i:s',$c['approvalDate']->sec);
-					$status .= '<tr>';
-					$status .= '<td><span class"approval '.$c['approval'].'">'.$appstatus.'</span></td>';
-					$status .= '<td>'.$c['approverName'].'</td>';
-					$status .= '<td><span class="commentTime">'.$timestamp.'</span><br />';
-					$status .= '<p>'.$c['approvalNote'].'</p></td>';
-					$status .= '</tr>';
-
-					if($c['approverEmail'] == Auth::user()->email){
-						$shallapprove = false;
-					}
-
-				}
-				$status .= '</table>';
-
-
-			}else{
-				if($request_type == 'Approval'){
-					$status = 'Pending Approval';
-				}else{
-					$status = 'Credential Submission';
-				}
-			}			
-
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
+
+			if(isset($doc['expiring'])){
+				
+				if($doc['expiring'] == 'Today'){
+					$doc['expiring'] = '<span class="expiring now">'.$doc['expiring'].'</span>';
+				}elseif($doc['expiring'] < 0){
+					$doc['expiring'] = '<span class="expiring yesterday">'.abs($doc['expiring']).' day(s) ago</span>';
+				}elseif($doc['expiring'] != false){
+					$doc['expiring'] = '<span class="expiring">'.$doc['expiring'].' day(s)</span>';						
+				}else{
+					$doc['expiring'] = '';
+				}
+
+			}else{
+
+				$doc['expiring'] = '';
+			}
+
+			$download = '<a href="'.URL::to('document/download/'.$doc['_id']).'">'.
+						'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
 
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
+				depttitle($doc['docDepartment']),
 				date('d-m-Y H:i:s', $doc['createdDate']->sec),
+				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
+				(isset($doc['expiryDate']) && $doc['expiryDate'] != '')?date('d-m-Y', $doc['expiryDate']->sec):'',
+				$doc['expiring'],
 				$doc['creatorName'],
-				//$requestTo,
-				$request_type,
-				$status,
+				isset($doc['access'])?ucfirst($doc['access']):'',
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
+				isset($doc['useAsTemplate'])?$doc['useAsTemplate']:'No',
 				$tags,
-				($shallapprove)?'<i class="foundicon-checkmark has-tip tip-bottom noradius action approvalview" id="'.$doc['_id'].'" title="Approve"></i>':'<i class="foundicon-checkmark tip-bottom noradius action noapproval" title="Approve"></i>'
+				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
+				$download.
+				'<i class="foundicon-refresh action restore" id="'.$doc['_id'].'"></i>&nbsp;'.
+				'<i class="foundicon-remove action purge" id="'.$doc['_id'].'"></i>'
 			);
 			$counter++;
 		}
 
-		
+
 		$result = array(
 			'sEcho'=> Input::get('sEcho'),
 			'iTotalRecords'=>$count_all,
@@ -463,262 +219,97 @@ class Myhr_Controller extends Base_Controller {
 		return Response::json($result);
 	}
 
-//outgoing
 
-	public function get_outgoing()
-	{
+	public function post_del(){
+		$id = Input::get('id');
 
-		$this->crumb->add('myhr/outgoing','Outgoing',false);
+		$user = new Document();
 
-		$heads = array(
-			array('#',array('class'=>'one')),
-			array('Title',array('class'=>'one')),
-			array('Created',array('class'=>'one')),
-			array('Requester',array('class'=>'one')),
-			array('Type',array('class'=>'one')),
-			array('Request To',array('class'=>'one')),
-			'Status',
-			array('Attachment',array('class'=>'one')),
-			array('Tags',array('class'=>'one')),
-			array('Action',array('class'=>'one'))
-		);
-		
-		$searchinput = array(false,'title','created','creator','approval from',false,false,'filename','tags',false);
-
-		//if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
-			return View::make('tables.simple')
-				->with('title','Submissions & Requests')
-				->with('newbutton','Submit Request')
-				->with('addurl','requests/submit')
-				->with('disablesort','0,5,6')
-				->with('searchinput',$searchinput)
-				->with('ajaxsource',URL::to('requests/outgoing'))
-				->with('ajaxdel',URL::to('requests/del'))
-				->with('crumb',$this->crumb)
-				->with('heads',$heads);
-		/*
+		if(is_null($id)){
+			$result = array('status'=>'ERR','data'=>'NOID');
 		}else{
-			return View::make('document.restricted')
-							->with('title',$title);			
+
+			$id = new MongoId($id);
+
+
+			if($user->update(array('_id'=>$id),array('$set'=>array('deleted'=>true)))){
+				Event::fire('document.delete',array('id'=>$id,'result'=>'OK'));
+				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
+			}else{
+				Event::fire('document.delete',array('id'=>$id,'result'=>'FAILED'));
+				$result = array('status'=>'ERR','data'=>'DELETEFAILED');
+			}
 		}
-		*/
+
+		print json_encode($result);
 	}
 
-	public function post_outgoing()
-	{
+	public function post_purge(){
+		$id = Input::get('id');
 
-		$fields = array('title','createdDate','creatorName','docApproval','docFilename','docTag');
+		$user = new Document();
 
-		$rel = array('like','like','like','like','like','like');
-
-		$cond = array('both','both','both','both','both','both');
-
-		$pagestart = Input::get('iDisplayStart');
-		$pagelength = Input::get('iDisplayLength');
-
-		$limit = array($pagelength, $pagestart);
-
-		$defsort = 1;
-		$defdir = -1;
-
-		$idx = 0;
-		$q = array();
-
-		$self_id = new MongoId(Auth::user()->id);
-
-		/*
-		$q['$or'] = array(
-			array('approvalRequestIds.id'=>$self_id),
-			array('docApproval'=> new MongoRegex('/'.Auth::user()->email.'/i'))
-		);
-
-		$q = array('approvalRequestIds._id'=>$self_id);
-		*/
-		$q = array(
-			'creatorId'=>Auth::user()->id,
-			'docApproval'=>array('$ne'=>'""'),
-			'docRequestToDepartment'=>array('$ne'=>'""'),
-			'$or'=>array(
-				array('docApproval'=>array('$exists'=>true)),
-				array('docRequestToDepartment'=>array('$exists'=>true))
-			)
-		);
-
-
-		$hilite = array();
-		$hilite_replace = array();
-
-		foreach($fields as $field){
-			if(Input::get('sSearch_'.$idx))
-			{
-
-				$hilite_item = Input::get('sSearch_'.$idx);
-				$hilite[] = $hilite_item;
-				$hilite_replace[] = '<span class="hilite">'.$hilite_item.'</span>';
-
-				if($rel[$idx] == 'like'){
-					if($cond[$idx] == 'both'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
-					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
-					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
-					}
-				}else if($rel[$idx] == 'equ'){
-					$q[$field] = Input::get('sSearch_'.$idx);
-				}
-			}
-			$idx++;
-		}
-
-		//print_r($q)
-
-		$document = new Document();
-
-		/* first column is always sequence number, so must be omitted */
-		$fidx = Input::get('iSortCol_0');
-		if($fidx == 0){
-			$fidx = $defsort;			
-			$sort_col = $fields[$fidx];
-			$sort_dir = $defdir;
+		if(is_null($id)){
+			$result = array('status'=>'ERR','data'=>'NOID');
 		}else{
-			$fidx = ($fidx > 0)?$fidx - 1:$fidx;
-			$sort_col = $fields[$fidx];
-			$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+
+			$id = new MongoId($id);
+
+
+			if($user->delete(array('_id'=>$id))){
+				Event::fire('document.purge',array('id'=>$id,'result'=>'OK'));
+				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
+			}else{
+				Event::fire('document.purge',array('id'=>$id,'result'=>'FAILED'));
+				$result = array('status'=>'ERR','data'=>'DELETEFAILED');
+			}
 		}
 
-		$count_all = $document->count();
-
-		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count($q);
-		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir),$limit);
-			$count_display_all = $document->count();
-		}
-
-		$aadata = array();
-
-		$counter = 1 + $pagestart;
-		foreach ($documents as $doc) {
-
-			if(isset($doc['tags']) && is_array($doc['tags']) && implode('',$doc['tags']) != ''){
-				$tags = array();
-
-				foreach($doc['tags'] as $t){
-					$tags[] = '<span class="tagitem">'.$t.'</span>';
-				}
-
-				$tags = implode('',$tags);
-
-			}else{
-				$tags = '';
-			}
-
-			$requestTo = '<ol>';
-
-			if(isset($doc['approvalRequestIds'])){
-				foreach ($doc['approvalRequestIds'] as $r) {
-					if($r['_id'] == $self_id){
-						//$requestTo .= '<li><span class="approvalview" id="'.$doc['_id'].'">'.$r['fullname'].'</span></li>';
-						$requestTo .= '<li><strong>'.$r['fullname'].' (You)</strong></li>';
-					}else{
-						$requestTo .= '<li>'.$r['fullname'].'</li>';
-					}
-				}
-
-				if(count($doc['approvalRequestIds']) > 0){
-					$request_type = 'Approval';
-				}else{
-					$request_type = 'Submission';
-				}
-
-			}else{
-				$requestTo .= '<li>No approval requested</li>';
-			}
-
-			$requestTo .= '</ol>';
-
-			$shallapprove = true;
-
-			if(isset($doc['approvalResponds'])){
-				$status = '<table style="width:100%">';
-				$status .= '<thead>';
-				$status .= '<tr>';
-				$status .= '<th>Status</th><th>By</th><th>Detail</th>';
-				$status .= '</tr>';
-				$status .= '<tr>';
-				$status .= '<th colspan="3"><span id="'.$doc['_id'].'" class="printcover right">Print cover</span></th>';
-				$status .= '</tr>';
-				$status .= '</thead>';
-				foreach($doc['approvalResponds'] as $c){
-					if($c['approval'] == 'transfer'){
-						$appstatus = 'Transferred';
-					}else if($c['approval'] == 'yes'){
-						$appstatus = 'Approved';
-					}else if($c['approval'] == 'no'){
-						$appstatus = 'Not Approved';
-					}
-					$timestamp = date('d-m-Y h:i:s',$c['approvalDate']->sec);
-					$status .= '<tr>';
-					$status .= '<td><span class"approval '.$c['approval'].'">'.$appstatus.'</span></td>';
-					$status .= '<td>'.$c['approverName'].'</td>';
-					$status .= '<td><span class="commentTime">'.$timestamp.'</span><br />';
-					$status .= '<p>'.$c['approvalNote'].'</p></td>';
-					$status .= '</tr>';
-					if($c['approverEmail'] == Auth::user()->email){
-						$shallapprove = false;
-					}
-				}
-				$status .= '</table>';
-			}else{
-				if($request_type == 'Approval'){
-					$status = 'Pending Approval';
-				}else{
-					$status = 'Credential Submission';
-					$shallapprove = false;
-				}
-			}
-
-
-			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
-			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
-
-			$aadata[] = array(
-				$counter,
-				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
-				date('d-m-Y H:i:s', $doc['createdDate']->sec),
-				$doc['creatorName'],
-				$request_type,
-				$requestTo,
-				$status,
-				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
-				$tags,
-				''
-				//'<i class="foundicon-checkmark action approvalview" id="'.$doc['_id'].'"></i>&nbsp;'.
-				//'<i class="foundicon-right-arrow action forwardview" id="'.$doc['_id'].'"></i>'
-			);
-			$counter++;
-		}
-
-		
-		$result = array(
-			'sEcho'=> Input::get('sEcho'),
-			'iTotalRecords'=>$count_all,
-			'iTotalDisplayRecords'=> $count_display_all,
-			'aaData'=>$aadata,
-			'qrs'=>$q
-		);
-
-		return Response::json($result);
+		print json_encode($result);
 	}
 
-	public function get_submit(){
-		$this->crumb->add('myhr/submit','Submit Request Document');
+	public function post_restore(){
+		$id = Input::get('id');
+
+		$user = new Document();
+
+		if(is_null($id)){
+			$result = array('status'=>'ERR','data'=>'NOID');
+		}else{
+
+			$id = new MongoId($id);
+
+
+			if($user->update(array('_id'=>$id),array('$set'=>array('deleted'=>false)))){
+				Event::fire('document.restore',array('id'=>$id,'result'=>'OK'));
+				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
+			}else{
+				Event::fire('document.restore',array('id'=>$id,'result'=>'FAILED'));
+				$result = array('status'=>'ERR','data'=>'DELETEFAILED');
+			}
+		}
+
+		print json_encode($result);
+	}
+
+	public function get_add($type = null){
+
+		$type = 'hr_admin';
+
+		if(is_null($type)){
+			$this->crumb->add('myhr/add','New Document');
+		}else{
+			$this->crumb = new Breadcrumb();
+
+			$this->crumb->add('myhr/type/'.$type,'My Employment');
+			$this->crumb->add('myhr/add','New Document');
+		}
 
 		$doc = new Document();
 
 		$template = $doc->find(array('useAsTemplate'=>'Yes'));
+
+		$permissions = Auth::user()->permissions;
 
 		$templates = array();
 		$templates['none'] = 'None';
@@ -726,22 +317,23 @@ class Myhr_Controller extends Base_Controller {
 			$templates[$t['_id']->__toString()] = $t['title'];
 		}
 
-		$category = getCategory('employee');
+		$category = $this->getCategory($type);
 
 		$form = new Formly();
 		return View::make('myhr.new')
 					->with('form',$form)
 					->with('category',$category)
 					->with('templates',$templates)
+					->with('type',$type)
 					->with('crumb',$this->crumb)
-					->with('title','Submit Employee Document');
+					->with('title','New Document');
 
 	}
 
-
-	public function post_submit($type = null){
+	public function post_add($type = null){
 
 		//print_r(Session::get('permission'));
+
 
 		$back = 'myhr';
 
@@ -800,9 +392,10 @@ class Myhr_Controller extends Base_Controller {
 			$data['lastUpdate'] = new MongoDate();
 			$data['creatorName'] = Auth::user()->fullname;
 			$data['creatorId'] = Auth::user()->id;
-			$data['employmentDoc'] = 'Yes';
 
 			$data['useAsTemplate'] = (isset($data['useAsTemplate']))?$data['useAsTemplate']:'No';
+
+			$data['employmentDoc'] = true;
 
 			if(isset($data['alertStart'])){
 				if($data['alertStart'] > Config::get('parama.expiration_alert_days')){
@@ -928,40 +521,175 @@ class Myhr_Controller extends Base_Controller {
 
 	}
 
+	public function get_edit($id = null,$type = null){
+
+		if(is_null($type)){
+			$this->crumb->add('document/add','Edit',false);
+		}else{
+			$this->crumb = new Breadcrumb();
+			$this->crumb->add('document/type/'.$type,'Document');
+
+			$this->crumb->add('document/type/'.$type,depttitle($type),false);
+			$this->crumb->add('document/edit/'.$id,'Edit',false);
+		}
 
 
-	public function ___post_submit($type = null){
+		$doc = new Document();
+
+		$id = (is_null($id))?Auth::user()->id:$id;
+
+		$id = new MongoId($id);
+
+		$doc_data = $doc->get(array('_id'=>$id));
+
+		$doc_data['oldTag'] = $doc_data['docTag'];
+		$doc_data['oldShare'] = $doc_data['docShare'];
+		
+		$doc_data['effectiveDate'] = date('d-m-Y', $doc_data['effectiveDate']->sec);
+		$doc_data['expiryDate'] = date('d-m-Y', $doc_data['expiryDate']->sec);
+
+		if(isset($doc_data['useAsTemplate'])){
+			$doc_data['useAsTemplate'] = ($doc_data['useAsTemplate'] == 'No')?false:true;
+		}else{
+			$doc_data['useAsTemplate'] = false;
+		}
+
+		if(is_null($type)){
+			$this->crumb->add('document/edit/'.$id,$doc_data['title']);
+		}else{
+			$this->crumb->add('document/edit/'.$id.'/'.$type,$doc_data['title']);
+		}
+
+		$doc_data['oldTemplateName'] = (isset($doc_data['templateName']))?$doc_data['templateName']:'';
+
+		$template = $doc->find(array('useAsTemplate'=>'Yes'));
+
+		$templates = array();
+		$templates['none'] = 'None';
+		foreach($template as $t){
+			$templates[$t['_id']->__toString()] = $t['title'];
+		}
+
+		$permissions = Auth::user()->permissions;
+
+
+		$category = $this->getCategory($type);
+
+		$form = Formly::make($doc_data);
+
+		return View::make('document.edit')
+					->with('doc',$doc_data)
+					->with('templates',$templates)
+					->with('category',$category)
+					->with('form',$form)
+					->with('type',$type)
+					->with('crumb',$this->crumb)
+					->with('title','Edit Document');
+
+	}
+
+
+	public function post_edit($id,$type = null){
 
 		//print_r(Session::get('permission'));
-		$back = 'myhr/outgoing';
 
-	    $rules = array(
-	        'title'  => 'required|max:50'
-	    );
+		if(is_null($type)){
+			$back = 'document';
+		}else{
+			$back = 'document/type/'.$type;
+		}
+
+		$postdata = Input::get();
+
+		if(isset($postdata['useAsTemplate']) && $postdata['useAsTemplate'] == 'Yes'){
+		    $rules = array(
+		        'title'  => 'required|max:50',
+		        'templateName' => 'required',
+		        'templateNumberStart'=>'required'
+		    );
+		}else{
+		    $rules = array(
+		        'title'  => 'required|max:50'
+		    );
+		}
+
 
 	    $validation = Validator::make($input = Input::all(), $rules);
 
 	    if($validation->fails()){
 
-	    	return Redirect::to('myhr/submit')->with_errors($validation)->with_input(Input::all());
+	    	return Redirect::to('document/edit/'.$id.'/'.$type)->with_errors($validation)->with_input(Input::all());
 
 	    }else{
 
 			$data = Input::get();
 
-	    	//print_r($data);
+			$id = new MongoId($data['id']);
 
-			//pre save transform
+	            $datetimeNow = new DateTime(date('d-m-Y',time()));
+	            $datetimeThen = new DateTime($data['expiryDate']);
+
+	            $indays = $datetimeNow->diff($datetimeThen);
+
+    	        $exp = new Expiration();
+
+	            if(isset($data['alertStart']) && $indays->days > $data['alertStart']){
+	            	$data['expiring'] = false;
+	            	$exp->delete(array('doc_id'=>$id));
+	            }else{
+	            	if($indays->days == 0){
+		            	$data['expiring'] = 'Today';
+	            	}elseif($indays->invert == 0){
+		            	$data['expiring'] = $indays->days;
+	            	}elseif($indays->invert == 1){
+		            	$data['expiring'] = $indays->days * -1;
+	            	}
+					$expiryDate = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+
+	                $exp->update(array('doc_id'=>$id),array('doc_id'=>$id,'expiring'=>$indays->days,'expiryDate'=>$expiryDate,'updated'=>false),array('upsert'=>true));
+	            
+	                // send no message
+	            }
+
+			$data['effectiveDate'] = ($data['effectiveDate'] == '')?'':new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
+			$data['expiryDate'] =($data['expiryDate'] == '')?'':new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+
+			//$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
+			//$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+			$data['lastUpdate'] = new MongoDate();
+
+			if(isset($data['expiring'])){
+				$data['expiring'] = ($data['expiring'] == '')?false:$data['expiring'];
+			}else{
+				$data['expiring'] = false;
+			}
+
+			if(isset($data['alertStart'])){
+				if($data['alertStart'] > Config::get('parama.expiration_alert_days')){
+					$data['alertStart'] = Config::get('parama.expiration_alert_days');
+				}
+				$data['alertStart'] = new MongoInt64($data['alertStart']);
+			}
+
 			unset($data['csrf_token']);
 
-			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
-			$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
+			$docId = $data['id'];
+			unset($data['id']);
 
-			$data['createdDate'] = new MongoDate();
-			$data['lastUpdate'] = new MongoDate();
-			$data['creatorName'] = Auth::user()->fullname;
-			$data['creatorId'] = Auth::user()->id;
-
+			if(isset($data['useAsTemplate']) && $data['useAsTemplate'] == 'Yes' && ($data['oldTemplateName'] != $data['templateName'] || $data['oldTemplateName'] == '')){
+				$templatename = trim(strtolower($data['templateName']));
+				$startFrom = ($data['templateNumberStart'] == '' || $data['templateNumberStart'] <= 0)?1:$data['templateNumberStart'];
+				$startFrom = new MongoInt64($startFrom);
+				// set new sequencer
+				$sequencer = new Sequence();
+				if($obj = $sequencer->get(array('_id'=>$templatename))){
+					if(count($obj) < 0){
+						$sequencer->insert(array('_id'=>$templatename,'seq'=>$startFrom),array('upsert'=>true));
+					}
+				}else{
+					$sequencer->insert(array('_id'=>$templatename,'seq'=>$startFrom),array('upsert'=>true));
+				}
+			}
 
 			$sharelist = explode(',', $data['docShare']);
 			if(is_array($sharelist)){
@@ -989,327 +717,6 @@ class Myhr_Controller extends Base_Controller {
 				$data['approvalRequestIds'] = array_values($approval_ids) ;
 			}
 
-			$docupload = Input::file('docupload');
-			
-			$docupload['name'] = fixfilename($docupload['name']);
-
-			//print $docupload['name'];
-
-			$docupload['uploadTime'] = new MongoDate();
-
-			$data['docFilename'] = $docupload['name'];
-
-			$data['docFiledata'] = $docupload;
-
-			$data['docFileList'][] = $docupload;
-
-			$data['tags'] = explode(',',$data['docTag']);
-
-			$document = new Document();
-
-			$newobj = $document->insert($data);
-
-
-			if($newobj){
-
-
-				if($docupload['name'] != ''){
-
-					$newid = $newobj['_id']->__toString();
-
-					$newdir = realpath(Config::get('parama.storage')).'/'.$newid;
-
-					Input::upload('docupload',$newdir,$docupload['name']);
-
-				}
-
-				if(count($data['tags']) > 0){
-					$tag = new Tag();
-					foreach($data['tags'] as $t){
-						$tag->update(array('tag'=>$t),array('$inc'=>array('count'=>1)),array('upsert'=>true));
-					}
-				}
-
-				$sharedto = explode(',',$data['docShare']);
-
-				if(count($sharedto) > 0  && $data['docShare'] != ''){
-					foreach($sharedto as $to){
-						Event::fire('document.share',array('id'=>$newobj['_id'],'sharer_id'=>Auth::user()->id,'shareto'=>$to));
-					}
-				}
-
-				$approvalby = explode(',',$data['docApprovalRequest']);
-
-				if(count($approvalby) > 0 && $data['docApprovalRequest'] != ''){
-					foreach($approvalby as $to){
-						Event::fire('request.approval',array('id'=>$newobj['_id'],'approvalby'=>$to));
-					}
-				}
-
-				Event::fire('document.create',array('id'=>$newobj['_id'],'result'=>'OK','department'=>Auth::user()->department,'creator'=>Auth::user()->id));
-
-		    	return Redirect::to($back)->with('notify_success','Document saved successfully');
-			}else{
-				Event::fire('document.create',array('id'=>$id,'result'=>'FAILED'));
-		    	return Redirect::to($back)->with('notify_success','Document saving failed');
-			}
-
-	    }
-
-
-	}
-
-
-
-	public function post_del(){
-		$id = Input::get('id');
-
-		$user = new Document();
-
-		if(is_null($id)){
-			$result = array('status'=>'ERR','data'=>'NOID');
-		}else{
-
-			$id = new MongoId($id);
-
-
-			if($user->delete(array('_id'=>$id))){
-				Event::fire('document.delete',array('id'=>$id,'result'=>'OK'));
-				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
-			}else{
-				Event::fire('document.delete',array('id'=>$id,'result'=>'FAILED'));
-				$result = array('status'=>'ERR','data'=>'DELETEFAILED');				
-			}
-		}
-
-		print json_encode($result);
-	}
-
-
-	public function get_add($type = null){
-
-		if(is_null($type)){
-			$this->crumb->add('document/add','New Document');
-		}else{
-			$this->crumb->add('document/type/'.$type,depttitle($type));
-			$this->crumb->add('document/add','New Document');
-		}
-
-		$category = $this->getCategory('hr_admin');
-
-		$form = new Formly();
-		return View::make('myhr.new')
-					->with('form',$form)
-					->with('type',$type)
-					->with('category',$category)
-					->with('crumb',$this->crumb)
-					->with('title','New Document');
-
-	}
-
-	public function post_add($type = null){
-
-		//print_r(Session::get('permission'));
-
-		if(is_null($type)){
-			$back = 'document';
-		}else{
-			$back = 'document/type/'.$type;
-		}
-
-	    $rules = array(
-	        'title'  => 'required|max:50'
-	    );
-
-	    $validation = Validator::make($input = Input::all(), $rules);
-
-	    if($validation->fails()){
-
-	    	return Redirect::to('document/add/'.$type)->with_errors($validation)->with_input(Input::all());
-
-	    }else{
-
-			$data = Input::get();
-	    	
-	    	//print_r($data);
-
-			//pre save transform
-			unset($data['csrf_token']);
-
-			$data['effectiveDate'] = ($data['effectiveDate'] == '')?'':new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
-			$data['expiryDate'] =($data['expiryDate'] == '')?'':new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
-
-			//$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
-			//$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
-
-			$data['createdDate'] = new MongoDate();
-			$data['lastUpdate'] = new MongoDate();
-			$data['creatorName'] = Auth::user()->fullname;
-			$data['creatorId'] = Auth::user()->id;
-			
-			$docupload = Input::file('docupload');
-
-			$docupload['name'] = fixfilename($docupload['name']);
-
-			$data['docFilename'] = $docupload['name'];
-
-			$data['docFiledata'] = $docupload;
-
-			$data['tags'] = explode(',',$data['docTag']);
-
-			$document = new Document();
-
-			$newobj = $document->insert($data);
-
-			if($newobj){
-
-
-				if($docupload['name'] != ''){
-
-					$newid = $newobj['_id']->__toString();
-
-					$newdir = realpath(Config::get('parama.storage')).'/'.$newid;
-
-					Input::upload('docupload',$newdir,$docupload['name']);
-					
-				}
-
-				if(count($data['tags']) > 0){
-					$tag = new Tag();
-					foreach($data['tags'] as $t){
-						$tag->update(array('tag'=>$t),array('$inc'=>array('count'=>1)),array('upsert'=>true));
-					}
-				}
-
-				$sharedto = explode(',',$data['docShare']);
-
-				if(count($sharedto) > 0  && $data['docShare'] != ''){
-					foreach($sharedto as $to){
-						Event::fire('document.share',array('id'=>$newobj['_id'],'sharer_id'=>Auth::user()->id,'shareto'=>$to));
-					}
-				}
-
-				$approvalby = explode(',',$data['docApprovalRequest']);
-
-				if(count($approvalby) > 0 && $data['docApprovalRequest'] != ''){
-					foreach($approvalby as $to){
-						Event::fire('request.approval',array('id'=>$newobj['_id'],'approvalby'=>$to));
-					}
-				}
-
-				Event::fire('document.create',array('id'=>$newobj['_id'],'result'=>'OK','department'=>Auth::user()->department,'creator'=>Auth::user()->id));
-
-		    	return Redirect::to($back)->with('notify_success','Document saved successfully');
-			}else{
-				Event::fire('document.create',array('id'=>$id,'result'=>'FAILED'));
-		    	return Redirect::to($back)->with('notify_success','Document saving failed');
-			}
-
-	    }
-
-		
-	}
-
-	public function get_edit($id = null,$type = null){
-
-		if(is_null($type)){
-			$this->crumb->add('document/add','Edit Document');
-		}else{
-			$this->crumb->add('document/type/'.$type,depttitle($type),false);
-			$this->crumb->add('document/edit/'.$id,'Edit',false);
-		}
-
-
-		$doc = new Document();
-
-		$id = (is_null($id))?Auth::user()->id:$id;
-
-		$id = new MongoId($id);
-
-		$doc_data = $doc->get(array('_id'=>$id));
-
-		$doc_data['oldTag'] = $doc_data['docTag'];
-
-		$doc_data['effectiveDate'] = date('d-m-Y', $doc_data['effectiveDate']->sec);
-		$doc_data['expiryDate'] = date('d-m-Y', $doc_data['expiryDate']->sec);
-
-
-		if(is_null($type)){
-			$this->crumb->add('document/edit/'.$id,$doc_data['title']);
-		}else{
-			$this->crumb->add('document/edit/'.$id.'/'.$type,$doc_data['title']);
-		}
-
-		$template = $doc->find(array('useAsTemplate'=>'Yes'));
-
-		$templates = array();
-		$templates['none'] = 'None';
-		foreach($template as $t){
-			$templates[$t['_id']->__toString()] = $t['title'];
-		}
-
-
-		$form = Formly::make($doc_data);
-
-		return View::make('document.edit')
-					->with('doc',$doc_data)
-					->with('templates',$templates)
-					->with('form',$form)
-					->with('type',$type)
-					->with('crumb',$this->crumb)
-					->with('title','Edit Document');
-
-	}
-
-
-	public function post_edit($id,$type = null){
-
-		//print_r(Session::get('permission'));
-
-		if(is_null($type)){
-			$back = 'document';
-		}else{
-			$back = 'document/type/'.$type;
-		}
-
-	    $rules = array(
-	        'title'  => 'required|max:50'
-	    );
-
-	    $validation = Validator::make($input = Input::all(), $rules);
-
-	    if($validation->fails()){
-
-	    	return Redirect::to('document/edit/'.$id.'/'.$type)->with_errors($validation)->with_input(Input::all());
-
-	    }else{
-
-			$data = Input::get();
-	    	
-			$id = new MongoId($data['id']);
-
-			$data['effectiveDate'] = ($data['effectiveDate'] == '')?'':new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
-			$data['expiryDate'] =($data['expiryDate'] == '')?'':new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
-
-			//$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
-			//$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
-			
-			$data['lastUpdate'] = new MongoDate();
-
-			unset($data['csrf_token']);
-			unset($data['id']);
-
-			$sharelist = explode(',', $data['docShare']);
-			if(is_array($sharelist)){
-				$usr = new User();
-				$shd = array();
-				foreach($sharelist as $sh){
-					$shd[] = array('email'=>$sh);
-				}
-				$shared_ids = $usr->find(array('$or'=>$shd),array('id'));
-
-				$data['sharedIds'] = array_values($shared_ids) ;
-			}
 
 			$data['tags'] = explode(',',$data['docTag']);
 
@@ -1331,26 +738,86 @@ class Myhr_Controller extends Base_Controller {
 			}
 
 			unset($data['oldTag']);
-			
-			if($doc->update(array('_id'=>$id),array('$set'=>$data))){
+
+			// upload new file , additive
+
+			$docupload = Input::file('docupload');
+
+			$withfile = false;
+
+			if($docupload['name'] != ''){
+
+				$docupload['uploadTime'] = new MongoDate();
+
+				$docupload['name'] = fixfilename($docupload['name']);
+
+				$dirname = $docId;
+
+				$dirname = realpath(Config::get('parama.storage')).'/'.$dirname;
+
+				$uploadresult = Input::upload('docupload',$dirname,$docupload['name']);
+
+				if($uploadresult){
+
+					$data['docFilename'] = $docupload['name'];
+
+					$data['docFiledata'] = $docupload;
+
+					$withfile = true;
+
+					$inpath = $dirname.'/'.$docupload['name'];
+
+					$ext = File::extension($inpath);
+
+					if($ext == 'pdf'){
+						$outpath = str_replace('.'.$ext, '', $inpath);
+
+						if(File::exists($outpath) == false){
+							File::mkdir($outpath);
+						}
+						
+						$cmd = pdf2images($inpath,$outpath);
+					}
+
+				}
+
+
+
+			}
+
+			if($withfile == true){
+				$updatequery = array('$set'=>$data,'$push'=>array('docFileList'=>$docupload));
+			}else{
+				$updatequery = array('$set'=>$data);
+			}
+
+			//print_r($data);
+
+			if($doc->update(array('_id'=>$id),$updatequery)){
 
 				Event::fire('document.update',array('id'=>$id,'result'=>'OK'));
 
 				$sharedto = explode(',',$data['docShare']);
 
 				if(count($sharedto) > 0  && $data['docShare'] != ''){
+					$oldShared = explode(',', $data['oldShare']);
+
 					foreach($sharedto as $to){
-						Event::fire('document.share',array('id'=>$id,'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+						if(is_array($oldShared) && !in_array($to, $oldShared)){
+							Event::fire('document.share',array('id'=>$id,'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+						}else{
+							Event::fire('document.share',array('id'=>$id,'sharer_id'=>Auth::user()->id,'shareto'=>$to));
+						}
 					}
 				}
 
-				$approvalby = explode(',',$data['docApproval']);
+				$approvalby = explode(',',$data['docApprovalRequest']);
 
-				if(count($approvalby) > 0 && $data['docApproval'] != ''){
+				if(count($approvalby) > 0 && $data['docApprovalRequest'] != ''){
 					foreach($approvalby as $to){
 						Event::fire('request.approval',array('id'=>$id,'approvalby'=>$to));
 					}
-				}				
+				}
 
 		    	return Redirect::to($back)->with('notify_success','Document saved successfully');
 			}else{
@@ -1362,46 +829,63 @@ class Myhr_Controller extends Base_Controller {
 
 	    }
 
-		
+
 	}
 
 
-	public function get_type($type = null)
+	public function get_index($type = null)
 	{
-		$this->crumb->add('document/type/'.$type,depttitle($type));
+		$type = 'hr_admin';
 
-		$heads = array('#','Title','Created','Last Update','Creator','Attachment','Tags','Action');
-		$searchinput = array(false,'title','created','last update','creator','filename','tags',false);
+		$this->crumb = new Breadcrumb();
+		$this->crumb->add('document/type/'.$type,'My Employment');
+
+		$heads = array('#',
+			'Title','Created','Last Update',
+			//'Expiry Date','Expiring In','Creator',
+			'Access','Folder','Attachment','Tags','Action');
+
+		$searchinput = array(false,'title','created','last update',
+			//'expiry date','expiring','creator',
+			'access','folder','filename','tags',false);
 
 		$dept = Config::get('parama.department');
 
-		$title = $dept[$type];
+		$permissions = Auth::user()->permissions;
+
+		$category = $this->getCategory($type);
+
+		$title = 'My Employment';
 
 		$doc = new Document();
 
+		//check is shared
 		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
 
-		$shared = $doc->count(array('docShare'=>$sharecriteria));
+		// empty query object
+		$q = array();
+		// default filter by department
+		$q['docDepartment'] = $type;
 
-		$permissions = Auth::user()->permissions;
+		// by default can not open the page
+		$can_open = true;
 
-		$can_open = false;
+		if( $can_open == true ){
 
-		if(Auth::user()->role == 'root' || 
-			Auth::user()->role == 'super' || 
-			Auth::user()->department == $title || 
-			$permissions->{$type} == true
-		){
+			$addurl = 'myhr/add/'.$type;
+
 			return View::make('tables.simple')
 				->with('title',$title)
-				->with('newbutton','New Document')
+				->with('newbutton','New Employment Document')
 				->with('disablesort','0,5,6')
-				->with('addurl','document/add/'.$type)
+				->with('category',$category)
+				->with('addurl',$addurl)
 				->with('searchinput',$searchinput)
-				->with('ajaxsource',URL::to('document/type/'.$type))
-				->with('ajaxdel',URL::to('document/del'))
+				->with('ajaxsource',URL::to('myhr'))
+				->with('ajaxdel',URL::to('myhr/del'))
+				->with('filteron',true)
 				->with('crumb',$this->crumb)
-				->with('heads',$heads);			
+				->with('heads',$heads);
 		}else{
 			return View::make('document.restricted')
 				->with('crumb',$this->crumb)
@@ -1410,17 +894,34 @@ class Myhr_Controller extends Base_Controller {
 
 	}
 
-	public function post_type($type = null)
+	public function post_index($type = null)
 	{
 
-		$fields = array('title','createdDate','lastUpdate','creatorName','docFilename','docTag');
+		$type = 'hr_admin';
 
-		$rel = array('like','like','like','like','like','like');
+		$fields = array('title','createdDate','lastUpdate',
+			//'expiryDate','expiring','creatorName',
+			'access','docCategory','docFilename','docTag');
 
-		$cond = array('both','both','both','both','both','both');
+		$rel = array('like','like','like',
+			//'like','like','like',
+			'like','like','like','like');
+
+		$cond = array('both','both','both','both','both','both','both','both','both');
 
 		$pagestart = Input::get('iDisplayStart');
 		$pagelength = Input::get('iDisplayLength');
+
+		$searchCategory = Input::get('searchCategory');
+		$searchCategory = (!isset($searchCategory) || $searchCategory == '')?'all':$searchCategory;
+
+
+		$searchOpportunityNo = Input::get('filterOpportunityNo');
+		$searchOpportunityNo = (!isset($searchOpportunityNo) || $searchOpportunityNo == '')?'all':$searchOpportunityNo;
+		$searchTenderNo = Input::get('filterTenderNo');
+		$searchTenderNo = (!isset($searchTenderNo) || $searchTenderNo == '')?'all':$searchTenderNo;
+		$searchProjectNo = Input::get('filterProjectNo');
+		$searchProjectNo = (!isset($searchProjectNo) || $searchProjectNo == '')?'all':$searchProjectNo;
 
 		$limit = array($pagelength, $pagestart);
 
@@ -1428,10 +929,11 @@ class Myhr_Controller extends Base_Controller {
 		$defdir = -1;
 
 		$idx = 0;
-		$q = array();
 
 		$hilite = array();
 		$hilite_replace = array();
+
+		$sq = array();
 
 		foreach($fields as $field){
 			if(Input::get('sSearch_'.$idx))
@@ -1443,30 +945,57 @@ class Myhr_Controller extends Base_Controller {
 
 				if($rel[$idx] == 'like'){
 					if($cond[$idx] == 'both'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
+						$sq[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
+						$sq[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
+						$sq[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
 					}
 				}else if($rel[$idx] == 'equ'){
-					$q[$field] = Input::get('sSearch_'.$idx);
+					$sq[$field] = Input::get('sSearch_'.$idx);
 				}
 			}
 			$idx++;
 		}
 
-		//print_r($q)
-		if(!is_null($type)){
-			$q['docDepartment'] = $type;
+		if($searchProjectNo != 'all'){
+			$project_no = new MongoRegex('/'.$searchProjectNo.'/i');
+			$sq['docProject'] = $project_no;
 		}
+
+		if($searchTenderNo != 'all'){
+			$tender_no = new MongoRegex('/'.$searchTenderNo.'/i');
+			$sq['docTender'] = $tender_no;
+		}
+
+		if($searchOpportunityNo != 'all'){
+			$opportunity_no = new MongoRegex('/'.$searchOpportunityNo.'/i');
+			$sq['docOpportunity'] = $opportunity_no;
+		}
+
+		//start creating query array
+		//$q = array();
+
+		//print_r($q)
+
+		$sharecriteria = new MongoRegex('/'.Auth::user()->email.'/i');
+
+		$permissions = Auth::user()->permissions;
+
+		$q['employmentDoc'] = true;
+		$q['creatorId'] = Auth::user()->id;
+
+		$q['$or'] = array(
+			array('deleted'=>false),
+			array('deleted'=>array('$exists'=>false))
+		);
 
 		$document = new Document();
 
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
 		if($fidx == 0){
-			$fidx = $defsort;			
+			$fidx = $defsort;
 			$sort_col = $fields[$fidx];
 			$sort_dir = $defdir;
 		}else{
@@ -1477,6 +1006,16 @@ class Myhr_Controller extends Base_Controller {
 
 		$count_all = $document->count();
 
+		if(count($sq) > 0){
+			$q = array_merge($sq,$q);
+		}
+
+		if($searchCategory != 'all'){
+			$q['docCategory'] = $searchCategory;
+		}
+
+		//print_r($q);
+
 		if(count($q) > 0){
 			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
 			$count_display_all = $document->count($q);
@@ -1485,18 +1024,22 @@ class Myhr_Controller extends Base_Controller {
 			$count_display_all = $document->count();
 		}
 
-
+		//print_r($documents);
 
 
 		$aadata = array();
 
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
-			if(isset($doc['tags'])){
+
+
+			if(isset($doc['tags']) && is_array($doc['tags']) && implode('',$doc['tags']) != ''){
 				$tags = array();
 
 				foreach($doc['tags'] as $t){
-					$tags[] = '<span class="tagitem">'.$t.'</span>';
+					if(trim($t) != ''){
+						$tags[] = '<span class="tagitem">'.$t.'</span>';
+					}
 				}
 
 				$tags = implode('',$tags);
@@ -1507,23 +1050,88 @@ class Myhr_Controller extends Base_Controller {
 
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
+			
+			if(isset($doc['expiring']) && isset($doc['alert']) && $doc['alert'] == 'Yes'){
+				
+				if($doc['expiring'] == 'Today'){
+					$doc['expiring'] = '<span class="expiring now">'.$doc['expiring'].'</span>';
+				}elseif($doc['expiring'] < 0){
+					$doc['expiring'] = '<span class="expiring yesterday">'.abs($doc['expiring']).' day(s) ago</span>';
+				}elseif($doc['expiring'] != false){
+					$doc['expiring'] = '<span class="expiring">'.$doc['expiring'].' day(s)</span>';						
+				}else{
+					$doc['expiring'] = '';
+				}
+
+			}else{
+
+				$doc['expiring'] = '';
+			}
+
+			if($doc['creatorId'] == Auth::user()->id ||
+									Auth::user()->role == 'root' ||
+									Auth::user()->role == 'super' ||
+									Auth::user()->role == 'president_director' ||
+									Auth::user()->role == 'bod'
+				){
+				$edit = '<a href="'.URL::to('myhr/edit/'.$doc['_id'].'/'.$type).'">'.
+						'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
+				$del = '<i class="foundicon-trash action del has-tip tip-bottom noradius" title="Delete" id="'.$doc['_id'].'"></i>';
+				$download = '<a href="'.URL::to('myhr/download/'.$doc['_id'].'/'.$type).'">'.
+							'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
+			}else{
+
+				if(isset($doc['interaction']) && $doc['interaction'] == 'rw'){
+					if($permissions->{$type}->edit == 1){
+						$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
+								'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
+					}else{
+						$edit = '';
+					}
+
+					if($permissions->{$type}->delete == 1){
+						$del = '<i class="foundicon-trash action  has-tip tip-bottom noradius del" title="Delete" id="'.$doc['_id'].'"></i>';
+					}else{
+						$del = '';
+					}
+
+					if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1){
+						$download = '<a href="'.URL::to('document/download/'.$doc['_id'].'/'.$type).'">'.
+								'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
+					}else{
+						$download = '';
+					}
+				}else{
+					$edit = '';
+					$del = '';
+					$download = '';
+				}
+
+			}
 
 			$aadata[] = array(
 				$counter,
 				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
 				date('d-m-Y H:i:s', $doc['createdDate']->sec),
-				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
-				$doc['creatorName'],
-				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
+				(isset($doc['lastUpdate']) && $doc['lastUpdate'] != '')?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
+				//(isset($doc['expiryDate']) && $doc['expiryDate'] != '')?date('d-m-Y', $doc['expiryDate']->sec):'',
+				//(isset($doc['alert']) && $doc['alert'] == 'Yes')?$doc['expiring']:'',
+				//$doc['creatorName'],
+				isset($doc['access'])?ucfirst($doc['access']):'',
+				isset($doc['docCategoryLabel'])?ucfirst($doc['docCategoryLabel']):'-',
+				isset($doc['docFilename'])?'<span class="fileview has-tip tip-bottom noradius" "title"="'.$doc['docFilename'].'" id="'.$doc['_id'].'">'.breaksentence($doc['docFilename'],25).'</span>':'',
 				$tags,
+				$edit.$download.$del
+				/*
 				'<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
 				'<i class="foundicon-edit action"></i></a>&nbsp;'.
 				'<i class="foundicon-trash action del" id="'.$doc['_id'].'"></i>'
+				*/
 			);
 			$counter++;
 		}
 
-		
+
 		$result = array(
 			'sEcho'=> Input::get('sEcho'),
 			'iTotalRecords'=>$count_all,
@@ -1536,114 +1144,121 @@ class Myhr_Controller extends Base_Controller {
 	}
 
 
-	public function __get_type($type = null)
-	{
-		$menutitle = array(
-			'opportunity'=>'Opportunity',
-			'tender'=>'Tender',
-			'commbid'=>'Commercial Bid',
-			'proposal'=>'Tech Proposal',
-			'techbid'=>'Tech Bid',
-			'contract'=>'Contracts',
-			'legal'=>'Legal Docs',
-			'qc'=>'QA / QC',
-			'warehouse'=>'Warehouse'
-			);
+	public function get_download($id, $type = null){
 
-		$heads = array('#','Title','Created','Creator','Owner','Tags','Action');
-		$fields = array('seq','title','created','creator','owner','tags','action');
-		$searchinput = array(false,'title','created','creator','owner','tags',false);
+		$this->crumb = new Breadcrumb();
+		
 
-		return View::make('tables.simple')
-			->with('title',(is_null($type))?'Document - All':'Document - '.$menutitle[$type])
-			->with('newbutton','New Document')
-			->with('disablesort','0,5,6')
-			->with('addurl','document/add')
-			->with('searchinput',$searchinput)
-			->with('ajaxsource',URL::to('document/type/'.$type))
-			->with('ajaxdel',URL::to('document/del'))
-			->with('heads',$heads);
-	}
+		if(is_null($type)){
+			$this->crumb->add('document','Document');
 
-	public function __post_type($type = null)
-	{
-		$fields = array('title','createdDate','creatorName','creatorName','tags');
+		}else{
 
-		$rel = array('like','like','like','like','equ');
-
-		$cond = array('both','both','both','both','equ');
-
-		$idx = 0;
-		$q = array();
-		foreach($fields as $field){
-			if(Input::get('sSearch_'.$idx))
-			{
-				if($rel[$idx] == 'like'){
-					if($cond[$idx] == 'both'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/');
-					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/');						
-					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/');						
-					}
-				}else if($rel[$idx] == 'equ'){
-					$q[$field] = Input::get('sSearch_'.$idx);
-				}
-			}
-			$idx++;
+			$this->crumb->add('document/type/'.$type,'Document');
+			$this->crumb->add('document/type/'.$type,depttitle($type));
 		}
 
-		//print_r($q)
+		$this->crumb->add('document/download/'.$id.'/'.$type,'Download Request',false);
+
+
+		$_id = new MongoId($id);
+
 
 		$document = new Document();
 
-		/* first column is always sequence number, so must be omitted */
-		$fidx = Input::get('iSortCol_0');
-		$fidx = ($fidx > 0)?$fidx - 1:$fidx;
-		$sort_col = $fields[$fidx];
-		$sort_dir = (Input::get('sSortDir_0') == 'asc')?1:-1;
+		$doc = $document->get(array('_id'=>$_id));
 
-		$count_all = $document->count();
+		$this->crumb->add('document/download/'.$id.'/'.$type,$doc['title'],false);
 
-		if(count($q) > 0){
-			$documents = $document->find($q,array(),array($sort_col=>$sort_dir));
-			$count_display_all = $document->count($q);
-		}else{
-			$documents = $document->find(array(),array(),array($sort_col=>$sort_dir));
-			$count_display_all = $document->count();
-		}
+		$path = Config::get('parama.storage').$id.'/'.$doc['docFilename'];
 
 
+		$form = new Formly();
+		return View::make('document.downloadrequest')
+					->with('form',$form)
+					->with('docnumber',0)
+					->with('profile',$doc)
+					->with('crumb',$this->crumb)
+					->with('title','Document Download Request');
 
-
-		$aadata = array();
-
-		$counter = 1;
-		foreach ($documents as $doc) {
-			$aadata[] = array(
-				$counter,
-				$doc['title'],
-				date('d-m-Y H:i:s',$doc['createdDate']),
-				$doc['creatorName'],
-				$doc['creatorName'],
-				implode(',',$doc['tag']),
-				'<i class="foundicon-edit action"></i>&nbsp;<i class="foundicon-trash action"></i>'
-			);
-			$counter++;
-		}
-
-		
-		$result = array(
-			'sEcho'=> Input::get('sEcho'),
-			'iTotalRecords'=>$count_all,
-			'iTotalDisplayRecords'=> $count_display_all,
-			'aaData'=>$aadata,
-			'qrs'=>$q
-		);
-
-		print json_encode($result);
 	}
 
+	public function post_download($id,$type = null){
+		$_id = new MongoId($id);
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$_id));
+
+		$path = Config::get('parama.storage').$id.'/'.$doc['docFilename'];
+
+		if(file_exists($path)){
+
+			$filename = $doc['docFilename'];
+
+			$ext = File::extension($path);
+
+			$dlobj = array(
+				'dltype'=>'document',
+				'document'=>$doc,
+				'downloader'=>Auth::user(),
+				'downloadedfullfilename'=>$filename,
+				'downloadedfilename'=>$filename,
+				'downloadedfileext'=>$ext,
+				'templatename'=>$doc['title'],
+				'doc_number'=>0,
+				'timestamp'=>new MongoDate()
+			);
+
+			$dlog = new Download();
+			$dlog->insert($dlobj);
+
+
+			return Response::download($path, $filename);
+		}else{
+			Event::fire('document.download',array('id'=>$id,'result'=>'FILENOTFOUND'));
+			return Redirect::to('document/download/'.$id.'/'.$type)->with('notify_success','Document attachment does not exist');
+		}
+
+	}
+
+
+
+	public function get_dl($id){
+		$_id = new MongoId($id);
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$_id));
+
+		$path = Config::get('parama.storage').$id.'/'.$doc['docFilename'];
+
+		if(file_exists($path)){
+			Event::fire('document.download',array('id'=>$id,'result'=>'OK'));
+			$filename = $doc['docFilename'];
+
+			$dlobj = array(
+				'dltype'=>'document',
+				'document'=>$doc,
+				'downloader'=>Auth::user(),
+				'downloadedfullfilename'=>$filename.'.'.$ext,
+				'downloadedfilename'=>$filename,
+				'downloadedfileext'=>$ext,
+				'templatename'=>'',
+				'doc_number'=>'',
+				'timestamp'=>new MongoDate()
+			);
+
+			$dlog = new Download();
+			$dlog->insert($dlobj);
+
+			return Response::download($path, $filename);
+		}else{
+			Event::fire('document.download',array('id'=>$id,'result'=>'FILENOTFOUND'));
+			return false;
+		}
+
+	}
 
 	public function get_view($id){
 		$id = new MongoId($id);
@@ -1652,7 +1267,27 @@ class Myhr_Controller extends Base_Controller {
 
 		$doc = $document->get(array('_id'=>$id));
 
-		return View::make('document.view')->with('doc',$doc);
+		return View::make('pop.docview')->with('profile',$doc);
+	}
+
+	public function get_cover($id){
+		$id = new MongoId($id);
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$id));
+
+		return View::make('pop.doccover')->with('profile',$doc);
+	}
+
+	public function get_printcover($id){
+		$id = new MongoId($id);
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$id));
+
+		return View::make('document.printcover')->with('profile',$doc);
 	}
 
 	public function get_fileview($id){
@@ -1662,9 +1297,379 @@ class Myhr_Controller extends Base_Controller {
 
 		$doc = $document->get(array('_id'=>$_id));
 
-		$file = URL::to(Config::get('parama.storage').$id.'/'.$doc['docFilename']);
+		//$file = URL::to(Config::get('parama.storage').$id.'/'.$doc['docFilename']);
 
-		return View::make('document.fileview')->with('doc',$doc)->with('href',$file);
+		//$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+
+		$realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFilename']);
+
+		$poppage = 'pop.fileview';
+
+		if(file_exists($realfile)){
+			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+			//$file = URL::base().'/document/stream/'.$id;			
+			$ext = File::extension($realfile);
+			if($ext == 'pdf'){
+				$pagepath = str_replace('.'.$ext, '', $realfile);
+
+				if(File::exists($pagepath) == false){
+					File::mkdir($pagepath);
+					$cmd = pdf2images($realfile,$pagepath);
+				}
+
+				$pages = getpages($pagepath);
+				$doc['pages'] = $pages;
+				$doc['pagepath'] = str_replace('.'.$ext, '', $file);
+				$poppage = 'pop.galleryview';
+
+			}else if(in_array($ext, Config::get('kickstart.googledocext'))){
+				if(Config::get('kickstart.usegoogleviewer') == 'true'){
+					$file = 'https://docs.google.com/viewer?embedded=true&url='.$file;
+				}
+			}
+
+			if(in_array($ext, Config::get('kickstart.noviewer'))){
+				$file = URL::base().'/document/noviewer';
+			}			
+
+		}else{
+			$file = URL::base().'/document/notfound';
+		}
+
+		return View::make($poppage)->with('doc',$doc)->with('href',$file);
+	}
+
+	public function get_approve($id){
+		$id = new MongoId($id);
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$id));
+
+		$form = new Formly();
+
+		$realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFilename']);
+
+		if(file_exists($realfile)){
+			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+			//$file = URL::base().'/document/stream/'.$id;			
+			$ext = File::extension($realfile);
+			if(in_array($ext, Config::get('kickstart.googledocext'))){
+				if(Config::get('kickstart.usegoogleviewer') == 'true'){
+					$file = 'https://docs.google.com/viewer?embedded=true&url='.$file;
+				}
+			}
+
+			if(in_array($ext, Config::get('kickstart.noviewer'))){
+				$file = URL::base().'/document/noviewer';
+			}
+
+		}else{
+			$file = URL::base().'/document/notfound';
+		}
+
+
+		return View::make('pop.approval')->with('doc',$doc)->with('form',$form)->with('href',$file)
+			->with('ajaxpost','document/approve');
+	}
+
+	public function get_notfound()
+	{
+
+		return View::make('pop.notfound');
+	}
+
+	public function get_noviewer()
+	{
+
+		return View::make('pop.noviewer');
+	}
+
+	public function get_stream($id)
+	{
+
+		$id = new MongoId($id);
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$id));
+
+		$form = new Formly();
+
+		$realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFilename']);
+
+		if(file_exists($realfile)){
+			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+
+			$tmp = file_get_contents($realfile);
+
+		    if ( headers_sent()) {
+		      die("Unable to stream file: headers already sent");
+		    }
+
+		    $contenttype = system("file -I -b ".escapeshellarg($realfile));;
+		    $contentsize = File::size($realfile);
+
+		    header('Cache-Control: private');
+		    header('Content-type: '.$contenttype);
+
+		    //FIXME: I don't know that this is sufficient for determining content length (i.e. what about transport compression?)
+		    header('Content-Length: '.$contentsize );
+		    //$fileName = (isset($options['Content-Disposition']) ?  $options['Content-Disposition'] :  'file.pdf');
+
+		    header('Content-Disposition: inline; filename="'.$doc['docFilename'].'"');
+			//header("Accept-Ranges: " . $contentsize);
+
+		    /*
+		    if (isset($options['Accept-Ranges']) && $options['Accept-Ranges'] == 1) {
+		      //FIXME: Is this the correct value ... spec says 1#range-unit
+		      header("Accept-Ranges: " . mb_strlen($tmp, '8bit'));
+		    }
+		    */
+
+		    echo $tmp;
+		    flush();
+
+		}else{
+			return View::make('pop.notfound');
+		}
+
+	}
+
+
+	public function get_forward($id){
+		$id = new MongoId($id);
+
+		$document = new Document();
+
+		$doc = $document->get(array('_id'=>$id));
+
+		$form = new Formly();
+
+		$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+
+		return View::make('pop.forwarder')->with('doc',$doc)->with('form',$form)->with('href',$file)->with('ajaxpost','document/forward');
+	}
+
+	public function post_forward(){
+
+		$response = Input::all();
+
+		$_id = new MongoId($response['docid']);
+
+		$users = new User();
+
+		$user = $users->get(array('email'=>trim($response['fwdto'])));
+
+		$doc = new Document();
+
+		$now = new MongoDate();
+
+
+		$res1['approvalResponds'] = array(
+				'approval'=>'transfer',
+				'transferedTo'=>$user['_id'],
+				'approverId'=>Auth::user()->id,
+				'approverEmail'=>Auth::user()->email,
+				'approvalDate'=>$now,
+				'approvalNote'=>$response['note']
+			);
+
+		
+
+		$res2['approvalRequestIds'] = array(
+				'_id'=>$user['_id'],
+				'fullname'=>$user['fullname']
+			);
+
+		$res3['approvalRequestEmails'] = trim($response['fwdto']);
+		
+		//print_r($res);
+
+		if($document = $doc->update(array('_id'=>$_id),array('$push'=>$res1),array('upsert'=>true))){
+
+			$doc->update(array('_id'=>$_id),array('$push'=>$res2),array('upsert'=>true));
+
+			$doc->update(array('_id'=>$_id),array('$push'=>$res3),array('upsert'=>true));
+
+			$docobj = $doc->get(array('_id'=>$_id));
+
+			//print_r($document);
+
+			$docApprovalRequest = $docobj['docApprovalRequest'].','.trim($response['fwdto']);
+
+			$set = array('docApprovalRequest'=>$docApprovalRequest);
+
+			$doc->update(array('_id'=>$_id),array('$set'=>$set),array('upsert'=>true));
+
+			return Response::json(array('status'=>'OK','doc'=>$document));
+		}else{
+			return Response::json(array('status'=>'FAILED'));
+		}
+
+	}
+
+	public function post_approve(){
+
+		$response = Input::all();
+
+		$_id = new MongoId($response['docid']);
+
+		$doc = new Document();
+
+		$users = new User();
+
+		$user = $users->get(array('email'=>trim($response['fwdto'])));
+
+	    if (  Hash::check($response['pass'], Auth::user()->pass)){
+
+			$now = new MongoDate();
+
+			$res['approvalResponds'] = array(
+					'approval'=>$response['approval'],
+					'approverId'=>Auth::user()->id,
+					'approverEmail'=>Auth::user()->email,
+					'approverName'=>Auth::user()->fullname,
+					'approverInitial'=>Auth::user()->initial,
+					'approvalDate'=>$now,
+					'approvalNote'=>$response['note'],
+					'approvalTransfer'=>$response['fwdto']
+				);
+
+			$docobj = $doc->get(array('_id'=>$_id));
+
+			$already_responded = false;
+
+			if(isset($docobj['approvalResponds'])){
+				foreach($docobj['approvalResponds'] as $responses){
+					if($responses['approverEmail'] == Auth::user()->email && $responses['approverId'] == Auth::user()->id){
+						$already_responded = true;
+					}
+				}
+			}
+
+			if($already_responded == true){
+				return Response::json(array('status'=>'ALREADY'));				
+			}
+
+			if($response['approval'] == 'transfer'){
+				$users = new User();
+
+				$user = $users->get(array('email'=>trim($response['fwdto'])));
+
+				$res2['approvalRequestIds'] = array(
+						'_id'=>$user['_id'],
+						'fullname'=>$user['fullname']
+					);
+
+				$res3['approvalRequestEmails'] = trim($response['fwdto']);
+
+				$doc->update(array('_id'=>$_id),array('$push'=>$res2),array('upsert'=>true));
+
+				$doc->update(array('_id'=>$_id),array('$push'=>$res3),array('upsert'=>true));
+
+
+				//print_r($document);
+
+				$docApprovalRequest = $docobj['docApprovalRequest'].','.trim($response['fwdto']);
+
+				$set = array('docApprovalRequest'=>$docApprovalRequest);
+
+				$doc->update(array('_id'=>$_id),array('$set'=>$set),array('upsert'=>true));
+
+			}
+
+			if($document = $doc->update(array('_id'=>$_id),array('$addToSet'=>$res),array('upsert'=>true))){
+				return Response::json(array('status'=>'OK'));
+			}else{
+				return Response::json(array('status'=>'FAILED'));
+			}
+
+
+		}else{
+				return Response::json(array('status'=>'AUTHFAILED'));
+		}
+
+
+
+	}
+
+	private function getCategory($type = null){
+
+		$permissions = Auth::user()->permissions;
+
+		if(is_null($type)){
+			$category = false;
+			//$category = json_encode(Config::get('category.all'));
+		}else{
+			$therole = Auth::user()->role;
+
+			if($type == 'president_director'){
+
+				$types = Config::get('parama.department');
+				$types = array_keys($types);
+
+				$fullarray = array();
+
+				foreach ($types as $t) {
+					$nodisplay = ($t == 'finance_hr_director' || $t == 'operations_director')?true:false;
+
+					if(file_exists('public/yml/'.$t.'.yml') && $nodisplay == false){
+						$parsed = Yaml::from_file('public/yml/'.$t.'.yml')->to_array();
+						$parent = array('label'=>depttitle($t),'id'=>'parent','children'=>$parsed);
+						$fullarray[] = $parent;
+					}
+				}
+
+				$all = array('label'=>'All','id'=>'all');
+
+				array_unshift($fullarray, $all);
+
+				$category = json_encode($fullarray);
+
+
+			}else if($type == 'operations_director'){
+
+				$types = Config::get('parama.department');
+				$types = array_keys($types);
+
+				$fullarray = array();
+
+				foreach ($types as $t) {
+					$nodisplay = ($t == 'finance_hr_director' || $t == 'finance_balikpapan' || $t == 'finance_pusat' || $t == 'hr_admin')?true:false;
+
+					if(file_exists('public/yml/'.$t.'.yml') && $nodisplay == false){
+						$parsed = Yaml::from_file('public/yml/'.$t.'.yml')->to_array();
+						$parent = array('label'=>depttitle($t),'id'=>'parent','children'=>$parsed);
+						$fullarray[] = $parent;
+					}
+				}
+
+				$all = array('label'=>'All','id'=>'all');
+
+				array_unshift($fullarray, $all);
+
+				$category = json_encode($fullarray);
+
+			}else{
+
+				if(file_exists('public/yml/'.$type.'.yml')){
+					$parsed = Yaml::from_file('public/yml/'.$type.'.yml')->to_array();
+
+					$all = array('label'=>'All','id'=>'all');
+
+					array_unshift($parsed, $all);
+
+					$category = json_encode($parsed);
+				}else{
+					$category = json_encode(Config::get('category.'.$type));
+				}
+
+			}
+
+		}
+
+		return $category;
 	}
 
 }

@@ -6,7 +6,7 @@
 <h3>{{$title}}</h3>
 </div>
 
-{{$form->open_for_files('myhr/add','POST',array('class'=>'custom','id'=>'newdoc'))}}
+{{$form->open_for_files('myhr/add/'.$type,'POST',array('class'=>'custom','id'=>'newdoc'))}}
 <div class="row">
   <div class="six columns left">
 
@@ -140,9 +140,12 @@
   <div class="five columns right">
     <fieldset>
       <legend>Filing System</legend>
-      {{ Form::label('docDepartment','Department of Origin : '.depttitle(Auth::user()->department))}}
-      {{ $form->hidden('docDepartment',Auth::user()->department)}}
-
+      @if(is_null($type) || Auth::user()->role == 'root' || Auth::user()->role == 'super' || Auth::user()->role == 'bod' || Auth::user()->role == 'president_director')
+        {{$form->select('docDepartment','Department of Origin',Config::get('parama.department'),array('class'=>'four'))}}
+      @else
+        {{ Form::label('docDepartment','Department of Origin : '.depttitle($type))}}
+        {{ $form->hidden('docDepartment',$type)}}
+      @endif
       {{ $form->text('docCategoryLabel','Folders','',array('class'=>'four','id'=>'docCategoryLabel','rows'=>'1', 'style'=>'width:100%')) }}
       {{ $form->hidden('docCategoryParents','',array('id'=>'docCategoryParents')) }}
       {{ $form->hidden('docCategory','',array('id'=>'docCategory')) }}

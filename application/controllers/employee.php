@@ -273,6 +273,7 @@ class Employee_Controller extends Base_Controller {
 		//print_r($q)
 		if(!is_null($id)){
 			$q['creatorId'] = $id;
+			$q['employmentDoc'] = true;
 			$q['$or'] = array(
 				array('docRequestToDepartment'=>'hr_admin'),
 				array('docRequestToDepartment'=>'finance_hr_director')

@@ -110,7 +110,7 @@
 		var currentCategory = 'all';
 
 		@if(isset($category))
-			var catdata = {{$category}};
+			var catdata = {{ $category }};
 		@else
 			var catdata = [
 				{"label":"All","id":"all"},

@@ -1,0 +1,35 @@
+- label: Human Resources
+  children:
+    - label: Company Rules And Regulation
+    - label: Standard Employment Agreement
+    - label: Remuneration Policy
+    - label: List Of Employee
+    - label: Employee Data
+      children:
+        - label: Resume
+        - label: Job Description
+        - label: Leave Record
+        - label: Attendance Record
+        - label: Overtime Record
+        - label: Medical Claim Record
+        - label: Training Record
+        - label: Loan Record
+- label: General Affairs / Administration
+  children:
+    - label: Legal Document And Formalities
+    - label: Agreement
+      children:
+        - label: Leasing Agreement
+        - label: Other Agreements
+    - label: Stationeries
+    - label: Office Building Requirements
+    - label: List Of Assets
+    - label: Company Cars
+      children:
+        - label: BPKB & STNK
+        - label: Repair And Maintenance Record
+    - label: Insurances
+      children:
+        - label: Car Insurance
+        - label: Medical Insurance
+        - label: Other Insurances
