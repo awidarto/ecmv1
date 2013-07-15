@@ -155,7 +155,7 @@ class Import_Controller extends Base_Controller {
 	public function post_loader($controller,$id)
 	{
 		$excel = new Excel();
-		
+
 		$imp = new Importcache();
 
 		$ihead = $imp->get(array('cache_id'=>$id, 'cache_head'=>true));
@@ -293,7 +293,7 @@ class Import_Controller extends Base_Controller {
 			foreach($email_check as $ec){
 				$email_arrays[] = $ec['opportunityNumber'];
 			}
-			
+
 			// contact dupes
 
 			$contacts = new Person();
@@ -343,14 +343,14 @@ class Import_Controller extends Base_Controller {
 					if(in_array($doc[$fields[$i]], $contact_arrays) || in_array($doc[$fields[$i]], $email_arrays) ){
 						$adata[$i] = '<span class="duplicateemail">'.$doc[$fields[$i]].'</span>';
 					}else{
-						$adata[$i] = $doc[$fields[$i]];
+						$adata[$i] = se($doc[$fields[$i]]);
 					}
 
 				}else{
 					if(in_array($doc[$fields[$i]], $email_arrays) ){
 						$adata[$i] = '<span class="duplicateemail">'.$doc[$fields[$i]].'</span>';
 					}else{
-						$adata[$i] = $doc[$fields[$i]];
+						$adata[$i] = se($doc[$fields[$i]]);
 					}
 				}
 
@@ -573,7 +573,7 @@ class Import_Controller extends Base_Controller {
 					//print var_dump($existing)."\r\n";
 				}
 
-				
+
 				if($override == true){
 
 					$attobj = $target->get(array($target_identifier=>$tocommit[$target_identifier]));
@@ -581,7 +581,7 @@ class Import_Controller extends Base_Controller {
 					$tocommit['lastUpdate'] = new MongoDate();
 					$contacttocommit['lastUpdate'] = new MongoDate();
 
-					
+
 					$is_main = true;
 
 					if($controller == 'opportunity'){
@@ -644,9 +644,9 @@ class Import_Controller extends Base_Controller {
 					if($controller == 'opportunity'){
 
 						if(strtoupper($tocommit['entry_type']) == strtoupper( 'Contact' )){
-							$is_main = false;					
+							$is_main = false;
 						}else{
-							$is_main = true;					
+							$is_main = true;
 						}
 
 						if($obj = $contacts->insert($contacttocommit)){
@@ -681,7 +681,7 @@ class Import_Controller extends Base_Controller {
 
 
 
-	
+
 				}
 
 			}
@@ -881,7 +881,7 @@ class Import_Controller extends Base_Controller {
 
 					}
 
-					
+
 
 				}
 
