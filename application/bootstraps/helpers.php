@@ -1,5 +1,48 @@
 <?php
 
+function idr($in){
+    return number_format((double) $in,2,',','.');
+}
+
+function se($val, $def = null){
+
+    $def = (is_null($def))?'':$def;
+
+    // $val not set
+    if(isset($val)){
+
+        if(is_null($val)){
+            // null value
+            $val = $def;
+
+        }else{
+
+            if(is_array($val)){
+                // empty array
+                if(empty($val) || count($val) == 0){
+                    $val = $def;
+                }
+
+            }else{
+                // empty string
+                if($val == ''){
+                    $val = $def;
+                }
+
+            }
+
+        }
+
+    }else{
+
+        $val = $def;
+
+    }
+
+    return $val;
+
+}
+
 function getCategory($type = null){
 
 	$permissions = Auth::user()->permissions;
@@ -151,7 +194,7 @@ function getavatar($id,$alt = 'avatar-image',$class = 'avatar',$width = '1000'){
 		$time = time();
 		$url = URL::to_asset('avatar/'.$id.'/avatar.jpg');
 		$photo = '<a id="avatarimagefancy" href="'.$url.'">'.HTML::image('avatar/'.$id.'/avatar.jpg?'.$time, $alt, array('class' => $class,'width'=>$width)).'</a>';
-		
+
 	}else{
 		if(isset($usr['salutation'])){
 			$salutation = strtolower($usr['salutation']);
@@ -162,15 +205,15 @@ function getavatar($id,$alt = 'avatar-image',$class = 'avatar',$width = '1000'){
 		  		$usr['department'] == 'finance_hr_director'
 
 			){
-				$photo = HTML::image('images/'.$salutation.'-bod-no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));				
-				
+				$photo = HTML::image('images/'.$salutation.'-bod-no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));
+
 			}else{
-				$photo = HTML::image('images/'.$salutation.'-other-no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));				
+				$photo = HTML::image('images/'.$salutation.'-other-no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));
 			}
 		}else{
-			
-			$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));				
-			
+
+			$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));
+
 		}
 	}
 
@@ -185,10 +228,10 @@ function getavatarbyemail($email,$alt = 'avatar-image',$class = 'avatar'){
 	$id = $usr['_id'];
 
 	if(file_exists(Config::get('parama.avatarstorage').$id.'/avatar.jpg')){
-		
+
 		$photo = HTML::image('avatar/'.$id.'/avatar.jpg', $alt, array('class' => $class));
 	}else{
-		$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class));				
+		$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class));
 	}
 
 	return $photo;
@@ -201,7 +244,7 @@ function getphoto($id,$alt = 'avatar-image',$class = 'avatar',$width = '1000'){
 		$url = URL::to_asset('employees/'.$id.'/formal.jpg');
 		$photo = '<a id="avatarimagefancy" href="'.$url.'">'.HTML::image('employees/'.$id.'/formal.jpg', $alt, array('class' => $class,'width'=>$width)).'</a>';
 	}else{
-		$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));				
+		$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));
 	}
 
 	return $photo;
@@ -217,7 +260,7 @@ function getphotobyemail($email,$alt = 'avatar-image',$class = 'avatar'){
 	if(file_exists(Config::get('parama.photostorage').$id.'/avatar.jpg')){
 		$photo = HTML::image('employees/'.$id.'/formal.jpg', $alt, array('class' => $class));
 	}else{
-		$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class));				
+		$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class));
 	}
 
 	return $photo;
@@ -295,18 +338,18 @@ function fixfilename($filename)
 }
 
 function recurse_copy($src,$dst) {
-    $dir = opendir($src); 
-    @mkdir($dst); 
-    while(false !== ( $file = readdir($dir)) ) { 
-        if (( $file != '.' ) && ( $file != '..' )) { 
-            if ( is_dir($src . '/' . $file) ) { 
-                recurse_copy($src . '/' . $file,$dst . '/' . $file); 
-            } 
-            else { 
-                copy($src . '/' . $file,$dst . '/' . $file); 
-            } 
-        } 
-    } 
-    closedir($dir); 
+    $dir = opendir($src);
+    @mkdir($dst);
+    while(false !== ( $file = readdir($dir)) ) {
+        if (( $file != '.' ) && ( $file != '..' )) {
+            if ( is_dir($src . '/' . $file) ) {
+                recurse_copy($src . '/' . $file,$dst . '/' . $file);
+            }
+            else {
+                copy($src . '/' . $file,$dst . '/' . $file);
+            }
+        }
+    }
+    closedir($dir);
 }
 ?>

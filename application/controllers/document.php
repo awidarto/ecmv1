@@ -181,13 +181,13 @@ class Document_Controller extends Base_Controller {
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
 			if(isset($doc['expiring'])){
-				
+
 				if($doc['expiring'] == 'Today'){
 					$doc['expiring'] = '<span class="expiring now">'.$doc['expiring'].'</span>';
 				}elseif($doc['expiring'] < 0){
 					$doc['expiring'] = '<span class="expiring yesterday">'.abs($doc['expiring']).' day(s) ago</span>';
 				}elseif($doc['expiring'] != false){
-					$doc['expiring'] = '<span class="expiring">'.$doc['expiring'].' day(s)</span>';						
+					$doc['expiring'] = '<span class="expiring">'.$doc['expiring'].' day(s)</span>';
 				}else{
 					$doc['expiring'] = '';
 				}
@@ -207,8 +207,8 @@ class Document_Controller extends Base_Controller {
 				date('d-m-Y H:i:s', $doc['createdDate']->sec),
 				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				isset($doc['expiryDate']) && $doc['expiryDate'] != '' ?date('d-m-Y', $doc['expiryDate']->sec):'',
-				$doc['expiring'],
-				$doc['creatorName'],
+				se($doc['expiring']),
+				se($doc['creatorName']),
 				isset($doc['access'])?ucfirst($doc['access']):'',
 				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
 				isset($doc['useAsTemplate'])?$doc['useAsTemplate']:'No',
@@ -357,13 +357,13 @@ class Document_Controller extends Base_Controller {
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
 			if(isset($doc['expiring'])){
-				
+
 				if($doc['expiring'] == 'Today'){
 					$doc['expiring'] = '<span class="expiring now">'.$doc['expiring'].'</span>';
 				}elseif($doc['expiring'] < 0){
 					$doc['expiring'] = '<span class="expiring yesterday">'.abs($doc['expiring']).' day(s) ago</span>';
 				}elseif($doc['expiring'] != false){
-					$doc['expiring'] = '<span class="expiring">'.$doc['expiring'].' day(s)</span>';						
+					$doc['expiring'] = '<span class="expiring">'.$doc['expiring'].' day(s)</span>';
 				}else{
 					$doc['expiring'] = '';
 				}
@@ -735,7 +735,7 @@ class Document_Controller extends Base_Controller {
 
 		$doc_data['oldTag'] = $doc_data['docTag'];
 		$doc_data['oldShare'] = $doc_data['docShare'];
-		
+
 		$doc_data['effectiveDate'] = date('d-m-Y', $doc_data['effectiveDate']->sec);
 		$doc_data['expiryDate'] = date('d-m-Y', $doc_data['expiryDate']->sec);
 
@@ -838,7 +838,7 @@ class Document_Controller extends Base_Controller {
 					$expiryDate = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
 
 	                $exp->update(array('doc_id'=>$id),array('doc_id'=>$id,'expiring'=>$indays->days,'expiryDate'=>$expiryDate,'updated'=>false),array('upsert'=>true));
-	            
+
 	                // send no message
 	            }
 
@@ -966,7 +966,7 @@ class Document_Controller extends Base_Controller {
 						if(File::exists($outpath) == false){
 							File::mkdir($outpath);
 						}
-						
+
 						$cmd = pdf2images($inpath,$outpath);
 					}
 
@@ -1133,7 +1133,7 @@ class Document_Controller extends Base_Controller {
 		$can_open = false;
 
 		if( Auth::user()->role == 'root' ||
-			Auth::user()->role == 'president_director' 
+			Auth::user()->role == 'president_director'
 			/*
 			||
 			Auth::user()->role == 'super' ||
@@ -1150,7 +1150,7 @@ class Document_Controller extends Base_Controller {
 		}else if( Auth::user()->role == 'super' ||
 			Auth::user()->role == 'operations_director' ||
 			Auth::user()->role == 'finance_hr_director' ||
-			Auth::user()->role == 'bod' 
+			Auth::user()->role == 'bod'
 		){
 
 			if($permissions->{$type}->read == 1){
@@ -1344,7 +1344,7 @@ class Document_Controller extends Base_Controller {
 		}else if( Auth::user()->role == 'super' ||
 			Auth::user()->role == 'operations_director' ||
 			Auth::user()->role == 'finance_hr_director' ||
-			Auth::user()->role == 'bod' 
+			Auth::user()->role == 'bod'
 		){
 
 			if(!is_null($type)){
@@ -1396,7 +1396,7 @@ class Document_Controller extends Base_Controller {
 						'$or'=> array(
 							array('deleted'=>false),
 							array('deleted'=>array('$exists'=>false))
-						)						
+						)
 					);
 
 				}else{
@@ -1504,15 +1504,15 @@ class Document_Controller extends Base_Controller {
 
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
-			
+
 			if(isset($doc['expiring']) && isset($doc['alert']) && $doc['alert'] == 'Yes'){
-				
+
 				if($doc['expiring'] == 'Today'){
 					$doc['expiring'] = '<span class="expiring now">'.$doc['expiring'].'</span>';
 				}elseif($doc['expiring'] < 0){
 					$doc['expiring'] = '<span class="expiring yesterday">'.abs($doc['expiring']).' day(s) ago</span>';
 				}elseif($doc['expiring'] != false){
-					$doc['expiring'] = '<span class="expiring">'.$doc['expiring'].' day(s)</span>';						
+					$doc['expiring'] = '<span class="expiring">'.$doc['expiring'].' day(s)</span>';
 				}else{
 					$doc['expiring'] = '';
 				}
@@ -1571,7 +1571,7 @@ class Document_Controller extends Base_Controller {
 				//(isset($doc['expiryDate']) && $doc['expiryDate'] != '')?date('d-m-Y', $doc['expiryDate']->sec):'',
 				//(isset($doc['alert']) && $doc['alert'] == 'Yes')?$doc['expiring']:'',
 				//$doc['creatorName'],
-				isset($doc['access'])?ucfirst($doc['access']):'',
+				ucfirst( se($doc['access']) ),
 				isset($doc['docCategoryLabel'])?ucfirst($doc['docCategoryLabel']):'-',
 				isset($doc['docFilename'])?'<span class="fileview has-tip tip-bottom noradius" "title"="'.$doc['docFilename'].'" id="'.$doc['_id'].'">'.breaksentence($doc['docFilename'],25).'</span>':'',
 				$tags,
@@ -1601,7 +1601,7 @@ class Document_Controller extends Base_Controller {
 	public function get_download($id, $type = null){
 
 		$this->crumb = new Breadcrumb();
-		
+
 
 		if(is_null($type)){
 			$this->crumb->add('document','Document');
@@ -1761,7 +1761,7 @@ class Document_Controller extends Base_Controller {
 
 		if(file_exists($realfile)){
 			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
-			//$file = URL::base().'/document/stream/'.$id;			
+			//$file = URL::base().'/document/stream/'.$id;
 			$ext = File::extension($realfile);
 			if($ext == 'pdf'){
 				$pagepath = str_replace('.'.$ext, '', $realfile);
@@ -1784,7 +1784,7 @@ class Document_Controller extends Base_Controller {
 
 			if(in_array($ext, Config::get('kickstart.noviewer'))){
 				$file = URL::base().'/document/noviewer';
-			}			
+			}
 
 		}else{
 			$file = URL::base().'/document/notfound';
@@ -1806,7 +1806,7 @@ class Document_Controller extends Base_Controller {
 
 		if(file_exists($realfile)){
 			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
-			//$file = URL::base().'/document/stream/'.$id;			
+			//$file = URL::base().'/document/stream/'.$id;
 			$ext = File::extension($realfile);
 			if(in_array($ext, Config::get('kickstart.googledocext'))){
 				if(Config::get('kickstart.usegoogleviewer') == 'true'){
@@ -1929,7 +1929,7 @@ class Document_Controller extends Base_Controller {
 				'approvalNote'=>$response['note']
 			);
 
-		
+
 
 		$res2['approvalRequestIds'] = array(
 				'_id'=>$user['_id'],
@@ -1937,7 +1937,7 @@ class Document_Controller extends Base_Controller {
 			);
 
 		$res3['approvalRequestEmails'] = trim($response['fwdto']);
-		
+
 		//print_r($res);
 
 		if($document = $doc->update(array('_id'=>$_id),array('$push'=>$res1),array('upsert'=>true))){
@@ -2003,7 +2003,7 @@ class Document_Controller extends Base_Controller {
 			}
 
 			if($already_responded == true){
-				return Response::json(array('status'=>'ALREADY'));				
+				return Response::json(array('status'=>'ALREADY'));
 			}
 
 			if($response['approval'] == 'transfer'){
