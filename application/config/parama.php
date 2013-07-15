@@ -4,7 +4,7 @@
   'avatarstorage'=>'public/avatar/',
   'photostorage'=>'public/employees/',
   'currencies'=>array( 'IDR'=>'IDR','USD'=>'USD','EURO'=>'EURO'),
-  'roles'=>array( 
+  'roles'=>array(
   		'root'=>'Root User',
   		'super'=>'Super User',
   		'outdoor_sales'=>'Outdoor Sales',
@@ -28,7 +28,7 @@
   		'subcon'=>'3rd Party / Sub-Con'
   		),
   'access'=>array( 'all'=>'all','restrict'=>'restrict','client'=>'client','vendor'=>'vendor'),
-  'doc_type'=>array( 
+  'doc_type'=>array(
   		'General'=>array(
 	 		'references'=>'References',
 			'correspondences'=>'Correspondences',
@@ -80,7 +80,7 @@
 		)
   ),
 
-  'doc_category_list'=>array( 
+  'doc_category_list'=>array(
       'references'=>'References',
       'correspondences'=>'Correspondences',
       'minutesofmeeting'=>'Minutes of Meeting',
@@ -122,7 +122,7 @@
 
   'department'=>array(
   		'general'=>'General',
-      'template'=>'Template',
+        'template'=>'Template',
   		'outdoor_sales'=>'Outdoor Sales',
   		'indoor_sales'=>'Indoor Sales',
   		'project_control'=>'Project Control',
@@ -135,7 +135,7 @@
   		'finance_balikpapan'=>'F&A Balikpapan',
   		'sales_kemang'=>'S&M Kemang',
   		'sales_balikpapan'=>'S&M Balikpapan',
-      'tender_balikpapan'=>'Bid & Tender Balikpapan',
+        'tender_balikpapan'=>'Bid & Tender Balikpapan',
   		'hr_admin'=>'HR & GA',
   		'warehouse'=>'Warehouse',
   		'qc'=>'Quality Control',

@@ -1,35 +1,58 @@
 - label: Human Resources
   children:
     - label: Company Rules And Regulation
+      id: hr_company_rules_regulation
     - label: Standard Employment Agreement
+      id: hr_standard_employment_agreement
     - label: Remuneration Policy
+      id: hr_remuneration_policy
     - label: List Of Employee
+      id: hr_list_employees
     - label: Employee Data
       children:
         - label: Resume
+          id: hr_resume
         - label: Job Description
+          id: hr_jpb_description
         - label: Leave Record
+          id: hr_leave_record
         - label: Attendance Record
+          id: hr_attendance_record
         - label: Overtime Record
+          id: hr_overtime_record
         - label: Medical Claim Record
+          id: hr_medical_claim_record
         - label: Training Record
+          id: hr_training_record
         - label: Loan Record
+          id: hr_loan_record
 - label: General Affairs / Administration
   children:
     - label: Legal Document And Formalities
+      id: ga_legal_document_and_formalities
     - label: Agreement
       children:
         - label: Leasing Agreement
+          id: ga_leasing_agreement
         - label: Other Agreements
+          id: ga_other_agreements
     - label: Stationeries
+      id: ga_stationaries
     - label: Office Building Requirements
+      id: ga_office_building_requirements
     - label: List Of Assets
+      id: ga_list_of_assets
     - label: Company Cars
       children:
         - label: BPKB & STNK
+          id: ga_bpkb_stnk
         - label: Repair And Maintenance Record
+          id: ga_repair_and_maintenance_record
     - label: Insurances
       children:
         - label: Car Insurance
+          id: ga_car_insurance
         - label: Medical Insurance
+          id: ga_medical_insurance
         - label: Other Insurances
+          id: ga_other_insurances

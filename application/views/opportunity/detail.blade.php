@@ -31,12 +31,6 @@
 						<span>{{date('d-m-Y',$opportunity['opportunityDate']->sec)}}</span>
 					</td>
 				</tr>
-                <tr>
-                    <td class="detail-title">Remark</td>
-                    <td class="detail-info">
-                        <span>{{ se($opportunity['opportunityRemark']) }}</span>
-                    </td>
-                </tr>
 		<?php
 /*
 				<tr>
@@ -52,8 +46,14 @@
 		?>
 				<tr>
 					<td class="detail-title">Description</td>
-					<td class="detail-info">{{ $opportunity['targetScopeDescription'] }}</td>
+					<td class="detail-info">{{ se($opportunity['targetScopeDescription']) }}</td>
 				</tr>
+                <tr>
+                    <td class="detail-title">Remark</td>
+                    <td class="detail-info">
+                        <span>{{ se($opportunity['opportunityRemark']) }}</span>
+                    </td>
+                </tr>
 
 			</table>
 		</div>
