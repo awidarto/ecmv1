@@ -15,22 +15,28 @@
 			<table class="profile-info">
 				<tr>
 					<td class="detail-title">Opportunity Number</td>
-					<td class="detail-info">{{ $opportunity['opportunityNumber'] }}</td>
+					<td class="detail-info">{{ se($opportunity['opportunityNumber']) }}</td>
 				</tr>
 				<tr>
 					<td class="detail-title">Prospective Client</td>
-					<td class="detail-info">{{ $opportunity['clientCompany'] }}</td>
+					<td class="detail-info">{{ se($opportunity['clientCompany']) }}</td>
 				</tr>
 				<tr>
 					<td class="detail-title">Managed By</td>
-					<td class="detail-info">{{ $opportunity['opportunityPIC'] }}</td>
+					<td class="detail-info">{{ se($opportunity['opportunityPIC']) }}</td>
 				</tr>
 				<tr>
 					<td class="detail-title">Opportunity Date</td>
-					<td class="detail-info">	
+					<td class="detail-info">
 						<span>{{date('d-m-Y',$opportunity['opportunityDate']->sec)}}</span>
 					</td>
 				</tr>
+                <tr>
+                    <td class="detail-title">Remark</td>
+                    <td class="detail-info">
+                        <span>{{ se($opportunity['opportunityRemark']) }}</span>
+                    </td>
+                </tr>
 		<?php
 /*
 				<tr>
@@ -64,7 +70,7 @@
 				        		$hid = 0;
 				        	?>
 				        	@foreach($heads as $head)
-				        		<th 
+				        		<th
 				        			@if(isset($colclass[$hid]))
 				        				class="{{$colclass[$hid]}}"
 				        			@endif
@@ -85,12 +91,12 @@
 				    		@else
 				        		<td>&nbsp;</td>
 				    		@endif
-				    	@endforeach        	
+				    	@endforeach
 				    </tr>
 				    </tfoot>
 				</table>
 				<div class="clear"></div>
-			<hr />	
+			<hr />
 			<h5>Contact Persons</h5>
 				<span class="foundicon-add-doc button right newdoc action clearfix" id="addcontact">&nbsp;&nbsp;<span>Add Contact</span></span>
 				<table class="contactTable">
@@ -103,7 +109,7 @@
 				        		$hid = 0;
 				        	?>
 				        	@foreach($contactheads as $head)
-				        		<th 
+				        		<th
 				        			@if(isset($colclass[$hid]))
 				        				class="{{$colclass[$hid]}}"
 				        			@endif
@@ -144,15 +150,15 @@
 				"oTableTools": {
 					"sSwfPath": "assets/swf/copy_csv_xls_pdf.swf"
 				},
-				"aoColumnDefs": [ 
+				"aoColumnDefs": [
 				    { "bSortable": false, "aTargets": [ {{ $disablesort }} ] }
 				 ],
 			    "fnServerData": function ( sSource, aoData, fnCallback ) {
 		            $.ajax( {
-		                "dataType": 'json', 
-		                "type": "POST", 
-		                "url": sSource, 
-		                "data": aoData, 
+		                "dataType": 'json',
+		                "type": "POST",
+		                "url": sSource,
+		                "data": aoData,
 		                "success": fnCallback
 		            } );
 		        }
@@ -171,15 +177,15 @@
 				"oTableTools": {
 					"sSwfPath": "assets/swf/copy_csv_xls_pdf.swf"
 				},
-				"aoColumnDefs": [ 
+				"aoColumnDefs": [
 				    { "bSortable": false, "aTargets": [ {{ $disablesort }} ] }
 				 ],
 			    "fnServerData": function ( sSource, aoData, fnCallback ) {
 		            $.ajax( {
-		                "dataType": 'json', 
-		                "type": "POST", 
-		                "url": sSource, 
-		                "data": aoData, 
+		                "dataType": 'json',
+		                "type": "POST",
+		                "url": sSource,
+		                "data": aoData,
 		                "success": fnCallback
 		            } );
 		        }
@@ -198,15 +204,15 @@
 				"oTableTools": {
 					"sSwfPath": "assets/swf/copy_csv_xls_pdf.swf"
 				},
-				"aoColumnDefs": [ 
+				"aoColumnDefs": [
 				    { "bSortable": false, "aTargets": [ 0,2,3 ] }
 				 ],
 			    "fnServerData": function ( sSource, aoData, fnCallback ) {
 		            $.ajax( {
-		                "dataType": 'json', 
-		                "type": "POST", 
-		                "url": sSource, 
-		                "data": aoData, 
+		                "dataType": 'json',
+		                "type": "POST",
+		                "url": sSource,
+		                "data": aoData,
 		                "success": fnCallback
 		            } );
 		        }
@@ -219,7 +225,7 @@
 		} );
 
 		/*
-		 * Support functions to provide a little bit of 'user friendlyness' to the textboxes in 
+		 * Support functions to provide a little bit of 'user friendlyness' to the textboxes in
 		 * the footer
 		 */
 		$('tfoot input').each( function (i) {
@@ -251,7 +257,7 @@
 		} );
 
 		/*
-		 * Support functions to provide a little bit of 'user friendlyness' to the textboxes in 
+		 * Support functions to provide a little bit of 'user friendlyness' to the textboxes in
 		 * the footer
 		 */
 		$('.filter input').each( function (i) {
@@ -279,7 +285,7 @@
 			if ($(e.target).is('.addcomment')) {
 				var _id = e.target.id;
 				var comment = $('#comment_' + _id).val();
-				
+
 				$.post('{{ URL::to("opportunity/addcomment/".$opportunity["_id"]) }}',{'progressid':_id,'comment':comment}, function(data) {
 					if(data.status == 'OK'){
 						//redraw table
@@ -328,7 +334,7 @@
 					autosize: true
 				});
 
-		   	}	
+		   	}
 
 			if ($(e.target).is('.fileview')) {
 				var _id = e.target.id;
@@ -341,7 +347,7 @@
 					autosize: true
 				});
 
-		   	}		   			   	
+		   	}
 
 			if ($(e.target).is('.metaview')) {
 				var doc_id = e.target.id;
@@ -374,7 +380,7 @@
 					autosize: false
 				});
 
-				
+
 			}
 
 		});
