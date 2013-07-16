@@ -1174,7 +1174,9 @@ class Document_Controller extends Base_Controller {
 			}
 
 		}else if($type == 'general'){
+
 			$can_open = true;
+
 		}else{
 
 			if(Auth::user()->department == $type){
@@ -1190,13 +1192,25 @@ class Document_Controller extends Base_Controller {
 			$shared = $doc->count($q);
 			$created = $doc->count($q);
 
+            /*
+            print_r($q);
+
+            print 'shared '.$shared.'<br />';
+
+            print 'created '.$created.'<br />';
+
+            print $permissions->{$type}->read;
+            */
+
 			if($shared > 0 || $created > 0 || $permissions->{$type}->read == 1){
 				$can_open = true;
 			}
+
 		}
 
 
-		//print_r($permissions);
+		// print_r($permissions);
+
 
 		//print_r($permissions->{$type}->create);
 
@@ -1431,12 +1445,12 @@ class Document_Controller extends Base_Controller {
 
 					}else{
 						$q = array(
-							array('docShare'=>$sharecriteria),
-							'$or'=> array(
-								array('deleted'=>false),
-								array('deleted'=>array('$exists'=>false))
-							)
-						);
+                                'docShare'=>$sharecriteria,
+                                '$or'=> array(
+								    array('deleted'=>0),
+								    array('deleted'=>array('$exists'=>0))
+                                )
+							);
 
 					}
 
@@ -1472,6 +1486,8 @@ class Document_Controller extends Base_Controller {
 			$q['docCategory'] = $searchCategory;
 		}
 
+        //print_r($q);
+
 		if(count($q) > 0){
 			$documents = $document->find($q,array(),array($sort_col=>$sort_dir),$limit);
 			$count_display_all = $document->count($q);
@@ -1481,7 +1497,7 @@ class Document_Controller extends Base_Controller {
 		}
 
 
-
+        //print_r($documents);
 
 		$aadata = array();
 
