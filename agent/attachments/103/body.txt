@@ -1,0 +1,35 @@
+---------- Forwarded message ----------
+From: The Google Latitude Team <location-noreply@google.com>
+Date: Thu, Jul 11, 2013 at 3:36 AM
+Subject: Google Latitude will be retiring on August 9th
+To: andy.awidarto@gmail.com
+
+
+**
+     [image: Google]       Hello,   Earlier today, we
+announced<http://www.google.com/appserve/mkt/7cpcyL4MsdhyHIZiybUIgV>that
+Google Latitude is no longer part of the Google Maps app, and we're
+retiring Latitude on August 9, 2013.   This means that after August 9, your
+Latitude friends list will be deleted and you'll lose the ability to share
+your location with them. There will also be some changes to Location
+Reporting and Location History, including changes to third-party
+applications that use Google Latitude. Please see our
+FAQs<http://www.google.com/appserve/mkt/40u2cRWBDOIfMvp69K4pAQ>for
+more information.  We understand some of you still want to see your
+friends and family on a
+map, which is why we've
+added<http://www.google.com/appserve/mkt/0PTbW7uVpfeY049Teiv2jV>location
+sharing to Google+ for Android (coming soon to iOS).  Thank you for
+using Google Latitude.  Sincerely,
+
+The Google Latitude Team                      © 2013 Google Inc. 1600
+Amphitheatre Parkway, Mountain View, CA 94043
+
+You have received this mandatory email service announcement to update you
+about important changes to the Google Latitude product.
+
+
+
+-- 
+Andy K. Awidarto
+( andy.awidarto@gmail.com <andy@sinaptix.com> )
