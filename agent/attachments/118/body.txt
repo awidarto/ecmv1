@@ -1,0 +1,81 @@
+---------- Forwarded message ----------
+From: Apigee Team <scottr@apigee.com>
+Date: Thu, Apr 25, 2013 at 8:06 PM
+Subject: Webcast: SOA in the API World - Facades, Transactions, Stateless
+Services . . .
+To: andy.awidarto@kickstartlab.com
+
+
+**
+To view this email as a web page, click
+here<http://pages.apigee.com/index.php/email/emailWebview?mkt_tok=3RkMMJWWfF9wsRokvqXOZKXonjHpfsX%2B7%2BgsUbHr08Yy0EZ5VunJEUWy2YQAS9Q%2FcOedCQkZHblFnV8NS62iRLkNq6ML>
+
+ [image: Apigee]<http://go.apigee.com/trk?t=2&mid=MzUxLVdYWS0xNjY6NjQ0OjI1OTc6NDE3MzowOjE3MTc6Nzo2NDQxODphbmR5LmF3aWRhcnRvQGtpY2tzdGFydGxhYi5jb20%3D&&&http://www.apigee.com?mkt_tok=3RkMMJWWfF9wsRokvqXOZKXonjHpfsX%2B7%2BgsUbHr08Yy0EZ5VunJEUWy2YQAS9Q%2FcOedCQkZHblFnV8NS62iRLkNq6ML>
+
+Live Webcast
+SOA in the API World - Facades, Transactions, Stateless Services . . .
+
+Thursday, May 2, 11:00am PT / 2:00pm ET
+
+In a recent webcast, we established the imperative for APIs to evolve
+a SOA that's just not flexible enough to meet the requirements of today's
+projects. So what does that entail? You'll need to design a facade for your
+services, ensure services are stateless, handle complex, stateful
+transactions, and more.
+
+Join Brian Pagano and Greg Brail for a deep dive into some top
+considerations for evolving your SOA to expose functionality to meet the
+demands of business in the growing app economy.
+
+   Register Now<http://go.apigee.com/trk?t=2&mid=MzUxLVdYWS0xNjY6NjQ0OjI1OTc6NDE3MzowOjE3MTc6Nzo2NDQxODphbmR5LmF3aWRhcnRvQGtpY2tzdGFydGxhYi5jb20%3D&&&http://pages.apigee.com/SOA-in-the-API-World-Facades-Transactions-Stateless-Services-webcast-registration.html?mkt_tok=3RkMMJWWfF9wsRokvqXOZKXonjHpfsX%2B7%2BgsUbHr08Yy0EZ5VunJEUWy2YQAS9Q%2FcOedCQkZHblFnV8NS62iRLkNq6ML>
+
+
+We'll Cover:<http://go.apigee.com/trk?t=2&mid=MzUxLVdYWS0xNjY6NjQ0OjI1OTc6NDE3MzowOjE3MTc6Nzo2NDQxODphbmR5LmF3aWRhcnRvQGtpY2tzdGFydGxhYi5jb20%3D&&&http://pages.apigee.com/SOA-in-the-API-World-Facades-Transactions-Stateless-Services-webcast-registration.html?mkt_tok=3RkMMJWWfF9wsRokvqXOZKXonjHpfsX%2B7%2BgsUbHr08Yy0EZ5VunJEUWy2YQAS9Q%2FcOedCQkZHblFnV8NS62iRLkNq6ML>
+
+   - Designing API Facades that expose data and services in an intuitive way
+   - Dealing with complex, stateful transactions
+   - Internal APIs vs. external APIs - are they different? Should they be?
+
+
+
+*If you can't make the live webcast, register and we'll send you a video
+recording with slides.**
+ *
+
+*Presenters*
+  [image: Brian
+Pagano]<http://go.apigee.com/trk?t=2&mid=MzUxLVdYWS0xNjY6NjQ0OjI1OTc6NDE3MzowOjE3MTc6Nzo2NDQxODphbmR5LmF3aWRhcnRvQGtpY2tzdGFydGxhYi5jb20%3D&&&http://pages.apigee.com/SOA-in-the-API-World-Facades-Transactions-Stateless-Services-webcast-registration.html?mkt_tok=3RkMMJWWfF9wsRokvqXOZKXonjHpfsX%2B7%2BgsUbHr08Yy0EZ5VunJEUWy2YQAS9Q%2FcOedCQkZHblFnV8NS62iRLkNq6ML>
+[image:
+Greg Brail]<http://go.apigee.com/trk?t=2&mid=MzUxLVdYWS0xNjY6NjQ0OjI1OTc6NDE3MzowOjE3MTc6Nzo2NDQxODphbmR5LmF3aWRhcnRvQGtpY2tzdGFydGxhYi5jb20%3D&&&http://pages.apigee.com/SOA-in-the-API-World-Facades-Transactions-Stateless-Services-webcast-registration.html?mkt_tok=3RkMMJWWfF9wsRokvqXOZKXonjHpfsX%2B7%2BgsUbHr08Yy0EZ5VunJEUWy2YQAS9Q%2FcOedCQkZHblFnV8NS62iRLkNq6ML>
+
+*Brian Pagano
+*Apigee
+@brianpagano
+
+
+
+*Greg Brail
+*Apigee
+@gbrail
+
+
+
+
+
+.
+
+[image: Apigee]
+  260 Sheridan Avenue, Palo Alto CA 94306 © 2013 Apigee Corp. All rights
+reserved.
+
+This email was sent to andy.awidarto@kickstartlab.com. If you no longer
+wish to receive these emails you may
+unsubscribe<http://pages.apigee.com/UnsubscribePage.html?mkt_unsubscribe=1&mkt_tok=3RkMMJWWfF9wsRokvqXOZKXonjHpfsX%2B7%2BgsUbHr08Yy0EZ5VunJEUWy2YQAS9Q%2FcOedCQkZHblFnV8NS62iRLkNq6ML>at
+any time.
+
+
+
+-- 
+Andy Awidarto
+Lead Developer - Kickstart Interactive
+andy.awidarto@kickstartlab.com

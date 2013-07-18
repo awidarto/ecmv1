@@ -1445,6 +1445,7 @@ class Document_Controller extends Base_Controller {
 
 					}else{
 						$q = array(
+                                'docDepartment' => trim($type),
                                 'docShare'=>$sharecriteria,
                                 '$or'=> array(
 								    array('deleted'=>0),
