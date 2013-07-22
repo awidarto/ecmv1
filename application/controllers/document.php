@@ -197,12 +197,28 @@ class Document_Controller extends Base_Controller {
 				$doc['expiring'] = '';
 			}
 
+            $attlist = isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'';
+
+            $emailin = 'No';
+
+            if(isset($doc['docEmailInput']) && $doc['docEmailInput'] == 1){
+
+                $emailin = 'Yes';
+
+                $idx = 1;
+                foreach($doc['docFileList'] as $f){
+                    $attlist .= '<br /><br /><span class="fileview" id="'.$doc['_id'].'/'.$idx.'">'.$f['name'].'</span>';
+                    $idx++;
+                }
+            }
+
+
 			$download = '<a href="'.URL::to('document/download/'.$doc['_id']).'">'.
 						'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
 
 			$aadata[] = array(
 				$counter,
-				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
+				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].' ('.$emailin.')</span>',
 				depttitle($doc['docDepartment']),
 				date('d-m-Y H:i:s', $doc['createdDate']->sec),
 				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
@@ -210,7 +226,7 @@ class Document_Controller extends Base_Controller {
 				se($doc['expiring']),
 				se($doc['creatorName']),
 				isset($doc['access'])?ucfirst($doc['access']):'',
-				isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'',
+				$attlist,
 				isset($doc['useAsTemplate'])?$doc['useAsTemplate']:'No',
 				$tags,
 				'<a href="'.URL::to('document/edit/'.$doc['_id']).'"><i class="foundicon-edit action"></i></a>&nbsp;'.
@@ -1540,6 +1556,22 @@ class Document_Controller extends Base_Controller {
 				$doc['expiring'] = '';
 			}
 
+            $attlist = isset($doc['docFilename'])?'<span class="fileview" id="'.$doc['_id'].'">'.$doc['docFilename'].'</span>':'';
+
+            $emailin = 'No';
+
+            if(isset($doc['docEmailInput']) && $doc['docEmailInput'] == 1){
+
+                $emailin = 'Yes';
+
+                $idx = 1;
+                foreach($doc['docFileList'] as $f){
+                    $attlist .= '<br /><br /><span class="fileview" id="'.$doc['_id'].'/'.$idx.'">'.$f['name'].'</span>';
+                    $idx++;
+                }
+            }
+
+
 			if($doc['creatorId'] == Auth::user()->id ||
 									Auth::user()->role == 'root' ||
 									Auth::user()->role == 'super' ||
@@ -1593,7 +1625,8 @@ class Document_Controller extends Base_Controller {
 				ucfirst( se($doc['access']) ),
                 (is_array($doc['sharedEmails']))?implode('<br />',$doc['sharedEmails']):$doc['sharedEmails'],
 				isset($doc['docCategoryLabel'])?ucfirst($doc['docCategoryLabel']):'-',
-				isset($doc['docFilename'])?'<span class="fileview has-tip tip-bottom noradius" "title"="'.$doc['docFilename'].'" id="'.$doc['_id'].'">'.breaksentence($doc['docFilename'],25).'</span>':'',
+                $attlist,
+				//isset($doc['docFilename'])?'<span class="fileview has-tip tip-bottom noradius" "title"="'.$doc['docFilename'].'" id="'.$doc['_id'].'">'.breaksentence($doc['docFilename'],25).'</span>':'',
 				$tags,
 				$edit.$move.$download.$del
 				/*
@@ -1782,7 +1815,7 @@ class Document_Controller extends Base_Controller {
 		return View::make('document.printcover')->with('profile',$doc);
 	}
 
-	public function get_fileview($id){
+	public function get_fileview($id,$idx = null){
 		$_id = new MongoId($id);
 
 		$document = new Document();
@@ -1793,12 +1826,25 @@ class Document_Controller extends Base_Controller {
 
 		//$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
 
-		$realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFilename']);
+        if(is_null($idx)){
+            $realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFiledata']['name']);
+            //$realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFilename']);
+        }else{
+            $realfile = realpath(Config::get('kickstart.storage').'/'.$id.'/'.$doc['docFileList'][$idx - 1]['name']);
+        }
+
 
 		$poppage = 'pop.fileview';
 
 		if(file_exists($realfile)){
-			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+
+            if(is_null($idx)){
+                $file = URL::base().'/storage/'.$id.'/'.$doc['docFiledata']['name'];
+                //$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
+            }else{
+                $file = URL::base().'/storage/'.$id.'/'.$doc['docFileList'][$idx - 1]['name'];
+            }
+
 			//$file = URL::base().'/document/stream/'.$id;
 			$ext = File::extension($realfile);
 			if($ext == 'pdf'){

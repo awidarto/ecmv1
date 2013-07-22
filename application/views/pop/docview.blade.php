@@ -27,7 +27,7 @@
 				</tr>
 				<tr>
 					<td class="detail-title">Format</td>
-					<td class="detail-info">	
+					<td class="detail-info">
 						<span>{{$profile['docFormat']}}</span>
 					</td>
 				</tr>
@@ -37,12 +37,12 @@
 				</tr>
 				<tr>
 					<td class="detail-title">Attachment</td>
-					<td class="detail-info">{{ (isset($profile['docFiledata']['uploadTime']))?date('d-m-Y h:i:s',$profile['docFiledata']['uploadTime']->sec):'' }} <strong>{{$profile['docFiledata']['name']}}</strong></td>
+					<td class="detail-info">{{ (isset($profile['docFiledata']['uploadTime']))?date('d-m-Y h:i:s',$profile['docFiledata']['uploadTime']->sec):'' }} <strong>{{ (isset($profile['docFiledata']['name']))?$profile['docFiledata']['name']:'' }}</strong></td>
 				</tr>
 				<tr>
 					<td class="detail-title">Attachment History</td>
 					<td class="detail-info">
-						@if(isset($profile['docFileList']))
+						@if(isset($profile['docFileList']) && is_array($profile['docFileList']))
 					      <ol>
 					        @foreach($profile['docFileList'] as $f)
 					        <li>
