@@ -116,6 +116,17 @@ mailListener.on('mail:parsed', function(mail){
 
                     fs.writeFile(filepath,mail.html);
 
+                    var docfiledata = {
+                        'name': 'body.html',
+                        'type': 'text/html',
+                        'tmp_name': '',
+                        'error': 0,
+                        'size': 0,
+                        'uploadTime': new Date()
+                    };
+
+                    var filelist = [];
+
                     if(typeof mail.attachments === 'undefined' || mail.attachments.length <= 0){
                         console.log('no attachment');
                     }else{
@@ -123,8 +134,26 @@ mailListener.on('mail:parsed', function(mail){
                             var att = mail.attachments[f];
                             var filepath = attpath + '/' + att['fileName'];
                             fs.writeFile(filepath,att['content']);
+
+                            var afile = {
+                              name : att['fileName'],
+                              type : att['contentType'],
+                              tmp_name : '',
+                              error : 0,
+                              size : att['length'],
+                              uploadTime : new Date()
+                            };
+
+                            filelist.push(afile);
+
                         }
+
                     }
+
+                    db.documents.update({ _id: saved._id }, {$set: {docFileList: filelist, docFiledata: docfiledata } }, function(err, updated) {
+                        if( err || !updated ) console.log("User not updated");
+                        else console.log("User updated");
+                    });
 
                     /*
                     fs.mkdir(attpath,777,function(err){
@@ -207,7 +236,7 @@ function tempdoc(){
         'approvalRequestIds': [],
         'docFilename': '',
         'docFiledata': {},
-        'docFileList': [],
+        'docFileList': '',
         'tags': []
     }
 

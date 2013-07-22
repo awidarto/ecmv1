@@ -1033,10 +1033,10 @@ class Document_Controller extends Base_Controller {
 		$heads = array('# <input type="checkbox" value="" class="select-all" >',
 			'Title','Created','Last Update',
 			//'Expiry Date','Expiring In','Creator',
-			'Access','Folder','Attachment','Tags','Action');
+			'Access','Sharing','Folder','Attachment','Tags','Action');
 		$searchinput = array(false,'title','created','last update',
 			//'expiry date','expiring','creator',
-			'access','folder','filename','tags',false);
+			'access','sharing','folder','filename','tags',false);
 
 		$dept = Config::get('parama.department');
 
@@ -1591,6 +1591,7 @@ class Document_Controller extends Base_Controller {
 				//(isset($doc['alert']) && $doc['alert'] == 'Yes')?$doc['expiring']:'',
 				//$doc['creatorName'],
 				ucfirst( se($doc['access']) ),
+                (is_array($doc['sharedEmails']))?implode('<br />',$doc['sharedEmails']):$doc['sharedEmails'],
 				isset($doc['docCategoryLabel'])?ucfirst($doc['docCategoryLabel']):'-',
 				isset($doc['docFilename'])?'<span class="fileview has-tip tip-bottom noradius" "title"="'.$doc['docFilename'].'" id="'.$doc['_id'].'">'.breaksentence($doc['docFilename'],25).'</span>':'',
 				$tags,

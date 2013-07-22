@@ -16,11 +16,11 @@
     <fieldset>
       <legend>Document Info & Attachment</legend>
         {{ $form->hidden('id',$doc['_id'])}}
-        
+
         @if(isset($doc['expiring']))
         {{ $form->hidden('expiring',$doc['expiring']) }}
         @endif
-        
+
         {{ $form->text('title','Title.req','',array('class'=>'text')) }}
 
         {{$form->select('docFormat','Original Document Format',Config::get('parama.doc_format'),array('class'=>'four'))}}
@@ -30,65 +30,67 @@
       {{ Form::label('access','Who can see this document')}}
       <div class="row">
         <div class="four columns left">
-          {{ $form->radio('access','Confidential','confidential')}} 
-        </div>   
+          {{ $form->radio('access','Confidential','confidential')}}
+        </div>
         <div class="eight columns right">
           <p>
             <strong>Confidential</strong> document ( default ) can only be seen by its creator and people it was shared with.<br />
           </p>
-        </div>   
+        </div>
       </div>
 
       <div class="row">
         <div class="four columns left">
-          {{ $form->radio('access','Departmental','departmental')}} 
-        </div>   
+          {{ $form->radio('access','Departmental','departmental')}}
+        </div>
         <div class="eight columns right">
           <p>
-            <strong>Departmental</strong> document will be able to be seen by creator's peers at the same department. 
+            <strong>Departmental</strong> document will be able to be seen by creator's peers at the same department.
           </p>
-        </div>   
+        </div>
       </div>
 
       <div class="row">
         <div class="four columns left">
-          {{ $form->radio('access','General','general')}} 
-        </div>   
+          {{ $form->radio('access','General','general')}}
+        </div>
         <div class="eight columns right">
           <p>
-            <strong>General</strong> document will be able to be seen by all employees in the company, and listed in General document section. 
+            <strong>General</strong> document will be able to be seen by all employees in the company, and listed in General document section.
           </p>
-        </div>   
+        </div>
       </div>
 
       {{ Form::label('interaction','Interaction ( What can other users do with this document )')}}
       <div class="row">
         <div class="four columns left">
-          {{ $form->radio('interaction','Read Only','ro')}} 
-        </div>   
+          {{ $form->radio('interaction','Read Only','ro')}}
+        </div>
         <div class="eight columns right">
           <p>
             <strong>Read Only</strong> access ( default ) will make other users can only be able to read / view this document, regardless of their permission set.<br />
           </p>
-        </div>   
+        </div>
       </div>
 
       <div class="row">
         <div class="four columns left">
-          {{ $form->radio('interaction','Read & Write','rw')}} 
-        </div>   
+          {{ $form->radio('interaction','Read & Write','rw')}}
+        </div>
         <div class="eight columns right">
           <p>
-            <strong>Read & Write</strong> access will enable other users to see and interact further ( ie: edit and/or delete ) according to their permission set. 
+            <strong>Read & Write</strong> access will enable other users to see and interact further ( ie: edit and/or delete ) according to their permission set.
           </p>
-        </div>   
+        </div>
       </div>
 
         <hr />
         {{ $form->file('docupload','Document File')}}
 
+        @if(isset($doc['docFiledata']['name']))
         <p><strong>Current Active Attachment :</strong><br />{{ (isset($doc['docFiledata']['uploadTime']))?date('d-m-Y h:i:s',$doc['docFiledata']['uploadTime']->sec):'' }} <strong>{{$doc['docFiledata']['name']}}</strong></p>
 
+        @endif
         <p><strong>Attachment History :</strong><br />
           @if(isset($doc['docFileList']))
             <ol>
@@ -124,23 +126,23 @@
       {{ Form::label('alert','Expiration alert')}}
       <div class="row">
         <div class="four columns left">
-          {{ $form->radio('alert','Yes','Yes')}} 
-        </div>   
+          {{ $form->radio('alert','Yes','Yes')}}
+        </div>
         <div class="eight columns right">
-          {{ $form->radio('alert','No','No')}} 
-        </div>   
+          {{ $form->radio('alert','No','No')}}
+        </div>
       </div>
 
       <div class="row">
         <div class="left">
           {{ Form::label('alertStart','Start alert in')}}
-        </div>   
+        </div>
         <div class="one columns left">
-          {{ $form->text('alertStart','','')}}        
-        </div>   
+          {{ $form->text('alertStart','','')}}
+        </div>
         <div class="alertsuffix">
           {{ Form::label('alertStartSuffix',' days before Expiry Date')}}
-        </div>   
+        </div>
       </div>
 
       <div class="alertsuffix six"> </div>
@@ -181,7 +183,7 @@
       {{ $form->textarea('docRemarks','Remarks','',array('class'=>'text','placeholder'=>'Put note / remarks here'))}}
     </fieldset>
     <fieldset>
-      <legend>Reference & Relationships</legend>    
+      <legend>Reference & Relationships</legend>
 
       {{ $form->text('docRevisionOf','This Document is Related to / Revision of ( other Document )','',array('class'=>'tag_revision four','rows'=>'1', 'style'=>'width:100%')) }}
 
@@ -251,7 +253,7 @@
   $('#categoryTree').tree(
     {
       data:catdata,
-      autoOpen:false      
+      autoOpen:false
     }
   );
 
