@@ -144,6 +144,12 @@
   		'subcon'=>'3rd Party / Sub-Con'
   		),
 
+  'guardedsection'=>array(
+        'opportunity'=>'Opportunity',
+        'tender'=>'Tender',
+        'project'=>'Project',
+        'hr'=>'Human Resource'
+    ),
   'eventtitle'=>array(
       'document.upload'=>'New Document Created',
       'document.create'=>'New Document Created',

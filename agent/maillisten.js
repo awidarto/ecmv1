@@ -4,13 +4,16 @@ var db = require('mongojs').connect(databaseUrl, collections);
 
 var doc_path = '/Library/WebServer/Documents/pnu/public/storage/';
 
+//var doc_path = '/var/kickstart/pnu/public/storage/';
+
+
 var fs = require('fs');
 
 var MailListener = require('mail-listener');
-/*
+
 var mailListener = new MailListener({
-  username: 'kickstartlab@gmail.com',
-  password: 'pisangkeju',
+  username: 'paramanusa@gmail.com',
+  password: 'Parama0101',
   host: 'imap.gmail.com',
   port: 993, // imap port
   secure: true, // use secure connection
@@ -18,18 +21,19 @@ var mailListener = new MailListener({
   markSeen: true, // all fetched email willbe marked as seen and not fetched next time
   fetchUnreadOnStart: false // use it only if you want to get all unread email on lib start. Default is `false`
 });
-*/
 
+/*
 var mailListener = new MailListener({
   username: 'input@paramanusa.co.id',
   password: 'inpnu2013',
-  host: 'mail.paramanusa.co.id',
+  host: 'mail.paramanusa.co.id', //202.146.241.30
   port: 143, // imap port
   secure: false, // use secure connection
   mailbox: 'INBOX', // mailbox to monitor
   markSeen: true, // all fetched email willbe marked as seen and not fetched next time
   fetchUnreadOnStart: false // use it only if you want to get all unread email on lib start. Default is `false`
 });
+*/
 
 
 mailListener.start();

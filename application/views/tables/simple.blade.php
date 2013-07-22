@@ -50,7 +50,7 @@
 		        <tr>
 		        	@foreach($heads as $head)
 		        		@if(is_array($head))
-		        			<th 
+		        			<th
 		        				@foreach($head[1] as $key=>$val)
 		        					{{ $key }}="{{ $val }}"
 
@@ -69,7 +69,7 @@
 		        	<tr>
 		        	@foreach($secondheads as $head)
 		        		@if(is_array($head))
-		        			<th 
+		        			<th
 		        				@foreach($head[1] as $key=>$val)
 		        					{{ $key }}="{{ $val }}"
 
@@ -96,7 +96,7 @@
 		    		@else
 		        		<td>&nbsp;</td>
 		    		@endif
-		    	@endforeach        	
+		    	@endforeach
 		    </tr>
 		    </tfoot>
 		</table>
@@ -123,7 +123,7 @@
 						{"label":"Progress Report","id":"progressreport"}
 					]
 				},
-				{	
+				{
 					"label":"Indoor Sales",
 					"id":"parent",
 					"children":[
@@ -149,7 +149,7 @@
 				autoOpen:false
 
 				/*,
-				selectable: true,				
+				selectable: true,
 			    onCanSelectNode: function(node) {
 			        if (node.children.length == 0) {
 			            // Nodes without children can be selected
@@ -161,7 +161,7 @@
 		        	}
 				}
 				*/
-				
+
 			}
 		);
 
@@ -181,7 +181,7 @@
 				"oTableTools": {
 					"sSwfPath": "{{ URL::base() }}/swf/copy_csv_xls_pdf.swf"
 				},
-				"aoColumnDefs": [ 
+				"aoColumnDefs": [
 				    { "bSortable": false, "aTargets": [ {{ $disablesort }} ] }
 				 ],
 			    "fnServerData": function ( sSource, aoData, fnCallback ) {
@@ -208,13 +208,13 @@
 					$.getJSON( sSource, aoData, function (json) {
 						fnCallback(json);
 					});
-					*/	
+					*/
 
 		            $.ajax( {
-		                "dataType": 'json', 
-		                "type": "POST", 
-		                "url": sSource, 
-		                "data": aoData, 
+		                "dataType": 'json',
+		                "type": "POST",
+		                "url": sSource,
+		                "data": aoData,
 		                "success": function(json){
 		                	fnCallback(json);
 		                }
@@ -242,7 +242,7 @@
 		} );
 
 		/*
-		 * Support functions to provide a little bit of 'user friendlyness' to the textboxes in 
+		 * Support functions to provide a little bit of 'user friendlyness' to the textboxes in
 		 * the footer
 		 */
 		$('tfoot input').each( function (i) {
@@ -295,7 +295,7 @@
 			}
 		} );
 		*/
-		
+
 		$('thead input').keyup( function () {
 			/* Filter on the column (the index) of this element */
 			//oTable.fnFilter( this.value, $('tfoot input').index(this) );
@@ -366,7 +366,22 @@
 					autosize: true
 				});
 
-		   	}	
+		   	}
+
+            if ($(e.target).is('.move')) {
+                var doc_id = e.target.id;
+
+                $.fancybox({
+                    type:'iframe',
+                    width:'800',
+                    href: '{{ URL::to("document/movedoc/") }}' + doc_id + '/{{ (isset($type))?$type:'' }}',
+                    autosize: false,
+                    afterClose:function(){
+                        oTable.fnDraw();
+                    }
+                });
+            }
+
 
 			if ($(e.target).is('.fileview')) {
 				var _id = e.target.id;
@@ -381,7 +396,7 @@
 					autosize: false
 				});
 
-		   	}		   			   	
+		   	}
 
 			if ($(e.target).is('.metaview')) {
 				var doc_id = e.target.id;
@@ -418,7 +433,7 @@
 					autosize: false,
 					afterClose:function(){
 						oTable.fnDraw();
-					}					
+					}
 				});
 			}
 
@@ -432,7 +447,7 @@
 					autosize: false
 				});
 
-				
+
 			}
 
 		});

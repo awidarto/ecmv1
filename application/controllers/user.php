@@ -518,11 +518,11 @@ class User_Controller extends Base_Controller {
 	        'fullname'  => 'required|max:50'
 	    );
 
-	    
+
 	    if($in['initial'] != '' && $in['initial'] != $in['old_initial']){
 	    	$rules['initial'] = 'unique:user';
 	    }
-	    
+
 
 	    $validation = Validator::make($input = Input::all(), $rules);
 
@@ -534,7 +534,7 @@ class User_Controller extends Base_Controller {
 
 			$data = Input::get();
 
-			$obj = Config::get('parama.department');
+			$obj = array_merge( Config::get('parama.guardedsection'),Config::get('parama.department') );
 
 			$pitem = Config::get('acl.permissions');
 
@@ -632,7 +632,8 @@ class User_Controller extends Base_Controller {
 
 			$data = Input::get();
 
-			$obj = Config::get('parama.department');
+			//$obj = Config::get('parama.department');
+            $obj = array_merge( Config::get('parama.guardedsection'),Config::get('parama.department') );
 
 			$pitem = Config::get('acl.permissions');
 

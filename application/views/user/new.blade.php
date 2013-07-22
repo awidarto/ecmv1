@@ -15,13 +15,13 @@
 
     <div class="row radioInput">
         <div class="two columns">
-          {{ $form->radio('salutation','Mr','Mr',true)}} 
-        </div>   
+          {{ $form->radio('salutation','Mr','Mr',true)}}
+        </div>
         <div class="two columns">
-          {{ $form->radio('salutation','Mrs','Mrs')}} 
-        </div>   
+          {{ $form->radio('salutation','Mrs','Mrs')}}
+        </div>
         <div class="two columns">
-          {{ $form->radio('salutation','Ms','Ms')}} 
+          {{ $form->radio('salutation','Ms','Ms')}}
         </div>
         <div class="six columns">
         </div>
@@ -61,7 +61,22 @@
     <div class="twelve columns">
 
       <h5>Permissions</h5>
-
+      <ul>
+        @foreach(Config::get('parama.guardedsection') as $obj=>$title)
+            <li class="three columns">
+              {{ Form::label($obj, $title)}}
+                <ul>
+                  @foreach(Config::get('acl.permissions') as $key=>$perm)
+                      <li>
+                        {{ $form->checkbox($obj.'_'.$perm, $key,1,false,array('id'=>$obj,'class'=>$perm))}}
+                      </li>
+                  @endforeach
+                </ul>
+            </li>
+        @endforeach
+      </ul>
+      <hr />
+      <h6>Department</h6>
       <ul>
         @foreach(Config::get('parama.department') as $obj=>$title)
             <li class="three columns">
@@ -76,7 +91,7 @@
 
                 <?php
                 /*
-                {{ $form->checkbox($obj,$title,1)}} 
+                {{ $form->checkbox($obj,$title,1)}}
                 <ul>
                   @foreach(Config::get('acl.permissions') as $key=>$perm)
                       <li>

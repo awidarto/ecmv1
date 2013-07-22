@@ -42,13 +42,17 @@
                 <dd><a href="{{ URL::to('requests/outgoing') }}"><i class="foundicon iconnew upload sidemenu"></i>Submissions <br />&<br /> Requests</a></dd>
                 <dd><a href="{{ URL::to('template') }}"><i class="foundicon page iconnew sidemenu"></i>Templates</a></dd>
 
-                @if($role != 'hr_admin')
+                @if( isset(Auth::user()->permissions->opportunity->read ) && Auth::user()->permissions->opportunity->read == 1)
                     <dd><a href="{{ URL::to('opportunity') }}"><i class="foundicon flag iconnew sidemenu"></i>Opportunity</a></dd>
+                @endif
+                @if( isset(Auth::user()->permissions->tender->read ) && Auth::user()->permissions->tender->read == 1)
                     <dd><a href="{{ URL::to('tender') }}"><i class="foundicon forward iconnew sidemenu"></i>Tender</a></dd>
+                @endif
+                @if( isset(Auth::user()->permissions->project->read ) && Auth::user()->permissions->project->read == 1)
                     <dd><a href="{{ URL::to('project') }}"><i class="foundicon tools iconnew sidemenu"></i>Projects</a></dd>
                 @endif
 
-                @if($role == 'hr_admin' || $role == 'root' || $role == 'super' || $role == 'president' || $role == 'bod')
+                @if( ( isset(Auth::user()->permissions->hr->read ) && Auth::user()->permissions->hr->read == 1) || $role == 'hr_admin' || $role == 'root' || $role == 'super' || $role == 'president' || $role == 'bod')
                     <dd><a href="{{ URL::to('employee') }}"><i class="foundicon iconnew group sidemenu"></i>Human Resources</a></dd>
                 @endif
                 <dd><a href="{{ URL::to('myhr') }}"><i class="foundicon iconnew user sidemenu"></i>My Employment</a></dd>
