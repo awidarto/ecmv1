@@ -4,7 +4,7 @@ var db = require('mongojs').connect(databaseUrl, collections);
 
 //var doc_path = '/Library/WebServer/Documents/pnu/public/storage/';
 
-var doc_path = '/var/kickstart/pnu/public/storage/';
+var doc_path = '/var/parama/pnu/public/storage/';
 
 
 var fs = require('fs');
