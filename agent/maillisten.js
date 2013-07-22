@@ -2,9 +2,9 @@ var databaseUrl = 'paramadatastore2'; // 'username:password@example.com/mydb'
 var collections = ['docinbox','documents','users','projects','opportunities','tenders'];
 var db = require('mongojs').connect(databaseUrl, collections);
 
-var doc_path = '/Library/WebServer/Documents/pnu/public/storage/';
+//var doc_path = '/Library/WebServer/Documents/pnu/public/storage/';
 
-//var doc_path = '/var/kickstart/pnu/public/storage/';
+var doc_path = '/var/parama/pnu/public/storage/';
 
 
 var fs = require('fs');
@@ -116,6 +116,8 @@ mailListener.on('mail:parsed', function(mail){
 
                     fs.writeFile(filepath,mail.html);
 
+                    var docFilename = mail.subject;
+
                     var docfiledata = {
                         'name': 'body.html',
                         'type': 'text/html',
@@ -150,7 +152,7 @@ mailListener.on('mail:parsed', function(mail){
 
                     }
 
-                    db.documents.update({ _id: saved._id }, {$set: {docFileList: filelist, docFiledata: docfiledata } }, function(err, updated) {
+                    db.documents.update({ _id: saved._id }, {$set: {docFileList: filelist, docFiledata: docfiledata, docFilename: docFilename } }, function(err, updated) {
                         if( err || !updated ) console.log("User not updated");
                         else console.log("User updated");
                     });
@@ -209,7 +211,7 @@ function tempdoc(){
         'docShare': '',
         'docApprovalRequest': '',
         'docDepartment': '',
-        'docCategoryLabel': '',
+        'docCategoryLabel': 'E-mails',
         'docCategoryParents': '',
         'docCategory': '',
         'docOriginalTemplate': 'none',
@@ -237,6 +239,7 @@ function tempdoc(){
         'docFilename': '',
         'docFiledata': {},
         'docFileList': '',
+        'docEmailInput': 1,
         'tags': []
     }
 
