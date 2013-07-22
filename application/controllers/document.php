@@ -736,8 +736,8 @@ class Document_Controller extends Base_Controller {
 		$doc_data['oldTag'] = $doc_data['docTag'];
 		$doc_data['oldShare'] = $doc_data['docShare'];
 
-		$doc_data['effectiveDate'] = date('d-m-Y', $doc_data['effectiveDate']->sec);
-		$doc_data['expiryDate'] = date('d-m-Y', $doc_data['expiryDate']->sec);
+		$doc_data['effectiveDate'] = ($doc_data['effectiveDate'] == '')?'':date('d-m-Y', $doc_data['effectiveDate']->sec);
+		$doc_data['expiryDate'] = ($doc_data['expiryDate'] == '')?'':date('d-m-Y', $doc_data['expiryDate']->sec);
 
 		if(isset($doc_data['useAsTemplate'])){
 			$doc_data['useAsTemplate'] = ($doc_data['useAsTemplate'] == 'No')?false:true;
@@ -1030,7 +1030,7 @@ class Document_Controller extends Base_Controller {
 		$this->crumb->add('document/type/'.$type,'Document');
 		$this->crumb->add('document/type/'.$type,depttitle($type));
 
-		$heads = array('#',
+		$heads = array('# <input type="checkbox" value="" class="select-all" >',
 			'Title','Created','Last Update',
 			//'Expiry Date','Expiring In','Creator',
 			'Access','Folder','Attachment','Tags','Action');
@@ -1231,6 +1231,7 @@ class Document_Controller extends Base_Controller {
 				->with('category',$category)
 				->with('addurl',$addurl)
 				->with('searchinput',$searchinput)
+                ->with('type',$type)
 				->with('ajaxsource',URL::to('document/type/'.$type))
 				->with('ajaxdel',URL::to('document/del'))
 				->with('filteron',true)
@@ -1445,6 +1446,7 @@ class Document_Controller extends Base_Controller {
 
 					}else{
 						$q = array(
+                                'docDepartment' => trim($type),
                                 'docShare'=>$sharecriteria,
                                 '$or'=> array(
 								    array('deleted'=>0),
@@ -1546,6 +1548,7 @@ class Document_Controller extends Base_Controller {
 				){
 				$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
 						'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
+                $move = '<i class="foundicon-folder action move has-tip tip-bottom noradius" title="Move Doc" id="'.$doc['_id'].'"></i>';
 				$del = '<i class="foundicon-trash action del has-tip tip-bottom noradius" title="Delete" id="'.$doc['_id'].'"></i>';
 				$download = '<a href="'.URL::to('document/download/'.$doc['_id'].'/'.$type).'">'.
 							'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
@@ -1581,7 +1584,7 @@ class Document_Controller extends Base_Controller {
 
 			$aadata[] = array(
 				$counter,
-				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
+				'<input type="checkbox" value="'.$doc['_id'].'" class="selector" > <span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
 				date('d-m-Y H:i:s', $doc['createdDate']->sec),
 				(isset($doc['lastUpdate']) && $doc['lastUpdate'] != '')?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
 				//(isset($doc['expiryDate']) && $doc['expiryDate'] != '')?date('d-m-Y', $doc['expiryDate']->sec):'',
@@ -1591,7 +1594,7 @@ class Document_Controller extends Base_Controller {
 				isset($doc['docCategoryLabel'])?ucfirst($doc['docCategoryLabel']):'-',
 				isset($doc['docFilename'])?'<span class="fileview has-tip tip-bottom noradius" "title"="'.$doc['docFilename'].'" id="'.$doc['_id'].'">'.breaksentence($doc['docFilename'],25).'</span>':'',
 				$tags,
-				$edit.$download.$del
+				$edit.$move.$download.$del
 				/*
 				'<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
 				'<i class="foundicon-edit action"></i></a>&nbsp;'.
@@ -1739,6 +1742,24 @@ class Document_Controller extends Base_Controller {
 
 		return View::make('pop.docview')->with('profile',$doc);
 	}
+
+    public function get_movedoc($id,$type){
+        $_id = new MongoId($id);
+
+        $document = new Document();
+
+        $doc = $document->get(array('_id'=>$_id));
+
+        $category = $this->getCategory($type);
+
+        $form = new Formly($doc);
+
+        return View::make('pop.movedoc')
+            ->with('profile',$doc)
+            ->with('form',$form)
+            ->with('category',$category)
+            ->with('ajaxpost','document/movedoc/'.$id);
+    }
 
 	public function get_cover($id){
 		$id = new MongoId($id);
@@ -2063,6 +2084,27 @@ class Document_Controller extends Base_Controller {
 
 
 	}
+
+    public function post_movedoc($id){
+
+        $response = Input::all();
+
+        $_id = new MongoId($id);
+
+        unset($response['csrf_token']);
+
+        $doc = new Document();
+
+        if($document = $doc->update(array('_id'=>$_id),array('$set'=>$response),array('upsert'=>true))){
+            return Response::json(array('status'=>'OK'));
+        }else{
+            return Response::json(array('status'=>'FAILED'));
+        }
+
+        //return Response::json(array( 'status'=>$response ));
+
+    }
+
 
 	private function getCategory($type = null){
 

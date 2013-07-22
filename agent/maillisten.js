@@ -1,14 +1,19 @@
-var databaseUrl = 'paramadatastore'; // 'username:password@example.com/mydb'
+var databaseUrl = 'paramadatastore2'; // 'username:password@example.com/mydb'
 var collections = ['docinbox','documents','users','projects','opportunities','tenders'];
 var db = require('mongojs').connect(databaseUrl, collections);
+
+var doc_path = '/Library/WebServer/Documents/pnu/public/storage/';
+
+//var doc_path = '/var/kickstart/pnu/public/storage/';
+
 
 var fs = require('fs');
 
 var MailListener = require('mail-listener');
 
 var mailListener = new MailListener({
-  username: 'kickstartlab@gmail.com',
-  password: 'pisangkeju',
+  username: 'paramanusa@gmail.com',
+  password: 'Parama0101',
   host: 'imap.gmail.com',
   port: 993, // imap port
   secure: true, // use secure connection
@@ -16,6 +21,20 @@ var mailListener = new MailListener({
   markSeen: true, // all fetched email willbe marked as seen and not fetched next time
   fetchUnreadOnStart: false // use it only if you want to get all unread email on lib start. Default is `false`
 });
+
+/*
+var mailListener = new MailListener({
+  username: 'input@paramanusa.co.id',
+  password: 'inpnu2013',
+  host: 'mail.paramanusa.co.id', //202.146.241.30
+  port: 143, // imap port
+  secure: false, // use secure connection
+  mailbox: 'INBOX', // mailbox to monitor
+  markSeen: true, // all fetched email willbe marked as seen and not fetched next time
+  fetchUnreadOnStart: false // use it only if you want to get all unread email on lib start. Default is `false`
+});
+*/
+
 
 mailListener.start();
 
@@ -61,14 +80,6 @@ mailListener.on('mail:parsed', function(mail){
         mail.isTender = true;
     }
 
-
-    db.docinbox.save( mail, function(err, saved) {
-        if( err || !saved ) {
-        }else{
-            console.log('failed to save mail');
-        }
-    });
-
     var from = mail.from[0];
     from = from.address;
 
@@ -88,7 +99,56 @@ mailListener.on('mail:parsed', function(mail){
 
             dt.docCategory = getcat(user['department']);
 
+            dt.title = mail.subject;
+
+            db.documents.save(dt, function(err, saved) {
+                if( err || !saved ){
+                    console.log('document not saved');
+                }else{
+                    console.log('document saved : ' + saved._id );
+                    var attpath = doc_path + saved._id;
+
+                    fs.mkdirSync(attpath, 0777 );
+
+                    var filepath = attpath + '/body.html';
+
+                    console.log(filepath);
+
+                    fs.writeFile(filepath,mail.html);
+
+                    if(typeof mail.attachments === 'undefined' || mail.attachments.length <= 0){
+                        console.log('no attachment');
+                    }else{
+                        for(f = 0; f < mail.attachments.length ; f++){
+                            var att = mail.attachments[f];
+                            var filepath = attpath + '/' + att['fileName'];
+                            fs.writeFile(filepath,att['content']);
+                        }
+                    }
+
+                    /*
+                    fs.mkdir(attpath,777,function(err){
+                        if(err){
+                            console.log('failed to make dir');
+                        }else{
+                            var filepath = attpath + '/body.html';
+                            fs.writeFile(filepath , mail.html );
+                        }
+
+                    });
+                    */
+                }
+            });
+
             console.log(dt);
+        }
+    });
+
+    db.docinbox.save( mail, function(err, saved) {
+        if( err || !saved ) {
+            console.log('failed to save mail');
+        }else{
+            console.log('mail saved');
         }
     });
 
@@ -155,7 +215,7 @@ function tempdoc(){
 
 function getcat(dept){
     var defcat = {
-        'general':'General',
+        'general':'general_correspondences_incoming_emails',
         'outdoor_sales':'os_general_correspondences_incoming_emails',
         'indoor_sales':'is_general_correspondences_incoming_emails',
         'project_control':'pc_correspondences_incoming_emails',
