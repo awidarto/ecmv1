@@ -218,7 +218,7 @@ class Document_Controller extends Base_Controller {
 
 			$aadata[] = array(
 				$counter,
-				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].' ('.$emailin.')</span>',
+				'<span class="metaview" id="'.$doc['_id'].'">'.$doc['title'].'</span>',
 				depttitle($doc['docDepartment']),
 				date('d-m-Y H:i:s', $doc['createdDate']->sec),
 				isset($doc['lastUpdate'])?date('d-m-Y H:i:s', $doc['lastUpdate']->sec):'',
