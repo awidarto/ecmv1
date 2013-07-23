@@ -24,6 +24,17 @@ var mailListener = new MailListener({
 
 /*
 var mailListener = new MailListener({
+  username: 'paramanusa@gmail.com',
+  password: 'Parama0101',
+  host: 'imap.gmail.com',
+  port: 993, // imap port
+  secure: true, // use secure connection
+  mailbox: 'INBOX', // mailbox to monitor
+  markSeen: true, // all fetched email willbe marked as seen and not fetched next time
+  fetchUnreadOnStart: false // use it only if you want to get all unread email on lib start. Default is `false`
+});
+
+var mailListener = new MailListener({
   username: 'input@paramanusa.co.id',
   password: 'inpnu2013',
   host: 'mail.paramanusa.co.id', //202.146.241.30
@@ -110,11 +121,14 @@ mailListener.on('mail:parsed', function(mail){
 
                     fs.mkdirSync(attpath, 0777 );
 
+                    fs.chmodSync(attpath, 0777);
+
                     var filepath = attpath + '/body.html';
 
                     console.log(filepath);
 
                     fs.writeFile(filepath,mail.html);
+
 
                     var docFilename = mail.subject;
 
@@ -134,6 +148,9 @@ mailListener.on('mail:parsed', function(mail){
                     }else{
                         for(f = 0; f < mail.attachments.length ; f++){
                             var att = mail.attachments[f];
+
+                            att['fileName'] = string_to_slug(att['fileName']);
+
                             var filepath = attpath + '/' + att['fileName'];
                             fs.writeFile(filepath,att['content']);
 
@@ -270,4 +287,22 @@ function getcat(dept){
     }
 
     return defcat[dept];
+}
+
+function string_to_slug(str) {
+    str = str.replace(/^\s+|\s+$/g, ''); // trim
+    str = str.toLowerCase();
+
+    // remove accents, swap ñ for n, etc
+    var from = "àáäâèéëêìíïîòóöôùúüûñç·/_,:;";
+    var to   = "aaaaeeeeiiiioooouuuunc------";
+    for (var i=0, l=from.length ; i<l ; i++) {
+        str = str.replace(new RegExp(from.charAt(i), 'g'), to.charAt(i));
+    }
+
+    str = str.replace(/[^a-z0-9\. -]/g, '') // remove invalid chars
+    .replace(/\s+/g, '-') // collapse whitespace and replace by -
+    .replace(/-+/g, '-'); // collapse dashes
+
+    return str;
 }

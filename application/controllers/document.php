@@ -206,10 +206,14 @@ class Document_Controller extends Base_Controller {
                 $emailin = 'Yes';
 
                 $idx = 1;
-                foreach($doc['docFileList'] as $f){
-                    $attlist .= '<br /><br /><span class="fileview" id="'.$doc['_id'].'/'.$idx.'">'.$f['name'].'</span>';
-                    $idx++;
+
+                if(is_array($doc['docFileList'])){
+                    foreach($doc['docFileList'] as $f){
+                        $attlist .= '<br /><br /><span class="fileview" id="'.$doc['_id'].'/'.$idx.'">'.$f['name'].'</span>';
+                        $idx++;
+                    }
                 }
+
             }
 
 
@@ -1565,9 +1569,11 @@ class Document_Controller extends Base_Controller {
                 $emailin = 'Yes';
 
                 $idx = 1;
-                foreach($doc['docFileList'] as $f){
-                    $attlist .= '<br /><br /><span class="fileview" id="'.$doc['_id'].'/'.$idx.'">'.$f['name'].'</span>';
-                    $idx++;
+                if(is_array($doc['docFileList'])){
+                    foreach($doc['docFileList'] as $f){
+                        $attlist .= '<br /><br /><span class="fileview" id="'.$doc['_id'].'/'.$idx.'">'.$f['name'].'</span>';
+                        $idx++;
+                    }
                 }
             }
 
