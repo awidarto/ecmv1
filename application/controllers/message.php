@@ -171,7 +171,7 @@ class Message_Controller extends Base_Controller {
 		}else{
 			$q['$and'] = array(
 					array('$not'=>array('from'=>Config::get('kickstart.system_email'))),
-					array( 
+					array(
 						'$or'=>array(
 						array('to'=>$self_email_regex),
 						array('cc'=>$self_email_regex),
@@ -181,8 +181,8 @@ class Message_Controller extends Base_Controller {
 					array('$or'=>array(
 						array('delete'=>array('$exists'=>false)),
 						array('delete.email'=>array('$not'=>$self_email_regex))
-					)				
-				
+					)
+
 			));
 		}
 
@@ -232,7 +232,7 @@ class Message_Controller extends Base_Controller {
 			);
 		}
 
-		
+
 		$result = array(
 			'sEcho'=> Input::get('sEcho'),
 			'iTotalRecords'=>$count_all,
@@ -319,7 +319,7 @@ class Message_Controller extends Base_Controller {
 
 			/*
 			$q['$and'] = array(
-					array( 
+					array(
 						'$or'=>array(
 						array('from'=>Config::get('kickstart.system_email')),
 						array('to'=>$self_email_regex),
@@ -330,14 +330,14 @@ class Message_Controller extends Base_Controller {
 					array('$or'=>array(
 						array('delete'=>array('$exists'=>false)),
 						array('delete.email'=>array('$not'=>$self_email_regex))
-					)				
-				
+					)
+
 			));
 			*/
 
 			$q['$and'] = array(
 					array('from'=>Config::get('kickstart.system_email')),
-					array( 
+					array(
 						'$or'=>array(
 							array('to'=>$self_email_regex),
 							array('cc'=>$self_email_regex),
@@ -347,8 +347,8 @@ class Message_Controller extends Base_Controller {
 					array('$or'=>array(
 						array('delete'=>array('$exists'=>false)),
 						array('delete.email'=>array('$not'=>$self_email_regex))
-					)				
-				
+					)
+
 			));
 
 		}
@@ -399,7 +399,7 @@ class Message_Controller extends Base_Controller {
 			);
 		}
 
-		
+
 		$result = array(
 			'sEcho'=> Input::get('sEcho'),
 			'iTotalRecords'=>$count_all,
@@ -453,11 +453,16 @@ class Message_Controller extends Base_Controller {
 				array('subject'=>$search),
 				array('body'=>$search)
 			);
+
+            $q['delete'] = array('$exists'=>false);
+            $q['delete.email'] = array('$not'=>$self_email_regex);
+
 		}else{
-			$q = array('from'=>$self_email_regex);
+			$q = array('from'=>$self_email_regex,
+                    'delete'=>array('$exists'=>false),
+                    'delete.email'=>array('$not'=>$self_email_regex)
+                );
 		}
-
-
 
 		//$q = array();
 
@@ -485,7 +490,7 @@ class Message_Controller extends Base_Controller {
 			);
 		}
 
-		
+
 		$result = array(
 			'sEcho'=> Input::get('sEcho'),
 			'iTotalRecords'=>$count_all,
@@ -523,7 +528,7 @@ class Message_Controller extends Base_Controller {
 		$quote = '<p>------- original message -------<br />';
 
 		$quote .= date('\O\n d m Y, \a\t H:i',$message['createdDate']->sec).', '.$message['from'].' wrote:</p>';
-		
+
 		//On 25 Mar 2013, at 11:03, Oddie Octaviadi <oddieoctaviadi@gmail.com> wrote:
 
 		$message['body'] = $quote."<p>".$message['body']."</p>";
@@ -560,7 +565,7 @@ class Message_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 	    	//print_r($data);
 
 			//pre save transform
@@ -574,7 +579,7 @@ class Message_Controller extends Base_Controller {
 			$data['inreplyto'] = $id;
 
 			$data['from'] = Auth::user()->email;
-			
+
 			//$docupload = Input::file('docupload');
 
 			$data['recipients'] = explode(',',$data['to']);
@@ -601,7 +606,7 @@ class Message_Controller extends Base_Controller {
 					$newdir = realpath(Config::get('parama.storage')).'/'.$newid;
 
 					Input::upload('docupload',$newdir,$docupload['name']);
-					
+
 				}
 
 				$sharedto = explode(',',$data['docShare']);
@@ -624,8 +629,8 @@ class Message_Controller extends Base_Controller {
 
 	    }
 
-		
-	}	
+
+	}
 
 	public function get_forward($box,$id)
 	{
@@ -683,7 +688,7 @@ class Message_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 	    	//print_r($data);
 
 			//pre save transform
@@ -695,7 +700,7 @@ class Message_Controller extends Base_Controller {
 			$data['creatorId'] = Auth::user()->id;
 
 			$data['from'] = Auth::user()->email;
-			
+
 			//$docupload = Input::file('docupload');
 
 			$data['recipients'] = explode(',',$data['to']);
@@ -722,7 +727,7 @@ class Message_Controller extends Base_Controller {
 					$newdir = realpath(Config::get('parama.storage')).'/'.$newid;
 
 					Input::upload('docupload',$newdir,$docupload['name']);
-					
+
 				}
 
 				$sharedto = explode(',',$data['docShare']);
@@ -745,8 +750,8 @@ class Message_Controller extends Base_Controller {
 
 	    }
 
-		
-	}	
+
+	}
 
 
 	public function get_replyall($box,$id)
@@ -819,7 +824,7 @@ class Message_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 	    	//print_r($data);
 
 			//pre save transform
@@ -831,7 +836,7 @@ class Message_Controller extends Base_Controller {
 			$data['creatorId'] = Auth::user()->id;
 
 			$data['from'] = Auth::user()->email;
-			
+
 			//$docupload = Input::file('docupload');
 
 			$data['bcc'] = implode(',',array($data['bcc'],$data['prevbcc']));
@@ -860,7 +865,7 @@ class Message_Controller extends Base_Controller {
 					$newdir = realpath(Config::get('parama.storage')).'/'.$newid;
 
 					Input::upload('docupload',$newdir,$docupload['name']);
-					
+
 				}
 
 				$sharedto = explode(',',$data['docShare']);
@@ -883,8 +888,8 @@ class Message_Controller extends Base_Controller {
 
 	    }
 
-		
-	}	
+
+	}
 
 
 	public function get_new()
@@ -913,7 +918,7 @@ class Message_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 	    	//print_r($data);
 
 			//pre save transform
@@ -925,7 +930,7 @@ class Message_Controller extends Base_Controller {
 			$data['creatorId'] = Auth::user()->id;
 
 			$data['from'] = Auth::user()->email;
-			
+
 			//$docupload = Input::file('docupload');
 
 			$data['recipients'] = explode(',',$data['to']);
@@ -952,7 +957,7 @@ class Message_Controller extends Base_Controller {
 					$newdir = realpath(Config::get('parama.storage')).'/'.$newid;
 
 					Input::upload('docupload',$newdir,$docupload['name']);
-					
+
 				}
 
 				$sharedto = explode(',',$data['docShare']);
@@ -975,8 +980,8 @@ class Message_Controller extends Base_Controller {
 
 	    }
 
-		
-	}	
+
+	}
 
 	public function get_read($box,$id){
 
