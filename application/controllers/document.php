@@ -1612,8 +1612,12 @@ class Document_Controller extends Base_Controller {
 					}else{
 						$download = '';
 					}
+
+                    $move = '';
+
 				}else{
 					$edit = '';
+                    $move = '';
 					$del = '';
 					$download = '';
 				}
