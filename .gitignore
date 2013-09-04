@@ -34,4 +34,7 @@ dwsync.xml
 .CVS
 intermediate
 publish
-.idea
+.idea=
+logs
+log
+.foreverignore
