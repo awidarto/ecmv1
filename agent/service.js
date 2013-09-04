@@ -1,4 +1,4 @@
-var forever = require('forever-monitor'),
+var forever = require('forever'),
     child = new(forever.Monitor)('maillisten.js', {
         'silent': false,
         'pidFile': 'pids/app.pid',
