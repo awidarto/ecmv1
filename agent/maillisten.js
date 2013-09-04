@@ -170,8 +170,12 @@ mailListener.on('mail:parsed', function(mail){
                     }
 
                     db.documents.update({ _id: saved._id }, {$set: {docFileList: filelist, docFiledata: docfiledata, docFilename: docFilename } }, function(err, updated) {
-                        if( err || !updated ) console.log("User not updated");
-                        else console.log("User updated");
+                        if( err || !updated ){
+                            console.log("User not updated");
+                        }
+                        else{
+                            console.log("User updated");
+                        }
                     });
 
                     /*
@@ -202,7 +206,7 @@ mailListener.on('mail:parsed', function(mail){
 
 
 
-    //console.log(doctemplate);
+    console.log(doctemplate);
 
 
 
