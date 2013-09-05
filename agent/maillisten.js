@@ -206,7 +206,7 @@ mailListener.on('mail:parsed', function(mail){
 
 
 
-    console.log(doctemplate);
+    //console.log(doctemplate);
 
 
 
