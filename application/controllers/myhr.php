@@ -167,13 +167,13 @@ class Myhr_Controller extends Base_Controller {
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
 
 			if(isset($doc['expiring'])){
-				
+
 				if($doc['expiring'] == 'Today'){
 					$doc['expiring'] = '<span class="expiring now">'.$doc['expiring'].'</span>';
 				}elseif($doc['expiring'] < 0){
 					$doc['expiring'] = '<span class="expiring yesterday">'.abs($doc['expiring']).' day(s) ago</span>';
 				}elseif($doc['expiring'] != false){
-					$doc['expiring'] = '<span class="expiring">'.$doc['expiring'].' day(s)</span>';						
+					$doc['expiring'] = '<span class="expiring">'.$doc['expiring'].' day(s)</span>';
 				}else{
 					$doc['expiring'] = '';
 				}
@@ -544,9 +544,9 @@ class Myhr_Controller extends Base_Controller {
 
 		$doc_data['oldTag'] = $doc_data['docTag'];
 		$doc_data['oldShare'] = $doc_data['docShare'];
-		
-		$doc_data['effectiveDate'] = date('d-m-Y', $doc_data['effectiveDate']->sec);
-		$doc_data['expiryDate'] = date('d-m-Y', $doc_data['expiryDate']->sec);
+
+        $doc_data['effectiveDate'] = ($doc_data['effectiveDate'] == '')?'':date('d-m-Y', $doc_data['effectiveDate']->sec);
+        $doc_data['expiryDate'] = ($doc_data['expiryDate'] == '')?'':date('d-m-Y', $doc_data['expiryDate']->sec);
 
 		if(isset($doc_data['useAsTemplate'])){
 			$doc_data['useAsTemplate'] = ($doc_data['useAsTemplate'] == 'No')?false:true;
@@ -577,7 +577,7 @@ class Myhr_Controller extends Base_Controller {
 
 		$form = Formly::make($doc_data);
 
-		return View::make('document.edit')
+		return View::make('myhr.edit')
 					->with('doc',$doc_data)
 					->with('templates',$templates)
 					->with('category',$category)
@@ -593,11 +593,11 @@ class Myhr_Controller extends Base_Controller {
 
 		//print_r(Session::get('permission'));
 
-		if(is_null($type)){
-			$back = 'document';
-		}else{
-			$back = 'document/type/'.$type;
-		}
+		//if(is_null($type)){
+			$back = 'myhr';
+		//}else{
+		//	$back = 'document/type/'.$type;
+		//}
 
 		$postdata = Input::get();
 
@@ -618,7 +618,7 @@ class Myhr_Controller extends Base_Controller {
 
 	    if($validation->fails()){
 
-	    	return Redirect::to('document/edit/'.$id.'/'.$type)->with_errors($validation)->with_input(Input::all());
+	    	return Redirect::to('myhr/edit/'.$id.'/'.$type)->with_errors($validation)->with_input(Input::all());
 
 	    }else{
 
@@ -647,7 +647,7 @@ class Myhr_Controller extends Base_Controller {
 					$expiryDate = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
 
 	                $exp->update(array('doc_id'=>$id),array('doc_id'=>$id,'expiring'=>$indays->days,'expiryDate'=>$expiryDate,'updated'=>false),array('upsert'=>true));
-	            
+
 	                // send no message
 	            }
 
@@ -775,7 +775,7 @@ class Myhr_Controller extends Base_Controller {
 						if(File::exists($outpath) == false){
 							File::mkdir($outpath);
 						}
-						
+
 						$cmd = pdf2images($inpath,$outpath);
 					}
 
@@ -1050,15 +1050,15 @@ class Myhr_Controller extends Base_Controller {
 
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
-			
+
 			if(isset($doc['expiring']) && isset($doc['alert']) && $doc['alert'] == 'Yes'){
-				
+
 				if($doc['expiring'] == 'Today'){
 					$doc['expiring'] = '<span class="expiring now">'.$doc['expiring'].'</span>';
 				}elseif($doc['expiring'] < 0){
 					$doc['expiring'] = '<span class="expiring yesterday">'.abs($doc['expiring']).' day(s) ago</span>';
 				}elseif($doc['expiring'] != false){
-					$doc['expiring'] = '<span class="expiring">'.$doc['expiring'].' day(s)</span>';						
+					$doc['expiring'] = '<span class="expiring">'.$doc['expiring'].' day(s)</span>';
 				}else{
 					$doc['expiring'] = '';
 				}
@@ -1147,7 +1147,7 @@ class Myhr_Controller extends Base_Controller {
 	public function get_download($id, $type = null){
 
 		$this->crumb = new Breadcrumb();
-		
+
 
 		if(is_null($type)){
 			$this->crumb->add('document','Document');
@@ -1307,7 +1307,7 @@ class Myhr_Controller extends Base_Controller {
 
 		if(file_exists($realfile)){
 			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
-			//$file = URL::base().'/document/stream/'.$id;			
+			//$file = URL::base().'/document/stream/'.$id;
 			$ext = File::extension($realfile);
 			if($ext == 'pdf'){
 				$pagepath = str_replace('.'.$ext, '', $realfile);
@@ -1330,7 +1330,7 @@ class Myhr_Controller extends Base_Controller {
 
 			if(in_array($ext, Config::get('kickstart.noviewer'))){
 				$file = URL::base().'/document/noviewer';
-			}			
+			}
 
 		}else{
 			$file = URL::base().'/document/notfound';
@@ -1352,7 +1352,7 @@ class Myhr_Controller extends Base_Controller {
 
 		if(file_exists($realfile)){
 			$file = URL::base().'/storage/'.$id.'/'.$doc['docFilename'];
-			//$file = URL::base().'/document/stream/'.$id;			
+			//$file = URL::base().'/document/stream/'.$id;
 			$ext = File::extension($realfile);
 			if(in_array($ext, Config::get('kickstart.googledocext'))){
 				if(Config::get('kickstart.usegoogleviewer') == 'true'){
@@ -1475,7 +1475,7 @@ class Myhr_Controller extends Base_Controller {
 				'approvalNote'=>$response['note']
 			);
 
-		
+
 
 		$res2['approvalRequestIds'] = array(
 				'_id'=>$user['_id'],
@@ -1483,7 +1483,7 @@ class Myhr_Controller extends Base_Controller {
 			);
 
 		$res3['approvalRequestEmails'] = trim($response['fwdto']);
-		
+
 		//print_r($res);
 
 		if($document = $doc->update(array('_id'=>$_id),array('$push'=>$res1),array('upsert'=>true))){
@@ -1549,7 +1549,7 @@ class Myhr_Controller extends Base_Controller {
 			}
 
 			if($already_responded == true){
-				return Response::json(array('status'=>'ALREADY'));				
+				return Response::json(array('status'=>'ALREADY'));
 			}
 
 			if($response['approval'] == 'transfer'){
