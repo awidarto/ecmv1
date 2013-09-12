@@ -128,6 +128,7 @@ class Message_Controller extends Base_Controller {
 
 		$self_email_regex = new MongoRegex('/'.Auth::user()->email.'/i');
 
+        /*
 		if($search != ''){
 			$search = new MongoRegex('/'.$search.'/i');
 			//$q['from'] = $self_email_regex;
@@ -154,19 +155,6 @@ class Message_Controller extends Base_Controller {
 				)
 			);
 
-			/*
-			$q['$or'] = array(
-				array('from'=>$search),
-				array('to'=>$search),
-				array('subject'=>$search),
-				array('body'=>$search)
-			);
-			$q = array('$or'=>array(
-				array('to'=>$self_email_regex),
-				array('cc'=>$self_email_regex),
-				array('bcc'=>$self_email_regex),
-			));
-			*/
 
 		}else{
 			$q['$and'] = array(
@@ -186,6 +174,32 @@ class Message_Controller extends Base_Controller {
 			));
 		}
 
+        */
+
+        if($search != ''){
+            $search = new MongoRegex('/'.$search.'/i');
+            $q['to'] = $self_email_regex;
+            $q['$or'] = array(
+                array('from'=>$search),
+                array('to'=>$search),
+                array('subject'=>$search),
+                array('body'=>$search)
+            );
+
+            $q['delete'] = array('$exists'=>false);
+            $q['delete.email'] = array('$not'=>$self_email_regex);
+
+        }else{
+
+            $q['$or'] = array(
+                array('to'=>$self_email_regex),
+                array('cc'=>$self_email_regex),
+                array('bcc'=>$self_email_regex),
+            );
+
+            $q['delete'] = array('$exists'=>false);
+            $q['delete.email'] = array('$not'=>$self_email_regex);
+        }
 
 
 		if(count($q) > 0){
@@ -333,7 +347,6 @@ class Message_Controller extends Base_Controller {
 					)
 
 			));
-			*/
 
 			$q['$and'] = array(
 					array('from'=>Config::get('kickstart.system_email')),
@@ -350,6 +363,19 @@ class Message_Controller extends Base_Controller {
 					)
 
 			));
+
+            */
+
+            $q['from'] = Config::get('kickstart.system_email');
+            $q['$or'] = array(
+                array('to'=>$self_email_regex),
+                array('cc'=>$self_email_regex),
+                array('bcc'=>$self_email_regex),
+            );
+
+            $q['delete'] = array('$exists'=>false);
+            $q['delete.email'] = array('$not'=>$self_email_regex);
+
 
 		}
 
