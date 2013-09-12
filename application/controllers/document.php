@@ -1619,7 +1619,12 @@ class Document_Controller extends Base_Controller {
 					$edit = '';
                     $move = '';
 					$del = '';
-					$download = '';
+                    if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1){
+                        $download = '<a href="'.URL::to('document/download/'.$doc['_id'].'/'.$type).'">'.
+                                '<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
+                    }else{
+                        $download = '';
+                    }
 				}
 
 			}
