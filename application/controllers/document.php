@@ -1592,7 +1592,11 @@ class Document_Controller extends Base_Controller {
 							'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
 			}else{
 
-				if(isset($doc['interaction']) && $doc['interaction'] == 'rw'){
+				if(
+                    (isset($doc['interaction']) && $doc['interaction'] == 'rw') ||
+                                    Auth::user()->role == 'operations_director' ||
+                                    Auth::user()->role == 'finance_hr_director'
+                    ){
 					if($permissions->{$type}->edit == 1){
 						$edit = '<a href="'.URL::to('document/edit/'.$doc['_id'].'/'.$type).'">'.
 								'<i class="foundicon-edit action has-tip tip-bottom noradius" title="Edit"></i></a>&nbsp;';
@@ -1619,12 +1623,7 @@ class Document_Controller extends Base_Controller {
 					$edit = '';
                     $move = '';
 					$del = '';
-                    if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1){
-                        $download = '<a href="'.URL::to('document/download/'.$doc['_id'].'/'.$type).'">'.
-                                '<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
-                    }else{
-                        $download = '';
-                    }
+                    $download = '';
 				}
 
 			}
