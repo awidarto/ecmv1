@@ -1611,7 +1611,7 @@ class Document_Controller extends Base_Controller {
 						$del = '';
 					}
 
-					if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1){
+					if(isset($permissions->{$type}->download) && $permissions->{$type}->download == 1 || $type == 'general'){
 						$download = '<a href="'.URL::to('document/download/'.$doc['_id'].'/'.$type).'">'.
 								'<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
 					}else{
@@ -1624,10 +1624,27 @@ class Document_Controller extends Base_Controller {
 					$edit = '';
                     $move = '';
 					$del = '';
-                    $download = '';
+                    if($type == 'general'){
+                        $download = '<a href="'.URL::to('document/download/'.$doc['_id'].'/'.$type).'">'.
+                                '<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
+                    }else{
+                        $download = '';
+                    }
 				}
 
 			}
+
+            if(is_array($doc['sharedEmails'])){
+                if(in_array(Auth::user()->email, $doc['sharedEmails'])){
+                    $download = '<a href="'.URL::to('document/download/'.$doc['_id'].'/'.$type).'">'.
+                            '<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
+                }
+            }else{
+                if(Auth::user()->email == $doc['sharedEmails']){
+                    $download = '<a href="'.URL::to('document/download/'.$doc['_id'].'/'.$type).'">'.
+                            '<i class="foundicon-inbox action has-tip tip-bottom noradius" title="Download"></i></a>&nbsp;';
+                }
+            }
 
 			$aadata[] = array(
 				$counter,
