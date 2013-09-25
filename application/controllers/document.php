@@ -1438,46 +1438,32 @@ class Document_Controller extends Base_Controller {
 
 					if(Auth::user()->department == $type){
 
-						$q = array(
-							'docDepartment' => trim($type),
-							'$or'=>array(
-									array('access'=>'departmental'),
-									array('docShare'=>$sharecriteria),
-									array('creatorId'=>Auth::user()->id)
-                                    ),
-                            'deleted'=>false
-							)
-						);
+						$q['docDepartment'] = trim($type);
+						$q['$or']= array(
+									   array('access'=>'departmental'),
+									   array('docShare'=>$sharecriteria),
+									   array('creatorId'=>Auth::user()->id)
+                                    );
+                        $q['deleted'] = 0;
 
 					}else if($permissions->{$type}->read == 1){
 
-						$q = array(
-							'docDepartment' => trim($type),
-							'deleted'=>false,
-							'access'=>'departmental'
-							//'$or'=>array(
-									//array('access'=>'departmental'),
-									//array('docShare'=>$sharecriteria),
-									//array('creatorId'=>Auth::user()->id),
-									//array('deleted'=>array('$exists'=>false))
-							//)
-						);
-
+						$q['docDepartment'] = trim($type);
+						$q['deleted'] = 0 ;
+						//$q['access'] ='departmental';
 
 					}else{
-						$q = array(
-                                'docDepartment' => trim($type),
-                                'docShare'=>$sharecriteria,
-                                '$or'=> array(
-								    array('deleted'=>0),
-								    array('deleted'=>array('$exists'=>0))
-                                )
-							);
 
+                        $q['docDepartment'] = trim($type);
+                        $q['docShare'] = $sharecriteria;
+                        $q['$or'] = array(
+						      array('deleted'=>0),
+						      array('deleted'=>array('$exists'=>0))
+                            );
 					}
 
-
 				}
+
 			}
 
 		}
