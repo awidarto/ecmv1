@@ -1444,12 +1444,12 @@ class Document_Controller extends Base_Controller {
 									   array('docShare'=>$sharecriteria),
 									   array('creatorId'=>Auth::user()->id)
                                     );
-                        $q['deleted'] = 0;
+                        $q['deleted'] = false;
 
 					}else if($permissions->{$type}->read == 1){
 
 						$q['docDepartment'] = trim($type);
-						$q['deleted'] = 0 ;
+						$q['deleted'] = false ;
 						//$q['access'] ='departmental';
 
 					}else{
@@ -1457,7 +1457,7 @@ class Document_Controller extends Base_Controller {
                         $q['docDepartment'] = trim($type);
                         $q['docShare'] = $sharecriteria;
                         $q['$or'] = array(
-						      array('deleted'=>0),
+						      array('deleted'=>false),
 						      array('deleted'=>array('$exists'=>0))
                             );
 					}
