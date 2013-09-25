@@ -1443,10 +1443,9 @@ class Document_Controller extends Base_Controller {
 							'$or'=>array(
 									array('access'=>'departmental'),
 									array('docShare'=>$sharecriteria),
-									array('creatorId'=>Auth::user()->id),
-									array('deleted'=>array('$exists'=>false),
-                                    array('deleted'=>false)
-                                    )
+									array('creatorId'=>Auth::user()->id)
+                                    ),
+                            'deleted'=>false
 							)
 						);
 
