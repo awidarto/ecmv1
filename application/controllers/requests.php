@@ -62,7 +62,7 @@ class Requests_Controller extends Base_Controller {
 		/*
 		}else{
 			return View::make('document.restricted')
-							->with('title',$title);			
+							->with('title',$title);
 		}
 		*/
 	}
@@ -111,9 +111,9 @@ class Requests_Controller extends Base_Controller {
 					if($cond[$idx] == 'both'){
 						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
 					}
 				}else if($rel[$idx] == 'equ'){
 					$q[$field] = Input::get('sSearch_'.$idx);
@@ -129,7 +129,7 @@ class Requests_Controller extends Base_Controller {
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
 		if($fidx == 0){
-			$fidx = $defsort;			
+			$fidx = $defsort;
 			$sort_col = $fields[$fidx];
 			$sort_dir = $defdir;
 		}else{
@@ -215,7 +215,7 @@ class Requests_Controller extends Base_Controller {
 			$counter++;
 		}
 
-		
+
 		$result = array(
 			'sEcho'=> Input::get('sEcho'),
 			'iTotalRecords'=>$count_all,
@@ -263,7 +263,7 @@ class Requests_Controller extends Base_Controller {
 		/*
 		}else{
 			return View::make('document.restricted')
-							->with('title',$title);			
+							->with('title',$title);
 		}
 		*/
 	}
@@ -315,9 +315,9 @@ class Requests_Controller extends Base_Controller {
 					if($cond[$idx] == 'both'){
 						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
 					}
 				}else if($rel[$idx] == 'equ'){
 					$q[$field] = Input::get('sSearch_'.$idx);
@@ -333,7 +333,7 @@ class Requests_Controller extends Base_Controller {
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
 		if($fidx == 0){
-			$fidx = $defsort;			
+			$fidx = $defsort;
 			$sort_col = $fields[$fidx];
 			$sort_dir = $defdir;
 		}else{
@@ -429,7 +429,7 @@ class Requests_Controller extends Base_Controller {
 				}else{
 					$status = 'Credential Submission';
 				}
-			}			
+			}
 
 			$doc['title'] = str_ireplace($hilite, $hilite_replace, $doc['title']);
 			$doc['creatorName'] = str_ireplace($hilite, $hilite_replace, $doc['creatorName']);
@@ -449,7 +449,7 @@ class Requests_Controller extends Base_Controller {
 			$counter++;
 		}
 
-		
+
 		$result = array(
 			'sEcho'=> Input::get('sEcho'),
 			'iTotalRecords'=>$count_all,
@@ -480,7 +480,7 @@ class Requests_Controller extends Base_Controller {
 			array('Tags',array('class'=>'one')),
 			array('Action',array('class'=>'one'))
 		);
-		
+
 		$searchinput = array(false,'title','created','creator','approval from',false,false,'filename','tags',false);
 
 		//if(Auth::user()->role == 'root' || Auth::user()->role == 'super'){
@@ -497,7 +497,7 @@ class Requests_Controller extends Base_Controller {
 		/*
 		}else{
 			return View::make('document.restricted')
-							->with('title',$title);			
+							->with('title',$title);
 		}
 		*/
 	}
@@ -558,9 +558,9 @@ class Requests_Controller extends Base_Controller {
 					if($cond[$idx] == 'both'){
 						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
 					}
 				}else if($rel[$idx] == 'equ'){
 					$q[$field] = Input::get('sSearch_'.$idx);
@@ -576,7 +576,7 @@ class Requests_Controller extends Base_Controller {
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
 		if($fidx == 0){
-			$fidx = $defsort;			
+			$fidx = $defsort;
 			$sort_col = $fields[$fidx];
 			$sort_dir = $defdir;
 		}else{
@@ -699,7 +699,7 @@ class Requests_Controller extends Base_Controller {
 			$counter++;
 		}
 
-		
+
 		$result = array(
 			'sEcho'=> Input::get('sEcho'),
 			'iTotalRecords'=>$count_all,
@@ -794,7 +794,7 @@ class Requests_Controller extends Base_Controller {
 			}
 
 			$docupload = Input::file('docupload');
-			
+
 			$docupload['name'] = fixfilename($docupload['name']);
 
 			//print $docupload['name'];
@@ -882,7 +882,7 @@ class Requests_Controller extends Base_Controller {
 				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
 			}else{
 				Event::fire('document.delete',array('id'=>$id,'result'=>'FAILED'));
-				$result = array('status'=>'ERR','data'=>'DELETEFAILED');				
+				$result = array('status'=>'ERR','data'=>'DELETEFAILED');
 			}
 		}
 
@@ -932,7 +932,7 @@ class Requests_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 	    	//print_r($data);
 
 			//pre save transform
@@ -948,7 +948,9 @@ class Requests_Controller extends Base_Controller {
 			$data['lastUpdate'] = new MongoDate();
 			$data['creatorName'] = Auth::user()->fullname;
 			$data['creatorId'] = Auth::user()->id;
-			
+
+            $data['deleted'] = false;
+
 			$docupload = Input::file('docupload');
 
 			$docupload['name'] = fixfilename($docupload['name']);
@@ -973,7 +975,7 @@ class Requests_Controller extends Base_Controller {
 					$newdir = realpath(Config::get('parama.storage')).'/'.$newid;
 
 					Input::upload('docupload',$newdir,$docupload['name']);
-					
+
 				}
 
 				if(count($data['tags']) > 0){
@@ -1009,7 +1011,7 @@ class Requests_Controller extends Base_Controller {
 
 	    }
 
-		
+
 	}
 
 	public function get_edit($id = null,$type = null){
@@ -1087,7 +1089,7 @@ class Requests_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 			$id = new MongoId($data['id']);
 
 			$data['effectiveDate'] = ($data['effectiveDate'] == '')?'':new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
@@ -1095,7 +1097,7 @@ class Requests_Controller extends Base_Controller {
 
 			//$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
 			//$data['expiryDate'] = new MongoDate(strtotime($data['expiryDate']." 00:00:00"));
-			
+
 			$data['lastUpdate'] = new MongoDate();
 
 			unset($data['csrf_token']);
@@ -1133,7 +1135,7 @@ class Requests_Controller extends Base_Controller {
 			}
 
 			unset($data['oldTag']);
-			
+
 			if($doc->update(array('_id'=>$id),array('$set'=>$data))){
 
 				Event::fire('document.update',array('id'=>$id,'result'=>'OK'));
@@ -1152,7 +1154,7 @@ class Requests_Controller extends Base_Controller {
 					foreach($approvalby as $to){
 						Event::fire('request.approval',array('id'=>$id,'approvalby'=>$to));
 					}
-				}				
+				}
 
 		    	return Redirect::to($back)->with('notify_success','Document saved successfully');
 			}else{
@@ -1164,7 +1166,7 @@ class Requests_Controller extends Base_Controller {
 
 	    }
 
-		
+
 	}
 
 
@@ -1189,9 +1191,9 @@ class Requests_Controller extends Base_Controller {
 
 		$can_open = false;
 
-		if(Auth::user()->role == 'root' || 
-			Auth::user()->role == 'super' || 
-			Auth::user()->department == $title || 
+		if(Auth::user()->role == 'root' ||
+			Auth::user()->role == 'super' ||
+			Auth::user()->department == $title ||
 			$permissions->{$type} == true
 		){
 			return View::make('tables.simple')
@@ -1203,7 +1205,7 @@ class Requests_Controller extends Base_Controller {
 				->with('ajaxsource',URL::to('document/type/'.$type))
 				->with('ajaxdel',URL::to('document/del'))
 				->with('crumb',$this->crumb)
-				->with('heads',$heads);			
+				->with('heads',$heads);
 		}else{
 			return View::make('document.restricted')
 				->with('crumb',$this->crumb)
@@ -1247,9 +1249,9 @@ class Requests_Controller extends Base_Controller {
 					if($cond[$idx] == 'both'){
 						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
 					}
 				}else if($rel[$idx] == 'equ'){
 					$q[$field] = Input::get('sSearch_'.$idx);
@@ -1268,7 +1270,7 @@ class Requests_Controller extends Base_Controller {
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
 		if($fidx == 0){
-			$fidx = $defsort;			
+			$fidx = $defsort;
 			$sort_col = $fields[$fidx];
 			$sort_dir = $defdir;
 		}else{
@@ -1325,7 +1327,7 @@ class Requests_Controller extends Base_Controller {
 			$counter++;
 		}
 
-		
+
 		$result = array(
 			'sEcho'=> Input::get('sEcho'),
 			'iTotalRecords'=>$count_all,
@@ -1384,9 +1386,9 @@ class Requests_Controller extends Base_Controller {
 					if($cond[$idx] == 'both'){
 						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/');
 					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/');						
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/');
 					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/');						
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/');
 					}
 				}else if($rel[$idx] == 'equ'){
 					$q[$field] = Input::get('sSearch_'.$idx);
@@ -1434,7 +1436,7 @@ class Requests_Controller extends Base_Controller {
 			$counter++;
 		}
 
-		
+
 		$result = array(
 			'sEcho'=> Input::get('sEcho'),
 			'iTotalRecords'=>$count_all,

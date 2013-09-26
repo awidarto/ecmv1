@@ -84,7 +84,7 @@ class Project_Controller extends Base_Controller {
 			'',
 			'',
 			''
-		);		
+		);
 
 		$colclass = array('one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one','one');
 		//$colclass = false;
@@ -126,7 +126,7 @@ class Project_Controller extends Base_Controller {
 				){
 
 				$importurl = 'import/doimport/project';
-				$addurl = 'project/add';				
+				$addurl = 'project/add';
 				// roots can see all
 
 			}else if( Auth::user()->role == 'client' ||
@@ -241,7 +241,7 @@ class Project_Controller extends Base_Controller {
 			Auth::user()->role == 'president_director' ||
 			Auth::user()->role == 'bod'
 			){
-			
+
 			// roots can see all
 
 		}else if( Auth::user()->role == 'client' ||
@@ -290,7 +290,7 @@ class Project_Controller extends Base_Controller {
 
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
-			
+
 			if(isset($doc['tags']) && is_array($doc['tags']) && implode('',$doc['tags']) != ''){
 				$tags = array();
 
@@ -411,7 +411,7 @@ class Project_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 	    	//print_r($data);
 
 			//pre save transform
@@ -424,7 +424,8 @@ class Project_Controller extends Base_Controller {
 			$data['lastUpdate'] = new MongoDate();
 			$data['creatorName'] = Auth::user()->fullname;
 			$data['creatorId'] = Auth::user()->id;
-			
+            $data['deleted'] = false;
+
 			$data['tags'] = explode(',',$data['projectTag']);
 
 			$project = new Project();
@@ -505,7 +506,7 @@ class Project_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 			$id = new MongoId($data['id']);
 
 			$data['effectiveDate'] = new MongoDate(strtotime($data['effectiveDate']." 00:00:00"));
@@ -535,7 +536,7 @@ class Project_Controller extends Base_Controller {
 			}
 
 			unset($data['oldTag']);
-			
+
 			if($doc->update(array('_id'=>$id),array('$set'=>$data))){
 
 				Event::fire('project.update',array('id'=>$id,'result'=>'OK'));
@@ -569,7 +570,7 @@ class Project_Controller extends Base_Controller {
 				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
 			}else{
 				Event::fire('project.delete',array('id'=>$id,'creatorId'=>Auth::user()->id,'result'=>'FAILED'));
-				$result = array('status'=>'ERR','data'=>'DELETEFAILED');				
+				$result = array('status'=>'ERR','data'=>'DELETEFAILED');
 			}
 		}
 
@@ -591,7 +592,7 @@ class Project_Controller extends Base_Controller {
 			foreach ($schedule['schedules'] as $val) {
 				$from = $val['values'][0]['from']->sec * 1000;
 				$val['values'][0]['from'] = '/Date('.$from.')/';
-				
+
 				$to = $val['values'][0]['to']->sec * 1000;
 				$val['values'][0]['to'] = '/Date('.$to.')/';
 
@@ -601,7 +602,7 @@ class Project_Controller extends Base_Controller {
 
 				$seq++;
 
-			}			
+			}
 		}
 
 		return Response::json($schedules);

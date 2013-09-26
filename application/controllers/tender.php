@@ -121,7 +121,7 @@ class Tender_Controller extends Base_Controller {
 				){
 
 				$importurl = 'import/doimport/tender';
-				$addurl = 'tender/add';				
+				$addurl = 'tender/add';
 				// roots can see all
 
 			}else if( Auth::user()->role == 'client' ||
@@ -233,7 +233,7 @@ class Tender_Controller extends Base_Controller {
 			Auth::user()->role == 'president_director' ||
 			Auth::user()->role == 'bod'
 			){
-			
+
 			// roots can see all
 
 		}else if( Auth::user()->role == 'client' ||
@@ -406,9 +406,9 @@ class Tender_Controller extends Base_Controller {
 							if($cond[$idx] == 'both'){
 								$sub[] = array($f=> new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i') );
 							}else if($cond[$idx] == 'before'){
-								$sub[] = array($f=> new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i') );						
+								$sub[] = array($f=> new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i') );
 							}else if($cond[$idx] == 'after'){
-								$sub[] = array($f=> new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i') );						
+								$sub[] = array($f=> new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i') );
 							}
 						}
 						$q['$or'] = $sub;
@@ -416,10 +416,10 @@ class Tender_Controller extends Base_Controller {
 						if($cond[$idx] == 'both'){
 							$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
 						}else if($cond[$idx] == 'before'){
-							$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
+							$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
 						}else if($cond[$idx] == 'after'){
-							$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
-						}						
+							$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
+						}
 					}
 				}else if($rel[$idx] == 'equ'){
 					$q[$field] = Input::get('sSearch_'.$idx);
@@ -434,7 +434,7 @@ class Tender_Controller extends Base_Controller {
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
 		if($fidx == 0){
-			$fidx = $defsort;			
+			$fidx = $defsort;
 			$sort_col = $fields[$fidx];
 			$sort_dir = $defdir;
 		}else{
@@ -488,7 +488,7 @@ class Tender_Controller extends Base_Controller {
 			$counter++;
 		}
 
-		
+
 		$result = array(
 			'sEcho'=> Input::get('sEcho'),
 			'iTotalRecords'=>$count_all,
@@ -531,7 +531,7 @@ class Tender_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 	    	//print_r($data);
 
 			//pre save transform
@@ -540,11 +540,13 @@ class Tender_Controller extends Base_Controller {
 			$data['tenderDate'] = new MongoDate(strtotime($data['tenderDate']." 00:00:00"));
 			$data['closingDate'] = new MongoDate(strtotime($data['closingDate']." 00:00:00"));
 
+            $data['deleted'] = false;
+
 			$data['createdDate'] = new MongoDate();
 			$data['lastUpdate'] = new MongoDate();
 			$data['creatorName'] = Auth::user()->fullname;
 			$data['creatorId'] = Auth::user()->id;
-			
+
 			$data['tags'] = explode(',',$data['tenderTag']);
 
 			$tender = new tender();
@@ -619,7 +621,7 @@ class Tender_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 			$id = new MongoId($data['id']);
 
 			$data['tenderDate'] = new MongoDate(strtotime($data['tenderDate']." 00:00:00"));
@@ -649,7 +651,7 @@ class Tender_Controller extends Base_Controller {
 			}
 
 			unset($data['oldTag']);
-			
+
 			if($doc->update(array('_id'=>$id),array('$set'=>$data))){
 
 				Event::fire('tender.update',array('id'=>$id,'result'=>'OK'));
@@ -683,7 +685,7 @@ class Tender_Controller extends Base_Controller {
 				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
 			}else{
 				Event::fire('tender.delete',array('id'=>$id,'result'=>'FAILED'));
-				$result = array('status'=>'ERR','data'=>'DELETEFAILED');				
+				$result = array('status'=>'ERR','data'=>'DELETEFAILED');
 			}
 		}
 
@@ -705,7 +707,7 @@ class Tender_Controller extends Base_Controller {
 			foreach ($schedule['schedules'] as $val) {
 				$from = $val['values'][0]['from']->sec * 1000;
 				$val['values'][0]['from'] = '/Date('.$from.')/';
-				
+
 				$to = $val['values'][0]['to']->sec * 1000;
 				$val['values'][0]['to'] = '/Date('.$to.')/';
 
@@ -715,7 +717,7 @@ class Tender_Controller extends Base_Controller {
 
 				$seq++;
 
-			}			
+			}
 		}
 
 		return Response::json($schedules);

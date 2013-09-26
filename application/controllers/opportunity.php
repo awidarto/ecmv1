@@ -118,7 +118,7 @@ class Opportunity_Controller extends Base_Controller {
 				){
 
 				$importurl = 'import/doimport/opportunity';
-				$addurl = 'opportunity/add';				
+				$addurl = 'opportunity/add';
 				// roots can see all
 
 			}else if( Auth::user()->role == 'client' ||
@@ -235,7 +235,7 @@ class Opportunity_Controller extends Base_Controller {
 			Auth::user()->role == 'president_director' ||
 			Auth::user()->role == 'bod'
 			){
-			
+
 			// roots can see all
 
 		}else if( Auth::user()->role == 'client' ||
@@ -287,7 +287,7 @@ class Opportunity_Controller extends Base_Controller {
 
 		$counter = 1 + $pagestart;
 		foreach ($documents as $doc) {
-			
+
 			if(isset($doc['tags']) && is_array($doc['tags']) && implode('',$doc['tags']) != ''){
 				$tags = array();
 
@@ -439,9 +439,9 @@ class Opportunity_Controller extends Base_Controller {
 							if($cond[$idx] == 'both'){
 								$sub[] = array($f=> new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i') );
 							}else if($cond[$idx] == 'before'){
-								$sub[] = array($f=> new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i') );						
+								$sub[] = array($f=> new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i') );
 							}else if($cond[$idx] == 'after'){
-								$sub[] = array($f=> new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i') );						
+								$sub[] = array($f=> new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i') );
 							}
 						}
 						$q['$or'] = $sub;
@@ -449,10 +449,10 @@ class Opportunity_Controller extends Base_Controller {
 						if($cond[$idx] == 'both'){
 							$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
 						}else if($cond[$idx] == 'before'){
-							$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
+							$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
 						}else if($cond[$idx] == 'after'){
-							$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
-						}						
+							$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
+						}
 					}
 				}else if($rel[$idx] == 'equ'){
 					$q[$field] = Input::get('sSearch_'.$idx);
@@ -467,7 +467,7 @@ class Opportunity_Controller extends Base_Controller {
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
 		if($fidx == 0){
-			$fidx = $defsort;			
+			$fidx = $defsort;
 			$sort_col = $fields[$fidx];
 			$sort_dir = $defdir;
 		}else{
@@ -521,7 +521,7 @@ class Opportunity_Controller extends Base_Controller {
 			$counter++;
 		}
 
-		
+
 		$result = array(
 			'sEcho'=> Input::get('sEcho'),
 			'iTotalRecords'=>$count_all,
@@ -565,10 +565,10 @@ class Opportunity_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 	    	//print_r($data);
 
-	    	
+
 			//pre save transform
 			unset($data['csrf_token']);
 
@@ -579,7 +579,9 @@ class Opportunity_Controller extends Base_Controller {
 			$data['lastUpdate'] = new MongoDate();
 			$data['creatorName'] = Auth::user()->fullname;
 			$data['creatorId'] = Auth::user()->id;
-			
+
+            $data['deleted'] = false;
+
 			$data['tags'] = explode(',',$data['opportunityTag']);
 
 			$data['opportunityContactPersons'] = array();
@@ -642,7 +644,7 @@ class Opportunity_Controller extends Base_Controller {
 
 
 				Event::fire('opportunity.create',array('id'=>$newobj['_id'],'result'=>'OK'));
-				
+
 		    	return Redirect::to('opportunity')->with('notify_success','Document saved successfully');
 			}else{
 				Event::fire('opportunity.create',array('id'=>$id,'result'=>'FAILED'));
@@ -702,7 +704,7 @@ class Opportunity_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 			$id = new MongoId($data['id']);
 
 			$data['opportunityDate'] = new MongoDate(strtotime($data['opportunityDate']." 00:00:00"));
@@ -734,7 +736,7 @@ class Opportunity_Controller extends Base_Controller {
 			}
 
 			unset($data['oldTag']);
-			
+
 			if($doc->update(array('_id'=>$id),array('$set'=>$data))){
 
 				if($data['saveToContact'] == 'Yes' && $data['contact_id'] != ''){
@@ -789,7 +791,7 @@ class Opportunity_Controller extends Base_Controller {
 				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
 			}else{
 				Event::fire('opportunity.delete',array('id'=>$id,'result'=>'FAILED'));
-				$result = array('status'=>'ERR','data'=>'DELETEFAILED');				
+				$result = array('status'=>'ERR','data'=>'DELETEFAILED');
 			}
 		}
 
@@ -811,7 +813,7 @@ class Opportunity_Controller extends Base_Controller {
 			foreach ($schedule['schedules'] as $val) {
 				$from = $val['values'][0]['from']->sec * 1000;
 				$val['values'][0]['from'] = '/Date('.$from.')/';
-				
+
 				$to = $val['values'][0]['to']->sec * 1000;
 				$val['values'][0]['to'] = '/Date('.$to.')/';
 
@@ -821,7 +823,7 @@ class Opportunity_Controller extends Base_Controller {
 
 				$seq++;
 
-			}			
+			}
 		}
 
 		return Response::json($schedules);

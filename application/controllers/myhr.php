@@ -393,6 +393,8 @@ class Myhr_Controller extends Base_Controller {
 			$data['creatorName'] = Auth::user()->fullname;
 			$data['creatorId'] = Auth::user()->id;
 
+            $data['deleted'] = false;
+
 			$data['useAsTemplate'] = (isset($data['useAsTemplate']))?$data['useAsTemplate']:'No';
 
 			$data['employmentDoc'] = true;
