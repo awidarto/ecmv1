@@ -1447,10 +1447,12 @@ class Document_Controller extends Base_Controller {
                         $q['deleted'] = false;
 
 					}else if($permissions->{$type}->read == 1){
-
+                        //print "can read";
 						$q['docDepartment'] = trim($type);
-						$q['deleted'] = false ;
-						//$q['access'] ='departmental';
+                        $q['$or'] = array(
+                              array('deleted'=>false),
+                              array('deleted'=>array('$exists'=>0))
+                            );
 
 					}else{
 
