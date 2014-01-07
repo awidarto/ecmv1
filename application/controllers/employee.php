@@ -39,7 +39,7 @@ class Employee_Controller extends Base_Controller {
 
 		date_default_timezone_set('Asia/Jakarta');
 		$this->filter('before','auth');
-	}	
+	}
 
 
 
@@ -92,9 +92,9 @@ class Employee_Controller extends Base_Controller {
 					if($cond[$idx] == 'both'){
 						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');						
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/i');
 					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');						
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/i');
 					}
 				}else if($rel[$idx] == 'equ'){
 					$q[$field] = Input::get('sSearch_'.$idx);
@@ -110,7 +110,7 @@ class Employee_Controller extends Base_Controller {
 		/* first column is always sequence number, so must be omitted */
 		$fidx = Input::get('iSortCol_0');
 		if($fidx == 0){
-			$fidx = $defsort;			
+			$fidx = $defsort;
 			$sort_col = $fields[$fidx];
 			$sort_dir = $defdir;
 		}else{
@@ -140,7 +140,7 @@ class Employee_Controller extends Base_Controller {
 			if(file_exists(Config::get('parama.avatarstorage').$doc['_id'].'/avatar.jpg')){
 				$photo = HTML::image('avatar/'.$doc['_id'].'/avatar.jpg', $doc['fullname'], array('class' => 'avatar-list'));
 			}else{
-				$photo = HTML::image('images/no-avatar.jpg', $doc['fullname'], array('class' => 'avatar-list'));				
+				$photo = HTML::image('images/no-avatar.jpg', $doc['fullname'], array('class' => 'avatar-list'));
 			}
 			*/
 
@@ -162,7 +162,7 @@ class Employee_Controller extends Base_Controller {
 			$counter++;
 		}
 
-		
+
 		$result = array(
 			'sEcho'=> Input::get('sEcho'),
 			'iTotalRecords'=>$count_all,
@@ -362,7 +362,7 @@ class Employee_Controller extends Base_Controller {
 	}
 
 	public function post_profile(){
-		
+
 	}
 
 	public function post_del(){
@@ -379,7 +379,7 @@ class Employee_Controller extends Base_Controller {
 			if($user->delete(array('_id'=>$id))){
 				$result = array('status'=>'OK','data'=>'CONTENTDELETED');
 			}else{
-				$result = array('status'=>'ERR','data'=>'DELETEFAILED');				
+				$result = array('status'=>'ERR','data'=>'DELETEFAILED');
 			}
 		}
 
@@ -439,7 +439,7 @@ class Employee_Controller extends Base_Controller {
 
 			Input::upload('picupload',$newdir,$picupload['name']);
 
-			
+
 		}
 
 		$user = new Employee();
@@ -448,9 +448,9 @@ class Employee_Controller extends Base_Controller {
 		$data['lastUpdate'] = new MongoDate();
 
 		unset($data['csrf_token']);
-		unset($data['id']);		
+		unset($data['id']);
 
-		
+
 		if($user->update(array('_id'=>$_id),array('$set'=>$data))){
 	    	return Redirect::to($back)->with('notify_success','Picture saved successfully');
 		}else{
@@ -496,7 +496,7 @@ class Employee_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 
 			$data['pass'] = Hash::make($data['pass']);
 
@@ -513,9 +513,9 @@ class Employee_Controller extends Base_Controller {
 			}else{
 		    	return Redirect::to($back)->with('notify_success','Password change failed');
 			}
-			
 
-	    }		
+
+	    }
 
 	}
 
@@ -561,7 +561,7 @@ class Employee_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 			$id = new MongoId($data['id']);
 			$data['lastUpdate'] = new MongoDate();
 
@@ -569,7 +569,7 @@ class Employee_Controller extends Base_Controller {
 			unset($data['id']);
 
 			$user = new Employee();
-			
+
 			if($user->update(array('_id'=>$id),array('$set'=>$data))){
 		    	return Redirect::to('employee')->with('notify_success','Employee saved successfully');
 			}else{
@@ -578,7 +578,7 @@ class Employee_Controller extends Base_Controller {
 
 	    }
 
-		
+
 	}
 
 
@@ -614,7 +614,7 @@ class Employee_Controller extends Base_Controller {
 	    }else{
 
 			$data = Input::get();
-	    	
+
 			unset($data['csrf_token']);
 
 			$data['createdDate'] = new MongoDate();
@@ -629,9 +629,9 @@ class Employee_Controller extends Base_Controller {
 				$userid = $obj['userId'];
 				$employeeid = $obj['_id'];
 				$userdirectoryavatar = realpath(Config::get('parama.avatarstorage')).'/'.$userid;
-				
 
-				
+
+
 				//make directory employee
 				$newdir = realpath(Config::get('parama.photostorage')).'/'.$employeeid;
 
@@ -644,16 +644,16 @@ class Employee_Controller extends Base_Controller {
 				$useravatarnew = realpath(Config::get('parama.photostorage')).'/'.$employeeid.'/formal.jpg';
 				rename($useravatar, $useravatarnew);
 
-		    	
+
 		    	return Redirect::to('employee')->with('notify_success','Employee saved successfully');
 			}else{
 		    	return Redirect::to('employee')->with('notify_success','Employee saving failed');
 			}
-			
+
 
 	    }
 
-		
+
 	}
 
 	public function get_people()
@@ -690,9 +690,9 @@ class Employee_Controller extends Base_Controller {
 					if($cond[$idx] == 'both'){
 						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'/');
 					}else if($cond[$idx] == 'before'){
-						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/');						
+						$q[$field] = new MongoRegex('/^'.Input::get('sSearch_'.$idx).'/');
 					}else if($cond[$idx] == 'after'){
-						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/');						
+						$q[$field] = new MongoRegex('/'.Input::get('sSearch_'.$idx).'$/');
 					}
 				}else if($rel[$idx] == 'equ'){
 					$q[$field] = Input::get('sSearch_'.$idx);
@@ -740,7 +740,7 @@ class Employee_Controller extends Base_Controller {
 			$counter++;
 		}
 
-		
+
 		$result = array(
 			'sEcho'=> Input::get('sEcho'),
 			'iTotalRecords'=>$count_all,
@@ -750,6 +750,6 @@ class Employee_Controller extends Base_Controller {
 		);
 
 		print json_encode($result);
-	}	
+	}
 
 }

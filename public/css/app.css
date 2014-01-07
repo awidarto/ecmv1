@@ -1,6 +1,6 @@
 /* Artfully masterminded by ZURB  */
 
-/* -------------------------------------------------- 
+/* --------------------------------------------------
    Table of Contents
 -----------------------------------------------------
 :: Shared Styles
@@ -326,7 +326,7 @@
 body{
 	background-color: #fff;
 	font-size: 1em;
-	font-family:"Helvetica Neue","Helvetica",Helvetica,Arial,sans-serif;
+	font-family: Roboto,"Helvetica Neue","Helvetica",Helvetica,Arial,sans-serif;
 	font-weight: 400;
 
 }
@@ -379,7 +379,7 @@ visibility:hidden;
 
 .sidepanel{
 	background-color: #fff;
-	border: 1px solid #d7d7d7;	
+	border: 1px solid #d7d7d7;
 }
 .center{
 	width:1024px;
@@ -441,7 +441,7 @@ table.dataTable{
 }
 
 .sidemenu{
-	font-size: 1.9em;	
+	font-size: 1.9em;
 }
 .tabs.vertical dd a, .tabs.vertical li a{
 	background-color: #fafafa;
@@ -473,7 +473,7 @@ table.dataTable{
 
 }
 body.front .container-content{
-	margin-top: 0;	
+	margin-top: 0;
 	min-height: 400px;
 }
 .container-content .dialog{
@@ -515,11 +515,11 @@ body.front .container-content{
 }
 
 .top-bar ul > li a:not(.button){
-	
+
 	font-size: 12px;
 	font-weight: normal;
-	font-family: "Helvetica Neue","Helvetica",Helvetica,Arial,sans-serif;
-	
+	font-family: Roboto,"Helvetica Neue","Helvetica",Helvetica,Arial,sans-serif;
+
 }
 .tabs.vertical dd a, .tabs.vertical li a{
 	margin: 0 auto;
@@ -531,7 +531,7 @@ body.front .container-content{
 
 /* -----------------------------------------
    Page Name 2
------------------------------------------ 
+-----------------------------------------
 
 .tableHeader h3{
 	width: 50%;
@@ -559,7 +559,7 @@ body.front .container-content{
 	padding:0 15px;
 }
 .newdoc.action{
-	font-size:1.7em; 
+	font-size:1.7em;
 	background-position: top left;
 
 }
@@ -603,7 +603,7 @@ table tbody tr.even,tr.even td.sorting_1{
 }
 .message-list-item span.category-info{
 	color: #ac9b70;
-	
+
 	font-style: italic;
 	font-size: 1.05em;
 }
@@ -619,7 +619,7 @@ footer{
 /*FRONT*/
 footer p{
 	margin-left: 20px;
-	
+
 	margin-top:20px;
 	margin-bottom:20px;
 }
@@ -640,7 +640,7 @@ body.front .container-content{
 }
 body.front .container-content #maincontent{
 	margin: 0 auto;
-	text-align: left;	
+	text-align: left;
 	float: none;
 	-webkit-box-shadow: 0px 3px 3px 1px rgba(0, 0, 0, 0.2);
 box-shadow: 0px 3px 3px 1px rgba(0, 0, 0, 0.2);
@@ -671,7 +671,7 @@ table.profile-info{
 
 }
 table.profile-info td{
-	padding:9px 10px 9px 0;	
+	padding:9px 10px 9px 0;
 }
 
 table.profile-info tbody tr:nth-child(even){
@@ -683,7 +683,7 @@ table.profile-info td.detail-title{
 
 }
 table.profile-info td.detail-info{
-    width: 200px;    
+    width: 200px;
 }
 table.profile-info td.detail-info span{
 	display: block;
@@ -877,7 +877,7 @@ i.approvalview{
 .fileviewer-container{
 	margin:0px;
 	padding: 0px;
-	height:400px;	
+	height:400px;
 }
 
 iframe.fileviewer{
@@ -903,7 +903,7 @@ iframe.fileviewer{
 a.inlink {
 	display: block;
     padding-bottom: 7px;
-    
+
 }
 .profileContent img{
     margin-bottom: 20px;
@@ -924,7 +924,7 @@ body.front .loginheader h1#paramanusaLogofront{
 	margin-top: 25px;
 	margin-bottom: 10px;
 	text-align: center;
-    
+
 	float: none;
 }
 .main-bar{
@@ -938,7 +938,7 @@ body.front .loginheader h1#paramanusaLogofront{
 .top-bar ul>li a:not(.button){
 	padding:0 7px;
 	color: #484236;
-	
+
 }
 .top-bar ul>li{
 	/*border-right: 1px solid #d2bf9e;*/
@@ -949,7 +949,7 @@ body.front .loginheader h1#paramanusaLogofront{
 .top-bar, .top-bar ul > li.has-dropdown .dropdown, .top-bar ul > li.has-dropdown .dropdown li, .top-bar ul > li.has-dropdown .dropdown li:last-child{
 	/*background-color: #e2ceaa;*/
 	background-color: transparent;
-	
+
 }
 .top-bar ul > li.has-dropdown ul.dropdown,.top-bar ul > li.has-dropdown ul.dropdown li,.top-bar ul > li.has-dropdown ul.dropdown li a,.top-bar ul > li.has-dropdown ul.dropdown li:last-child{
 	background-color: #fff;
@@ -967,7 +967,7 @@ body.front .loginheader h1#paramanusaLogofront{
 }
 .top-bar ul.mainnavparama>li:first-child:hover{
 	/*border-top-left-radius: 9px;*/
-	
+
 
 }
 
@@ -986,10 +986,10 @@ body.front .loginheader h1#paramanusaLogofront{
     border-bottom: none;
 }
 .top-bar ul>li:not(.name):hover a, .top-bar ul>li:not(.name).active a, .top-bar ul>li:not(.name):focus a{
-	
-	color: #484236;	
+
+	color: #484236;
     border-bottom: 1px solid #cccccc;
-    
+
 }
 .top-bar ul>li.has-dropdown:hover a{
     color: #33b5e5;
@@ -1006,7 +1006,7 @@ body.front .loginheader h1#paramanusaLogofront{
 
 }
 .top-bar ul>li.has-dropdown .dropdown li{
-	
+
 	border-right: 1px solid #e3e3e3;
     border-left: 1px solid #e3e3e3;
 
@@ -1015,12 +1015,12 @@ body.front .loginheader h1#paramanusaLogofront{
 .top-bar ul>li.has-dropdown:hover{
     border-right: 1px solid #e3e3e3;
     border-left: 1px solid #e3e3e3;
-    
+
 
 }
 .top-bar ul>li.has-dropdown:hover a{
     padding:0 6px 0 6px;
-    
+
 
 
 }
@@ -1103,7 +1103,7 @@ body.front .loginheader h1#paramanusaLogofront{
 	line-height: 20px;
 }
 .sidenav{
-	
+
 }
 .top-bar ul>li.divider{
 	background: transparent;
@@ -1120,28 +1120,28 @@ tr.odd{
 }
 
 .homeicon{
-	background: transparent url(../images/icon/home.png) no-repeat;	
+	background: transparent url(../images/icon/home.png) no-repeat;
 }
 
 .download{
-	background: transparent url(../images/icon/downloads.png) no-repeat;	
+	background: transparent url(../images/icon/downloads.png) no-repeat;
 }
 
 .upload{
 	background: transparent url(../images/icon/uploads.png) no-repeat;
-	
+
 }
 .mail{
 	background: transparent url(../images/icon/mail.png) no-repeat;
-	
+
 }
 .page{
 	background: transparent url(../images/icon/page.png) no-repeat;
-	
+
 }
 .flag{
 	background: transparent url(../images/icon/flag.png) no-repeat;
-	
+
 }
 .forward{
 	background: transparent url(../images/icon/applications-office.png) no-repeat;
@@ -1202,7 +1202,7 @@ visibility:hidden;
 
 
 .dataTables_paginate a.paginate_button,.dataTables_paginate span a{
-	
+
 	padding: 4px 12px;
 	line-height: 20px;
 	text-decoration: none;
@@ -1255,11 +1255,11 @@ cursor: pointer;
 }
 
 .expiring.now{
-    background-color: red;    
+    background-color: red;
 }
 
 .expiring.yesterday{
-    background-color: maroon;    
+    background-color: maroon;
 }
 
 .button.action{
@@ -1272,7 +1272,7 @@ td.approval.yes{
     padding: 3px;
     display: block;
     font-weight: bold;
-    text-align: center    
+    text-align: center
 }
 
 td.approval.no{
@@ -1281,7 +1281,7 @@ td.approval.no{
     padding: 3px;
     display: block;
     font-weight: bold;
-    text-align: center    
+    text-align: center
 }
 
 td.approval.transfer{
@@ -1290,7 +1290,7 @@ td.approval.transfer{
     padding: 3px;
     display: block;
     font-weight: bold;
-    text-align: center    
+    text-align: center
 }
 
 
@@ -1371,8 +1371,8 @@ ul.profilenav li a.help{
     background-image:  url(../images/icon/topnav/help.png);
     width:12px;
     height: 17px;
-    
-    
+
+
 }
 ul.profilenav li:last-child{
     padding-right: 20px;
@@ -1409,12 +1409,12 @@ a{
     margin-left: 20px;
 }
 .searchbtn{
- margin-left: 15px;   
+ margin-left: 15px;
 }
 
 
 img.avatar{
-    max-width:50px !important; 
+    max-width:50px !important;
 }
 
 .invalidhead{
@@ -1529,12 +1529,12 @@ ul.jqtree-tree li.jqtree-folder .jqtree-title {
     padding:5px;
 }
 
-ul.jqtree-tree li.jqtree-selected > .jqtree-element, 
+ul.jqtree-tree li.jqtree-selected > .jqtree-element,
 ul.jqtree-tree li.jqtree-selected > .jqtree-element:hover{
-    background: transparent; 
+    background: transparent;
 }
 
-ul.jqtree-tree li.jqtree-selected > .jqtree-element .jqtree-title, 
+ul.jqtree-tree li.jqtree-selected > .jqtree-element .jqtree-title,
 ul.jqtree-tree li.jqtree-selected > .jqtree-element .jqtree-title:hover{
     background-color: #97BDD6;
     padding:5px;

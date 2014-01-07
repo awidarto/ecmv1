@@ -2,7 +2,7 @@
 
 $doc_photo = '';
 $avatar_name = '';
-$system_photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => 'ten'));
+$system_photo = HTML::image('images/no-avatar.png', 'no-avatar', array('class' => 'ten'));
 
 if(isset($doc['creator_id'])){
 	$doc_photo = getavatar($doc['creator_id'],$doc['creator_name'],'ten');
@@ -29,13 +29,13 @@ elseif($doc['event'] == 'document.share'){
 	$avatar_name = $doc['sharer_name'];
 }
 elseif($doc['event'] == 'document.update'){
-	$main_photo = getavatar($doc['updater_id'],$doc['updater_name'],'twelve');	
+	$main_photo = getavatar($doc['updater_id'],$doc['updater_name'],'twelve');
 	$body = $doc['updater_name'].' has updated '.$doc['doc_title'];
 	$avatar_name = $doc['updater_name'];
 }
 
 elseif($doc['event'] == 'document.download'){
-	$main_photo = getavatar($doc['downloader_id'],$doc['downloader_name'],'twelve');	
+	$main_photo = getavatar($doc['downloader_id'],$doc['downloader_name'],'twelve');
 	$body = $doc['downloader_name'].' has downloaded '.$doc['doc_title'];
 	$avatar_name = $doc['downloader_name'];
 
@@ -60,13 +60,13 @@ elseif($doc['event'] == 'project.share'){
 
 }
 elseif($doc['event'] == 'project.update'){
-	$main_photo = getavatar($doc['updater_id'],$doc['updater_name'],'twelve');	
+	$main_photo = getavatar($doc['updater_id'],$doc['updater_name'],'twelve');
 	$body = $doc['updater_name'].' have updated '.$doc['doc_number'].' - '.$doc['doc_title'];
 	$avatar_name = $doc['updater_name'];
 
 }
 elseif($doc['event'] == 'request.approval'){
-	
+
 	$main_photo = getavatar($doc['requester_id'],$doc['requester_name'],'twelve');
 
 	if($doc['approvalby'] == Auth::user()->email){
@@ -78,7 +78,7 @@ elseif($doc['event'] == 'request.approval'){
 	$avatar_name = $doc['requester_name'];
 
 }elseif($doc['event'] == 'document.expire'){
-	
+
 	$main_photo = '';
 	$doc_photo = $system_photo;
 	//http://localhost/pnu/public/index.php/document/edit/513df31c0b9b34a401000000/general
@@ -117,7 +117,7 @@ elseif($doc['event'] == 'request.approval'){
 			@else
 				<div class="twelve columns">
 			@endif
-			
+
 		    	<p>
 					<strong style="margin-bottom:4px;display:block;">Document <span class="metaview" id="{{ $doc['doc_id'] }}">{{ $doc['doc_title'] }}</span> {{ $doc['title'] }}</strong>
 					Attachment : <span class="fileview" id="{{ $doc['doc_id'] }}">{{ $doc['doc_filename'] }}</span><br/>
@@ -126,9 +126,9 @@ elseif($doc['event'] == 'request.approval'){
 		  			{{ (isset($edit))?$edit:''}}
 		    	</p>
 		    </div>
-		  	
-		  	
-		
+
+
+
 	</div>
 </div>
 

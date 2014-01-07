@@ -212,7 +212,7 @@ function getavatar($id,$alt = 'avatar-image',$class = 'avatar',$width = '1000'){
 			}
 		}else{
 
-			$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));
+			$photo = HTML::image('images/no-avatar.png', 'no-avatar', array('class' => $class,'width'=>$width));
 
 		}
 	}
@@ -231,7 +231,7 @@ function getavatarbyemail($email,$alt = 'avatar-image',$class = 'avatar'){
 
 		$photo = HTML::image('avatar/'.$id.'/avatar.jpg', $alt, array('class' => $class));
 	}else{
-		$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class));
+		$photo = HTML::image('images/no-avatar.png', 'no-avatar', array('class' => $class));
 	}
 
 	return $photo;
@@ -244,7 +244,7 @@ function getphoto($id,$alt = 'avatar-image',$class = 'avatar',$width = '1000'){
 		$url = URL::to_asset('employees/'.$id.'/formal.jpg');
 		$photo = '<a id="avatarimagefancy" href="'.$url.'">'.HTML::image('employees/'.$id.'/formal.jpg', $alt, array('class' => $class,'width'=>$width)).'</a>';
 	}else{
-		$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class,'width'=>$width));
+		$photo = HTML::image('images/no-avatar.png', 'no-avatar', array('class' => $class,'width'=>$width));
 	}
 
 	return $photo;
@@ -260,7 +260,7 @@ function getphotobyemail($email,$alt = 'avatar-image',$class = 'avatar'){
 	if(file_exists(Config::get('parama.photostorage').$id.'/avatar.jpg')){
 		$photo = HTML::image('employees/'.$id.'/formal.jpg', $alt, array('class' => $class));
 	}else{
-		$photo = HTML::image('images/no-avatar.jpg', 'no-avatar', array('class' => $class));
+		$photo = HTML::image('images/no-avatar.png', 'no-avatar', array('class' => $class));
 	}
 
 	return $photo;
