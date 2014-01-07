@@ -8,7 +8,7 @@
   <!-- Set the viewport width to device width for mobile -->
   <meta name="viewport" content="width=device-width" />
 
-  <title>ParamaNusa</title>
+  <title>ECM V1</title>
 
   <!-- Included CSS Files -->
   {{ HTML::style('css/foundation.min.css') }}
@@ -28,12 +28,12 @@
 
   <!-- Header and Nav -->
   <header class="row mainheader loginheader">
-    
-      <h1 id="paramanusaLogofront">ParamaNusa</h1>
-    
+
+      <h1 id="paramanusaLogofront">ECM v1</h1>
+
   </header>
   <div class="row container-content">
-      
+
       <div id="maincontent" class="three columns clearfix">
           @if (Session::has('notify_success'))
               <div class="row">
@@ -43,13 +43,13 @@
 
           @yield('content')
       </div>
-      
+
   </div>
 
   <footer class="row">
-  
-        <p>&copy; Copyright 2012. ParamaNusa.</p>
-    
+
+        <p>&copy; Copyright 2012. ECM v1</p>
+
   </footer>
 </body>
 </html>

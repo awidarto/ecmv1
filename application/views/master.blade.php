@@ -8,7 +8,7 @@
   <!-- Set the viewport width to device width for mobile -->
   <meta name="viewport" content="width=device-width" />
 
-  <title>ParamaNusa</title>
+  <title>ECM V1</title>
 
   <!-- Included CSS Files -->
   {{ HTML::style('css/foundation.min.css') }}
@@ -44,10 +44,10 @@
 
   <!-- Header and Nav -->
   <!--<header class="row mainheader">
-    
+
       <h1 id="paramanusaLogo" class="six columns">ParamaNusa</h1>
       <div class="nav-top">
-        
+
       </div>
       <!--<div class="four columns">
             @yield('identity')
@@ -62,7 +62,7 @@
     <!-- This is source ordered to be pulled to the left on larger screens -->
 @if(Auth::check())
     <div class="row mainheader">
-      
+
       @yield('identity')
       <h1 id="paramanusaLogo"><a href="{{ URL::to() }}">Paramanusa</a></h1>
       <nav class="top-bar main-bar">
@@ -71,7 +71,7 @@
 
       </nav>
     </div>
-          
+
     <div class="row container-content clearfix">
 
         @yield('sidenav')
@@ -121,7 +121,7 @@
 
 
   <footer class="row">
-    <p>&copy; Copyright 2012. ParamaNusa.</p>
+    <p>&copy; Copyright 2012. ECM v1</p>
   </footer>
     {{ HTML::script('js/modernizr.foundation.js') }}
     {{ HTML::script('js/jquery.foundation.navigation.js') }}
